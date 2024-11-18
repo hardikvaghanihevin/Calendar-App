@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0.5dp">
+
+    <!-- RecyclerView for displaying the days in the month -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_calender_year"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/month_navigator_shape_1"
+        android:padding="8dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="3"
+        tools:context=".presentation.ui.calendar_month.CalendarMonthFragment"
+        tools:itemCount="12"
+        tools:listitem="@layout/item_month_for_year_calendar_layout"
+        tools:spanCount="3" />
+
+</FrameLayout>
