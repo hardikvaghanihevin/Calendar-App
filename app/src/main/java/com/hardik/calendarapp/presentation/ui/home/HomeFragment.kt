@@ -12,7 +12,6 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentHomeBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
-import com.hardik.calendarapp.presentation.ui.calendar_year.CalendarYearFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -59,13 +58,3 @@ class HomeFragment : Fragment() {
 
 }
 
-/**
- * Use this factory method to create a new instance of
- * this fragment using the provided parameters.
- *
- *  * Use the [CalendarYearFragment.newInstance] factory method to
- * @param param1 Parameter 1.
- * @param param2 Parameter 2.
- * @return A new instance of fragment CalendarYearFragment.
- */
-// TODO: Rename and change types and number of parameters
