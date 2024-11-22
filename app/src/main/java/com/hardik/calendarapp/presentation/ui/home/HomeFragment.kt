@@ -48,6 +48,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+
+
     }
 
 
@@ -57,4 +59,6 @@ class HomeFragment : Fragment() {
     }
 
 }
+// binding.customView.addEvent("2024-11-25", Event(title = "Independence Day", startTime = 0L, endTime = 0L, startDate = "", endDate = "", eventType =   EventType.NATIONAL_HOLIDAY))
+// binding.customView.incrementMonth()
 

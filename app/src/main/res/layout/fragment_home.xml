@@ -9,32 +9,20 @@
     tools:ignore="HardcodedText">
 
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
-        android:layout_width="250dp"
-        android:layout_height="@dimen/_250sdp"
-        app:layout_constraintStart_toStartOf="parent"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager_calendarMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/white"
-        app:running_year="2024"
-        app:running_month="10"
-        app:running_date="20"
-        app:week_start="monday"
-        app:month_display_option="showAdjacentMonthDates"
-        app:text_size_month="@null"
-        app:text_size_day="@null"
-        app:text_size_date="@null"
-        app:text_color_month="#F80909"
-        app:text_color_day="@color/black"
-        app:text_color_date="@null"
-        app:background_color_month="@color/black"
-        app:background_color_day="@color/red"
-        app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
-        android:id="@+id/customView"
-        />
+        app:layout_constraintVertical_bias="0"
+        tools:layout_height="250dp" />
 
+    <include
+        layout="@layout/calendar_year_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/included_year_layout"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

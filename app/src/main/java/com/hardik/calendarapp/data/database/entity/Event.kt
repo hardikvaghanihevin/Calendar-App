@@ -13,6 +13,7 @@ data class Event(
     val startDate: String,
     val endDate: String,
     val isHoliday: Boolean = false, // To differentiate holiday events
+    val eventType: EventType = EventType.GLOBAL_HOLIDAY,
     val description: String = ""
 )
 
@@ -45,4 +46,7 @@ fun Event.toCalendarDetailItem(): CalendarDetail.Item {
         updated = "",
         visibility = "default"
     )
+}
+enum class EventType {
+    PERSONAL, GLOBAL_HOLIDAY, NATIONAL_HOLIDAY, CULTURAL_HOLIDAY, WORK_MEETING
 }

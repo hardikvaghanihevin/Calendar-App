@@ -1,10 +1,13 @@
 package com.hardik.calendarapp.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -17,6 +20,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -56,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 //        binding.appBarMain.toolbar.navigationIcon = null
 
         // Collecting the StateFlow
-       /* lifecycleScope.launch {
+        lifecycleScope.launch {
             mainViewModel.state.collect { dataState ->
                 if (dataState.isLoading) {
                     // Show loading indicator
@@ -74,7 +78,7 @@ class MainActivity : AppCompatActivity() {
     //                binding.recyclerview.setPadding(0, 0, 0, 0)
                 }
             }
-        }*/
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
