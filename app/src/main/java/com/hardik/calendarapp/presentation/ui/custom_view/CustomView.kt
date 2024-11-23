@@ -23,6 +23,7 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
     private final val TAG = CustomView::class.java.simpleName
     val today = Calendar.getInstance()
 
+    //region Function for Variables todo:for programmatically useful
     // Getter and Setter for currentYear
     var currentYear: Int
         get() = _currentYear
@@ -76,10 +77,61 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
         postInvalidate()
     }
 
+    var monthNameWithYear: Boolean
+        get() = _monthNameWithYear
+        set(value) {
+            if (_monthNameWithYear != value) { // Update only if the value changes
+                _monthNameWithYear = value
+                updateMonthText() // Trigger UI update
+            }
+        }
+
+    fun updateMonthNameWithYear(wantToMonthNameWithYear: Boolean) {
+        monthNameWithYear = wantToMonthNameWithYear
+    }
+    private fun updateMonthText() {
+        _currentMonthName = getMonthName(currentMonth)  // Update the month name after changing the month
+    }
+
+    private fun getMonthName(month: Int): String {
+        return  if (monthNameWithYear) DateFormatSymbols().months[month]+"-" + currentYear
+        else DateFormatSymbols().months[month]
+    }
+
+    fun getWeekCount(year: Int, month: Int): Int { return 0 }
+
+    fun weekStart(weekStart: WeekStart){
+        this.weekStart = weekStart
+    }
+    fun monthDisplayOption(monthDisplayOption: MonthDisplayOption){
+        this.monthDisplayOption = monthDisplayOption
+    }
+
+    fun textSizeMonth(textSizeMonth: Float){ this.textSizeMonth = textSizeMonth }
+    fun textSizeDay(textSizeDay: Float){ this.textSizeDay = textSizeDay }
+    fun textSizeDate(textSizeDate: Float){ this.textSizeDate = textSizeDate}
+    fun textColorMonth(textColorMonth: Int?){ this.textColorMonth = textColorMonth ?: return}
+    fun textColorDay(textColorDay: Int?){ this.textColorDay = textColorDay ?: return }
+    fun textColorDate(textColorDate: Int?){ this.textColorDate = textColorDate ?: return }
+
+    fun backgroundColorMonth(backgroundColorMonth: Int?){ this.backgroundColorMonth = backgroundColorMonth ?: return }
+    fun backgroundColorDay(backgroundColorDay: Int?){ this.backgroundColorDay = backgroundColorDay ?: return }
+    fun backgroundColorDate(backgroundColorDate: Int?){ this.backgroundColorDate = backgroundColorDate ?: return }
+
+    fun backgroundDrawableMonth(backgroundDrawableMonth: Drawable?){ this.backgroundDrawableMonth = backgroundDrawableMonth }
+    fun backgroundDrawableDay(backgroundDrawableDay: Drawable?){ this.backgroundDrawableDay = backgroundDrawableDay }
+    fun backgroundDrawableDate(backgroundDrawableDate: Drawable?){ this.backgroundDrawableDate = backgroundDrawableDate }
+
+
+    //endregion
+
+    //region Variables
     private var _currentYear: Int = 0
     private var _currentMonth: Int = 0
     private var _currentDate: Int = 0
     private var _currentMonthName: String = ""
+
+    private var _monthNameWithYear: Boolean = false
 
     private var weekStart: WeekStart = WeekStart.SUNDAY //todo: 0 for Sunday, 1 for Monday (default to Sunday)
     private var monthDisplayOption: MonthDisplayOption = MonthDisplayOption.NONE
@@ -116,7 +168,7 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
 
     private val eventsMap: MutableMap<String, List<Event>> = mutableMapOf()
 
-
+    //endregion
     init {
         val typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.CustomView)
         try {
@@ -124,6 +176,8 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
             currentMonth = typedArray.getInt(R.styleable.CustomView_running_month, Calendar.getInstance().get(Calendar.MONTH))
             currentDate = typedArray.getInt(R.styleable.CustomView_running_date, Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
             Log.d(TAG, "date $currentDate")
+
+            _monthNameWithYear = typedArray.getBoolean(R.styleable.CustomView_month_name_with_year, false)
 
             val valueWeekStart = typedArray.getInt(R.styleable.CustomView_week_start, WeekStart.SUNDAY.value)
             weekStart = WeekStart.values().first{it.value == valueWeekStart} // Default to Sunday
@@ -157,13 +211,6 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
         paint.textAlign = Paint.Align.CENTER
     }
 
-
-
-    private fun getMonthName(month: Int): String {
-        return DateFormatSymbols().months[month]+"-" + currentYear
-    }
-
-    fun getWeekCount(year: Int, month: Int): Int { return 0 }
     
     enum class WeekStart(val value: Int) {
         SUNDAY(0),
@@ -381,8 +428,9 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
             val bottom = top + dateBlockHeight
 
 
+            if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
             // Draw the background using the drawable if available
-            backgroundDrawableDay?.let { drawable ->
+            backgroundDrawableDate?.let { drawable ->
                 // Adjust the bounds to include a 1dp margin
                 modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
                 //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
@@ -393,7 +441,6 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
                 canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
             }
 
-            if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
 /**             //todo:Shorted instead of using draw directly
                 paint.color = Color.GRAY
                 paint.textSize = textSizeDate//dateBlockHeight * 0.5f
@@ -433,14 +480,14 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
                     val isToday = (dayCounter == calendar.get(Calendar.DAY_OF_MONTH) && currentMonth == calendar.get(Calendar.MONTH) && currentYear == calendar.get(Calendar.YEAR))
 
                     // Draw the background using the drawable if available
-                    backgroundDrawableDay?.let { drawable ->
+                    backgroundDrawableDate?.let { drawable ->
                         // Adjust the bounds to include a 1dp margin
                         modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isToday) Color.YELLOW else Color.WHITE)
                         //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
                         //drawable.draw(canvas)
                     } ?: run {
                         // If no drawable is set, use a solid color
-                        paint.color = backgroundColorDate//Color.LTGRAY
+                        paint.color = if(isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY
                         canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
                     }
 
@@ -485,8 +532,9 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
             val bottom = top + dateBlockHeight
 
 
+            if(monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH){
             // Draw the background using the drawable if available
-            backgroundDrawableDay?.let { drawable ->
+            backgroundDrawableDate?.let { drawable ->
                 // Adjust the bounds to include a 1dp margin
                 modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
                 //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
@@ -497,7 +545,6 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
                 canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
             }
 
-            if(monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH){
 /**             //todo:Shorted instead of using draw directly
                 paint.color = Color.GRAY
                 paint.textSize = textSizeDate//dateBlockHeight * 0.5f

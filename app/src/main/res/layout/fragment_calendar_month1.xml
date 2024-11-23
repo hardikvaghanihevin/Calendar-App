@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.ui.calendar_month_1.CalendarMonth1Fragment">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager_calendarMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        tools:layout_height="250dp" />
+
+    <include
+       layout="@layout/item_month_page1"
+       android:layout_width="match_parent"
+       android:layout_height="@dimen/_250sdp"
+       />
+</FrameLayout>

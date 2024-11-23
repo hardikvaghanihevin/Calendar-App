@@ -5,6 +5,8 @@
         <attr name="running_month" format="integer" />
         <attr name="running_date" format="integer" />
 
+        <attr name="month_name_with_year" format="boolean" />
+
         <attr name="text_size_month" format="dimension" />
         <attr name="text_size_day" format="dimension" />
         <attr name="text_size_date" format="dimension" />

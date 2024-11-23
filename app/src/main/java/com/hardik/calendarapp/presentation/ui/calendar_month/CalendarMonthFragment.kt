@@ -21,7 +21,7 @@ import com.hardik.calendarapp.databinding.FragmentCalendarMonthBinding
 import com.hardik.calendarapp.domain.model.CalendarModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
-import com.hardik.calendarapp.presentation.ui.calendar_month.adpater.CalendarMonthPagerAdapter
+import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CalendarMonthPagerAdapter
 import com.hardik.calendarapp.utillities.createDate
 import com.hardik.calendarapp.utillities.getMonth
 import com.hardik.calendarapp.utillities.isItToday

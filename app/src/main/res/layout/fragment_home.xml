@@ -9,20 +9,27 @@
     tools:ignore="HardcodedText">
 
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager_calendarMonth"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_4sdp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        tools:layout_height="250dp" />
+<!--    <androidx.viewpager2.widget.ViewPager2-->
+<!--        android:id="@+id/viewPager_calendarMonth"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="@dimen/_4sdp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0"-->
+<!--        tools:layout_height="250dp" />-->
 
-    <include
+       <!--<include
         layout="@layout/calendar_year_layout"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/included_year_layout"/>-->
+
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewYear
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/included_year_layout"/>
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

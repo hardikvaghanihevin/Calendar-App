@@ -21,5 +21,10 @@
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year.CalendarYearFragment"
         android:label="@string/calendar_year"
         tools:layout="@layout/fragment_calendar_year" />
+    <fragment
+        android:id="@+id/calendarMonth1Fragment"
+        android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
+        android:label="@string/calendar_month"
+        tools:layout="@layout/fragment_calendar_month1" />
 
 </navigation>
