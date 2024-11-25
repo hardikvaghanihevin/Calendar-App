@@ -3,21 +3,31 @@ package com.hardik.calendarapp.presentation.ui.custom_view
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants.BASE_TAG
+import java.util.Calendar
 
 class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
+    private val TAG = BASE_TAG + CustomViewYear::class.java.simpleName
 
-    private val yearTextView: TextView
+    val yearTextView: TextView
     private val monthsGridLayout: GridLayout
 
+    var currentYear: Int get() = _currentYear ; set(value) { _currentYear = value }
+    private var _currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
+
+    fun incrementYear(year: Int = 1){ _currentYear += year; postInvalidate()}
+    fun decrementYear(year: Int = 1){ _currentYear -= year; postInvalidate()}
+
     init {
+        Log.d(TAG, "init: ")
         // Set up the parent layout as LinearLayout for weight distribution
         val parentLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -33,7 +43,7 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
             )
             gravity = Gravity.CENTER
             textSize = 20f // Customize text size
-            text = "2024" // Replace dynamically as needed
+            text = "$currentYear" // Replace dynamically as needed
             setTextColor(Color.BLACK) // Customize text color
         }
 
@@ -62,6 +72,7 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
                 // Set custom attributes dynamically (replace with actual values as needed)
                 setBackgroundColor(Color.TRANSPARENT) // Example background
                 currentMonth = i
+                currentYear= this@CustomViewYear.currentYear
                 weekStart(CustomView.WeekStart.MONDAY)
                 monthDisplayOption(monthDisplayOption = CustomView.MonthDisplayOption.BOTH)
                 updateMonthNameWithYear(wantToMonthNameWithYear = false)
@@ -76,8 +87,10 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
                 backgroundDrawableDate(ResourcesCompat.getDrawable(context.resources, R.drawable.day_background_1,context.theme))
 
 
+                postInvalidate()
                 getDateClickListener {
-                    Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(context,it, Toast.LENGTH_SHORT).show()
+                    onMonthClickListener?.invoke(this@CustomViewYear.currentYear, i)// i stands month
                 }
 
                 // Example attributes for CustomView (these depend on your implementation)
@@ -92,5 +105,22 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
 
         // Add the parent layout to the FrameLayout
         addView(parentLayout)
+    }
+
+    fun updateYearAndMonths() {
+        yearTextView.text = "$currentYear" // Update year text
+
+        // Update each month's CustomView with the new year
+        for (i in 0 until monthsGridLayout.childCount) {
+            val monthView = monthsGridLayout.getChildAt(i) as CustomView
+            //monthView.setUpMonth(i, _currentYear)
+            monthView.currentYear = currentYear
+            monthView.currentMonth = i
+        }
+    }
+
+    private var onMonthClickListener: ((year:Int, month:Int)-> Unit)? = null
+    fun setOnMonthClickListener(listener: (year:Int, month:Int) -> Unit) {
+        onMonthClickListener = listener
     }
 }

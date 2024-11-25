@@ -4,20 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.ui.calendar_month_1.CalendarMonth1Fragment">
+    tools:context=".presentation.ui.calendar_year_1.CalendarYear1Fragment">
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager_calendarMonth"
+        android:id="@+id/viewPager_calendarYear"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_250sdp"
+        android:layout_height="match_parent"
         android:layout_marginTop="@dimen/_4sdp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        tools:layout_height="250dp" />
+        app:layout_constraintVertical_bias="0" />
 
-   <!-- <include
-       layout="@layout/item_month_page1"
-       android:layout_width="match_parent"
-       android:layout_height="@dimen/_250sdp"
-       />-->
 </FrameLayout>

@@ -4,30 +4,44 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.databinding.ItemMonthPage1Binding
+import com.hardik.calendarapp.presentation.ui.custom_view.CustomView
 
-class CalendarMonthPageAdapter(private val months: List<String>) : RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
+class CalendarMonthPageAdapter() :
+    RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
+
+    companion object {
+        const val FAKE_TOTAL_COUNT = Int.MAX_VALUE // Simulate infinite pages
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
-//        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_month_page1, parent, false)
-        val binding = ItemMonthPage1Binding.inflate(LayoutInflater.from(parent.context),parent,false)
+        val binding = ItemMonthPage1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MonthViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
-        val days = months[position]
-        holder.bind(days, position)
+        //val monthIndex = position % 12
+        holder.bind()
     }
 
-    override fun getItemCount(): Int = months.size
+    override fun getItemCount(): Int = FAKE_TOTAL_COUNT
 
-    inner class MonthViewHolder(private val binding: ItemMonthPage1Binding) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(month: String, position: Int) {
+    inner class MonthViewHolder(val binding: ItemMonthPage1Binding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind() {
             binding.apply {
-                customView.apply {
-                    currentMonth = position
+                    customView.apply {
+                    postInvalidate() // Redraw the custom view if needed
+                    getObjectOfCustomView?.invoke(this)
                 }
             }
         }
     }
+
+    private var getObjectOfCustomView: ((CustomView) -> Unit)? = null
+    fun setObjectOfCustomView(block: (CustomView) -> Unit) {
+        getObjectOfCustomView = block
+    }
+
 }
+
+
+

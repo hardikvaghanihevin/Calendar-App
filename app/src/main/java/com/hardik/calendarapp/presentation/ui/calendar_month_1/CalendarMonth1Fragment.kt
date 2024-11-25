@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.calendar_month_1
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,43 +11,74 @@ import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
-import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.CalendarMonthPageAdapter
-import org.joda.time.LocalDate
+import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
+import java.util.Calendar
 
 
 class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
-    private final val TAG = BASE_TAG + CalendarMonth1Fragment::class.java.simpleName
+    private val TAG = BASE_TAG + CalendarMonth1Fragment::class.simpleName
 
     private val binding get() = _binding!!
     private var _binding: FragmentCalendarMonth1Binding? = null
 
-    val monthsData = mutableListOf<String>().apply { addAll(listOf("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")) }
-
-    val currentDate = LocalDate.now()  // Get the current date
-    val currentMonth = currentDate.monthOfYear  // Get the current month (1-12)
-    val currentYear = currentDate.year  // Get the current year
+    private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {}
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentCalendarMonth1Binding.bind(view)
+        viewPager = binding.viewPagerCalendarMonth
 
-        Log.d(TAG, "onViewCreated: $currentDate, $currentMonth, $currentYear")
-        binding.viewPagerCalendarMonth.apply { adapter = CalendarMonthPageAdapter(monthsData) }
-        binding.viewPagerCalendarMonth.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        val adapter = CalendarMonthPageAdapter()
+        viewPager.adapter = adapter
+
+        var month = Calendar.getInstance().get(Calendar.MONTH)
+        // Start in the middle for infinite scrolling and set to the current month
+        viewPager.setCurrentItem(previousPosition, true)
+
+        // Register a callback to handle swipe events
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onPageSelected(position: Int) {
-                Log.d(TAG, "Selected month: ${monthsData[position]}")
+                super.onPageSelected(position)
+                //Log.d(TAG, "onPageSelected: A ($position position),  $previousPosition ")
+
+                // Check if swipe is to the right (next month) or left (previous month)
+                if (position > previousPosition ) {
+                    Log.d(TAG, "onPageSelected: A")
+                    // Swiped right: increment month
+                    adapter.setObjectOfCustomView {
+                        it.apply {
+                            incrementMonth() // Increment the month
+                        }
+                    }
+                }
+                if (position < previousPosition) {
+                    Log.d(TAG, "onPageSelected: B")
+                    // Swiped left: decrement month
+                    adapter.setObjectOfCustomView {
+                        it.apply {
+                            decrementMonth() // Decrement the month
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged()
+
+                // Update previous position to current one for next swipe comparison
+                previousPosition = position
             }
         })
-
-             // Add more months for scrolling if needed}
-
     }
+
+    // When swipe happens, update the year in your adapter based on the position
+    var previousPosition = 500 // todo: this is necessary to give previous position (which are you want)
+
 
     override fun onDestroyView() {
         super.onDestroyView()

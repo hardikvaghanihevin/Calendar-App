@@ -172,9 +172,9 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
     init {
         val typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.CustomView)
         try {
-            currentYear = typedArray.getInt(R.styleable.CustomView_running_year, Calendar.getInstance().get(Calendar.YEAR))
-            currentMonth = typedArray.getInt(R.styleable.CustomView_running_month, Calendar.getInstance().get(Calendar.MONTH))
-            currentDate = typedArray.getInt(R.styleable.CustomView_running_date, Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+            _currentYear = typedArray.getInt(R.styleable.CustomView_running_year, Calendar.getInstance().get(Calendar.YEAR))
+            _currentMonth = typedArray.getInt(R.styleable.CustomView_running_month, Calendar.getInstance().get(Calendar.MONTH))
+            _currentDate = typedArray.getInt(R.styleable.CustomView_running_date, Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
             Log.d(TAG, "date $currentDate")
 
             _monthNameWithYear = typedArray.getBoolean(R.styleable.CustomView_month_name_with_year, false)
@@ -400,7 +400,7 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
         dayNameHeight: Float,
         availableHeight: Float
     ) {
-        Log.d(TAG, "drawDateBlocks: ")
+        //Log.d(TAG, "drawDateBlocks: ")
         daysBlocks.clear()
 
         val calendar = Calendar.getInstance().apply {
