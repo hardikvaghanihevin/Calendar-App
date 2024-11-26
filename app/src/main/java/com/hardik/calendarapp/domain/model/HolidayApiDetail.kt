@@ -1,7 +1,7 @@
 package com.hardik.calendarapp.domain.model
 
 
-data class CalendarDetail(
+data class HolidayApiDetail(
     val accessRole: String,
     val defaultReminders: List<Any>,
     val description: String,

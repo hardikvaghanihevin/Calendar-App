@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ItemMonthPageBinding
-import com.hardik.calendarapp.domain.model.CalendarModel
+import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 
-class CalendarMonthPagerAdapter(private val monthData: List<List<CalendarModel>>, private val dateItemClickListener: DateItemClickListener) :
+class CalendarMonthPagerAdapter(private val monthData: List<List<CalendarDayModel>>, private val dateItemClickListener: DateItemClickListener) :
     RecyclerView.Adapter<CalendarMonthPagerAdapter.MonthViewHolder>() {
     private val TAG = BASE_TAG + CalendarMonthPagerAdapter::class.java.simpleName
 
@@ -32,7 +32,7 @@ class CalendarMonthPagerAdapter(private val monthData: List<List<CalendarModel>>
     inner class MonthViewHolder(private val binding: ItemMonthPageBinding) : RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("NotifyDataSetChanged")
-        fun bind(days: List<CalendarModel>, dateItemClickListener:DateItemClickListener) {
+        fun bind(days: List<CalendarDayModel>, dateItemClickListener:DateItemClickListener) {
 
             binding.apply {
                 Log.d(TAG, "bind: called")

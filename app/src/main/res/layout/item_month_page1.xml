@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="0.5dp">
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:id="@+id/customView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -31,7 +31,7 @@
         app:text_color_month="#F80909"
         app:text_color_day="@color/black"
         app:text_color_date="@null"
-        app:background_color_month="@color/black"
+        app:background_color_month="@color/white"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
         app:background_drawable_month="@drawable/day_background_1"

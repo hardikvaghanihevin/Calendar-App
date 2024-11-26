@@ -2,8 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
-    id ("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")
 //    id ("kotlin-kapt")
+    id("androidx.navigation.safeargs.kotlin") // Apply Safe Args here
 }
 
 android {

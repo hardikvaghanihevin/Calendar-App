@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ItemMonthForYearCalendarLayoutBinding
-import com.hardik.calendarapp.domain.model.CalendarModel
+import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.utillities.getMonth
 
-class CalendarYearAdapter(private val list: ArrayList<List<CalendarModel>> = arrayListOf(), private val dateItemClickListener: DateItemClickListener) : RecyclerView.Adapter<CalendarYearAdapter.ViewHolder>() {
+class CalendarYearAdapter(private val list: ArrayList<List<CalendarDayModel>> = arrayListOf(), private val dateItemClickListener: DateItemClickListener) : RecyclerView.Adapter<CalendarYearAdapter.ViewHolder>() {
     private val TAG = BASE_TAG + CalendarYearAdapter::class.java.simpleName
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,7 +41,7 @@ class CalendarYearAdapter(private val list: ArrayList<List<CalendarModel>> = arr
         private val layout = binding.root
 
         @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-        fun bind(months: List<CalendarModel>, position: Int, dateItemClickListener: DateItemClickListener){
+        fun bind(months: List<CalendarDayModel>, position: Int, dateItemClickListener: DateItemClickListener){
 
             binding.apply {
 
@@ -68,7 +68,7 @@ class CalendarYearAdapter(private val list: ArrayList<List<CalendarModel>> = arr
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newList: ArrayList<List<CalendarModel>>) {
+    fun updateData(newList: ArrayList<List<CalendarDayModel>>) {
         Log.d(TAG, "updateData: newlist: ${newList}")
         list.clear()
         list.addAll(newList)

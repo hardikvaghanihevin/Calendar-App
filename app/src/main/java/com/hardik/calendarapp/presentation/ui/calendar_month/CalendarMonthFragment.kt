@@ -18,7 +18,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.FragmentCalendarMonthBinding
-import com.hardik.calendarapp.domain.model.CalendarModel
+import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CalendarMonthPagerAdapter
@@ -130,7 +130,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setCalendarData() {
         Log.d(TAG, "setCalendarData: ")
-        val monthsData = mutableListOf<List<CalendarModel>>()
+        val monthsData = mutableListOf<List<CalendarDayModel>>()
         val initialCenterIndex = 62  // Arbitrary starting index
 
         // Populate initial monthsData with 12 months before and after the current month
@@ -179,15 +179,15 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
                     }
                 // Update first and last date when the month changes
                 val (firstDate, lastDate) = getFirstAndLastDateOfMonth(displayedMonthDate)
-                Log.d(TAG, "Updated First Date: $firstDate, Last Date: $lastDate")
+                Log.d(TAG, "Updated First Date: $displayedMonthDate -> $firstDate, Last Date: $lastDate")
                 }
             }
         })
     }
 
-    private fun setCalender(currDate: DateTime): List<CalendarModel> {
+    private fun setCalender(currDate: DateTime): List<CalendarDayModel> {
         Log.d(TAG, "setCalender: ")
-        val dateList = mutableListOf<CalendarModel>()
+        val dateList = mutableListOf<CalendarDayModel>()
         var date = currDate.withTime(0, 0, 0, 0)
         val numOfDaysInThisMonth = date.dayOfMonth().maximumValue
         date = date.minusDays(date.dayOfMonth)
@@ -197,7 +197,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
 
         for (i in 1..(numOfDaysInThisMonth + dayOfWeek)) {
             val model = if (i <= dayOfWeek) {
-                CalendarModel(0, "", -1)
+                CalendarDayModel(0, "", -1)
             } else {
                 val dateTemp = createDate(i - dayOfWeek, currDate.monthOfYear, currDate.year)
 
@@ -205,9 +205,9 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
                 val isHoliday = dateTemp!!.dayOfWeek == 7
 
                 when (isItToday(dateTemp)) {
-                    0 -> CalendarModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 3, isHoliday = isHoliday) // past day
-                    1 -> CalendarModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 2, isSelected = true, isHoliday = isHoliday) // today
-                    else -> CalendarModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 1, isHoliday = isHoliday) // future day
+                    0 -> CalendarDayModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 3, isHoliday = isHoliday) // past day
+                    1 -> CalendarDayModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 2, isSelected = true, isHoliday = isHoliday) // today
+                    else -> CalendarDayModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 1, isHoliday = isHoliday) // future day
                 }
             }
             dateList.add(model)
@@ -244,7 +244,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
     }
 
 
-    override fun onDateClick(position: Int, calendarModel: CalendarModel) {}
+    override fun onDateClick(position: Int, calendarDayModel: CalendarDayModel) {}
 
     override fun onDestroyView() {
         super.onDestroyView()

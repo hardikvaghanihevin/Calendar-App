@@ -2,7 +2,7 @@ package com.hardik.calendarapp.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.hardik.calendarapp.domain.model.CalendarDetail
+import com.hardik.calendarapp.domain.model.HolidayApiDetail
 
 @Entity(tableName = "events")
 data class Event(
@@ -17,29 +17,29 @@ data class Event(
     val description: String = ""
 )
 
-fun Event.toCalendarDetailItem(): CalendarDetail.Item {
-    return CalendarDetail.Item(
+fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
+    return HolidayApiDetail.Item(
         created = "", // Provide value if needed
-        creator = CalendarDetail.Item.Creator(
+        creator = HolidayApiDetail.Item.Creator(
             displayName = "",
             email = "",
             self = false
         ),
         description = this.description,
-        end = CalendarDetail.Item.End(date = endDate),
+        end = HolidayApiDetail.Item.End(date = endDate),
         etag = "",
         eventType = if (this.isHoliday) "holiday" else "regular",
         htmlLink = "",
         iCalUID = "",
         id = this.id.toString(),
         kind = "calendar#event",
-        organizer = CalendarDetail.Item.Organizer(
+        organizer = HolidayApiDetail.Item.Organizer(
             displayName = "",
             email = "",
             self = false
         ),
         sequence = 0,
-        start = CalendarDetail.Item.Start(date = startDate),
+        start = HolidayApiDetail.Item.Start(date = startDate),
         status = "confirmed",
         summary = this.title,
         transparency = "opaque",

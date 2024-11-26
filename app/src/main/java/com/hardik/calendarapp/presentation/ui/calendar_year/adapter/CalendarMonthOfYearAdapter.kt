@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ItemDateForYearCalendarLayoutBinding
-import com.hardik.calendarapp.domain.model.CalendarModel
+import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 
-class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, private val dateItemClickListener: DateItemClickListener):RecyclerView.Adapter<CalendarMonthOfYearAdapter.ViewHolder>() {
+class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarDayModel>, private val dateItemClickListener: DateItemClickListener):RecyclerView.Adapter<CalendarMonthOfYearAdapter.ViewHolder>() {
     private final val TAG = BASE_TAG + CalendarMonthOfYearAdapter::class.java.simpleName
 
     init { for (i in list){
@@ -21,7 +21,7 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, pri
     } }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newList: ArrayList<CalendarModel>) {
+    fun updateData(newList: ArrayList<CalendarDayModel>) {
         list.clear()
         list.addAll(newList)
         notifyDataSetChanged()
@@ -30,12 +30,12 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, pri
     //region Optional: If you only need to change a small set of data, you can use more specific methods
     //endregion
     @SuppressLint("NotifyDataSetChanged")
-    fun updateDataSet(newList: ArrayList<CalendarModel>) {
+    fun updateDataSet(newList: ArrayList<CalendarDayModel>) {
         list = newList
         notifyDataSetChanged()
     }
 
-    fun updateItem(position: Int, newItem: CalendarModel) {
+    fun updateItem(position: Int, newItem: CalendarDayModel) {
         list[position] = newItem
         notifyItemChanged(position)
     }
@@ -65,17 +65,17 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, pri
         private val layout = binding.root
 
         @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-        fun bind(calendarModel: CalendarModel, position: Int){
-            val day = calendarModel.day
+        fun bind(calendarDayModel: CalendarDayModel, position: Int){
+            val day = calendarDayModel.day
 
             binding.apply {
                 num.text = "$day"
-                if (calendarModel.isSelected)
+                if (calendarDayModel.isSelected)
                     binding.constraintLay1.background = ContextCompat.getDrawable(itemView.context, R.drawable.month_navigator_shape_1)
                 else
                     binding.constraintLay1.background = null
 
-                when(calendarModel.state) {
+                when(calendarDayModel.state) {
                     -1->{
                         itemCalendarDateLayout.visibility = View.INVISIBLE
                     }
@@ -86,12 +86,12 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, pri
                     1->{
                         // past days
                         num.setTextColor(ContextCompat.getColor(itemView.context, R.color.black))
-                        num.background = if (calendarModel.isHoliday) ContextCompat.getDrawable(itemView.context,R.drawable.shape_circle_red) else ContextCompat.getDrawable(itemView.context, R.drawable.shape_circle_green)
+                        num.background = if (calendarDayModel.isHoliday) ContextCompat.getDrawable(itemView.context,R.drawable.shape_circle_red) else ContextCompat.getDrawable(itemView.context, R.drawable.shape_circle_green)
                         today.visibility = View.INVISIBLE
                         layout.setOnClickListener {
 
                             selectItem(position = position)
-                            dateItemClickListener.onDateClick(position = position, calendarModel) }
+                            dateItemClickListener.onDateClick(position = position, calendarDayModel) }
                     }
                     2->{
                         // today
@@ -101,17 +101,17 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, pri
                         layout.setOnClickListener {
 
                             selectItem(position = position)
-                            dateItemClickListener.onDateClick(position = position, calendarModel) }
+                            dateItemClickListener.onDateClick(position = position, calendarDayModel) }
                     }
                     3 -> {
                         // future days
                         num.setTextColor(ContextCompat.getColor(itemView.context, R.color.black))
-                        num.background = if (calendarModel.isHoliday) ContextCompat.getDrawable(itemView.context,R.drawable.shape_circle_red) else ContextCompat.getDrawable(itemView.context, R.drawable.shape_circle_gray)
+                        num.background = if (calendarDayModel.isHoliday) ContextCompat.getDrawable(itemView.context,R.drawable.shape_circle_red) else ContextCompat.getDrawable(itemView.context, R.drawable.shape_circle_gray)
                         today.visibility = View.INVISIBLE
                         layout.setOnClickListener {
 
                             selectItem(position = position)
-                            dateItemClickListener.onDateClick(position = position, calendarModel) }
+                            dateItemClickListener.onDateClick(position = position, calendarDayModel) }
                     }
                 }
             }
@@ -119,7 +119,7 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarModel>, pri
         // This function is responsible for selecting the clicked item and deselecting others
         @SuppressLint("NotifyDataSetChanged")
         private fun selectItem(position: Int) {
-            Log.e(TAG, "selectItem: ", )
+            //Log.e(TAG, "selectItem: ", )
             // Deselect all items
             list.forEach { it.isSelected = false }
             // Select the clicked item

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         android:layout_height="@dimen/_100sdp"
@@ -33,7 +33,7 @@
         app:background_drawable_date="@drawable/day_background_1"
         android:id="@+id/customView"
         />
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView"
@@ -63,7 +63,7 @@
         android:id="@+id/customView1"
         />
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView1"
@@ -94,7 +94,7 @@
         />
 
 <!--    next 3,4,5-->
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         android:layout_height="@dimen/_100sdp"
@@ -123,7 +123,7 @@
         app:background_drawable_date="@drawable/day_background_1"
         android:id="@+id/customView4"
         />
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView4"
@@ -153,7 +153,7 @@
         android:id="@+id/customView5"
         />
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView5"
@@ -184,7 +184,7 @@
         />
 
 <!--    next 7,8,9-->
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         android:layout_height="@dimen/_100sdp"
@@ -213,7 +213,7 @@
         app:background_drawable_date="@drawable/day_background_1"
         android:id="@+id/customView7"
         />
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView7"
@@ -243,7 +243,7 @@
         android:id="@+id/customView8"
         />
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView8"
@@ -274,7 +274,7 @@
         />
 
 <!--    next 10,11,12-->
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         android:layout_height="@dimen/_100sdp"
@@ -303,7 +303,7 @@
         app:background_drawable_date="@drawable/day_background_1"
         android:id="@+id/customView10"
         />
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView10"
@@ -333,7 +333,7 @@
         android:id="@+id/customView11"
         />
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
         android:layout_width="0dp"
         android:layout_margin="@dimen/_4sdp"
         app:layout_constraintStart_toEndOf="@id/customView11"

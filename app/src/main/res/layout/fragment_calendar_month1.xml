@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presentation.ui.calendar_month_1.CalendarMonth1Fragment">
 
     <androidx.viewpager2.widget.ViewPager2
@@ -15,9 +15,80 @@
         app:layout_constraintVertical_bias="0"
         tools:layout_height="250dp" />
 
-   <!-- <include
-       layout="@layout/item_month_page1"
-       android:layout_width="match_parent"
-       android:layout_height="@dimen/_250sdp"
-       />-->
-</FrameLayout>
+    <ImageButton
+        android:id="@+id/btnPrevMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_weight="1"
+        android:background="@drawable/month_navigator_shape_1"
+        android:contentDescription="Previous Month"
+        android:src="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="@id/viewPager_calendarMonth"
+        app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
+
+    <!-- Right Arrow Button -->
+    <ImageButton
+        android:id="@+id/btnNextMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_weight="1"
+        android:background="@drawable/month_navigator_shape_1"
+        android:contentDescription="Next Month"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintEnd_toEndOf="@id/viewPager_calendarMonth"
+        app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLay_events"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        android:layout_weight="1"
+        android:background="@drawable/month_navigator_shape_1"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPager_calendarMonth"
+        app:layout_constraintVertical_bias="0">
+
+        <include
+            android:id="@+id/included_progress_layout"
+            layout="@layout/custom_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_event"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="@dimen/_4sdp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_event_layout"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_notify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_4sdp"
+            android:text="No Events"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

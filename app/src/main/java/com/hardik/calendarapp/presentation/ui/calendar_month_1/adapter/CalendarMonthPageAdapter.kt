@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.databinding.ItemMonthPage1Binding
-import com.hardik.calendarapp.presentation.ui.custom_view.CustomView
+import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
 class CalendarMonthPageAdapter() :
     RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
@@ -28,7 +28,8 @@ class CalendarMonthPageAdapter() :
     inner class MonthViewHolder(val binding: ItemMonthPage1Binding) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
             binding.apply {
-                    customView.apply {
+                customView.apply {
+                    enableTouchEventHandling(enable = true)
                     postInvalidate() // Redraw the custom view if needed
                     getObjectOfCustomView?.invoke(this)
                 }
@@ -36,8 +37,8 @@ class CalendarMonthPageAdapter() :
         }
     }
 
-    private var getObjectOfCustomView: ((CustomView) -> Unit)? = null
-    fun setObjectOfCustomView(block: (CustomView) -> Unit) {
+    private var getObjectOfCustomView: ((CustomViewMonth) -> Unit)? = null
+    fun setObjectOfCustomView(block: (CustomViewMonth) -> Unit) {
         getObjectOfCustomView = block
     }
 

@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ItemYearPageBinding
-import com.hardik.calendarapp.domain.model.CalendarModel
+import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 
 class CalendarYearPagerAdapter(
-    private val yearsData: MutableList<List<List<CalendarModel>>>,
+    private val yearsData: MutableList<List<List<CalendarDayModel>>>,
     private val dateItemClickListener: DateItemClickListener
 ) :
     RecyclerView.Adapter<CalendarYearPagerAdapter.ViewHolder>() {
@@ -40,7 +40,7 @@ class CalendarYearPagerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
-            years: List<List<CalendarModel>>,
+            years: List<List<CalendarDayModel>>,
             position: Int,
             dateItemClickListener: DateItemClickListener
         ) {

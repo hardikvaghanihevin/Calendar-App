@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.LinearLayout
@@ -23,8 +24,8 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
     var currentYear: Int get() = _currentYear ; set(value) { _currentYear = value }
     private var _currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
 
-    fun incrementYear(year: Int = 1){ _currentYear += year; postInvalidate()}
-    fun decrementYear(year: Int = 1){ _currentYear -= year; postInvalidate()}
+    fun incrementYear(year: Int = 1):Int{ _currentYear += year; postInvalidate(); return currentYear}
+    fun decrementYear(year: Int = 1):Int{ _currentYear -= year; postInvalidate(); return currentYear}
 
     init {
         Log.d(TAG, "init: ")
@@ -42,6 +43,7 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
                 0.05f // 5% of height
             )
             gravity = Gravity.CENTER
+            visibility = View.GONE
             textSize = 20f // Customize text size
             text = "$currentYear" // Replace dynamically as needed
             setTextColor(Color.BLACK) // Customize text color
@@ -60,7 +62,7 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
 
         // Add 12 CustomView instances for each month
         for (i in 0 until 12) {
-            val monthView = CustomView(context, attributeSet).apply {
+            val monthView = CustomViewMonth(context, attributeSet).apply {
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0
                     height = 0
@@ -73,8 +75,8 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
                 setBackgroundColor(Color.TRANSPARENT) // Example background
                 currentMonth = i
                 currentYear= this@CustomViewYear.currentYear
-                weekStart(CustomView.WeekStart.MONDAY)
-                monthDisplayOption(monthDisplayOption = CustomView.MonthDisplayOption.BOTH)
+                weekStart(CustomViewMonth.WeekStart.MONDAY)
+                monthDisplayOption(monthDisplayOption = CustomViewMonth.MonthDisplayOption.BOTH)
                 updateMonthNameWithYear(wantToMonthNameWithYear = false)
                 textColorMonth(Color.parseColor("#F80909"))
                 textColorDay(context.resources.getColor(R.color.black,context.theme))
@@ -85,18 +87,16 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
                 backgroundDrawableMonth(ResourcesCompat.getDrawable(context.resources, R.drawable.day_background_1, context.theme))
                 backgroundDrawableDay(ResourcesCompat.getDrawable(context.resources, R.drawable.day_background_1, context.theme))
                 backgroundDrawableDate(ResourcesCompat.getDrawable(context.resources, R.drawable.day_background_1,context.theme))
-
-
+                enableTouchEventHandling(enable = false)
                 postInvalidate()
-                getDateClickListener {
-                    //Toast.makeText(context,it, Toast.LENGTH_SHORT).show()
-                    onMonthClickListener?.invoke(this@CustomViewYear.currentYear, i)// i stands month
-                }
 
-                // Example attributes for CustomView (these depend on your implementation)
-//                setRunningMonth(i) // Custom method to set month
             }
             monthsGridLayout.addView(monthView)
+            // Set click listener for each month view
+            monthView.setOnClickListener {
+                Log.i(TAG, "Month clicked: Year: $currentYear, month: $i")
+                onMonthClickListener?.invoke(currentYear, i) // Pass the month index 'i'
+            }
         }
 
         // Add views to the parent layout
@@ -112,7 +112,7 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
 
         // Update each month's CustomView with the new year
         for (i in 0 until monthsGridLayout.childCount) {
-            val monthView = monthsGridLayout.getChildAt(i) as CustomView
+            val monthView = monthsGridLayout.getChildAt(i) as CustomViewMonth
             //monthView.setUpMonth(i, _currentYear)
             monthView.currentYear = currentYear
             monthView.currentMonth = i

@@ -1,12 +1,11 @@
 package com.hardik.calendarapp.data.remote.dto
 
 
-import com.google.gson.annotations.SerializedName
 import androidx.annotation.Keep
-import com.hardik.calendarapp.domain.model.CalendarDetail
+import com.hardik.calendarapp.domain.model.HolidayApiDetail
 
 @Keep
-data class CalendarDto(
+data class HolidayApiDto(
     val accessRole: String,
     val defaultReminders: List<Any>,
     val description: String,
@@ -67,8 +66,8 @@ data class CalendarDto(
 
 
 // Extension function to convert CalendarDto to CalendarDetail
-fun CalendarDto.toCalendarDetail(): CalendarDetail {
-    return CalendarDetail(
+fun HolidayApiDto.toCalendarDetail(): HolidayApiDetail {
+    return HolidayApiDetail(
         accessRole = this.accessRole,
         defaultReminders = this.defaultReminders,
         description = this.description,
@@ -83,8 +82,8 @@ fun CalendarDto.toCalendarDetail(): CalendarDetail {
 }
 
 // Extension function to convert CalendarDto.Item to CalendarDetail.Item
-fun CalendarDto.Item.toItem(): CalendarDetail.Item {
-    return CalendarDetail.Item(
+fun HolidayApiDto.Item.toItem(): HolidayApiDetail.Item {
+    return HolidayApiDetail.Item(
         created = this.created,
         creator = this.creator.toCreator(),
         description = this.description,
@@ -107,8 +106,8 @@ fun CalendarDto.Item.toItem(): CalendarDetail.Item {
 }
 
 // Extension function to convert CalendarDto.Creator to CalendarDetail.Creator
-fun CalendarDto.Item.Creator.toCreator(): CalendarDetail.Item.Creator {
-    return CalendarDetail.Item.Creator(
+fun HolidayApiDto.Item.Creator.toCreator(): HolidayApiDetail.Item.Creator {
+    return HolidayApiDetail.Item.Creator(
         displayName = this.displayName,
         email = this.email,
         self = this.self
@@ -116,13 +115,13 @@ fun CalendarDto.Item.Creator.toCreator(): CalendarDetail.Item.Creator {
 }
 
 // Extension function to convert CalendarDto.End to CalendarDetail.End
-fun CalendarDto.Item.End.toEnd(): CalendarDetail.Item.End {
-    return CalendarDetail.Item.End(date = this.date)
+fun HolidayApiDto.Item.End.toEnd(): HolidayApiDetail.Item.End {
+    return HolidayApiDetail.Item.End(date = this.date)
 }
 
 // Extension function to convert CalendarDto.Organizer to CalendarDetail.Organizer
-fun CalendarDto.Item.Organizer.toOrganizer(): CalendarDetail.Item.Organizer {
-    return CalendarDetail.Item.Organizer(
+fun HolidayApiDto.Item.Organizer.toOrganizer(): HolidayApiDetail.Item.Organizer {
+    return HolidayApiDetail.Item.Organizer(
         displayName = this.displayName,
         email = this.email,
         self = this.self
@@ -130,7 +129,7 @@ fun CalendarDto.Item.Organizer.toOrganizer(): CalendarDetail.Item.Organizer {
 }
 
 // Extension function to convert CalendarDto.Start to CalendarDetail.Start
-fun CalendarDto.Item.Start.toStart(): CalendarDetail.Item.Start {
-    return CalendarDetail.Item.Start(date = this.date)
+fun HolidayApiDto.Item.Start.toStart(): HolidayApiDetail.Item.Start {
+    return HolidayApiDetail.Item.Start(date = this.date)
 }
 

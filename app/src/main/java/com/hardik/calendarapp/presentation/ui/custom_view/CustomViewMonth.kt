@@ -19,8 +19,8 @@ import java.text.DateFormatSymbols
 import java.util.Calendar
 
 @SuppressLint("CustomViewStyleable")
-class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
-    private final val TAG = CustomView::class.java.simpleName
+class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
+    private final val TAG = CustomViewMonth::class.java.simpleName
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful
@@ -94,7 +94,7 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
     }
 
     private fun getMonthName(month: Int): String {
-        return  if (monthNameWithYear) DateFormatSymbols().months[month]+"-" + currentYear
+        return  if (monthNameWithYear) DateFormatSymbols().months[month]//+"-" + currentYear
         else DateFormatSymbols().months[month]
     }
 
@@ -175,7 +175,7 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
             _currentYear = typedArray.getInt(R.styleable.CustomView_running_year, Calendar.getInstance().get(Calendar.YEAR))
             _currentMonth = typedArray.getInt(R.styleable.CustomView_running_month, Calendar.getInstance().get(Calendar.MONTH))
             _currentDate = typedArray.getInt(R.styleable.CustomView_running_date, Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
-            Log.d(TAG, "date $currentDate")
+            //Log.d(TAG, "date $currentDate")
 
             _monthNameWithYear = typedArray.getBoolean(R.styleable.CustomView_month_name_with_year, false)
 
@@ -241,8 +241,21 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
         viewWidth = w
         viewHeight = h
     }
+    // Flag to control touch event handling
+    var shouldHandleTouch = false
+
+    // Example setter for enabling/disabling touch event handling
+    fun enableTouchEventHandling(enable: Boolean) {
+        shouldHandleTouch = enable
+    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+
+        // Only handle the touch event if shouldHandleTouch is true
+        if (!shouldHandleTouch) {
+            return super.onTouchEvent(event)
+        }
+
         val x = event.x
         val y = event.y
         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -500,13 +513,13 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
                         top + dateBlockHeight / 2 + paint.textSize / 3,
                         paint
                     )↓*/
-/**
- todo: here to show indicator for events
+
+/**                 todo: here to show indicator for events*/
                     val eventList = eventsMap["$currentYear-$currentMonth-$dayCounter"] ?: emptyList()
                     drawEventDotsRight(canvas, eventList, rightX = (right - margin * 4), topY = (top + margin * 2), (dateBlockHeight + margin))
-                    drawEventDotsLeft(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
-                    drawEventDotsTop(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
-                    drawEventDotsBottom(canvas, eventList, leftX = (left + margin * 4 ), bottomY = (bottom - margin * 4), (dateBlockHeight + margin))*/
+                    //drawEventDotsLeft(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
+                    //drawEventDotsTop(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
+                    //drawEventDotsBottom(canvas, eventList, leftX = (left + margin * 4 ), bottomY = (bottom - margin * 4), (dateBlockHeight + margin))
 
                     drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
 
@@ -704,7 +717,7 @@ class CustomView(context: Context, attributeSet: AttributeSet) : FrameLayout(con
         }
     }
 
-    fun addEvent(date: String, event: Event) {
+    fun addEvent(date: String, event: Event) {//todo:addEvent("2024-11-27", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
         val currentEvents = eventsMap[date]?.toMutableList() ?: mutableListOf()
         currentEvents.add(event)
         eventsMap[date] = currentEvents

@@ -9,7 +9,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentCalendarYearBinding
-import com.hardik.calendarapp.domain.model.CalendarModel
+import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.ui.calendar_year.adapter.CalendarYearPagerAdapter
 import com.hardik.calendarapp.utillities.createDate
@@ -56,7 +56,7 @@ class CalendarYearFragment @Inject constructor() : Fragment(R.layout.fragment_ca
         Log.d(TAG, "setYearWiseCalendarData: ")
         CoroutineScope(Dispatchers.IO).launch {
 
-            val yearsData = mutableListOf<List<List<CalendarModel>>>() // List of years -> List of months -> List of days
+            val yearsData = mutableListOf<List<List<CalendarDayModel>>>() // List of years -> List of months -> List of days
             val initialCenterYearIndex = 5 // Arbitrary starting year index (5 years before and after current year)
 
             // Populate yearsData with data for previous, current, and future years
@@ -89,11 +89,11 @@ class CalendarYearFragment @Inject constructor() : Fragment(R.layout.fragment_ca
         }
     }
 
-    private suspend fun setYearCalendar(currDate: DateTime): List<List<CalendarModel>> {
+    private suspend fun setYearCalendar(currDate: DateTime): List<List<CalendarDayModel>> {
         Log.d(TAG, "setYearCalendar: for year ${currDate.year}")
-        val list: Deferred<MutableList<List<CalendarModel>>> = CoroutineScope(Dispatchers.IO).async {
+        val list: Deferred<MutableList<List<CalendarDayModel>>> = CoroutineScope(Dispatchers.IO).async {
 
-            val yearData = mutableListOf<List<CalendarModel>>()
+            val yearData = mutableListOf<List<CalendarDayModel>>()
 
             // Generate data for each month of the year
             for (month in 1..12) {
@@ -108,11 +108,11 @@ class CalendarYearFragment @Inject constructor() : Fragment(R.layout.fragment_ca
     }
 
 
-    private suspend fun setCalender(currDate: DateTime): List<CalendarModel> {
+    private suspend fun setCalender(currDate: DateTime): List<CalendarDayModel> {
 //        Log.d(TAG, "setCalender: currDate: $currDate")
         val list = CoroutineScope(Dispatchers.IO).async {
 
-            val dateList = mutableListOf<CalendarModel>()
+            val dateList = mutableListOf<CalendarDayModel>()
             var date = currDate.withTime(0, 0, 0, 0)
             val numOfDaysInThisMonth = date.dayOfMonth().maximumValue
             date = date.minusDays(date.dayOfMonth)
@@ -122,7 +122,7 @@ class CalendarYearFragment @Inject constructor() : Fragment(R.layout.fragment_ca
 
             for (i in 1..(numOfDaysInThisMonth + dayOfWeek)) {
                 val model = if (i <= dayOfWeek) {
-                    CalendarModel(0, "", -1)
+                    CalendarDayModel(0, "", -1)
                 } else {
                     val dateTemp = createDate(i - dayOfWeek, currDate.monthOfYear, currDate.year)
 
@@ -130,9 +130,9 @@ class CalendarYearFragment @Inject constructor() : Fragment(R.layout.fragment_ca
                     val isHoliday = dateTemp!!.dayOfWeek == 7
 
                     when (isItToday(dateTemp)) {
-                        0 -> CalendarModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 3, isHoliday = isHoliday) // past day
-                        1 -> CalendarModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 2, isSelected = true, isHoliday = isHoliday) // today
-                        else -> CalendarModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 1, isHoliday = isHoliday) // future day
+                        0 -> CalendarDayModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 3, isHoliday = isHoliday) // past day
+                        1 -> CalendarDayModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 2, isSelected = true, isHoliday = isHoliday) // today
+                        else -> CalendarDayModel(i - dayOfWeek, dateTemp.toLocalDate().toString(), 1, isHoliday = isHoliday) // future day
                     }
                 }
                 dateList.add(model)
@@ -159,7 +159,7 @@ class CalendarYearFragment @Inject constructor() : Fragment(R.layout.fragment_ca
         _binding = null
     }
 
-    override fun onDateClick(position: Int, calendarModel: CalendarModel) {
+    override fun onDateClick(position: Int, calendarDayModel: CalendarDayModel) {
 
     }
 }

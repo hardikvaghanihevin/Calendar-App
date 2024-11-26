@@ -8,5 +8,7 @@ object Constants {
     const val timeMin = "2023-01-01T11:26:55Z"
     const val timeMax = "2026-12-31T11:26:55Z"
     const val BASE_TAG = "A_"
+    const val KEY_YEAR = "key_year"
+    const val KEY_MONTH = "key_month"
 
 }

@@ -2,7 +2,7 @@ package com.hardik.calendarapp.domain.model
 
 import com.hardik.calendarapp.data.database.entity.Event
 
-data class CalendarModel (
+data class CalendarDayModel (
     val day:Int,
     val date:String,
     val state:Int,

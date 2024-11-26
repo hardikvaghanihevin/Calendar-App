@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Resource
 import com.hardik.calendarapp.data.database.entity.Event
-import com.hardik.calendarapp.domain.model.CalendarDetail
+import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.EventRepository
-import com.hardik.calendarapp.domain.use_case.GetCalendarUseCase
+import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.utillities.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,13 +18,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getCalendarUseCase: GetCalendarUseCase,
+    private val getHolidayApiUseCase: GetHolidayApiUseCase,
     private val eventRepository: EventRepository
 ) : ViewModel() {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
-    private val _state = MutableStateFlow<DataState<CalendarDetail>>(DataState(isLoading = true))
-    val state: StateFlow<DataState<CalendarDetail>> get() = _state
+    private val _state = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
+    val state: StateFlow<DataState<HolidayApiDetail>> get() = _state
 
     init {
         getCalendarData()
@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
 
     private fun getCalendarData() {
         viewModelScope.launch {
-            getCalendarUseCase.invoke().collect { result: Resource<CalendarDetail> ->
+            getHolidayApiUseCase.invoke().collect { result: Resource<HolidayApiDetail> ->
                 when (result) {
                     is Resource.Success -> {
                         _state.value = DataState(data = result.data); collectState()

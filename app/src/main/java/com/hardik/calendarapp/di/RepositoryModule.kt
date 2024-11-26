@@ -1,7 +1,7 @@
 package com.hardik.calendarapp.di
 
-import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
-import com.hardik.calendarapp.domain.repository.CalendarRepository
+import com.hardik.calendarapp.data.repository.HolidayApiRepositoryImpl
+import com.hardik.calendarapp.domain.repository.HolidayApiRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,5 +14,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindCalendarRepository(impl: CalendarRepositoryImpl): CalendarRepository
+    abstract fun bindCalendarRepository(impl: HolidayApiRepositoryImpl): HolidayApiRepository
 }

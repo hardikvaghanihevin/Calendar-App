@@ -4,14 +4,13 @@ import com.hardik.calendarapp.common.Constants.apiKey
 import com.hardik.calendarapp.common.Constants.timeMax
 import com.hardik.calendarapp.common.Constants.timeMin
 import com.hardik.calendarapp.data.remote.api.ApiInterface
-import com.hardik.calendarapp.data.remote.dto.CalendarDto
-import com.hardik.calendarapp.domain.repository.CalendarRepository
+import com.hardik.calendarapp.data.remote.dto.HolidayApiDto
+import com.hardik.calendarapp.domain.repository.HolidayApiRepository
 import javax.inject.Inject
 
-class CalendarRepositoryImpl@Inject constructor(private val apiInterface: ApiInterface) : CalendarRepository {
+class HolidayApiRepositoryImpl@Inject constructor(private val apiInterface: ApiInterface) : HolidayApiRepository {
 
-
-    override suspend fun getCalendar(): CalendarDto {
+    override suspend fun getHolidayEvents(): HolidayApiDto {
         return apiInterface.getCalendar(apiKey = apiKey, timeMin = timeMin, timeMax = timeMax)
     }
 

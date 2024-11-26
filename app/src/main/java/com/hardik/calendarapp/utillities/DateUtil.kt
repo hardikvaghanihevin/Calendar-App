@@ -2,6 +2,7 @@ package com.hardik.calendarapp.utillities
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
@@ -116,4 +117,42 @@ object DateUtil {
             "total_time_gaps" to totalTimeGaps
         )
     }
+
+
+    // Function to get the first and last date of the month in milliseconds (Long)
+    fun getFirstAndLastDateOfMonth(date: DateTime): Pair<Long, Long> {
+        // First day of the current month at 00:00:00
+        val firstDayOfMonth = date.withDayOfMonth(1).withTimeAtStartOfDay()
+
+        // Last day of the current month at 23:59:59.999
+        val lastDayOfMonth = date.withDayOfMonth(date.dayOfMonth().maximumValue).withTime(23, 59, 59, 999)
+
+        // Return the first and last dates as Pair<Long> (timestamps)
+        return Pair(firstDayOfMonth.millis, lastDayOfMonth.millis)
+    }
+
+    /**
+     * Get the first and last dates of a specific month and year.
+     *
+     * @param year The year of the target month.
+     * @param month The month (1 for January, 12 for December).
+     * @return Pair<Long, Long> where the first is the start timestamp of the month
+     *         and the second is the end timestamp of the month.
+     */
+    fun getFirstAndLastDateOfMonth(year: Int, month: Int): Pair<Long, Long> {
+        // Ensure the month is valid (1-12)
+        require(month in 1..12) { "Invalid month: $month. Must be between 1 and 12." }
+
+        // Create a DateTime object for the first day of the given month and year
+        val firstDayOfMonth = DateTime(year, month, 1, 0, 0, 0)
+
+        // Get the last day of the month
+        val lastDayOfMonth = firstDayOfMonth
+            .withDayOfMonth(firstDayOfMonth.dayOfMonth().maximumValue)
+            .withTime(23, 59, 59, 999)
+
+        // Return the first and last dates as Pair<Long> (timestamps)
+        return Pair(firstDayOfMonth.millis, lastDayOfMonth.millis)
+    }
 }
+

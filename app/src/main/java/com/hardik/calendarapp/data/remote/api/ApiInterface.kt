@@ -1,6 +1,6 @@
 package com.hardik.calendarapp.data.remote.api
 
-import com.hardik.calendarapp.data.remote.dto.CalendarDto
+import com.hardik.calendarapp.data.remote.dto.HolidayApiDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,7 +14,7 @@ interface ApiInterface {
         @Query("timeMax") timeMax: String,
         @Query("timezone") timezone: String = "UTC",
         @Query("setSingleEvents") setSingleEvents: Boolean = true
-    ): CalendarDto
+    ): HolidayApiDto
 
     /**
      * Without suspend keyword,it is necessary to use Call<Post>,
