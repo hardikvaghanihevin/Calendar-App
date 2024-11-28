@@ -13,11 +13,11 @@ class FetchEventsForMonthUseCase @Inject constructor(
     operator fun invoke(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>> = repository.getEventsForMonth(startOfMonth= startOfMonth, endOfMonth= endOfMonth)
 }
 
-//class ObserveAllEventsUseCase @Inject constructor(
-//    private val repository: EventRepository
-//) {
-//    operator fun invoke(): Flow<List<Event>> = repository.getAllEvents()
-//}
+class ObserveAllEventsUseCase @Inject constructor(
+    private val repository: EventRepository
+) {
+    operator fun invoke(): Flow<List<Event>> = repository.getAllEvents()
+}
 //
 //class FetchHolidayEventsUseCase @Inject constructor(
 //    private val repository: EventRepository

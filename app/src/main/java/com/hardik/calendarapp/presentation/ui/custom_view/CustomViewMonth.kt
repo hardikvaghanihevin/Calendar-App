@@ -14,16 +14,38 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
 @SuppressLint("CustomViewStyleable")
 class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
-    private final val TAG = CustomViewMonth::class.java.simpleName
+    private final val TAG = BASE_TAG + CustomViewMonth::class.java.simpleName
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful
+    var eventDateList: List<String>
+        get() = _eventDateList
+        set(value) {
+            _eventDateList = value
+            postInvalidate()
+        }
+    private var _eventDateList: List<String> = ArrayList()
+
+    fun updateEventsOfDate(eventDates: List<String>){
+        eventDateList = eventDates
+        Log.d(TAG, "updateEventsOfDate: ${eventDateList.size}")
+        postInvalidate()
+    }
+    var eventDateListMap:  List<Map<String, String>>
+        get() = _eventDateListMap
+        set(value) {
+            _eventDateListMap = value
+            postInvalidate()
+        }
+    private var _eventDateListMap: List<Map<String, String>> = emptyList()
+
     // Getter and Setter for currentYear
     var currentYear: Int
         get() = _currentYear
@@ -299,6 +321,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         // Draw the day names
         drawDayNames(canvas, blockWidth, monthNameHeight, dayNameHeight)
         // Draw the date blocks
+        Log.d(TAG, "onDraw: drawDateBlocks")
         drawDateBlocks(canvas, blockWidth, monthNameHeight, dayNameHeight, availableHeight)
 
     }
@@ -405,6 +428,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         }
     }
 
+    var cout = 0
     @SuppressLint("ClickableViewAccessibility")
     private fun drawDateBlocks(
         canvas: Canvas,
@@ -515,12 +539,38 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                     )↓*/
 
 /**                 todo: here to show indicator for events*/
-                    val eventList = eventsMap["$currentYear-$currentMonth-$dayCounter"] ?: emptyList()
-                    drawEventDotsRight(canvas, eventList, rightX = (right - margin * 4), topY = (top + margin * 2), (dateBlockHeight + margin))
+                    //val eventList = eventsMap["$currentYear-$currentMonth-$dayCounter"] ?: emptyList()
+                    //drawEventDotsRight(canvas, eventList, rightX = (right - margin * 4), topY = (top + margin * 2), (dateBlockHeight + margin))
                     //drawEventDotsLeft(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
                     //drawEventDotsTop(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
                     //drawEventDotsBottom(canvas, eventList, leftX = (left + margin * 4 ), bottomY = (bottom - margin * 4), (dateBlockHeight + margin))
+                    //Log.d(TAG, "drawDateBlocks: ${eventDateList.size}")
+                    /*eventDateListMap.forEach {map->
+                        map.keys.forEach { key -> // Iterate over keys of the map
+                            if (checkIfDayMatches(key, "$currentYear-${currentMonth}-$dayCounter")) {
+                                Log.d(TAG, "drawDateBlocks: $key matches $dayCounter")
+                                drawEventDotsRight(
+                                    canvas = canvas,
+                                    rightX = right - margin * 4, // Adjust right margin for positioning
+                                    topY = top, // Adjust top margin
+                                    blockHeight = dateBlockHeight + margin // Block height including padding
+                                )
+                            }
+                        }
+                    }*/
 
+                    eventDateList.forEach {
+                        cout++
+                        val date = "$currentYear-${currentMonth}-$dayCounter"
+                        if (checkIfDayMatches(dateString = it, targetDay = date)) {
+                            Log.d(TAG, "drawDateBlocks: $it == $date")
+                            drawEventDotsRight(  canvas = canvas,
+                                rightX = right - margin * 4, // Adjust right margin for positioning
+                                topY = top ,    // Adjust top margin
+                                blockHeight = dateBlockHeight + margin // Block height including padding
+                            )
+                        }
+                    }
                     drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
 
                     // Store the day block for later click detection
@@ -533,6 +583,8 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                 }
             }
         }
+        Log.w(TAG, "drawDateBlocks: count: $cout", )
+        cout = 0
 
         // Draw next month's dates
         var nextDayCounter = 1
@@ -568,11 +620,6 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                     paint
                 )*/
                 drawDateText(canvas, nextDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
-                // Draw Event Indicators
-//                val eventList = eventsMap["$currentYear-$currentMonth-$dayCounter"] ?: emptyList()
-//                if (eventList.isNotEmpty()) {
-//                    drawEventDots(canvas, eventList, right - margin * 2, top, dateBlockHeight)
-//                }
             }
 
             // Add next month's day block to the list
@@ -622,6 +669,8 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         )
     }
 
+    /*
+    //Todo: eventIndicator to Top, Bottom, Left, Right
     private fun drawEventDotsTop(
         canvas: Canvas,
         events: List<Event>,
@@ -716,6 +765,22 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
             canvas.drawCircle(cx, cy, dotRadius, paint)
         }
     }
+*/
+
+    private fun drawEventDotsRight(
+        canvas: Canvas,
+        rightX: Float,
+        topY: Float,
+        blockHeight: Float
+    ) {
+        val dotRadius = blockHeight * 0.05f // Relative size of the dot
+        val cx = rightX - dotRadius // Position the dot on the right
+        val cy = topY + blockHeight / 2 // Center the dot vertically within the block
+
+        // Set paint color and draw the dot
+        paint.color = Color.RED // Use event color or default to red
+        canvas.drawCircle(cx, cy, dotRadius, paint)
+    }
 
     fun addEvent(date: String, event: Event) {//todo:addEvent("2024-11-27", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
         val currentEvents = eventsMap[date]?.toMutableList() ?: mutableListOf()
@@ -734,7 +799,21 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         onDateItemClickListener = listener
     }
 }
+fun checkIfDayMatches(dateString: String, targetDay: Int): Boolean {
+    // Split the date string into parts: year, month, and day
+    val parts = dateString.split("-")
 
+    // Extract the day (third element in the list), convert it to an integer
+    val day = parts[2].toInt()
+
+    // Check if the day matches the target day
+    return day == targetDay
+}
+
+fun checkIfDayMatches(dateString: String, targetDay: String): Boolean {
+    //Log.i(TAG, "checkIfDayMatches: $dateString == $targetDay")
+    return dateString == targetDay
+}
 //Utility for Converting dp to Pixels
 fun Int.dpToPx(): Int {
     return (this * Resources.getSystem().displayMetrics.density).toInt()

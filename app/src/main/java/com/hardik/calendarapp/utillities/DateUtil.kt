@@ -154,5 +154,35 @@ object DateUtil {
         // Return the first and last dates as Pair<Long> (timestamps)
         return Pair(firstDayOfMonth.millis, lastDayOfMonth.millis)
     }
+
+    /**
+     * Converts a date string to a formatted string with a zero-based month.
+     *
+     * This extension function takes a date string in the format "yyyy-MM-dd",
+     * adjusts the month to be zero-based (0 for January, 11 for December),
+     * and removes leading zeros from the day of the month.
+     *
+     * @receiver A string representing a date in the format "yyyy-MM-dd".
+     * @return A string in the format "yyyy-M-d", where the month is zero-based
+     *         and leading zeros are removed from the day.
+     *
+     * Example:
+     * ```
+     * val date = "2024-12-01"
+     * val formattedDate = date.getFormattedDate()
+     * println(formattedDate) // Output: "2024-11-1"
+     * ```
+     *
+     * Note:
+     * - This function assumes the input string is in a valid "yyyy-MM-dd" format.
+     * - If the input string is not correctly formatted, it may throw an exception.
+     */
+    fun String.getFormattedDate(): String {
+        val parts = this.split("-") // Split the date into year, month, and day
+        val year = parts[0]
+        val month = parts[1].toInt()// - 1 // Convert to zero-based month by subtracting 1
+        val day = parts[2].toInt()       // Convert to integer to remove leading zeros
+        return "$year-${month-1}-$day"       // Combine into the new format
+    }
 }
 

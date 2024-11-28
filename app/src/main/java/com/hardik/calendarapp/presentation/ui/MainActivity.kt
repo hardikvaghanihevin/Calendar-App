@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    val mainViewModel: MainViewModel by viewModels()
+    val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     lateinit var toolbar: Toolbar
 
 

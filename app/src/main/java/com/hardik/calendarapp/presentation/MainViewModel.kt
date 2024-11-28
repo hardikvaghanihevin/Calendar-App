@@ -10,6 +10,7 @@ import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.getFormattedDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,15 +23,20 @@ class MainViewModel @Inject constructor(
     private val eventRepository: EventRepository
 ) : ViewModel() {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
+    var currentPosition: Int = 50 // Default position
+    var toolbarTitle: String = "2022" // Default toolbar title
+    var currentYear: Int = 2022 // Default year
 
     private val _state = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
     val state: StateFlow<DataState<HolidayApiDetail>> get() = _state
 
+    private val _stateEventsOfDate = MutableStateFlow<List<String>>(emptyList())
+    val stateEventsOfDate: StateFlow<List<String>> get() = _stateEventsOfDate
     init {
-        getCalendarData()
+        getHolidayCalendarData()
     }
 
-    private fun getCalendarData() {
+    private fun getHolidayCalendarData() {
         viewModelScope.launch {
             getHolidayApiUseCase.invoke().collect { result: Resource<HolidayApiDetail> ->
                 when (result) {
@@ -53,7 +59,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun collectState() {
+    private fun collectState() {//insert int DB
         viewModelScope.launch {
             state.collect { state ->
                 when {
@@ -92,6 +98,8 @@ class MainViewModel @Inject constructor(
 
                         // Insert events into your database or UI
                         insertEvents(events)
+                        // Get events of a specific date list
+                        _stateEventsOfDate.value = events.map { it.startDate.getFormattedDate() }.distinct()
                     }
                 }
             }

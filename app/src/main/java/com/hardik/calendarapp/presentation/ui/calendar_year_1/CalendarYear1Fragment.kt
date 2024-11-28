@@ -62,7 +62,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         viewPager.adapter = adapter
 
         // Set offscreen page limit to manage how many pages are in memory
-//        viewPager.offscreenPageLimit = 1
+        //viewPager.offscreenPageLimit = 1
 
         viewPager.setCurrentItem(previousPosition,true)
         toolbar?.apply { title = "$2022" }
