@@ -18,7 +18,7 @@ class ObserveAllEventsUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<Event>> = repository.getAllEvents()
 }
-//
+
 //class FetchHolidayEventsUseCase @Inject constructor(
 //    private val repository: EventRepository
 //) {

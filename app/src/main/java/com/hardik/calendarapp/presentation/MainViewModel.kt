@@ -1,26 +1,40 @@
 package com.hardik.calendarapp.presentation
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.DataListState
+import com.hardik.calendarapp.common.DataState
 import com.hardik.calendarapp.common.Resource
+import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.EventValue
+import com.hardik.calendarapp.data.database.entity.MonthKey
+import com.hardik.calendarapp.data.database.entity.YearKey
+import com.hardik.calendarapp.data.database.entity.getAllKeysAsList
+import com.hardik.calendarapp.data.database.entity.organizeEvents
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.EventRepository
+import com.hardik.calendarapp.domain.use_case.FetchEventsForMonthUseCase
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
+import com.hardik.calendarapp.domain.use_case.ObserveAllEventsUseCase
 import com.hardik.calendarapp.utillities.DateUtil
-import com.hardik.calendarapp.utillities.DateUtil.getFormattedDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getHolidayApiUseCase: GetHolidayApiUseCase,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val fetchEventsForMonthUseCase: FetchEventsForMonthUseCase,
+    private val observeAllEventsUseCase : ObserveAllEventsUseCase,
 ) : ViewModel() {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
     var currentPosition: Int = 50 // Default position
@@ -30,13 +44,13 @@ class MainViewModel @Inject constructor(
     private val _state = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
     val state: StateFlow<DataState<HolidayApiDetail>> get() = _state
 
-    private val _stateEventsOfDate = MutableStateFlow<List<String>>(emptyList())
-    val stateEventsOfDate: StateFlow<List<String>> get() = _stateEventsOfDate
     init {
         getHolidayCalendarData()
+        fetchAllEventsOfDateMap()
     }
 
     private fun getHolidayCalendarData() {
+        Log.i(TAG, "getHolidayCalendarData: ")
         viewModelScope.launch {
             getHolidayApiUseCase.invoke().collect { result: Resource<HolidayApiDetail> ->
                 when (result) {
@@ -60,6 +74,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun collectState() {//insert int DB
+        Log.i(TAG, "collectState: ")
         viewModelScope.launch {
             state.collect { state ->
                 when {
@@ -98,8 +113,6 @@ class MainViewModel @Inject constructor(
 
                         // Insert events into your database or UI
                         insertEvents(events)
-                        // Get events of a specific date list
-                        _stateEventsOfDate.value = events.map { it.startDate.getFormattedDate() }.distinct()
                     }
                 }
             }
@@ -116,6 +129,86 @@ class MainViewModel @Inject constructor(
     private fun insertEvents(events: List<Event>) {
         viewModelScope.launch {
             eventRepository.upsertEvents(events)
+        }
+    }
+
+
+    private val _text = MutableLiveData<String>().apply { value = "No Events" }
+    val text: LiveData<String> = _text
+
+    private val _stateEventsOfMonth = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
+    val stateEventsOfMonth: StateFlow<DataListState<Event>> get() = _stateEventsOfMonth
+
+    private val _stateEventsOfDateMap = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())
+    val stateEventsOfDateMap: StateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>
+        get() = _stateEventsOfDateMap
+
+    private val _stateEventsOfDate = MutableStateFlow<List<String>>(emptyList())
+    val stateEventsOfDate: StateFlow<List<String>> get() = _stateEventsOfDate
+    fun fetchEventsForMonth(startOfMonth: Long, endOfMonth: Long) {
+        Log.i(TAG, "fetchEventsForMonth: ")
+        // Set initial loading state
+        _stateEventsOfMonth.value = DataListState(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                fetchEventsForMonthUseCase.invoke(startOfMonth = startOfMonth, endOfMonth = endOfMonth)
+                    .collect { events ->
+                        // Update state with data
+                        val dummyList = mutableListOf<Event>()
+                        //repeat(10) { index -> dummyList.add(Event(title = "Dummy", startTime = 0L, endTime = 0L, startDate = "", endDate = "", isHoliday = false, description = "Dummy Event")) }
+                        //delay(100)//for showing progressbar
+
+                        _stateEventsOfMonth.value = DataListState(isLoading = false, data = events + dummyList)
+                    }
+            } catch (e: Exception) {
+                // Handle errors
+                _stateEventsOfMonth.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
+            }
+        }
+    }
+
+    private fun fetchAllEventsOfDateMap(){
+        Log.i(TAG, "fetchAllEventsOfDateMap: ")
+        viewModelScope.launch {
+            try {
+                observeAllEventsUseCase.invoke().collect{events: List<Event> ->
+                    //val evetns: List<String> = events.map { it.startDate.getFormattedDate() }.distinct() // Remove duplicates
+                    //val eventsMap: List<Map<String, String>> = events.map { event -> mapOf(event.startDate.getFormattedDate() to event.startDate) }
+                    val organizedEvents = organizeEvents(events)
+                    _stateEventsOfDateMap.emit(organizedEvents)
+                    //_stateEventsOfDateMap.value = organizedEvents // Emit the new map
+                    val allKeys = getAllKeysAsList(organizedEvents)
+                    _stateEventsOfDate.emit(allKeys) // Emit the new list of dates
+                    //Log.e(TAG, "collectState: \n$organizedEvents", )
+                    //Log.v(TAG, "collectState: \n$allKeys", )
+                }
+            }catch (e: Exception) {
+                // Handle errors
+                val error = e.message ?: "An unknown error occurred"
+            }
+        }
+    }
+
+    private val _yearState = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.YEAR))
+    private val _monthState = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.MONTH))
+
+    val yearState = _yearState
+    val monthState = _monthState
+    fun updateYear(year: Int) {
+        Log.i(TAG, "updateYear: $year")
+        viewModelScope.launch {
+            _yearState.emit(year)
+        }
+    }
+
+    fun updateMonth(month: Int) {
+        Log.i(TAG, "updateMonth: $month")
+        viewModelScope.launch {
+            _monthState.emit(month)
         }
     }
 }

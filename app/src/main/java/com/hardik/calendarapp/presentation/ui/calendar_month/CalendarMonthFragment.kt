@@ -20,6 +20,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.FragmentCalendarMonthBinding
 import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
+import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CalendarMonthPagerAdapter
 import com.hardik.calendarapp.utillities.createDate
@@ -41,7 +42,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
     private val binding get() = _binding!!
     private var _binding: FragmentCalendarMonthBinding? = null
 
-    private val viewModel: CalendarMonthViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var eventAdapter: EventAdapter
 
@@ -173,7 +174,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
                 }
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    val job1 = launch {
+                    launch {
                         delay(350)
                         monthPageAdapter.setNotifyDataSetChanged()
                     }

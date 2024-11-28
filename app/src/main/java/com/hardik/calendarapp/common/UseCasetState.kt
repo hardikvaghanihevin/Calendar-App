@@ -1,4 +1,4 @@
-package com.hardik.calendarapp.presentation
+package com.hardik.calendarapp.common
 
 data class DataListState<T>(
     val isLoading : Boolean = false,

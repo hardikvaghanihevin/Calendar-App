@@ -50,3 +50,45 @@ fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
 enum class EventType {
     PERSONAL, GLOBAL_HOLIDAY, NATIONAL_HOLIDAY, CULTURAL_HOLIDAY, WORK_MEETING
 }
+
+typealias YearKey = String
+typealias MonthKey = String
+typealias DayKey = String
+typealias EventValue = String // Or replace with Event if you want to store the whole event
+
+fun organizeEvents(events: List<Event>): MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> {
+    val mapOfEvents = mutableMapOf<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>()
+
+    for (event in events) {
+        // Parse the startDate (e.g., "2024-01-01") into year, month, day
+        val parts = event.startDate.split("-")
+        val year: YearKey = parts[0]
+        val month: MonthKey = (parts[1].toInt() - 1).toString() // Convert to zero-based month
+        val day: DayKey = parts[2].toInt().toString() // Remove leading zero
+
+        // Initialize maps if not already present
+        val yearMap = mapOfEvents.getOrPut(year) { mutableMapOf() }
+        val monthMap = yearMap.getOrPut(month) { mutableMapOf() }
+
+        // Use the day as key and store the event's startDate or any required data
+        monthMap[day] = event.startDate // Or use a custom value like event.title, event.description, etc.
+    }
+
+    return mapOfEvents
+}
+fun getAllKeysAsList(
+    map: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>
+): List<String> {
+    val keyList = mutableListOf<String>()
+
+    for ((yearKey, monthMap) in map) {
+        for ((monthKey, dayMap) in monthMap) {
+            for ((dayKey, _) in dayMap) {
+                // Combine keys into "yearKey-monthKey-dayKey" format
+                keyList.add("$yearKey-$monthKey-$dayKey")
+            }
+        }
+    }
+
+    return keyList
+}

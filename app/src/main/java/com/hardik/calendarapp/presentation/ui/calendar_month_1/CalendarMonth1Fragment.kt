@@ -19,13 +19,16 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_MONTH
 import com.hardik.calendarapp.common.Constants.KEY_YEAR
+import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.EventValue
+import com.hardik.calendarapp.data.database.entity.MonthKey
+import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
 import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
+import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
-import com.hardik.calendarapp.presentation.ui.MainActivity
-import com.hardik.calendarapp.presentation.ui.calendar_month.CalendarMonthViewModel
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
 import com.hardik.calendarapp.utillities.DateUtil.getFirstAndLastDateOfMonth
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +49,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarMonth1Binding? = null
     lateinit var toolbar:Toolbar
-    private val viewModel: CalendarMonthViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var eventAdapter: EventAdapter
 
     var year:Int=0
@@ -141,25 +144,26 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
 
     }
     companion object{
+        var _eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
         var eventsOfDate: List<String> = emptyList<String>()
-        var _eventsOfDateMap: List<Map<String, String>> = listOf(emptyMap())
     }
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
         Log.d(TAG, "observeViewModelState: ")
         // Collecting the StateFlow
         lifecycleScope.launch {
-            (requireActivity() as MainActivity).mainViewModel.stateEventsOfDate.collect { data ->
-                eventsOfDate = data
-                Log.v(TAG, "observeViewModelState: $eventsOfDate :size- ${eventsOfDate.size}")
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.stateEventsOfDateMap.collect { data ->
+            viewModel.stateEventsOfDateMap.collect { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
                 _eventsOfDateMap = data
-                eventsOfDate  = data.flatMap { it.keys }.distinct()
+                Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
+//        lifecycleScope.launch {
+//            viewModel.stateEventsOfDate.collect { data ->
+//                eventsOfDate = data
+//                Log.v(TAG, "observeViewModelState: $eventsOfDate :size- ${eventsOfDate.size}")
+//            }
+//        }
+
         lifecycleScope.launch {
             viewModel.stateEventsOfMonth.collect { dataState ->
                 val safeBinding = _binding // Safely reference the binding
@@ -187,8 +191,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                         Log.d(TAG, "observeViewModelState: hide Progressing2")
 
                         eventAdapter.updateData(data)
-                        //eventsOfDate = data.map { it.startDate.getFormattedDate() }.distinct() // Remove duplicates
-                        //eventAdapter.notifyDataSetChanged()
                         //binding.recyclerview.setPadding(0, 0, 0, 0)  // To remove the extra space on top and bottom of the RecyclerVie
                         safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
                     }
@@ -207,8 +209,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         viewPager = binding.viewPagerCalendarMonth
 
         viewPager.adapter = pageAdapter
-        //adapter.updateEventsOfDateMap(dates = eventsOfDateMap)
-        pageAdapter.updateEventsOfDate(eventsOfDate)
+        pageAdapter.updateEventsOfDate(_eventsOfDateMap)
         //Todo: Start in the middle for infinite scrolling and set to the current month
         viewPager.setCurrentItem(previousPosition, true)
 

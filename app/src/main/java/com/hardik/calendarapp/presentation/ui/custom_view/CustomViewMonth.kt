@@ -15,7 +15,11 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.EventValue
+import com.hardik.calendarapp.data.database.entity.MonthKey
+import com.hardik.calendarapp.data.database.entity.YearKey
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
@@ -25,26 +29,13 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful
-    var eventDateList: List<String>
+    var eventDateList: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>
         get() = _eventDateList
         set(value) {
             _eventDateList = value
             postInvalidate()
         }
-    private var _eventDateList: List<String> = ArrayList()
-
-    fun updateEventsOfDate(eventDates: List<String>){
-        eventDateList = eventDates
-        Log.d(TAG, "updateEventsOfDate: ${eventDateList.size}")
-        postInvalidate()
-    }
-    var eventDateListMap:  List<Map<String, String>>
-        get() = _eventDateListMap
-        set(value) {
-            _eventDateListMap = value
-            postInvalidate()
-        }
-    private var _eventDateListMap: List<Map<String, String>> = emptyList()
+    private var _eventDateList: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
 
     // Getter and Setter for currentYear
     var currentYear: Int
@@ -183,9 +174,6 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
     val screenWidth = displayMetrics.widthPixels // Total screen width in pixels
     val screenHeight = displayMetrics.heightPixels // Total screen height in pixels
 
-//    private var lastRowPositionInMonth = IntArray(6) // Assuming 6 rows in a month view
-//    private val monthBlocks = mutableListOf<Rect>()
-//    private val originalMonthBlocks = mutableListOf<Rect>()
     private val daysBlocks = mutableListOf<Pair<Rect, String>>()
 
     private val eventsMap: MutableMap<String, List<Event>> = mutableMapOf()
@@ -344,6 +332,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         paint.color = Color.RED // Set a custom background color
         paint.style = Paint.Style.FILL
 
+        /**
         // Calculate rectangle bounds
        val textWidth = paint.measureText(currentMonthName)
        val textHeight = paint.textSize
@@ -353,14 +342,12 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
        rectBottom = (monthNameHeight / 2 + textHeight / 2) + 8
 
         // Draw the rectangle
-        /**canvas.drawRect(rectLeft, rectTop, rectRight, rectBottom, paint) //todo: if you give background on text view only */
+        canvas.drawRect(rectLeft, rectTop, rectRight, rectBottom, paint) //todo: if you give background on text view only */
 
         // If a background drawable is set, draw it
         backgroundDrawableMonth?.let { drawable ->
             // Set bounds for the drawable to fill the entire month name area
             modifyAndApplyDrawable(drawable,margin.toFloat(),0.0F , 0.0F, viewWidth.toFloat(),monthNameHeight, canvas, Color.WHITE)
-            //drawable.setBounds((0  + margin), (0 + margin), (viewWidth - margin), (monthNameHeight - margin).toInt())
-            //drawable.draw(canvas)
         }
 
         // Set paint properties for text
@@ -468,33 +455,18 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
             if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
             // Draw the background using the drawable if available
             backgroundDrawableDate?.let { drawable ->
-                // Adjust the bounds to include a 1dp margin
                 modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
-                //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
-                //drawable.draw(canvas)
             } ?: run {
                 // If no drawable is set, use a solid color
                 paint.color = Color.LTGRAY // Color for previous month's dates
                 canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
             }
-
-/**             //todo:Shorted instead of using draw directly
-                paint.color = Color.GRAY
-                paint.textSize = textSizeDate//dateBlockHeight * 0.5f
-                canvas.drawText(
-                    prevDayCounter.toString(),
-                    left + blockWidth / 2,
-                    top + dateBlockHeight / 2 + paint.textSize / 3,
-                    paint
-                )*/
                 drawDateText(canvas, prevDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
             }
 
             // Add the day block to the list
             // Store the rect for the previous month's blocks
             val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-//            monthBlocks.add(rect)
-//            originalMonthBlocks.add(Rect(rect)) // Copy to store for click animations
             daysBlocks.add(Pair(rect, "$currentYear-$currentMonth-$prevDayCounter")) // Store the Rect and day
             prevDayCounter++
         }
@@ -518,10 +490,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
 
                     // Draw the background using the drawable if available
                     backgroundDrawableDate?.let { drawable ->
-                        // Adjust the bounds to include a 1dp margin
                         modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isToday) Color.YELLOW else Color.WHITE)
-                        //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
-                        //drawable.draw(canvas)
                     } ?: run {
                         // If no drawable is set, use a solid color
                         paint.color = if(isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY
@@ -539,44 +508,35 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                     )↓*/
 
 /**                 todo: here to show indicator for events*/
-                    //val eventList = eventsMap["$currentYear-$currentMonth-$dayCounter"] ?: emptyList()
-                    //drawEventDotsRight(canvas, eventList, rightX = (right - margin * 4), topY = (top + margin * 2), (dateBlockHeight + margin))
-                    //drawEventDotsLeft(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
-                    //drawEventDotsTop(canvas, eventList, leftX = (left + margin * 4 ), topY = (top + margin * 2), (dateBlockHeight + margin))
-                    //drawEventDotsBottom(canvas, eventList, leftX = (left + margin * 4 ), bottomY = (bottom - margin * 4), (dateBlockHeight + margin))
-                    //Log.d(TAG, "drawDateBlocks: ${eventDateList.size}")
-                    /*eventDateListMap.forEach {map->
-                        map.keys.forEach { key -> // Iterate over keys of the map
-                            if (checkIfDayMatches(key, "$currentYear-${currentMonth}-$dayCounter")) {
-                                Log.d(TAG, "drawDateBlocks: $key matches $dayCounter")
-                                drawEventDotsRight(
-                                    canvas = canvas,
-                                    rightX = right - margin * 4, // Adjust right margin for positioning
-                                    topY = top, // Adjust top margin
-                                    blockHeight = dateBlockHeight + margin // Block height including padding
-                                )
+                    eventDateList.forEach { (yearKey, monthMap) ->
+                        if(yearKey == "$currentYear"){
+                            monthMap.forEach {(monthKey, dayMap) -> 
+                                if (monthKey == "$currentMonth"){
+                                    dayMap.forEach { (dayKey, eventValue) ->
+                                        val startDate = "$yearKey-$monthKey-$dayKey"
+                                        val targetDate = "$currentYear-${currentMonth}-$dayCounter"
+
+                                        if (checkIfDayMatches(dateString = startDate, targetDay = targetDate)) {
+                                            Log.d(TAG, "drawDateBlocks: $startDate matches the target date")
+
+                                            // Call the draw function
+                                            drawEventDotsRight(
+                                                canvas = canvas,
+                                                rightX = right - margin * 4, // Adjust right margin for positioning
+                                                topY = top,                 // Adjust top margin
+                                                blockHeight = dateBlockHeight + margin // Block height including padding
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }*/
-
-                    eventDateList.forEach {
-                        cout++
-                        val date = "$currentYear-${currentMonth}-$dayCounter"
-                        if (checkIfDayMatches(dateString = it, targetDay = date)) {
-                            Log.d(TAG, "drawDateBlocks: $it == $date")
-                            drawEventDotsRight(  canvas = canvas,
-                                rightX = right - margin * 4, // Adjust right margin for positioning
-                                topY = top ,    // Adjust top margin
-                                blockHeight = dateBlockHeight + margin // Block height including padding
-                            )
-                        }
                     }
+
                     drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
 
                     // Store the day block for later click detection
                     val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-//                    monthBlocks.add(rect)
-//                    originalMonthBlocks.add(Rect(rect)) // Store for animation
                     daysBlocks.add(Pair(rect, "$currentYear-$currentMonth-$dayCounter")) // Store the Rect and day
 
                     dayCounter++
@@ -602,30 +562,16 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
             backgroundDrawableDate?.let { drawable ->
                 // Adjust the bounds to include a 1dp margin
                 modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
-                //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
-                //drawable.draw(canvas)
             } ?: run {
                 // If no drawable is set, use a solid color
                 paint.color = Color.LTGRAY // Color for next month's dates
                 canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
             }
-
-/**             //todo:Shorted instead of using draw directly
-                paint.color = Color.GRAY
-                paint.textSize = textSizeDate//dateBlockHeight * 0.5f
-                canvas.drawText(
-                    nextDayCounter.toString(),
-                    left + blockWidth / 2,
-                    top + dateBlockHeight / 2 + paint.textSize / 3,
-                    paint
-                )*/
                 drawDateText(canvas, nextDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
             }
 
             // Add next month's day block to the list
             val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-//            monthBlocks.add(rect)
-//            originalMonthBlocks.add(Rect(rect)) // Store for animation
             daysBlocks.add(Pair(rect, "$currentYear-$currentMonth-$nextDayCounter")) // Store the Rect and day
 
             nextDayCounter++
@@ -669,104 +615,6 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         )
     }
 
-    /*
-    //Todo: eventIndicator to Top, Bottom, Left, Right
-    private fun drawEventDotsTop(
-        canvas: Canvas,
-        events: List<Event>,
-        leftX: Float,   // Left position for the first dot
-        topY: Float,    // Top position of the block
-        blockWidth: Float // Width of the block (full horizontal space)
-    ) {
-        val dotRadius = blockWidth * 0.05f // Adjust dot size relative to block width
-        val spacing = dotRadius * 2.5f // Spacing between the dots
-        val maxDots = (blockWidth / spacing).toInt() // Limit dots horizontally
-
-        // Dynamically adjust the starting horizontal position to center the dots
-        val startX = leftX + (blockWidth - maxDots * spacing) / 2 // Center horizontally in the block
-
-        events.take(maxDots).forEachIndexed { index, event ->
-            paint.color = Color.RED // event.eventColor // Use event's color
-            val cx = startX + spacing * (index + 1)  // Position dots horizontally
-            val cy = topY + dotRadius // Position the dots near the top
-            canvas.drawCircle(cx, cy, dotRadius, paint)
-        }
-    }
-
-    private fun drawEventDotsBottom(
-        canvas: Canvas,
-        events: List<Event>,
-        leftX: Float,   // Left position for the first dot
-        bottomY: Float, // Bottom position of the block (actual Y coordinate for the bottom)
-        blockWidth: Float // Width of the block (full horizontal space)
-    ) {
-        val dotRadius = blockWidth * 0.05f // Adjust dot size relative to block width
-        val spacing = dotRadius * 2.5f // Spacing between the dots
-        val maxDots = (blockWidth / spacing).toInt() // Limit dots horizontally
-
-        // Dynamically adjust the starting horizontal position to center the dots
-        val startX = leftX + (blockWidth - maxDots * spacing) / 2 // Center horizontally in the block
-
-        // Dynamically calculate the vertical position to place the dots at the bottom
-        val startY = bottomY - dotRadius // Start the dots just above the bottom edge
-
-        events.take(maxDots).forEachIndexed { index, event ->
-            paint.color = Color.RED // event.eventColor // Use event's color
-            val cx = startX + spacing * (index + 1)  // Position dots horizontally
-            val cy = startY // Place the dots at the calculated vertical position (bottom)
-            canvas.drawCircle(cx, cy, dotRadius, paint)
-        }
-    }
-
-
-
-    private fun drawEventDotsLeft(
-        canvas: Canvas,
-        events: List<Event>,
-        leftX: Float,  // Position on the left side
-        topY: Float,
-        blockHeight: Float
-    ) {
-        val dotRadius = blockHeight * 0.05f // Adjust dot size relative to block height
-        val spacing = dotRadius * 2.5f
-        val maxDots = (blockHeight / spacing).toInt() // Limit dots vertically
-
-        // Dynamically adjust the starting vertical position to center the dots
-        val startY = topY + (blockHeight - maxDots * spacing) / 2 // Center vertically in the block
-
-        events.take(maxDots).forEachIndexed { index, event ->
-            paint.color = Color.RED // event.eventColor // Use event's color
-            val cx = leftX + dotRadius // Position dots on the left side
-            var cy = topY + spacing * (index + 1) // Spaced vertically
-            //cy = startY + index * spacing // Vertically spaced, adjusted for center alignment
-            canvas.drawCircle(cx, cy, dotRadius, paint)
-        }
-    }
-
-    private fun drawEventDotsRight(
-        canvas: Canvas,
-        events: List<Event>,
-        rightX: Float,
-        topY: Float,
-        blockHeight: Float
-    ) {
-        val dotRadius = blockHeight * 0.05f // Adjust dot size relative to block height
-        val spacing = dotRadius * 2.5f
-        val maxDots = (blockHeight / spacing).toInt() // Limit dots vertically
-
-        // Dynamically adjust the starting vertical position to center the dots
-        val startY = topY + (blockHeight - maxDots * spacing) / 2 // Center vertically in the block
-
-        events.take(maxDots).forEachIndexed { index, event ->
-            paint.color = Color.RED//event.eventColor // Use event's color
-            val cx = rightX - dotRadius // Position dots on the right side
-            var cy = topY + spacing * (index + 1) // Spaced vertically
-            //cy = startY + index * spacing // Vertically spaced, adjusted for center alignment
-            canvas.drawCircle(cx, cy, dotRadius, paint)
-        }
-    }
-*/
-
     private fun drawEventDotsRight(
         canvas: Canvas,
         rightX: Float,
@@ -780,17 +628,6 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         // Set paint color and draw the dot
         paint.color = Color.RED // Use event color or default to red
         canvas.drawCircle(cx, cy, dotRadius, paint)
-    }
-
-    fun addEvent(date: String, event: Event) {//todo:addEvent("2024-11-27", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
-        val currentEvents = eventsMap[date]?.toMutableList() ?: mutableListOf()
-        currentEvents.add(event)
-        eventsMap[date] = currentEvents
-        invalidate() // Redraw the calendar to reflect the changes
-    }
-
-    fun getEventsForDate(date: String): List<Event> {
-        return eventsMap[date] ?: emptyList()
     }
 
     private var onDateItemClickListener : ((String) -> Unit)? = null
@@ -813,10 +650,6 @@ fun checkIfDayMatches(dateString: String, targetDay: Int): Boolean {
 fun checkIfDayMatches(dateString: String, targetDay: String): Boolean {
     //Log.i(TAG, "checkIfDayMatches: $dateString == $targetDay")
     return dateString == targetDay
-}
-//Utility for Converting dp to Pixels
-fun Int.dpToPx(): Int {
-    return (this * Resources.getSystem().displayMetrics.density).toInt()
 }
 
 interface OnDateTouchListener {
