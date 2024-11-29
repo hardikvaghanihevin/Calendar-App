@@ -6,7 +6,7 @@ import com.hardik.calendarapp.domain.model.HolidayApiDetail
 
 @Entity(tableName = "events")
 data class Event(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = false) val id: String = "",
     val title: String,
     val startTime: Long, // Timestamp
     val endTime: Long,   // Timestamp

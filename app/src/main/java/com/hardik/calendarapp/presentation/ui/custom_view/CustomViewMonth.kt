@@ -497,43 +497,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                         canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
                     }
 
-/**                →//todo:↔ Shorted instead of using draw directly←
-                    paint.color = textColorDate//Color.BLACK
-                    paint.textSize = textSizeDate//dateBlockHeight * 0.5f
-                    canvas.drawText(
-                        dayCounter.toString(),
-                        left + blockWidth / 2,
-                        top + dateBlockHeight / 2 + paint.textSize / 3,
-                        paint
-                    )↓*/
-
-/**                 todo: here to show indicator for events*/
-                    /**
-                     eventDateList.forEach { (yearKey, monthMap) ->
-                        if(yearKey == "$currentYear"){
-                            monthMap.forEach {(monthKey, dayMap) -> 
-                                if (monthKey == "$currentMonth"){
-                                    dayMap.forEach { (dayKey, eventValue) ->
-                                        val startDate = "$yearKey-$monthKey-$dayKey"
-                                        val targetDate = "$currentYear-${currentMonth}-$dayCounter"
-
-                                        if (checkIfDayMatches(dateString = startDate, targetDay = targetDate)) {
-                                            Log.d(TAG, "drawDateBlocks: $startDate matches the target date")
-
-                                            // Call the draw function
-                                            drawEventDotsRight(
-                                                canvas = canvas,
-                                                rightX = right - margin * 4, // Adjust right margin for positioning
-                                                topY = top,                 // Adjust top margin
-                                                blockHeight = dateBlockHeight + margin // Block height including padding
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    */
+                    //todo: here to show indicator for events
                     if (eventDateList.containsKey(currentYear.toString())) {
                         // The key exists in the map
                         val yearMap = eventDateList[currentYear.toString()] ?: return

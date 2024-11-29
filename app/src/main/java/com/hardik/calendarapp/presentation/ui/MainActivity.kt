@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         // Collecting the StateFlow
         lifecycleScope.launch {
-            mainViewModel.state.collect { dataState ->
+            mainViewModel.holidayApiState.collect { dataState ->
                 if (dataState.isLoading) {
                     // Show loading indicator
                     Log.d(TAG, "onCreate: Progressing")

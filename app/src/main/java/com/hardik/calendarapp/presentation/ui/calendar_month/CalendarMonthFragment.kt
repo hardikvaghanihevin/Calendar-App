@@ -90,7 +90,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
 
         // Collecting the StateFlow
         lifecycleScope.launch {
-            viewModel.stateEventsOfMonth.collect { dataState ->
+            viewModel.monthlyEventsState.collect { dataState ->
                 if (dataState.isLoading) {
                     // Show loading indicator
                     binding.includedProgressLayout.progressBar.visibility = View.VISIBLE
@@ -238,7 +238,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
         val lastDayOfMonth = date.withDayOfMonth(date.dayOfMonth().maximumValue).withTime(23, 59, 59, 999)
 
         // Fetch events for the first and last dates from the database
-        viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth.millis, endOfMonth = lastDayOfMonth.millis)
+        viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth.millis, endOfMonth = lastDayOfMonth.millis)
 
         // Return the first and last dates as Pair<Long> (timestamps)
         return Pair(firstDayOfMonth.millis, lastDayOfMonth.millis)

@@ -53,7 +53,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
 
     var year:Int=0
     var month:Int=0
-    var date:Int=1
+    var day:Int=1
 
     private lateinit var viewPager: ViewPager2
     // When swipe happens, update the year in your adapter based on the position
@@ -66,7 +66,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         arguments?.let {
             year = it.getInt(KEY_YEAR)
             month = it.getInt(KEY_MONTH)
-            date = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+            day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+            viewModel.updateYear(year)
         }
     }
 
@@ -74,6 +76,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d(TAG, "onViewCreated: $year")
         _binding = FragmentCalendarMonth1Binding.bind(view)
         setupUI()
         //setupEventHandling()
@@ -138,8 +141,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             getFirstAndLastDateOfMonth(year = year, month = month + 1) // 1-based month
         }
         toolbar.title = "${if (year == 0) Calendar.getInstance().get(Calendar.YEAR) else year}"
-        // Fetch events for the first and last dates from the database
-        viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+        //todo: Fetch events for the first and last dates from the database
+        viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
 
     }
     companion object{
@@ -150,21 +153,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         Log.d(TAG, "observeViewModelState: ")
         // Collecting the StateFlow
         lifecycleScope.launch {
-            viewModel.stateEventsOfDateMap.collect { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
+            viewModel.allEventsDateInMapState.collect { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
                 _eventsOfDateMap = data
                 Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
-//        var eventsOfDate: List<String> = emptyList<String>()
-//        lifecycleScope.launch {
-//            viewModel.stateEventsOfDate.collect { data ->
-//                eventsOfDate = data
-//                Log.v(TAG, "observeViewModelState: $eventsOfDate :size- ${eventsOfDate.size}")
-//            }
-//        }
 
         lifecycleScope.launch {
-            viewModel.stateEventsOfMonth.collect { dataState ->
+            viewModel.monthlyEventsState.collect { dataState ->
                 val safeBinding = _binding // Safely reference the binding
                 if (safeBinding != null) {
 
@@ -212,18 +208,20 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         viewPager.setCurrentItem(previousPosition, true)
 
         // Set the year and month to the adapter
-        pageAdapter.configureCustomView { it.apply {
-            arguments?.let {// coming from year calendar to month
-                this.currentYear = it.getInt(KEY_YEAR)
-                this.currentMonth = it.getInt(KEY_MONTH)
-                // Fetch events for the first and last dates from the database
-                viewModel.getEventIndicatorMapForMonth(currentYear.toString(),currentMonth.toString())
-                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = currentYear, month = currentMonth +1 )
-                viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-                this.postInvalidate()
+        pageAdapter.configureCustomView {
+            it.run {
+                arguments?.let {// coming from year calendar to month
+                    this.currentYear = it.getInt(KEY_YEAR)
+                    this.currentMonth = it.getInt(KEY_MONTH)
+
+                    val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = currentYear, month = currentMonth +1 )
+                    viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+
+                    this.postInvalidate()
+                }
+                //addEvent("2024-0-26", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
             }
-            //addEvent("2024-0-26", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
-        }}
+        }
 
         // Register a callback to handle swipe events
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -236,14 +234,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 if (position > previousPosition ) {
                     Log.d(TAG, "onPageSelected: A")
                     // Swiped right: increment month
-                    pageAdapter.apply {
+                    pageAdapter.run {
                         configureCustomView {
-                            it.apply {
+                            it.run {
                                 incrementMonth() // Increment the month
+
                                 val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
-                                // Fetch events for the first and last dates from the database
-                                //viewModel.getEventIndicatorMapForMonth(currentYear.toString(),currentMonth.toString())
-                                viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+                                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+
                                 this.postInvalidate()
                                 toolbar.title = "$currentYear"
                             }
@@ -254,14 +252,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 if (position < previousPosition) {
                     Log.d(TAG, "onPageSelected: B")
                     // Swiped left: decrement month
-                    pageAdapter.apply {
+                    pageAdapter.run {
                         configureCustomView {
-                            it.apply {
+                            it.run {
                                 decrementMonth() // Decrement the month
+
                                 val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
-                                // Fetch events for the first and last dates from the database
-                               // viewModel.getEventIndicatorMapForMonth(currentYear.toString(),currentMonth.toString())
-                                viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+                                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+
                                 this.postInvalidate()
                                 toolbar.title = "$currentYear"
                             }
