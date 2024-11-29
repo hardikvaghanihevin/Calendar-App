@@ -36,9 +36,6 @@ class MainViewModel @Inject constructor(
     private val getMonthlyEventsUseCase: GetMonthlyEventsUseCase,// For getting monthly events compatibility (start to end date) (eventAdapter use)
 ) : ViewModel() {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
-    var currentPosition: Int = 50 // Default position
-    var toolbarTitle: String = "2022" // Default toolbar title
-    var currentYear: Int = 2022 // Default year
 
     private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
     val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
@@ -155,7 +152,7 @@ class MainViewModel @Inject constructor(
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
     // todo:for event showing below inside month view
     fun getMonthlyEvents(startOfMonth: Long, endOfMonth: Long) {
-        Log.i(TAG, "fetchEventsForMonth: ")
+        ///Log.i(TAG, "fetchEventsForMonth: ")
         // Set initial loading state
         _monthlyEventsState.value = DataListState(isLoading = true)
 
@@ -207,7 +204,7 @@ class MainViewModel @Inject constructor(
     fun updateYear(year: Int) {
         Log.i(TAG, "updateYear: $year")
         viewModelScope.launch {
-            _yearState.emit(year)
+            _yearState.value = year
         }
     }
 

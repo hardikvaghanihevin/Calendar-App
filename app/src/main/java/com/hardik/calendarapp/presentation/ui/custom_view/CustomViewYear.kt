@@ -15,6 +15,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import java.util.Calendar
 
+
 class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
     private val TAG = BASE_TAG + CustomViewYear::class.java.simpleName
 
@@ -23,6 +24,10 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
 
     var currentYear: Int get() = _currentYear ; set(value) { _currentYear = value }
     private var _currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
+    fun updateYear(year: Int){
+        _currentYear = year
+        postInvalidate()
+    }
 
     fun incrementYear(year: Int = 1):Int{ _currentYear += year; postInvalidate(); return currentYear}
     fun decrementYear(year: Int = 1):Int{ _currentYear -= year; postInvalidate(); return currentYear}
@@ -43,7 +48,7 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
                 0.05f // 5% of height
             )
             gravity = Gravity.CENTER
-            visibility = View.GONE
+            visibility = View.VISIBLE
             textSize = 20f // Customize text size
             text = "$currentYear" // Replace dynamically as needed
             setTextColor(Color.BLACK) // Customize text color
@@ -113,7 +118,6 @@ class CustomViewYear(context: Context, attributeSet: AttributeSet) : FrameLayout
         // Update each month's CustomView with the new year
         for (i in 0 until monthsGridLayout.childCount) {
             val monthView = monthsGridLayout.getChildAt(i) as CustomViewMonth
-            //monthView.setUpMonth(i, _currentYear)
             monthView.currentYear = currentYear
             monthView.currentMonth = i
         }

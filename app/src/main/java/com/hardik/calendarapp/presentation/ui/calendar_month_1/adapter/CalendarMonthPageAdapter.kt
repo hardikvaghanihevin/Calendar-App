@@ -45,8 +45,8 @@ class CalendarMonthPageAdapter() :
         fun bind(eventMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()) {
             binding.apply {
                 customView.apply {
-                    this.currentYear = currentYear
-                    this.currentMonth = currentMonth
+                    //this.currentYear = currentYear
+                    //this.currentMonth = currentMonth
                     enableTouchEventHandling(enable = true)
                     this.eventDateList = this@CalendarMonthPageAdapter.eventsOfDateMap
                     postInvalidate() // Redraw the custom view if needed

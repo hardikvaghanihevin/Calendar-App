@@ -10,8 +10,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -48,7 +50,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarMonth1Binding? = null
     lateinit var toolbar:Toolbar
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by activityViewModels()
     private lateinit var eventAdapter: EventAdapter
 
     var year:Int=0
@@ -67,16 +69,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             year = it.getInt(KEY_YEAR)
             month = it.getInt(KEY_MONTH)
             day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-
-            viewModel.updateYear(year)
         }
+        viewModel.updateYear(year)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d(TAG, "onViewCreated: $year")
         _binding = FragmentCalendarMonth1Binding.bind(view)
         setupUI()
         //setupEventHandling()
@@ -140,7 +140,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         } else {
             getFirstAndLastDateOfMonth(year = year, month = month + 1) // 1-based month
         }
-        toolbar.title = "${if (year == 0) Calendar.getInstance().get(Calendar.YEAR) else year}"
         //todo: Fetch events for the first and last dates from the database
         viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
 
@@ -150,12 +149,22 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     }
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
-        Log.d(TAG, "observeViewModelState: ")
+        //Log.d(TAG, "observeViewModelState: ")
         // Collecting the StateFlow
+        lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.yearState.collect{
+                    Log.e(TAG, "observeViewModelState: $it", )
+                    toolbar.title = "$it"
+                    year = it
+                }
+            }
+        }
+
         lifecycleScope.launch {
             viewModel.allEventsDateInMapState.collect { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
                 _eventsOfDateMap = data
-                Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
+                //Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
 
@@ -167,14 +176,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                     if (dataState.isLoading) {
                         // Show loading indicator
                         safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-                        Log.d(TAG, "observeViewModelState: Progressing")
+                        //Log.d(TAG, "observeViewModelState: Progressing")
                         safeBinding.tvNotify.visibility = View.GONE
 
                     } else if (dataState.error.isNotEmpty()) {
                         // Show error message
                         Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
                         safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                        Log.d(TAG, "observeViewModelState: hide Progressing1")
+                        //Log.d(TAG, "observeViewModelState: hide Progressing1")
                         safeBinding.tvNotify.text = dataState.error
                         safeBinding.tvNotify.visibility = View.VISIBLE
 
@@ -183,7 +192,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                         val data = dataState.data
                         safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                         safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-                        Log.d(TAG, "observeViewModelState: hide Progressing2")
+                        //Log.d(TAG, "observeViewModelState: hide Progressing2")
 
                         eventAdapter.updateData(data)
                         //binding.recyclerview.setPadding(0, 0, 0, 0)  // To remove the extra space on top and bottom of the RecyclerVie
@@ -210,7 +219,16 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         // Set the year and month to the adapter
         pageAdapter.configureCustomView {
             it.run {
-                arguments?.let {// coming from year calendar to month
+                Log.e(TAG, "setupViewPager: $year", )
+                this.currentYear = year.takeIf { it != 0 } ?: this.currentYear
+                this.currentMonth = month.takeIf { it !=0 } ?: this.currentMonth
+
+                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = currentYear, month = currentMonth +1 )
+                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+                this.postInvalidate()
+                viewModel.updateYear(currentYear)
+
+               /** arguments?.let {// coming from year calendar to month
                     this.currentYear = it.getInt(KEY_YEAR)
                     this.currentMonth = it.getInt(KEY_MONTH)
 
@@ -218,7 +236,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                     viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
 
                     this.postInvalidate()
-                }
+                }*/
                 //addEvent("2024-0-26", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
             }
         }
@@ -243,7 +261,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                                 viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
 
                                 this.postInvalidate()
-                                toolbar.title = "$currentYear"
+                                viewModel.updateYear(currentYear)
                             }
                             it.postInvalidate()
                         }
@@ -261,7 +279,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                                 viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
 
                                 this.postInvalidate()
-                                toolbar.title = "$currentYear"
+                                viewModel.updateYear(currentYear)
                             }
                             it.postInvalidate()
                         }

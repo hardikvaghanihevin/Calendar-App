@@ -24,7 +24,7 @@ import java.text.DateFormatSymbols
 import java.util.Calendar
 
 @SuppressLint("CustomViewStyleable")
-class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
+class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
     private final val TAG = BASE_TAG + CustomViewMonth::class.java.simpleName
     val today = Calendar.getInstance()
 
