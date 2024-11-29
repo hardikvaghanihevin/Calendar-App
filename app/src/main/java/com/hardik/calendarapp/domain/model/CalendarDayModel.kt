@@ -9,5 +9,5 @@ data class CalendarDayModel (
     var isSelected: Boolean = false,
     var eventIndicator: Boolean = false,
     var isHoliday: Boolean = false,
-    var event: Event = Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = "")
+    var event: Event = Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = "",  year = "", month = "", date = "",)
 )

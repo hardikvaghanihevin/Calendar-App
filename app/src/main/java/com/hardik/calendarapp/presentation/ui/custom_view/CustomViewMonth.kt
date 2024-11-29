@@ -16,10 +16,10 @@ import android.widget.FrameLayout
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.DayKey
-import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
 import com.hardik.calendarapp.data.database.entity.YearKey
+import com.hardik.calendarapp.utillities.DateUtil.getFormattedDate
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
@@ -176,7 +176,6 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
 
     private val daysBlocks = mutableListOf<Pair<Rect, String>>()
 
-    private val eventsMap: MutableMap<String, List<Event>> = mutableMapOf()
 
     //endregion
     init {
@@ -259,6 +258,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         shouldHandleTouch = enable
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
         // Only handle the touch event if shouldHandleTouch is true
@@ -508,7 +508,8 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                     )↓*/
 
 /**                 todo: here to show indicator for events*/
-                    eventDateList.forEach { (yearKey, monthMap) ->
+                    /**
+                     eventDateList.forEach { (yearKey, monthMap) ->
                         if(yearKey == "$currentYear"){
                             monthMap.forEach {(monthKey, dayMap) -> 
                                 if (monthKey == "$currentMonth"){
@@ -528,6 +529,31 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                                             )
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                    */
+                    if (eventDateList.containsKey(currentYear.toString())) {
+                        // The key exists in the map
+                        val yearMap = eventDateList[currentYear.toString()] ?: return
+                        if (yearMap.containsKey(currentMonth.toString())) {
+
+                            val monthMap = yearMap[currentMonth.toString()] ?: return
+                            if (monthMap.containsKey(dayCounter.toString())) {
+
+                                val dayMap = monthMap[dayCounter.toString()] ?: return
+                                val targetDate = "$currentYear-${currentMonth}-$dayCounter"
+
+                                if (dayMap.getFormattedDate() == targetDate) {
+
+                                    // then key exists in the map
+                                    drawEventDotsRight(
+                                        canvas = canvas,
+                                        rightX = right - margin * 4, // Adjust right margin for positioning
+                                        topY = top,                 // Adjust top margin
+                                        blockHeight = dateBlockHeight + margin // Block height including padding
+                                    )
                                 }
                             }
                         }

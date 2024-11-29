@@ -184,5 +184,31 @@ object DateUtil {
         val day = parts[2].toInt()       // Convert to integer to remove leading zeros
         return "$year-${month-1}-$day"       // Combine into the new format
     }
+
+    /**
+    val firstApproachTime = measureExecutionTime {inside your block of code}
+    Log.d(TAG, "First approach execution time: ${firstApproachTime / 1_000_000} ms")
+
+    1 second (s) is equal to:
+        1,000 milliseconds (ms)
+        1,000,000 microseconds (µs)
+        1,000,000,000 nanoseconds (ns)
+
+    Log.d(TAG, "${(endTime - startTime)} ns")
+    Log.d(TAG, "${(endTime - startTime) / 1_000} µs")
+    Log.d(TAG, "${(endTime - startTime) / 1_000_000} ms")
+    //Or
+    val startTime = System.nanoTime()
+    val endTime = System.nanoTime()
+    Log.d(TAG, "execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
+
+     */
+    fun measureExecutionTime(block: () -> Unit): Long {
+        val startTime = System.nanoTime()
+        block()
+        val endTime = System.nanoTime()
+        return endTime - startTime // Returns time in nanoseconds
+    }
+
 }
 

@@ -16,15 +16,9 @@ class CalendarMonthPageAdapter() :
     RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
     private val TAG = BASE_TAG + CalendarMonthPageAdapter::class.java.simpleName
 
-//    private var eventsOfDate: List<String> = emptyList()
-//    @SuppressLint("NotifyDataSetChanged")
-//    fun updateEventsOfDate(dates: List<String>) {
-//        this.eventsOfDate = dates
-//        notifyDataSetChanged()
-//    }
     private var eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
     @SuppressLint("NotifyDataSetChanged")
-    fun updateEventsOfDate(dates: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()) {
+    fun updateEventsOfDate(dates: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>) {
         this.eventsOfDateMap = dates
         notifyDataSetChanged()
     }

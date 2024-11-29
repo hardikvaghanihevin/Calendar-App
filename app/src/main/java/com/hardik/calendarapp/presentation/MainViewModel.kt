@@ -18,8 +18,9 @@ import com.hardik.calendarapp.data.database.entity.getAllKeysAsList
 import com.hardik.calendarapp.data.database.entity.organizeEvents
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.EventRepository
-import com.hardik.calendarapp.domain.use_case.FetchEventsForMonthUseCase
+import com.hardik.calendarapp.domain.use_case.GetEventIndicatorMapUseCase
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
+import com.hardik.calendarapp.domain.use_case.GetMonthlyEventsUseCase
 import com.hardik.calendarapp.domain.use_case.ObserveAllEventsUseCase
 import com.hardik.calendarapp.utillities.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,8 +34,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getHolidayApiUseCase: GetHolidayApiUseCase,
     private val eventRepository: EventRepository,
-    private val fetchEventsForMonthUseCase: FetchEventsForMonthUseCase,
+    private val getMonthlyEventsUseCase: GetMonthlyEventsUseCase,
     private val observeAllEventsUseCase : ObserveAllEventsUseCase,
+    private val getEventIndicatorMapUseCase: GetEventIndicatorMapUseCase,
 ) : ViewModel() {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
     var currentPosition: Int = 50 // Default position
@@ -97,16 +99,29 @@ class MainViewModel @Inject constructor(
                         val events: List<Event> = calendarDetails.items
                             .mapNotNull { item ->
 
-                                    Event(
-                                        id = DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT),
-                                        title = item.summary,
-                                        description = item.description,
-                                        startDate = item.start.date,
-                                        endDate = item.end.date,
-                                        startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT),
-                                        endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT),
-                                        isHoliday = true
-                                    )
+                                val date: Triple<String, String, String> = item.start.date.split("-").let { parts ->
+                                    val year = parts[0]
+                                    val month = (parts[1].toInt() - 1).toString()  // Adjust month (1-based to 0-based)
+                                    val day = parts[2].toInt().toString()  // Get the day as a string
+                                    //Log.e(TAG, "collectState: ${item.start.date} -> $year,$month,$day")
+
+                                    // Return a Triple with year, month, and day
+                                    Triple(year, month, day)
+                                }
+
+                                Event(
+                                    id = DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT),
+                                    title = item.summary,
+                                    description = item.description,
+                                    startDate = item.start.date,
+                                    endDate = item.end.date,
+                                    year = date.first,
+                                    month = date.second,
+                                    date = date.third,
+                                    startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT),
+                                    endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT),
+                                    isHoliday = true
+                                )
 
                             }
                             .filterNotNull() // Filter out null values resulting from mapNotNull
@@ -140,11 +155,11 @@ class MainViewModel @Inject constructor(
     val stateEventsOfMonth: StateFlow<DataListState<Event>> get() = _stateEventsOfMonth
 
     private val _stateEventsOfDateMap = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())
-    val stateEventsOfDateMap: StateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>
-        get() = _stateEventsOfDateMap
+    val stateEventsOfDateMap: StateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>> get() = _stateEventsOfDateMap
 
     private val _stateEventsOfDate = MutableStateFlow<List<String>>(emptyList())
     val stateEventsOfDate: StateFlow<List<String>> get() = _stateEventsOfDate
+    // todo:for event showing below inside month view
     fun fetchEventsForMonth(startOfMonth: Long, endOfMonth: Long) {
         Log.i(TAG, "fetchEventsForMonth: ")
         // Set initial loading state
@@ -152,7 +167,7 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                fetchEventsForMonthUseCase.invoke(startOfMonth = startOfMonth, endOfMonth = endOfMonth)
+                getMonthlyEventsUseCase.invoke(startOfMonth = startOfMonth, endOfMonth = endOfMonth)
                     .collect { events ->
                         // Update state with data
                         val dummyList = mutableListOf<Event>()
@@ -171,6 +186,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    //todo:for event indicator showing in month view
     private fun fetchAllEventsOfDateMap(){
         Log.i(TAG, "fetchAllEventsOfDateMap: ")
         viewModelScope.launch {
@@ -178,11 +194,17 @@ class MainViewModel @Inject constructor(
                 observeAllEventsUseCase.invoke().collect{events: List<Event> ->
                     //val evetns: List<String> = events.map { it.startDate.getFormattedDate() }.distinct() // Remove duplicates
                     //val eventsMap: List<Map<String, String>> = events.map { event -> mapOf(event.startDate.getFormattedDate() to event.startDate) }
+
                     val organizedEvents = organizeEvents(events)
                     _stateEventsOfDateMap.emit(organizedEvents)
                     //_stateEventsOfDateMap.value = organizedEvents // Emit the new map
+
+                    val startTime = System.nanoTime()
                     val allKeys = getAllKeysAsList(organizedEvents)
+                    val endTime = System.nanoTime()
+                    Log.d(TAG, "fetchAllEventsOfDateMap: execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
                     _stateEventsOfDate.emit(allKeys) // Emit the new list of dates
+
                     //Log.e(TAG, "collectState: \n$organizedEvents", )
                     //Log.v(TAG, "collectState: \n$allKeys", )
                 }
@@ -192,6 +214,23 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    //todo:for event indicator showing in month view using map
+    fun getEventIndicatorMapForMonth(year:String, month: String){
+        Log.i(TAG, "getEventIndicatorMapForMonth: ")
+        viewModelScope.launch {
+            try {
+                getEventIndicatorMapUseCase.invoke(year = year, month = month).collect{
+                    //_stateEventsOfDateMap.emit(it)
+                }
+            }catch (e: Exception) {
+                // Handle errors
+                val error = e.message ?: "An unknown error occurred"
+                Log.e(TAG, "getEventIndicatorMapForMonth: $error", e)
+            }
+        }
+    }
+
 
     private val _yearState = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.YEAR))
     private val _monthState = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.MONTH))
@@ -211,4 +250,8 @@ class MainViewModel @Inject constructor(
             _monthState.emit(month)
         }
     }
+
+
 }
+//fetchAllEventsOfDateMap: execution time: 864115 ns, 864 µs, 0 ms
+//repository.getEventsByYearAndMonth(year, month): execution time: 57292 ns, 57 µs, 0 ms

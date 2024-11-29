@@ -35,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.joda.time.DateTime
@@ -145,7 +144,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     }
     companion object{
         var _eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
-        var eventsOfDate: List<String> = emptyList<String>()
     }
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
@@ -157,6 +155,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
+//        var eventsOfDate: List<String> = emptyList<String>()
 //        lifecycleScope.launch {
 //            viewModel.stateEventsOfDate.collect { data ->
 //                eventsOfDate = data
@@ -205,7 +204,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     private suspend fun setupViewPager() {
         Log.d(TAG, "setupViewPager: ")
         yield()
-        delay(300)
         viewPager = binding.viewPagerCalendarMonth
 
         viewPager.adapter = pageAdapter
@@ -218,8 +216,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             arguments?.let {// coming from year calendar to month
                 this.currentYear = it.getInt(KEY_YEAR)
                 this.currentMonth = it.getInt(KEY_MONTH)
-                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
                 // Fetch events for the first and last dates from the database
+                viewModel.getEventIndicatorMapForMonth(currentYear.toString(),currentMonth.toString())
+                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = currentYear, month = currentMonth +1 )
                 viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
                 this.postInvalidate()
             }
@@ -243,6 +242,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                                 incrementMonth() // Increment the month
                                 val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
                                 // Fetch events for the first and last dates from the database
+                                //viewModel.getEventIndicatorMapForMonth(currentYear.toString(),currentMonth.toString())
                                 viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
                                 this.postInvalidate()
                                 toolbar.title = "$currentYear"
@@ -260,6 +260,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                                 decrementMonth() // Decrement the month
                                 val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
                                 // Fetch events for the first and last dates from the database
+                               // viewModel.getEventIndicatorMapForMonth(currentYear.toString(),currentMonth.toString())
                                 viewModel.fetchEventsForMonth(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
                                 this.postInvalidate()
                                 toolbar.title = "$currentYear"

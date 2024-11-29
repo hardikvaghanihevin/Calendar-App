@@ -12,4 +12,5 @@ interface EventRepository {
     fun getAllEvents(): Flow<List<Event>>
     fun getHolidayEvents(): Flow<List<Event>>
     fun getEventsForMonth(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>>
+    fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>
 }

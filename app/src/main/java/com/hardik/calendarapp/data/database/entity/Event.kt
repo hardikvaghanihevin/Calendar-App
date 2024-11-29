@@ -12,6 +12,9 @@ data class Event(
     val endTime: Long,   // Timestamp
     val startDate: String,
     val endDate: String,
+    val year: String,//2024
+    val month: String,// 0 to 11 for january to december
+    val date: String,
     val isHoliday: Boolean = false, // To differentiate holiday events
     val eventType: EventType = EventType.GLOBAL_HOLIDAY,
     val description: String = ""
