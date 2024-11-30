@@ -31,8 +31,10 @@ import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
+import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearMonthPairList
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
 import com.hardik.calendarapp.utillities.DateUtil.getFirstAndLastDateOfMonth
+import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,14 +55,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var eventAdapter: EventAdapter
 
-    var year:Int=0
-    var month:Int=0
-    var day:Int=1
+    var year: Int = Calendar.getInstance().get(Calendar.YEAR)
+    var month: Int = Calendar.getInstance().get(Calendar.MONTH)
+    var day: Int = 1
 
     private lateinit var viewPager: ViewPager2
-    // When swipe happens, update the year in your adapter based on the position
-    var previousPosition = 500 // todo: this is necessary to give previous position (which are you want)
-
     private var currDate = DateTime()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +69,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             month = it.getInt(KEY_MONTH)
             day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         }
+
         viewModel.updateYear(year)
     }
 
@@ -99,6 +99,17 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
     }
     override fun onDestroyView() {
         super.onDestroyView()
+
+        // Check if arguments are present and contain the required keys
+        if (arguments?.containsKey(KEY_YEAR) == true && arguments?.containsKey(KEY_MONTH) == true) {
+            year = arguments?.getInt(KEY_YEAR) ?: Calendar.getInstance().get(Calendar.YEAR)
+            month = arguments?.getInt(KEY_MONTH) ?: Calendar.getInstance().get(Calendar.MONTH)
+            day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        } else {
+            // Fallback: No arguments, use the current year
+            viewModel.updateYear(Calendar.getInstance().get(Calendar.YEAR))
+        }
+
         _binding = null
     }
 
@@ -144,9 +155,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
 
     }
-    companion object{
-        var _eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
-    }
+
+    var _eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
+
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
         //Log.d(TAG, "observeViewModelState: ")
@@ -205,10 +216,16 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         }
 
     }
-    val pageAdapter = CalendarMonthPageAdapter()
+
+    val pageAdapter = CalendarMonthPageAdapter(yearMonthPairList)
     private suspend fun setupViewPager() {
         Log.d(TAG, "setupViewPager: ")
         yield()
+
+        // When swipe happens, update the year in your adapter based on the position
+        val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, year, month)
+        var previousPosition = currentMonthPosition // todo: this is necessary to give previous position (which are you want)
+
         viewPager = binding.viewPagerCalendarMonth
 
         viewPager.adapter = pageAdapter
@@ -216,7 +233,34 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         //Todo: Start in the middle for infinite scrolling and set to the current month
         viewPager.setCurrentItem(previousPosition, true)
 
-        // Set the year and month to the adapter
+        viewModel.updateYear(year)
+
+        // Register a callback to handle swipe events
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                // Retrieve year and month directly from yearMonthPairList
+                val (year, month) = yearMonthPairList[position]
+                viewModel.updateYear(year)
+                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = year, month = month +1 )
+                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+
+                // Log current position and year/month
+                Log.d(TAG, "onPageSelected: Current Position = $position, Year = $year, Month = $month")
+
+                // Determine swipe direction
+                if (position > previousPosition) {
+                    Log.d(TAG, "onPageSelected: Swiped Right (Next Month)")
+                } else if (position < previousPosition) {
+                    Log.d(TAG, "onPageSelected: Swiped Left (Previous Month)")
+                }
+
+                // Update previous position
+                previousPosition = position
+            }
+        })
+       /* // Set the year and month to the adapter
         pageAdapter.configureCustomView {
             it.run {
                 Log.e(TAG, "setupViewPager: $year", )
@@ -227,17 +271,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
                 this.postInvalidate()
                 viewModel.updateYear(currentYear)
-
-               /** arguments?.let {// coming from year calendar to month
-                    this.currentYear = it.getInt(KEY_YEAR)
-                    this.currentMonth = it.getInt(KEY_MONTH)
-
-                    val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = currentYear, month = currentMonth +1 )
-                    viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-
-                    this.postInvalidate()
-                }*/
-                //addEvent("2024-0-26", Event(title = "", startTime = 0L, endTime = 0L, startDate = "", endDate = ""))
             }
         }
 
@@ -255,7 +288,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                     pageAdapter.run {
                         configureCustomView {
                             it.run {
-                                incrementMonth() // Increment the month
+                                //incrementMonth() // Increment the month
 
                                 val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
                                 viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
@@ -273,7 +306,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                     pageAdapter.run {
                         configureCustomView {
                             it.run {
-                                decrementMonth() // Decrement the month
+                                //decrementMonth() // Decrement the month
 
                                 val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
                                 viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
@@ -290,7 +323,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 // Update previous position to current one for next swipe comparison
                 previousPosition = position
             }
-        })
+        })*/
     }
 
     private fun navigateToMonth(direction: Int) {

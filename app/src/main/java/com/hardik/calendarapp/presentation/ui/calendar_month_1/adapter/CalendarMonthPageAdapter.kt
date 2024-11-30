@@ -12,7 +12,7 @@ import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.ItemMonthPage1Binding
 import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
-class CalendarMonthPageAdapter() :
+class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, Int>>) :
     RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
     private val TAG = BASE_TAG + CalendarMonthPageAdapter::class.java.simpleName
 
@@ -23,42 +23,52 @@ class CalendarMonthPageAdapter() :
         notifyDataSetChanged()
     }
 
-    companion object {
-        const val FAKE_TOTAL_COUNT = Int.MAX_VALUE // Simulate infinite pages
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
-        val binding =
-            ItemMonthPage1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemMonthPage1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MonthViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
         //val monthIndex = position % 12
-        holder.bind(eventsOfDateMap)
+        val (year, month) = yearMonthPairList[position]
+
+        holder.binding.customView.apply {
+            this.currentYear = year
+            this.currentMonth = month
+            enableTouchEventHandling(enable = true)
+            this.eventDateList = eventsOfDateMap
+            postInvalidate() // Redraw the custom view if needed
+            configureCustomViewCallback?.invoke(this) // Optional callback for further customization
+        }
+        //holder.bind(eventsOfDateMap)
     }
 
-    override fun getItemCount(): Int = FAKE_TOTAL_COUNT
+    override fun getItemCount(): Int = yearMonthPairList.size
 
     inner class MonthViewHolder(val binding: ItemMonthPage1Binding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(eventMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()) {
+        /*fun bind(eventMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()) {
             binding.apply {
                 customView.apply {
-                    //this.currentYear = currentYear
-                    //this.currentMonth = currentMonth
+                    this.currentYear = 2024
+                    this.currentMonth = 11
                     enableTouchEventHandling(enable = true)
                     this.eventDateList = this@CalendarMonthPageAdapter.eventsOfDateMap
                     postInvalidate() // Redraw the custom view if needed
                     configureCustomViewCallback?.invoke(this) // Optional callback for further customization
                 }
             }
-        }
+        }*/
     }
 
     private var configureCustomViewCallback: ((CustomViewMonth) -> Unit)? = null
     fun configureCustomView(callback: (CustomViewMonth) -> Unit) {
         this.configureCustomViewCallback = callback
+    }
+    private var getYearMonth: ((Int) -> Unit)? = null
+    fun getYearMonth(block: (Int) -> Unit) {
+        getYearMonth = block
     }
 }
 

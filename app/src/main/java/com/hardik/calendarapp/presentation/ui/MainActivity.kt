@@ -20,6 +20,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.utillities.createYearData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     lateinit var toolbar: Toolbar
+    companion object{
+        val yearList = createYearData(2000,2100, isZeroBased = true)
+        val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

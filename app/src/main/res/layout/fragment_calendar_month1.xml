@@ -10,35 +10,33 @@
         android:id="@+id/viewPager_calendarMonth"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_250sdp"
-        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_marginTop="@dimen/_1sdp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
         tools:layout_height="250dp" />
 
     <ImageButton
         android:id="@+id/btnPrevMonth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_weight="1"
-        android:background="@drawable/month_navigator_shape_1"
+        android:background="@drawable/left"
         android:contentDescription="Previous Month"
-        android:src="@drawable/ic_arrow_left"
         app:layout_constraintStart_toStartOf="@id/viewPager_calendarMonth"
         app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
 
     <!-- Right Arrow Button -->
     <ImageButton
         android:id="@+id/btnNextMonth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_14sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
         android:layout_weight="1"
-        android:background="@drawable/month_navigator_shape_1"
+        android:background="@drawable/right"
         android:contentDescription="Next Month"
-        android:src="@drawable/ic_arrow_right"
         app:layout_constraintEnd_toEndOf="@id/viewPager_calendarMonth"
         app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
 

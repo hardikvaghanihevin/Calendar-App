@@ -39,3 +39,41 @@ fun isItToday(date: DateTime): Int {
         2
     }
 }
+
+fun createYearData(startYear: Int, endYear: Int, isZeroBased: Boolean): Map<Int, Map<Int, List<Int>>> {
+    val yearMap = mutableMapOf<Int, Map<Int, List<Int>>>()
+
+    for (year in startYear..endYear) {
+        val monthsRange = if (isZeroBased) 0..11 else 1..12
+        val monthsMap = monthsRange.associateWith { month ->
+            (1..getDaysInMonth(year, if (isZeroBased) month + 1 else month)).toList()
+        }
+        yearMap[year] = monthsMap // Set year as key and monthsMap as value
+    }
+
+    return yearMap
+}
+
+fun getDaysInMonth(year: Int, month: Int): Int {
+    return when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> throw IllegalArgumentException("Invalid month: $month")
+    }
+}
+
+fun isLeapYear(year: Int): Boolean {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+}
+fun findIndexOfYearMonth(yearMonthPairList: List<Pair<Int, Int>>, targetYear: Int, targetMonth: Int): Int {
+    return yearMonthPairList.indexOfFirst { (year, month) -> year == targetYear && month == targetMonth }
+}
+
+
+// Example usage
+//val yearData = createYearData(2023, 2025, false) // 1-based month calendar
+//println(yearData)
+
+
+

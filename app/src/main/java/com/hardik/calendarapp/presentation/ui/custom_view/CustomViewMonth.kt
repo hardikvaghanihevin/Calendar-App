@@ -42,6 +42,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         get() = _currentYear
         set(value) {
             _currentYear = value
+            postInvalidate()
         }
 
     // Getter and Setter for currentMonth
@@ -50,6 +51,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         set(value) {
             _currentMonth = value
             _currentMonthName = getMonthName(_currentMonth)
+            postInvalidate()
         }
 
     // Getter and Setter for currentDate
@@ -107,7 +109,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     }
 
     private fun getMonthName(month: Int): String {
-        return  if (monthNameWithYear) DateFormatSymbols().months[month]//+"-" + currentYear
+        return  if (monthNameWithYear) DateFormatSymbols().months[month]+"-" + currentYear
         else DateFormatSymbols().months[month]
     }
 
@@ -286,6 +288,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        Log.d(TAG, "onDraw: drawDateBlocks")
 
 /**     todo: here responsiveness to layout
         val displayMetrics = context.resources.displayMetrics
@@ -297,20 +300,29 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val dayNameHeight = paint.textSize * 1.5f
         val availableHeight = screenHeight - monthNameHeight - dayNameHeight // or (screenHeight - monthNameHeight - dayNameHeight)/6f */
 
-        // Calculate basic parameters
-        val blockWidth = viewWidth / 7f
+        // Set padding (as a percentage of the view height/width for responsiveness)
+        val verticalPadding = viewHeight * 0.02f // 2% vertical padding
+        val horizontalPadding = viewWidth * 0.05f // 5% horizontal padding
+
+        // Calculate basic parameters //// Adjusted heights with padding
+        val blockWidth = viewWidth / 7f //(viewWidth - 2 * horizontalPadding) / 7f
         val monthNameHeight = viewHeight * 0.15f
         val dayNameHeight = viewHeight * 0.13f
-        val availableHeight = viewHeight - monthNameHeight - dayNameHeight // or (screenHeight - monthNameHeight - dayNameHeight)/6f
-        val dateBlockHeight = availableHeight / 6f
+
+        val availableHeight = viewHeight - monthNameHeight - dayNameHeight -  (2 * verticalPadding) // or (screenHeight - monthNameHeight - dayNameHeight)/6f
 
         // Draw the month name
         drawMonthName(canvas, blockWidth, monthNameHeight)
+
         // Draw the day names
-        drawDayNames(canvas, blockWidth, monthNameHeight, dayNameHeight)
+        // Adjust the starting position for day names
+        val dayNameTop = monthNameHeight + verticalPadding
+        drawDayNames(canvas, blockWidth, dayNameTop, dayNameHeight)
+
         // Draw the date blocks
-        Log.d(TAG, "onDraw: drawDateBlocks")
-        drawDateBlocks(canvas, blockWidth, monthNameHeight, dayNameHeight, availableHeight)
+        // Adjust the starting position for date blocks
+        val dateBlockTop = dayNameHeight + verticalPadding + 5
+        drawDateBlocks(canvas, blockWidth, monthNameHeight, dateBlockTop, availableHeight)
 
     }
 
@@ -389,19 +401,19 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             // Draw the background using the drawable if available
             backgroundDrawableDay?.let { drawable ->
                 // Adjust the bounds to include a 1dp margin
-                modifyAndApplyDrawable(drawable,margin.toFloat(),left , top, right,bottom, canvas, null)
+                modifyAndApplyDrawable(drawable,margin.toFloat(),left , top, right ,bottom, canvas, context.getColor(R.color.blue))
                 //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
                 //drawable.draw(canvas)
             } ?: run {
                 // If no drawable is set, use a solid color
                 paint.color = backgroundColorDay
-                canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
+                canvas.drawRect(left + margin + 2, top + margin, right - margin - 2, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
             }
             //paint.color = backgroundColorDay//
             //canvas.drawRect(left, top, right, bottom, paint)
 
             // Set text size dynamically
-            textSizeDay = if (textSizeDay > 0) textSizeDay else monthNameHeight * 0.4f
+            textSizeDay = if (textSizeDay > 0) textSizeDay else monthNameHeight * 0.3f
 /**         //todo:Shorted instead of using draw directly
             paint.color = textColorDay//Color.WHITE
             paint.textSize = textSizeDay//dayNameHeight * 0.5f
@@ -415,7 +427,6 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         }
     }
 
-    var cout = 0
     @SuppressLint("ClickableViewAccessibility")
     private fun drawDateBlocks(
         canvas: Canvas,
@@ -453,14 +464,14 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
 
             if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
-            // Draw the background using the drawable if available
-            backgroundDrawableDate?.let { drawable ->
-                modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
-            } ?: run {
-                // If no drawable is set, use a solid color
-                paint.color = Color.LTGRAY // Color for previous month's dates
-                canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
-            }
+                // Draw the background using the drawable if available
+                backgroundDrawableDate?.let { drawable ->
+                    modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
+                } ?: run {
+                    // If no drawable is set, use a solid color
+                    paint.color = Color.LTGRAY // Color for previous month's dates
+                    canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
+                }
                 drawDateText(canvas, prevDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
             }
 
@@ -533,8 +544,6 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                 }
             }
         }
-        Log.w(TAG, "drawDateBlocks: count: $cout", )
-        cout = 0
 
         // Draw next month's dates
         var nextDayCounter = 1
@@ -548,15 +557,15 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
 
             if(monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH){
-            // Draw the background using the drawable if available
-            backgroundDrawableDate?.let { drawable ->
-                // Adjust the bounds to include a 1dp margin
-                modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
-            } ?: run {
-                // If no drawable is set, use a solid color
-                paint.color = Color.LTGRAY // Color for next month's dates
-                canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
-            }
+                // Draw the background using the drawable if available
+                backgroundDrawableDate?.let { drawable ->
+                    // Adjust the bounds to include a 1dp margin
+                    modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
+                } ?: run {
+                    // If no drawable is set, use a solid color
+                    paint.color = Color.LTGRAY // Color for next month's dates
+                    canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
+                }
                 drawDateText(canvas, nextDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
             }
 
