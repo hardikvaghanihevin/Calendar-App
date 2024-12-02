@@ -3,8 +3,13 @@ package com.hardik.calendarapp.presentation.ui.calendar_year_1
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -19,11 +24,14 @@ import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearList
+import com.hardik.calendarapp.utillities.getPositionFromYear
+import com.hardik.calendarapp.utillities.getYearKeyAtPosition
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 @AndroidEntryPoint
@@ -51,6 +59,42 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             val job1 = launch { setupViewPager() }
 
         }
+
+        val menuHost: MenuHost = requireActivity()
+
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Inflate the menu resource for the fragment
+                menuInflater.inflate(R.menu.main, menu)
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_refresh -> {
+                        val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
+                        // Get the position of the key in the yearList
+                        val yearKeyPos: Int? = getPositionFromYear(yearList,backToCurrentYear)
+                        // Get the yearKey at the given position
+                        val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
+                        if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
+                        //Log.d(TAG, "refreshToYear: $yearKeyPos = $yearKeyAtPosition")
+                        if (::viewPager.isInitialized) {
+                            if (yearKeyPos != null) { viewPager.setCurrentItem(yearKeyPos, true) } // Navigate to the desired position
+                            adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
+                        }
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().invalidateOptionsMenu()
     }
 
     override fun onDestroy() {
@@ -101,13 +145,14 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                if (position > previousPosition) {
-                    // Swiped right: increment month
-                    viewModel.updateYear(year+1)
+                // Get the key at the given position
+                val yearKeyAtPosition = getYearKeyAtPosition(yearList,position)
+                if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
 
-                } else if (position < previousPosition) {
-                    // Swiped left: decrement month
-                    viewModel.updateYear(year-1)
+                if (position > previousPosition) { // Swiped right: increment month
+                    Log.d(TAG, "onPageSelected: Swiped Right (Next Year)")
+                } else if (position < previousPosition) { // Swiped left: decrement month
+                    Log.d(TAG, "onPageSelected: Swiped Left (Next Year)")
                 }
                 // Update previous position to current one for next swipe comparison
                 previousPosition = position
@@ -117,7 +162,11 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             navigateToCalendarMonth(year = mYear, month = mMonth)
         }
 
+
     }
+
+
+
     private fun navigateToCalendarMonth(year: Int, month: Int) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread

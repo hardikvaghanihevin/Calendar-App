@@ -122,4 +122,6 @@ dependencies {
     implementation ("androidx.fragment:fragment-ktx:1.6.1")
 
 //    implementation("com.kizitonwose.calendar:view:2.0.0")
+
+    implementation ("com.google.android.material:material:1.9.0")
 }

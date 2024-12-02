@@ -5,10 +5,15 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -31,6 +36,7 @@ import com.hardik.calendarapp.domain.model.CalendarDayModel
 import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearMonthPairList
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
 import com.hardik.calendarapp.utillities.DateUtil.getFirstAndLastDateOfMonth
@@ -91,6 +97,43 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             setupViewPager()
         }
 
+        val menuHost: MenuHost = requireActivity()
+
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Inflate the menu resource for the fragment
+                menuInflater.inflate(R.menu.main, menu)
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_refresh -> {
+                        val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
+                        val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
+                        val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)
+                        // Get the position of the key in the yearList
+                        val yearKeyPos: Int = MainActivity.yearList.keys.toList().indexOf(backToCurrentYear)
+                        // Get the yearKey at the given position
+                        val yearKeyAtPosition = MainActivity.yearList.keys.toList().getOrNull(yearKeyPos)
+                        if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
+                        Log.d(TAG, "onMenuItemSelected: action_refresh: keyPosition:$yearKeyPos = year:$yearKeyAtPosition")
+                        if (::viewPager.isInitialized) {
+                            viewPager.setCurrentItem(currentMonthPosition, true) // Navigate to the desired position
+                            pageAdapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
+                        }
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().invalidateOptionsMenu()
     }
 
     override fun onDestroy() {

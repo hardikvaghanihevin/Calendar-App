@@ -18,6 +18,7 @@ object DateUtil {
     // Define common date formats
     const val TIME_FORMAT = "h:mm a"
     const val DATE_FORMAT = "yyyy-MM-dd"
+    const val DATE_FORMAT_1 = "dd MM yyyy"
     const val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm"
     const val DATE_TIME_FORMAT_1 = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
@@ -57,6 +58,12 @@ object DateUtil {
     fun longToString(timestamp: Long, pattern: String = DATE_FORMAT): String {
         val date = longToDate(timestamp)
         return dateToString(date, pattern)
+    }
+
+    fun formatDate(epochTime: Long): String {
+        val dateFormat = SimpleDateFormat(DATE_FORMAT_1, Locale.getDefault())
+        val date = Date(epochTime)
+        return dateFormat.format(date)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -211,4 +218,10 @@ object DateUtil {
     }
 
 }
+
+//// Convert to epoch time
+//            val selectedEpochTime = Calendar.getInstance().apply {
+//                set(selectedYear, selectedMonth, selectedDay, 0, 0, 0)
+//                set(Calendar.MILLISECOND, 0) // Reset milliseconds
+//            }.timeInMillis
 

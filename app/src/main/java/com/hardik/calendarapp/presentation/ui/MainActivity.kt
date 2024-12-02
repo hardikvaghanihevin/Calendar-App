@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     lateinit var toolbar: Toolbar
     companion object{
-        val yearList = createYearData(2000,2100, isZeroBased = true)
+        val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
         val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
     }
 
@@ -58,8 +57,7 @@ class MainActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment
+            setOf(R.id.nav_home, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -81,19 +79,39 @@ class MainActivity : AppCompatActivity() {
                     // Update UI with the user list
                     val users = dataState.data
                     Log.d(TAG, "onCreate: hide Progressing")
-
-    //                userAdapter.differ.submitList(users.toList())
-    //                binding.recyclerview.setPadding(0, 0, 0, 0)
+//                 userAdapter.differ.submitList(users.toList())
+//                 binding.recyclerview.setPadding(0, 0, 0, 0)
                 }
             }
         }
+        navController.addOnDestinationChangedListener { _, destination, _ -> invalidateOptionsMenu() }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        menuInflater.inflate(R.menu.main, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        val navController = findNavController(R.id.nav_host_fragment_content_main)
+//        val currentDestination = navController.currentDestination
+//
+//            if (currentDestination?.id == R.id.nav_home || currentDestination?.id == R.id.calendarYear1Fragment) {
+//                when(item.itemId) {R.id.action_settings -> {;return true } }
+//            }
+//
+//        return super.onOptionsItemSelected(item)
+//    }
+//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+//        val navController = findNavController(R.id.nav_host_fragment_content_main)
+//        val currentDestination = navController.currentDestination
+//
+//        // Adjust menu visibility dynamically
+//        menu?.findItem(R.id.action_settings)?.isVisible = currentDestination?.id == R.id.nav_home || currentDestination?.id == R.id.calendarYear1Fragment
+//
+//        return super.onPrepareOptionsMenu(menu)
+//    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)

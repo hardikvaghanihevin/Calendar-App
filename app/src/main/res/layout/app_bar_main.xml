@@ -28,9 +28,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:visibility="invisible"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@drawable/baseline_add_24"
-        android:contentDescription="@string/add_event" />
+        android:contentDescription="@string/add_event"
+        android:visibility="visible"
+        app:fabSize="mini"
+        app:backgroundTint="@color/blue"
+        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"
+        app:srcCompat="@drawable/baseline_add_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
