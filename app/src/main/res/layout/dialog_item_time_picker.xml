@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/dialog_item_date_picker"
+    android:id="@+id/dialog_item_time_picker"
     tools:ignore="HardcodedText"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -17,15 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <DatePicker
-            android:id="@+id/datePicker"
-            android:paddingHorizontal="@dimen/_20sdp"
-            android:paddingVertical="@dimen/_20sdp"
+        <TimePicker
+            android:id="@+id/timePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@android:style/Widget.DatePicker"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            android:paddingHorizontal="@dimen/_20sdp"
+            android:paddingVertical="@dimen/_20sdp"
+            android:timePickerMode="spinner"
+            style="@android:style/Widget.Material.TimePicker"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.button.MaterialButton

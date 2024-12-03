@@ -1,56 +1,77 @@
-package com.hardik.calendarapp.presentation.ui.home
+package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.databinding.FragmentHomeBinding
-import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.databinding.DialogItemDatePickerBinding
+import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
+import com.hardik.calendarapp.databinding.FragmentNewEventBinding
+import com.hardik.calendarapp.utillities.DateUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
-    private final val TAG = BASE_TAG + HomeFragment::class.java.simpleName
+class NewEventFragment : Fragment(R.layout.fragment_new_event) {
+    private val TAG = BASE_TAG + NewEventFragment::class.java.simpleName
 
-    private var _binding: FragmentHomeBinding? = null
-    private val viewModel: MainViewModel by activityViewModels()
-
-    /** This property is only valid between [onCreateView] and [onDestroyView].
-     */
+    private val viewModel: NewEventViewModel  by activityViewModels()
+    private var _binding: FragmentNewEventBinding? = null
     private val binding get() = _binding!!
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {}
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        //val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        //homeViewModel.text.observe(viewLifecycleOwner) { binding.textView.text = it     }
-        return root
-    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) { super.onActivityCreated(savedInstanceState) }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentNewEventBinding.bind(view)
 
-       /* lifecycleScope.launch {
+        val menuHost: MenuHost = requireActivity()
+
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Inflate the menu resource for the fragment
+                menuInflater.inflate(R.menu.new_event_menu, menu)
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_save -> {
+                        viewModel.insertCustomEvent()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
+
+
+        lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.yearState.collectLatest { year ->
@@ -60,22 +81,34 @@ class HomeFragment : Fragment() {
                 }
                 launch {
                     viewModel.startDate.collectLatest { startDate ->
-                        binding.tvStartDatePicker.text = longToString(timestamp = startDate, pattern = DATE_FORMAT_2)
+                        binding.tvStartDatePicker.text = DateUtil.longToString(
+                            timestamp = startDate,
+                            pattern = DateUtil.DATE_FORMAT_2
+                        )
                     }
                 }
                 launch {
                     viewModel.endDate.collectLatest { endDate ->
-                        binding.tvEndDatePicker.text = longToString(timestamp = endDate, pattern = DATE_FORMAT_2)
+                        binding.tvEndDatePicker.text = DateUtil.longToString(
+                            timestamp = endDate,
+                            pattern = DateUtil.DATE_FORMAT_2
+                        )
                     }
                 }
                 launch {
                     viewModel.startTime.collectLatest { startTime ->
-                        binding.tvStartTimePicker.text = longToString(timestamp = startTime, pattern = TIME_FORMAT_1)
+                        binding.tvStartTimePicker.text = DateUtil.longToString(
+                            timestamp = startTime,
+                            pattern = DateUtil.TIME_FORMAT_1
+                        )
                     }
                 }
                 launch {
                     viewModel.endTime.collectLatest { endTime ->
-                        binding.tvEndTimePicker.text = longToString(timestamp = endTime, pattern = TIME_FORMAT_1)
+                        binding.tvEndTimePicker.text = DateUtil.longToString(
+                            timestamp = endTime,
+                            pattern = DateUtil.TIME_FORMAT_1
+                        )
                     }
                 }
                 launch {
@@ -123,17 +156,16 @@ class HomeFragment : Fragment() {
         binding.switchAllDay.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.updateAllDayStatus(isChecked)
         }
-*/
+
 
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    /*private var bindingDatePicker: DialogItemDatePickerBinding? = null
+    private var bindingDatePicker: DialogItemDatePickerBinding? = null
 
     @SuppressLint("InflateParams")
     fun showDatePickerDialog(isStartDate: Boolean) {
@@ -280,8 +312,4 @@ class HomeFragment : Fragment() {
 
         dialog.show()
     }
-*/
 }
-// binding.customView.addEvent("2024-11-25", Event(title = "Independence Day", startTime = 0L, endTime = 0L, startDate = "", endDate = "", eventType =   EventType.NATIONAL_HOLIDAY))
-// binding.customView.incrementMonth()
-

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/calendarMonth1Fragment">
 
     <fragment
         android:id="@+id/nav_home"
@@ -16,11 +16,13 @@
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month.CalendarMonthFragment"
         android:label="@string/calendar_month"
         tools:layout="@layout/fragment_calendar_month" />
+
     <fragment
         android:id="@+id/calendarYearFragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year.CalendarYearFragment"
         android:label="@string/calendar_year"
         tools:layout="@layout/fragment_calendar_year" />
+
     <fragment
         android:id="@+id/calendarMonth1Fragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
@@ -28,6 +30,7 @@
         tools:layout="@layout/fragment_calendar_month1" >
 
     </fragment>
+
     <fragment
         android:id="@+id/calendarYear1Fragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year_1.CalendarYear1Fragment"
@@ -37,5 +40,11 @@
             android:id="@+id/action_calendarYear1Fragment_to_calendarMonth1Fragment"
             app:destination="@id/calendarMonth1Fragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/newEventFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.new_event.NewEventFragment"
+        android:label="@string/new_event"
+        tools:layout="@layout/fragment_new_event" />
 
 </navigation>

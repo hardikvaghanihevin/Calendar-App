@@ -41,4 +41,6 @@
     <string name="calendar_month">Calendar Month</string>
     <string name="calendar_year">Calendar Year</string>
     <string name="action_refresh">Refresh</string>
+    <string name="new_event">New Event</string>
+    <string name="action_save">Save</string>
 </resources>

@@ -2,6 +2,7 @@ package com.hardik.calendarapp.presentation.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +15,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
@@ -46,11 +46,7 @@ class MainActivity : AppCompatActivity() {
         toolbar = binding.appBarMain.toolbar
         setSupportActionBar(toolbar)
 
-        binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
-        }
+
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
@@ -64,6 +60,14 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
 //        binding.appBarMain.toolbar.navigationIcon = null
+        //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).setAnchorView(R.id.fab).show()
+        // Check current fragment
+        //val currentDestination = navController.currentDestination?.id
+        //if (currentDestination != R.id.newEventFragment)
+
+        binding.appBarMain.fab.setOnClickListener { view ->
+            navController.navigate(R.id.newEventFragment)
+        }
 
         // Collecting the StateFlow
         lifecycleScope.launch {
@@ -84,7 +88,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        navController.addOnDestinationChangedListener { _, destination, _ -> invalidateOptionsMenu() }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            invalidateOptionsMenu()
+            val isFabVisible = destination.id != R.id.newEventFragment
+
+            if (isFabVisible) {
+                showFabWithAnimation(binding.appBarMain.fab)
+            } else {
+                hideFabWithAnimation(binding.appBarMain.fab)
+            }
+        }
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -116,5 +129,26 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+    // Function to show FAB with animation
+    private fun showFabWithAnimation(fab: View) {
+        fab.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(200) // animation duration in milliseconds
+            .withStartAction { fab.visibility = View.VISIBLE }
+            .start()
+    }
+
+    // Function to hide FAB with animation
+    private fun hideFabWithAnimation(fab: View) {
+        fab.animate()
+            .alpha(0f)
+            .scaleX(0f)
+            .scaleY(0f)
+            .setDuration(200) // animation duration in milliseconds
+            .withEndAction { fab.visibility = View.GONE }
+            .start()
     }
 }

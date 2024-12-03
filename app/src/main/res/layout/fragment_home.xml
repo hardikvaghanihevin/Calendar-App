@@ -7,7 +7,7 @@
     tools:context=".presentation.ui.home.HomeFragment"
     tools:ignore="HardcodedText">
 
-    <!--    Event Name-->
+ <!--   &lt;!&ndash;    Event Name&ndash;&gt;
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_first"
         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!--    Event Data-->
+    &lt;!&ndash;    Event Data&ndash;&gt;
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_second"
         android:layout_width="match_parent"
@@ -93,7 +93,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Right Section -->
+                &lt;!&ndash; Right Section &ndash;&gt;
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchAllDay"
                     android:layout_width="wrap_content"
@@ -234,7 +234,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!--    Alert-->
+    &lt;!&ndash;    Alert&ndash;&gt;
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_third"
         android:layout_width="match_parent"
@@ -289,7 +289,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!--    Note-->
+    &lt;!&ndash;    Note&ndash;&gt;
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_forth"
         android:layout_width="match_parent"
@@ -339,7 +339,7 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
+-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

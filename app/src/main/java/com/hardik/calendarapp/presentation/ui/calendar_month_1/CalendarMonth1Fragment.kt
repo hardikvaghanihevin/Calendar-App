@@ -39,7 +39,6 @@ import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearMonthPairList
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
-import com.hardik.calendarapp.utillities.DateUtil.getFirstAndLastDateOfMonth
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -57,7 +56,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
 
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarMonth1Binding? = null
-    lateinit var toolbar:Toolbar
+
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var eventAdapter: EventAdapter
 
@@ -158,7 +157,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
 
 
     private fun setupUI(){
-        toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)
         binding.apply {
             btnPrevMonth.setOnClickListener {
                 navigateToMonth(-1)
@@ -188,14 +186,15 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         }
     }
     private fun fetchEventsForSelectedMonth() {
-        val (firstDayOfMonth, lastDayOfMonth) = if (year == 0 && month == 0) {
-            val today = DateTime.now()
-            getFirstAndLastDateOfMonth(today)
-        } else {
-            getFirstAndLastDateOfMonth(year = year, month = month + 1) // 1-based month
-        }
-        //todo: Fetch events for the first and last dates from the database
-        viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+//        val (firstDayOfMonth, lastDayOfMonth) = if (year == 0 && month == 0) {
+//            val today = DateTime.now()
+//            getFirstAndLastDateOfMonth(today)
+//        } else {
+//            getFirstAndLastDateOfMonth(year = year, month = month + 1) // 1-based month
+//        }
+//        //todo: Fetch events for the first and last dates from the database
+//        viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+        viewModel.getEventsByMonthOfYear(year = year.toString(),month = month.toString())
 
     }
 
@@ -209,7 +208,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.yearState.collect{
                     Log.e(TAG, "observeViewModelState: $it", )
-                    toolbar.title = "$it"
+                    updateToolbarTitle("$it")
                     year = it
                 }
             }
@@ -286,8 +285,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 // Retrieve year and month directly from yearMonthPairList
                 val (year, month) = yearMonthPairList[position]
                 viewModel.updateYear(year)
-                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = year, month = month +1 )
-                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+                //val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = year, month = month +1)
+                //viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
+                viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
 
                 // Log current position and year/month
                 Log.d(TAG, "onPageSelected: Current Position = $position, Year = $year, Month = $month")
@@ -375,5 +375,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         binding.viewPagerCalendarMonth.setCurrentItem(newPosition, true)
     }
     override fun onDateClick(position: Int, calendarDayModel: CalendarDayModel) {}
+
+    private val toolbar: Toolbar? by lazy {
+        requireActivity().findViewById<Toolbar>(R.id.toolbar)
+    }
+    private fun updateToolbarTitle(title: String) {
+        toolbar?.title = title
+    }
 
 }

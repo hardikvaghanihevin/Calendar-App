@@ -34,6 +34,9 @@ interface EventDao {
     @Query("SELECT * FROM events WHERE startTime >= :startOfMonth AND startTime <= :endOfMonth ORDER BY startTime ASC")
     fun getEventsForMonth(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>>
 
+    @Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY date ASC")
+    fun getEventsByMonthOfYear(year: String, month: String): Flow<List<Event>>
+
     @Query("SELECT * FROM events WHERE year = :year AND month = :month")
     fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>
 }

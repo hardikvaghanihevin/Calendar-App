@@ -40,7 +40,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarYear1Binding? = null
-    private var toolbar: Toolbar? = null
     private val viewModel: MainViewModel by activityViewModels()
 
     private lateinit var viewPager: ViewPager2
@@ -107,12 +106,11 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     }
 
     private fun setupUI() {
-        toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)
         lifecycleScope.launch {
             // Safely collect yearState during STARTED state
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.yearState.collect{//collectLatest
-                    toolbar?.title = "$it"
+                    updateToolbarTitle("$it")
                     year = it
                     Log.i(TAG, "setupUI: year:$it")
                 }
@@ -179,5 +177,12 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             findNavController().navigate(R.id.calendarMonth1Fragment, bundle)
         }
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
+    }
+
+    private val toolbar: Toolbar? by lazy {
+        requireActivity().findViewById<Toolbar>(R.id.toolbar)
+    }
+    private fun updateToolbarTitle(title: String) {
+        toolbar?.title = title
     }
 }

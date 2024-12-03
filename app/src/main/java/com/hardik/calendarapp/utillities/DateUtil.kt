@@ -1,7 +1,9 @@
 package com.hardik.calendarapp.utillities
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import com.hardik.calendarapp.common.Constants.BASE_TAG
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -10,15 +12,19 @@ import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 object DateUtil {
+    private val TAG = BASE_TAG + DateUtil::class.java.simpleName
 
     // Define common date formats
     const val TIME_FORMAT = "h:mm a"
+    const val TIME_FORMAT_1 = "hh:mm a"
     const val DATE_FORMAT = "yyyy-MM-dd"
     const val DATE_FORMAT_1 = "dd MM yyyy"
+    const val DATE_FORMAT_2 =  "dd MMM yyyy" // For "03 Dec 2024" format
     const val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm"
     const val DATE_TIME_FORMAT_1 = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
@@ -193,6 +199,121 @@ object DateUtil {
     }
 
     /**
+     * Merges the date and time represented by two separate epoch times into one combined epoch time.
+     *
+     * The `dateEpoch` represents the date part, and `timeEpoch` represents the time part. The function
+     * combines these to produce a new epoch time that includes both the date and the time.
+     *
+     * For example:
+     * - If `dateEpoch` represents "2024-12-03" at 00:00:00, and
+     * - `timeEpoch` represents "12:30:00" on the same day,
+     *
+     * The result will be the epoch time corresponding to "2024-12-03 12:30:00".
+     *
+     * @param dateEpoch The epoch time representing the date part (in milliseconds).
+     * @param timeEpoch The epoch time representing the time part (in milliseconds).
+     * @return The combined epoch time that includes both date and time (in milliseconds).
+     */
+    fun mergeDateAndTime(dateEpoch: Long, timeEpoch: Long): Long {
+        // Get the Calendar instance for the date
+        val dateCalendar = Calendar.getInstance().apply {
+            timeInMillis = dateEpoch
+        }
+
+        // Get the time parts from the timeEpoch
+        val timeCalendar = Calendar.getInstance().apply {
+            timeInMillis = timeEpoch
+        }
+
+        // Set the time of the dateCalendar to the time from timeEpoch
+        dateCalendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY))
+        dateCalendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE))
+        dateCalendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND))
+        dateCalendar.set(Calendar.MILLISECOND, timeCalendar.get(Calendar.MILLISECOND))
+
+        // Return the merged date and time as epoch
+        return dateCalendar.timeInMillis
+    }
+
+    /**
+     * Separates a combined epoch time into two separate epoch times: one for the date and one for the time.
+     *
+     * The `mergedEpoch` represents both the date and time. This function splits it into:
+     * - The date part (midnight of the same day) and
+     * - The time part (the exact time of the `mergedEpoch`).
+     *
+     * For example:
+     * - If `mergedEpoch` represents "2024-12-03 12:30:00",
+     *
+     * The result will be:
+     * - `dateEpoch` as the epoch time for "2024-12-03 00:00:00" (midnight),
+     * - `timeEpoch` as the epoch time for "2024-12-03 12:30:00".
+     *
+     * @param mergedEpoch The combined epoch time (in milliseconds) representing both the date and the time.
+     * @return A pair of epoch times:
+     *         - The first element is the date part (midnight of the same day),
+     *         - The second element is the time part.
+     */
+    fun separateDateTime(mergedEpoch: Long): Pair<Long, Long> {
+        // Get the Calendar instance for the merged epoch
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = mergedEpoch
+        }
+
+        // Extract date part (without time)
+        val dateCalendar = Calendar.getInstance().apply {
+            set(Calendar.YEAR, calendar.get(Calendar.YEAR))
+            set(Calendar.MONTH, calendar.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH))
+            set(Calendar.HOUR_OF_DAY, 0) // Set time to 00:00:00
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val dateEpoch = dateCalendar.timeInMillis // Epoch time for the date part
+
+        // Extract time part (without date)
+        val timeEpoch = calendar.timeInMillis // Time part will be the full epoch time
+
+        return Pair(dateEpoch, timeEpoch)
+    }
+
+    /**
+     * Converts an epoch time (in milliseconds) to a `Triple` containing the year, month, and day as strings.
+     *
+     * @param epochTime The epoch time in milliseconds (e.g., System.currentTimeMillis()).
+     * @return A `Triple` where:
+     *  - `first`: The year as a string (e.g., "2024").
+     *  - `second`: The month as a string (1-based, e.g., "12" for December).
+     *  - `third`: The day of the month as a string (e.g., "3").
+     *
+     * Example:
+     * ```
+     * val epochTime = 1733164200000L  // Epoch time for 03-Dec-2024
+     * val dateTriple = epochToDateTriple(epochTime)
+     * println("Year: ${dateTriple.first}, Month: ${dateTriple.second}, Day: ${dateTriple.third}")
+     * // Output: Year: 2024, Month: 12, Day: 3
+     * ```
+     */
+    fun epochToDateTriple(epochTime: Long): Triple<String, String, String> {
+        val stringDate = longToString(epochTime)
+        Log.i(TAG, "epochToDateTriple: $stringDate")
+        return stringToDateTriple(stringDate)
+    }
+
+    fun stringToDateTriple(stringDate:String): Triple<String, String, String>{
+        return stringDate.split("-").let { parts ->
+            val year = parts[0]
+            val month = (parts[1].toInt() - 1).toString()  // Adjust month (1-based to 0-based)
+            val day = parts[2].toInt().toString()  // Get the day as a string
+            //Log.e(TAG, "collectState: ${item.start.date} -> $year,$month,$day")
+
+            // Return a Triple with year, month, and day
+            Triple(year, month, day)
+        }
+    }
+
+    /**
     val firstApproachTime = measureExecutionTime {inside your block of code}
     Log.d(TAG, "First approach execution time: ${firstApproachTime / 1_000_000} ms")
 
@@ -207,15 +328,15 @@ object DateUtil {
     //Or
     val startTime = System.nanoTime()
     val endTime = System.nanoTime()
-    Log.d(TAG, "execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
+    Log.d(TA
+    fun measureExecutionTime(block: () -> Unit): Long {
+    val startTime = System.nanoTime()
+    block()
+    val endTime = System.nanoTime()
+    return endTime - startTime // Returns time in nanoseconds
+    }G, "execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
 
      */
-    fun measureExecutionTime(block: () -> Unit): Long {
-        val startTime = System.nanoTime()
-        block()
-        val endTime = System.nanoTime()
-        return endTime - startTime // Returns time in nanoseconds
-    }
 
 }
 
