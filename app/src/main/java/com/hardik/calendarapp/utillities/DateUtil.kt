@@ -20,20 +20,20 @@ object DateUtil {
     private val TAG = BASE_TAG + DateUtil::class.java.simpleName
 
     // Define common date formats
-    const val TIME_FORMAT = "h:mm a"
-    const val TIME_FORMAT_1 = "hh:mm a"
-    const val DATE_FORMAT = "yyyy-MM-dd"
-    const val DATE_FORMAT_1 = "dd MM yyyy"
-    const val DATE_FORMAT_2 =  "dd MMM yyyy" // For "03 Dec 2024" format
-    const val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm"
-    const val DATE_TIME_FORMAT_1 = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    const val TIME_FORMAT_h_mm_a = "h:mm a"
+    const val TIME_FORMAT_hh_mm_a = "hh:mm a"
+    const val DATE_FORMAT_yyyy_MM_dd = "yyyy-MM-dd"
+    const val DATE_FORMAT_dd_MM_yyyy = "dd MM yyyy"
+    const val DATE_FORMAT_dd_MMM_yyyy =  "dd MMM yyyy" // For "03 Dec 2024" format
+    const val DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm = "yyyy-MM-dd HH:mm"
+    const val DATE_TIME_FORMAT_yyyy_MM_dd_T_HH_MM_ss_Z = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
     /** Function to format Date object to String*/
     /** Get SimpleDateFormat for a given pattern */
     private fun getDateFormat(pattern: String): SimpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
 
     /** Format Date -> String */
-    fun dateToString(date: Date, pattern: String = DATE_FORMAT): String {
+    fun dateToString(date: Date, pattern: String = DATE_FORMAT_yyyy_MM_dd): String {
         val format = getDateFormat(pattern)
         return format.format(date)
     }
@@ -42,7 +42,7 @@ object DateUtil {
     fun dateToLong(date: Date): Long = date.time
 
     /** Parse String -> Date */
-    fun stringToDate(dateString: String, pattern: String = DATE_FORMAT): Date? {
+    fun stringToDate(dateString: String, pattern: String = DATE_FORMAT_yyyy_MM_dd): Date? {
         val format = getDateFormat(pattern)
         return try {
             format.parse(dateString)
@@ -52,8 +52,18 @@ object DateUtil {
         }
     }
 
+    /** Parse String -> String */
+    fun stringToString(dateString: String, inputPattern: String = DATE_FORMAT_yyyy_MM_dd, outputPattern: String = DATE_FORMAT_dd_MMM_yyyy): String {
+        // Convert String -> Date using the inputPattern
+        val date = stringToDate(dateString, inputPattern)
+            ?: throw IllegalArgumentException("Invalid date string or pattern: $dateString, $inputPattern")
+
+        // Convert Date -> String using the outputPattern
+        return dateToString(date, outputPattern)
+    }
+
     /** Convert String -> Long (Timestamp) */
-    fun stringToLong(dateString: String, pattern: String = DATE_FORMAT): Long {
+    fun stringToLong(dateString: String, pattern: String = DATE_FORMAT_yyyy_MM_dd): Long {
         return stringToDate(dateString, pattern)?.time ?: 0L
     }
 
@@ -61,13 +71,13 @@ object DateUtil {
     fun longToDate(timestamp: Long): Date = Date(timestamp)
 
     /** Convert Long (Timestamp) -> String */
-    fun longToString(timestamp: Long, pattern: String = DATE_FORMAT): String {
+    fun longToString(timestamp: Long, pattern: String = DATE_FORMAT_yyyy_MM_dd): String {
         val date = longToDate(timestamp)
         return dateToString(date, pattern)
     }
 
     fun formatDate(epochTime: Long): String {
-        val dateFormat = SimpleDateFormat(DATE_FORMAT_1, Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy, Locale.getDefault())
         val date = Date(epochTime)
         return dateFormat.format(date)
     }
@@ -279,6 +289,73 @@ object DateUtil {
     }
 
     /**
+     * Calculates the start and end of the day (in epoch milliseconds) for a given timestamp.
+     *
+     * This function takes an epoch time (in milliseconds) as input and returns a pair of values:
+     * - The start of the day (midnight: 00:00:00.000)
+     * - The end of the day (just before midnight: 23:59:59.999)
+     *
+     * **Usage:**
+     * Use this function when you need to retrieve the time boundaries for a specific day.
+     * It is useful for scenarios such as:
+     * - Filtering events, tasks, or data that belong to a particular day.
+     * - Performing database queries or calculations for an entire day.
+     * - Converting an epoch timestamp to the day's boundaries for time-sensitive operations.
+     *
+     * **Parameters:**
+     * - `epochMillis`: A `Long` value representing the input epoch time in milliseconds.
+     *   This timestamp will be used to calculate the day's boundaries.
+     *
+     * **Returns:**
+     * - A `Pair<Long, Long>` where:
+     *   - The first element is the epoch time for the start of the day (00:00:00.000).
+     *   - The second element is the epoch time for the end of the day (23:59:59.999).
+     *
+     * **Example:**
+     * ```
+     * val epochTime = 1733250600000L // Example timestamp
+     * val (startOfDay, endOfDay) = getStartAndEndOfDay(epochTime)
+     *
+     * println("Start of Day: $startOfDay") // Outputs: Start of Day: 1733250600000
+     * println("End of Day: $endOfDay")     // Outputs: End of Day: 1733336999999
+     * ```
+     *
+     * **Notes:**
+     * - The function adjusts for the system's default timezone.
+     * - Ensure the input epoch time is in milliseconds.
+     * - Useful for working with calendars, events, and scheduling logic in applications.
+     */
+    fun getStartAndEndOfDay(epochMillis: Long): Pair<Long, Long> {
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = epochMillis
+        }
+
+        // Start of the day (00:00:00)
+        val startOfDay = Calendar.getInstance().apply {
+            set(Calendar.YEAR, calendar.get(Calendar.YEAR))
+            set(Calendar.MONTH, calendar.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH))
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+
+        // End of the day (23:59:59)
+        val endOfDay = Calendar.getInstance().apply {
+            set(Calendar.YEAR, calendar.get(Calendar.YEAR))
+            set(Calendar.MONTH, calendar.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH))
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }.timeInMillis
+
+        return Pair(startOfDay, endOfDay)
+    }
+
+    /**
      * Converts an epoch time (in milliseconds) to a `Triple` containing the year, month, and day as strings.
      *
      * @param epochTime The epoch time in milliseconds (e.g., System.currentTimeMillis()).
@@ -301,6 +378,31 @@ object DateUtil {
         return stringToDateTriple(stringDate)
     }
 
+    /**
+     * Converts a date string in the format "yyyy-MM-dd" into a `Triple` containing the year, month (0-based), and day.
+     *
+     * This function is useful when you need to break down a date string into its individual components (year, month, and day),
+     * especially if you need to perform further operations on these parts, such as adjusting the month for 0-based indexing.
+     *
+     * User Case:
+     * If you have a date string such as "2024-12-04" and want to separately access the year, month, and day as separate values,
+     * this function will split the string and return the individual parts as a `Triple`.
+     *
+     * Example:
+     * ```kotlin
+     * val stringDate = "2024-12-04"
+     * val dateTriple = stringToDateTriple(stringDate)
+     * println(dateTriple)  // Output: (2024, 11, 4)
+     * ```
+     *
+     * @param stringDate The date string to be split, expected in the format "yyyy-MM-dd".
+     * @return A `Triple` where:
+     *  - `first` is the year (e.g., "2024").
+     *  - `second` is the month (e.g., "11" for December, adjusted from 1-based to 0-based).
+     *  - `third` is the day (e.g., "4").
+     *
+     * @throws IndexOutOfBoundsException if the input string doesn't follow the "yyyy-MM-dd" format.
+     */
     fun stringToDateTriple(stringDate:String): Triple<String, String, String>{
         return stringDate.split("-").let { parts ->
             val year = parts[0]
@@ -312,6 +414,39 @@ object DateUtil {
             Triple(year, month, day)
         }
     }
+
+    /**
+     * Splits a time string in the format "hh:mm a" into a `Triple` containing the hour, minute, and AM/PM parts.
+     *
+     * This function is useful when you need to extract and manipulate the individual components (hour, minute, AM/PM)
+     * from a time string returned by functions like `longToString` that formats a timestamp into a time string.
+     *
+     * User Case:
+     * If you have a time string such as "01:30 PM" and want to separately access the hour, minute, and AM/PM parts,
+     * this function will break the string into a `Triple` and allow easy access to each component.
+     *
+     * Example:
+     * ```kotlin
+     * val timeString = "01:30 PM"
+     * val timeTriple = splitTimeString(timeString)
+     * println(timeTriple)  // Output: (01, 30, PM)
+     * ```
+     *
+     * @param timeString The time string to be split, expected in the format "hh:mm a".
+     * @return A `Triple` where:
+     *  - `first` is the hour (e.g., "01").
+     *  - `second` is the minute (e.g., "30").
+     *  - `third` is the AM/PM part (e.g., "PM").
+     * @throws IllegalArgumentException if the input time string is not in the expected format ("hh:mm a").
+     */
+    fun splitTimeString(timeString: String): Triple<String, String, String> {
+        val timeParts = timeString.split(":", " ") // Split the string by ":" and space
+        if (timeParts.size != 3) {
+            throw IllegalArgumentException("Invalid time format. Expected format: hh:mm a")
+        }
+        return Triple(timeParts[0], timeParts[1], timeParts[2])
+    }
+
 
     /**
     val firstApproachTime = measureExecutionTime {inside your block of code}
@@ -328,15 +463,15 @@ object DateUtil {
     //Or
     val startTime = System.nanoTime()
     val endTime = System.nanoTime()
-    Log.d(TA
-    fun measureExecutionTime(block: () -> Unit): Long {
-    val startTime = System.nanoTime()
-    block()
-    val endTime = System.nanoTime()
-    return endTime - startTime // Returns time in nanoseconds
-    }G, "execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
+    Log.d(TAG, "execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
 
      */
+    fun measureExecutionTime(block: () -> Unit): Long {
+        val startTime = System.nanoTime()
+        block()
+        val endTime = System.nanoTime()
+        return endTime - startTime // Returns time in nanoseconds
+    }
 
 }
 

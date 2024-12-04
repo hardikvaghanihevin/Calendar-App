@@ -103,7 +103,7 @@ class MainViewModel @Inject constructor(
                                 val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
                                 Event(
-                                    id = "${DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT)} | ${item.summary}",
+                                    id = "${DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT_yyyy_MM_dd)} | ${item.summary}",
                                     title = item.summary,
                                     description = item.description,
                                     startDate = item.start.date,
@@ -111,8 +111,8 @@ class MainViewModel @Inject constructor(
                                     year = date.first,
                                     month = date.second,
                                     date = date.third,
-                                    startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT),
-                                    endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT),
+                                    startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
+                                    endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
                                     isHoliday = true
                                 )
 

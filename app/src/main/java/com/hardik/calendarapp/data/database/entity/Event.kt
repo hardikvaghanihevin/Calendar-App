@@ -1,10 +1,14 @@
 package com.hardik.calendarapp.data.database.entity
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
+import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "events")
+
+@Parcelize
 data class Event(
     @PrimaryKey(autoGenerate = false) val id: String = "",
     val title: String,
@@ -18,7 +22,7 @@ data class Event(
     val isHoliday: Boolean = false, // To differentiate holiday events
     val eventType: EventType = EventType.GLOBAL_HOLIDAY,
     val description: String = ""
-)
+) : Parcelable
 
 fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
     return HolidayApiDetail.Item(

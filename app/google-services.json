@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "261214230287",
+    "project_id": "calendar-app-133b2",
+    "storage_bucket": "calendar-app-133b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261214230287:android:c35e942044ebb40a84d07a",
+        "android_client_info": {
+          "package_name": "com.hardik.calendarapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnpkcptqzOEen2LnQDneyM3yxjghtXheU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -5,6 +5,8 @@ plugins {
     id("com.google.dagger.hilt.android")
 //    id ("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") // Apply Safe Args here
+    id("com.google.gms.google-services")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -125,4 +127,7 @@ dependencies {
 //    implementation("com.kizitonwose.calendar:view:2.0.0")
 
     implementation ("com.google.android.material:material:1.9.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

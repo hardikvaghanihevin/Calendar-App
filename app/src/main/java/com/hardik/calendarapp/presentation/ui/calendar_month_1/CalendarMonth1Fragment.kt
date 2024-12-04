@@ -19,11 +19,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.common.Constants.KEY_MONTH
 import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.data.database.entity.DayKey
@@ -183,7 +185,22 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             rvEvent.setHasFixedSize(true)
             eventAdapter = EventAdapter(ArrayList<Event>(), this@CalendarMonth1Fragment)
             binding.rvEvent.adapter = eventAdapter
+            eventAdapter.setConfigureEventCallback {event:Event->
+                // got event update
+                navigateToNewEventFrag(event = event)
+            }
         }
+    }
+    private fun navigateToNewEventFrag(event: Event) {
+        lifecycleScope.launch {
+            // Make sure the navigation happens on the main thread
+            Log.e(TAG, "navigateToNewEventFrag:  ${Thread.currentThread().name}", )
+            val bundle = Bundle().apply {
+                putParcelable(KEY_EVENT, event)// Pass the event object
+            }
+            findNavController().navigate(R.id.newEventFragment, bundle)
+        }
+        // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }
     private fun fetchEventsForSelectedMonth() {
 //        val (firstDayOfMonth, lastDayOfMonth) = if (year == 0 && month == 0) {
@@ -303,70 +320,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 previousPosition = position
             }
         })
-       /* // Set the year and month to the adapter
-        pageAdapter.configureCustomView {
-            it.run {
-                Log.e(TAG, "setupViewPager: $year", )
-                this.currentYear = year.takeIf { it != 0 } ?: this.currentYear
-                this.currentMonth = month.takeIf { it !=0 } ?: this.currentMonth
-
-                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = currentYear, month = currentMonth +1 )
-                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-                this.postInvalidate()
-                viewModel.updateYear(currentYear)
-            }
-        }
-
-        // Register a callback to handle swipe events
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                //Log.d(TAG, "onPageSelected: A ($position position),  $previousPosition ")
-
-                // Check if swipe is to the right (next month) or left (previous month)
-                if (position > previousPosition ) {
-                    Log.d(TAG, "onPageSelected: A")
-                    // Swiped right: increment month
-                    pageAdapter.run {
-                        configureCustomView {
-                            it.run {
-                                //incrementMonth() // Increment the month
-
-                                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
-                                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-
-                                this.postInvalidate()
-                                viewModel.updateYear(currentYear)
-                            }
-                            it.postInvalidate()
-                        }
-                    }
-                }
-                if (position < previousPosition) {
-                    Log.d(TAG, "onPageSelected: B")
-                    // Swiped left: decrement month
-                    pageAdapter.run {
-                        configureCustomView {
-                            it.run {
-                                //decrementMonth() // Decrement the month
-
-                                val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year=currentYear,month=currentMonth+1)
-                                viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-
-                                this.postInvalidate()
-                                viewModel.updateYear(currentYear)
-                            }
-                            it.postInvalidate()
-                        }
-                    }
-                }
-                pageAdapter.notifyDataSetChanged()
-
-                // Update previous position to current one for next swipe comparison
-                previousPosition = position
-            }
-        })*/
     }
 
     private fun navigateToMonth(direction: Int) {

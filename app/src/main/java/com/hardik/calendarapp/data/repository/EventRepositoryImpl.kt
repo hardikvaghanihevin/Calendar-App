@@ -2,6 +2,7 @@ package com.hardik.calendarapp.data.repository
 
 import com.hardik.calendarapp.data.database.dao.EventDao
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -44,5 +45,9 @@ class EventRepositoryImpl @Inject constructor(
 
     override fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>{
         return eventDao.getEventsByYearAndMonth(year, month)
+    }
+
+    override fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>{
+        return eventDao.getEventByTitleAndType(title, eventType)
     }
 }

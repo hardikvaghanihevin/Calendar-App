@@ -2,6 +2,7 @@ package com.hardik.calendarapp.data.database.dao
 
 import androidx.room.*
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.EventType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -39,4 +40,8 @@ interface EventDao {
 
     @Query("SELECT * FROM events WHERE year = :year AND month = :month")
     fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>
+
+    @Query("SELECT * FROM events WHERE title = :title AND eventType = :eventType LIMIT 1")
+    fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>
+
 }

@@ -12,8 +12,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -23,12 +23,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
+import com.hardik.calendarapp.common.Constants.KEY_EVENT
+import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.DialogItemDatePickerBinding
 import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
 import com.hardik.calendarapp.databinding.FragmentNewEventBinding
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -41,6 +46,21 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private val viewModel: NewEventViewModel  by activityViewModels()
     private var _binding: FragmentNewEventBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var argEvent:Event
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getParcelable(KEY_EVENT, Event::class.java)
+                    ?: throw IllegalArgumentException("Event is missing")
+            } else {
+                @Suppress("DEPRECATION")
+                it.getParcelable(KEY_EVENT)
+                    ?: throw IllegalArgumentException("Event is missing")
+            }
+        }
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) { super.onActivityCreated(savedInstanceState) }
 
@@ -62,7 +82,22 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_save -> {
-                        viewModel.insertCustomEvent()
+                        lifecycleScope.launch {
+                            val msg: String = viewModel.run {
+                                val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                                insertCustomEvent(id = id)
+                            }
+
+                            // Display a message to the user
+                            Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
+                                .setAnchorView(binding.baseline)
+                                .show()
+
+                            // Reset the fields after successful insertion
+                            if (msg == EVENT_INSERT_SUCCESSFULLY) {
+                                viewModel.resetEventState()
+                            }
+                        }
                         true
                     }
                     else -> false
@@ -70,20 +105,29 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
 
+        if (arguments?.containsKey(KEY_EVENT) == true){
+            Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
+            populateEventData(event = argEvent)
+            updateToolbarTitle(resources.getString(R.string.update_event))
+        }else{
+            Log.e(TAG, "onViewCreated: argEvent is null", )
+            viewModel.resetEventState()
+            updateToolbarTitle(resources.getString(R.string.new_event))
+        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.yearState.collectLatest { year ->
                         Log.i(TAG, "setupUI: year:$year")
-                        Toast.makeText(requireContext(), "$year", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(requireContext(), "$year", Toast.LENGTH_SHORT).show()
                     }
                 }
                 launch {
                     viewModel.startDate.collectLatest { startDate ->
                         binding.tvStartDatePicker.text = DateUtil.longToString(
                             timestamp = startDate,
-                            pattern = DateUtil.DATE_FORMAT_2
+                            pattern = DateUtil.DATE_FORMAT_dd_MMM_yyyy
                         )
                     }
                 }
@@ -91,7 +135,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     viewModel.endDate.collectLatest { endDate ->
                         binding.tvEndDatePicker.text = DateUtil.longToString(
                             timestamp = endDate,
-                            pattern = DateUtil.DATE_FORMAT_2
+                            pattern = DateUtil.DATE_FORMAT_dd_MMM_yyyy
                         )
                     }
                 }
@@ -99,7 +143,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     viewModel.startTime.collectLatest { startTime ->
                         binding.tvStartTimePicker.text = DateUtil.longToString(
                             timestamp = startTime,
-                            pattern = DateUtil.TIME_FORMAT_1
+                            pattern = DateUtil.TIME_FORMAT_hh_mm_a
                         )
                     }
                 }
@@ -107,7 +151,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     viewModel.endTime.collectLatest { endTime ->
                         binding.tvEndTimePicker.text = DateUtil.longToString(
                             timestamp = endTime,
-                            pattern = DateUtil.TIME_FORMAT_1
+                            pattern = DateUtil.TIME_FORMAT_hh_mm_a
                         )
                     }
                 }
@@ -132,6 +176,13 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                         }
                     }
                 }
+                launch{
+                    viewModel.title.collect { title ->
+                        if (binding.tInEdtEventName.text.toString() != title) {
+                            binding.tInEdtEventName.setText(title) // Update UI if needed
+                        }
+                    }
+                }
             }
         }
 
@@ -147,8 +198,12 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         binding.tvEndTimePicker.setOnClickListener {
             showTimePickerDialog(isStartTime = false)
         }
-        binding.tInEdtEventName.addTextChangedListener {
-            viewModel.updateTitle(it.toString())
+        binding.tInEdtEventName.addTextChangedListener { text ->
+            text?.let {
+                if (viewModel.title.value != it.toString()) {
+                    viewModel.updateTitle(it.toString()) // Update ViewModel state
+                }
+            }
         }
         binding.tInEdtEventNote.addTextChangedListener {
             viewModel.updateDescription(it.toString())
@@ -165,8 +220,48 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         _binding = null
     }
 
-    private var bindingDatePicker: DialogItemDatePickerBinding? = null
+    private fun populateEventData(event: Event) {
+        // Populate the title and description
+       /* binding.tInEdtEventName.setText(event.title)
+        binding.tInEdtEventNote.setText(event.description)
 
+        // Populate start and end dates
+        binding.tvStartDatePicker.text = DateUtil.stringToString(
+            dateString = event.startDate,
+            inputPattern = DateUtil.DATE_FORMAT_yyyy_MM_dd,
+            outputPattern = DateUtil.DATE_FORMAT_dd_MMM_yyyy
+        )
+        binding.tvEndDatePicker.text = DateUtil.stringToString(
+            dateString = event.endDate,
+            inputPattern = DateUtil.DATE_FORMAT_yyyy_MM_dd,
+            outputPattern = DateUtil.DATE_FORMAT_dd_MMM_yyyy
+        )
+
+        // Populate start and end times
+        binding.tvStartTimePicker.text = DateUtil.longToString(
+            timestamp = event.startTime,
+            pattern = DateUtil.TIME_FORMAT_hh_mm_a
+        )
+        binding.tvEndTimePicker.text = DateUtil.longToString(
+            timestamp = event.endTime,
+            pattern = DateUtil.TIME_FORMAT_hh_mm_a
+        )*/
+
+        // Set the "All Day" status
+        binding.switchAllDay.isChecked = false//event.isAllDay
+
+        // Update ViewModel with the data
+        viewModel.updateTitle(event.title)
+        viewModel.updateDescription(event.description)
+        viewModel.updateStartDate(DateUtil.stringToLong(event.startDate))
+        viewModel.updateEndDate(DateUtil.stringToLong(event.endDate))
+        viewModel.updateStartTime(event.startTime)
+        viewModel.updateEndTime(event.endTime)
+        viewModel.updateAllDayStatus(false)//event.isAllDay)
+    }
+
+
+    private var bindingDatePicker: DialogItemDatePickerBinding? = null
     @SuppressLint("InflateParams")
     fun showDatePickerDialog(isStartDate: Boolean) {
         var selectedEpochTime: Long = Calendar.getInstance().timeInMillis // Default to current date
@@ -189,8 +284,11 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             val selectedDate = "$day/${month + 1}/$year" // Month is 0-based
             Log.d(TAG, "Selected Date: $selectedDate")
         }
-        // Programmatically set a date (e.g., January 1, 2025)
-        //datePicker.updateDate(2025, 0, 1)
+        // Programmatically set a date (e.g., January 1, 2025) datePicker.updateDate(2025,0,1)
+        if (arguments?.containsKey(KEY_EVENT) == true){
+            val data = DateUtil.stringToDateTriple(argEvent.startDate.takeIf { isStartDate } ?: argEvent.endDate,)
+            datePicker?.updateDate(data.first.toInt(), data.second.toInt(), data.third.toInt())
+        }
 
         // Create and display the dialog
         val dialog = AlertDialog.Builder(requireContext())
@@ -257,7 +355,31 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         val btnCancel = bindingTimePicker?.mBtnCancel
 
         // Configure TimePicker
-        timePicker?.setIs24HourView(false) // Use 24-hour format
+        timePicker?.apply {
+            setIs24HourView(false) // Use 12-hour format
+            //hour = 0 // Set the hour (0 for 12 AM)
+            //minute = 23 // Set the minute
+            // Programmatically set a time (e.g., 0:12)
+            if (arguments?.containsKey(KEY_EVENT) == true){
+                val data = DateUtil.longToString(timestamp = argEvent.startTime.takeIf { isStartTime } ?: argEvent.endTime,pattern = DateUtil.TIME_FORMAT_hh_mm_a)
+
+                // Split the time string into hour, minute, and AM/PM
+                val time = splitTimeString(data)
+                val hour = time.first.toInt()
+                val minute = time.second.toInt()
+                val amPm = time.third
+
+                // Set the hour and minute
+                this.hour = if (amPm == "PM" && hour != 12) {
+                    hour + 12 // Convert PM hours (except 12 PM) to 24-hour format
+                } else if (amPm == "AM" && hour == 12) {
+                    0 // Convert 12 AM to 0 hours (midnight)
+                } else {
+                    hour
+                }
+                this.minute = minute
+            }
+        }
 
         // Create and display the dialog
         val dialog = AlertDialog.Builder(requireContext())
@@ -311,5 +433,12 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
 
         dialog.show()
+    }
+
+    private val toolbar: Toolbar? by lazy {
+        requireActivity().findViewById<Toolbar>(R.id.toolbar)
+    }
+    private fun updateToolbarTitle(title: String) {
+        toolbar?.title = title
     }
 }
