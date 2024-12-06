@@ -242,4 +242,11 @@ class NewEventViewModel @Inject constructor(
             eventRepository.upsertEvent(event)
         }
     }
+
+    fun deleteEvent(argEvent: Event) {
+        viewModelScope.launch {
+            eventRepository.deleteEvent(argEvent)
+        }
+
+    }
 }

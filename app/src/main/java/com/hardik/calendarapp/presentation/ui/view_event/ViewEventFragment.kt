@@ -11,16 +11,21 @@ import android.view.View
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.databinding.FragmentViewEventBinding
+import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -28,6 +33,7 @@ import kotlinx.coroutines.launch
 class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     private val TAG = BASE_TAG + ViewEventFragment::class.java.simpleName
 
+    private val viewModel: NewEventViewModel by activityViewModels()
     private var _binding: FragmentViewEventBinding? = null
     private val binding get() = _binding!!
 
@@ -55,6 +61,17 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 // Inflate the menu resource for the fragment
                 menuInflater.inflate(R.menu.view_event_menu, menu)
+                // Check if argEvent is null
+                /*if (arguments?.containsKey(KEY_EVENT) != true) {
+                    // Hide the delete menu item if argEvent is null
+                    menu.findItem(R.id.action_delete)?.isVisible = false
+                }*/
+                if (arguments?.containsKey(KEY_EVENT) == true){
+                    if (argEvent.eventType != EventType.PERSONAL){
+                        menu.findItem(R.id.action_delete)?.isVisible = false
+                        menu.findItem(R.id.action_edit)?.isVisible = false
+                    }
+                }
             }
 
             @SuppressLint("NotifyDataSetChanged")
@@ -62,6 +79,17 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
                 return when (menuItem.itemId) {
                     R.id.action_edit -> {
                         navigateToNewEventFragForEdit(argEvent)
+                        true
+                    }
+                    R.id.action_delete -> {
+                        lifecycleScope.launch {
+                            viewModel.deleteEvent(argEvent)
+                            Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG)
+                                .setAnchorView(binding.baseline)
+                                .show()
+                            viewModel.resetEventState()
+                            findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                        }
                         true
                     }
                     else -> false
@@ -132,7 +160,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             val bundle = Bundle().apply {
                 putParcelable(Constants.KEY_EVENT, event)// Pass the event object
             }
-            findNavController().navigate(R.id.newEventFragment, bundle)
+            findNavController().navigate(R.id.newEventFragment, bundle, navOptions)
         }
     }
 

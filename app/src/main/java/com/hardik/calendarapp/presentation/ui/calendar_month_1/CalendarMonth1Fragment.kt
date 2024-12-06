@@ -41,6 +41,7 @@ import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearMonthPairList
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
+import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -198,7 +199,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             val bundle = Bundle().apply {
                 putParcelable(KEY_EVENT, event)// Pass the event object
             }
-            findNavController().navigate(R.id.viewEventFragment, bundle)
+            findNavController().navigate(R.id.viewEventFragment, bundle, navOptions)
             //findNavController().navigate(R.id.newEventFragment, bundle)
         }
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}

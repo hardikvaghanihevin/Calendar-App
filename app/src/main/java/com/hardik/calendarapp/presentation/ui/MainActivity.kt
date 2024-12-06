@@ -19,6 +19,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.createYearData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Log.i(TAG, "onCreate: clicked fab:")
-            navController.navigate(R.id.newEventFragment)
+            navController.navigate(R.id.newEventFragment, null, navOptions)
         }
 
         // Collecting the StateFlow

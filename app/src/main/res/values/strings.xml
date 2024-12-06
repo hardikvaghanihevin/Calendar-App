@@ -48,4 +48,6 @@
     <string name="view_event">View Event</string>
     <string name="event_title">Event Title</string>
     <string name="no_description">No description</string>
+    <string name="action_delete">Delete</string>
+    <string name="event_deleted">Event deleted!</string>
 </resources>

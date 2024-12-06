@@ -23,10 +23,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
+import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.DialogItemDatePickerBinding
@@ -95,9 +97,10 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                                 .show()
 
                             // Reset the fields after successful insertion
-                            if (msg == EVENT_INSERT_SUCCESSFULLY) {
+                            if (msg == EVENT_INSERT_SUCCESSFULLY || msg == EVENT_UPDATE_SUCCESSFULLY) {
                                 viewModel.resetEventState()
                             }
+                            findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                         }
                         true
                     }

@@ -24,6 +24,7 @@ import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearList
+import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.getPositionFromYear
 import com.hardik.calendarapp.utillities.getYearKeyAtPosition
 import dagger.hilt.android.AndroidEntryPoint
@@ -174,7 +175,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 putInt(KEY_MONTH, month)
             }
             val action = CalendarYear1FragmentDirections.actionCalendarYear1FragmentToCalendarMonth1Fragment()
-            findNavController().navigate(R.id.calendarMonth1Fragment, bundle)
+            findNavController().navigate(R.id.calendarMonth1Fragment, bundle, navOptions)
         }
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }
