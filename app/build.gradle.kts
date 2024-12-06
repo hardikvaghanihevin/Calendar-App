@@ -6,6 +6,7 @@ plugins {
 //    id ("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") // Apply Safe Args here
     id("com.google.gms.google-services")
+    id ("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
 }
 
@@ -43,6 +44,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
     packaging {
         resources {
@@ -130,4 +132,5 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics:19.2.1")
 }

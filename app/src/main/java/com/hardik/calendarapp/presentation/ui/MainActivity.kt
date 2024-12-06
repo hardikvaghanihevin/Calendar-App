@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         //if (currentDestination != R.id.newEventFragment)
 
         binding.appBarMain.fab.setOnClickListener { view ->
+            Log.i(TAG, "onCreate: clicked fab:")
             navController.navigate(R.id.newEventFragment)
         }
 

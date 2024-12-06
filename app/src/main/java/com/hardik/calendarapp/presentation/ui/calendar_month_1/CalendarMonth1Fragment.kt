@@ -187,18 +187,19 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
             binding.rvEvent.adapter = eventAdapter
             eventAdapter.setConfigureEventCallback {event:Event->
                 // got event update
-                navigateToNewEventFrag(event = event)
+                navigateToViewEventFrag(event = event)
             }
         }
     }
-    private fun navigateToNewEventFrag(event: Event) {
+    private fun navigateToViewEventFrag(event: Event) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToNewEventFrag:  ${Thread.currentThread().name}", )
+            Log.e(TAG, "navigateToViewEventFrag:  ${Thread.currentThread().name}", )
             val bundle = Bundle().apply {
                 putParcelable(KEY_EVENT, event)// Pass the event object
             }
-            findNavController().navigate(R.id.newEventFragment, bundle)
+            findNavController().navigate(R.id.viewEventFragment, bundle)
+            //findNavController().navigate(R.id.newEventFragment, bundle)
         }
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }

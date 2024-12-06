@@ -85,6 +85,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                         lifecycleScope.launch {
                             val msg: String = viewModel.run {
                                 val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                                Log.e(TAG, "onMenuItemSelected: id: $id", )
                                 insertCustomEvent(id = id)
                             }
 
@@ -157,6 +158,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 }
                 launch {
                     viewModel.isAllDay.collectLatest {isAllDay ->
+                        binding.switchAllDay.isChecked = isAllDay
+
                         if (isAllDay){
                             binding.tvStartTimePicker.visibility = View.GONE
                             binding.tvEndTimePicker.visibility = View.GONE
@@ -176,10 +179,17 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                         }
                     }
                 }
-                launch{
-                    viewModel.title.collect { title ->
+                launch {
+                    viewModel.title.collectLatest { title ->
                         if (binding.tInEdtEventName.text.toString() != title) {
                             binding.tInEdtEventName.setText(title) // Update UI if needed
+                        }
+                    }
+                }
+                launch {
+                    viewModel.description.collectLatest{ description ->
+                        if (binding.tInEdtEventNote.text.toString()!= description) {
+                            binding.tInEdtEventNote.setText(description) // Update UI if needed
                         }
                     }
                 }
@@ -221,8 +231,9 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     }
 
     private fun populateEventData(event: Event) {
+        Log.e(TAG, "populateEventData: ${DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)}", )
         // Populate the title and description
-       /* binding.tInEdtEventName.setText(event.title)
+        /* binding.tInEdtEventName.setText(event.title)
         binding.tInEdtEventNote.setText(event.description)
 
         // Populate start and end dates
@@ -245,10 +256,11 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         binding.tvEndTimePicker.text = DateUtil.longToString(
             timestamp = event.endTime,
             pattern = DateUtil.TIME_FORMAT_hh_mm_a
-        )*/
+        )
 
         // Set the "All Day" status
-        binding.switchAllDay.isChecked = false//event.isAllDay
+        binding.switchAllDay.isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
+        */
 
         // Update ViewModel with the data
         viewModel.updateTitle(event.title)
@@ -257,7 +269,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         viewModel.updateEndDate(DateUtil.stringToLong(event.endDate))
         viewModel.updateStartTime(event.startTime)
         viewModel.updateEndTime(event.endTime)
-        viewModel.updateAllDayStatus(false)//event.isAllDay)
+        viewModel.updateAllDayStatus(DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime))//event.isAllDay)
     }
 
 

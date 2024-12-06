@@ -447,6 +447,52 @@ object DateUtil {
         return Triple(timeParts[0], timeParts[1], timeParts[2])
     }
 
+    /**
+     * Checks if the given time range is exactly 24 hours (all-day event).
+     *
+     * Use Case:
+     * This function is useful when you need to determine if an event lasts a full day,
+     * such as when handling all-day events in a calendar or scheduling system.
+     *
+     * When to Use:
+     * Use this function when you want to check if the difference between the start time
+     * and end time is exactly 24 hours, indicating that it is an all-day event.
+     * This can be useful for event management where an all-day event needs special handling (e.g., no specific start or end time).
+     *
+     * How:
+     * The function calculates the difference between the provided `startTime` and `endTime`
+     * and checks if the duration is exactly 24 hours (i.e., 24 * 60 * 60 * 1000 milliseconds).
+     *
+     * Example:
+     * val startTime = 1733337000000L // Example start time (milliseconds)
+     * val endTime = 1733423399999L   // Example end time (milliseconds)
+     *
+     * val result = isAllDay(startTime, endTime)
+     * println(result) // This will print "true" if the duration is exactly 24 hours, or "false" otherwise.
+     *
+     * Arguments:
+     * - startTime: Long - The start time in milliseconds (epoch time).
+     * - endTime: Long - The end time in milliseconds (epoch time).
+     *
+     * Return:
+     * - Boolean - Returns `true` if the duration between `startTime` and `endTime` is exactly 24 hours, otherwise returns `false`.
+     */
+    fun isAllDay(startTime: Long, endTime: Long): Boolean {
+        val durationInMillis = endTime - startTime
+        val result = durationInMillis in (24 * 60 * 60 * 1000L - 1000)..(24 * 60 * 60 * 1000L + 1000)
+        Log.i(TAG, (if (result) "This is an all-day event." else "This is not an all-day event."))
+        return result
+    }
+
+    // Example usage:
+    fun main() {
+        val startTime = 1733337000000L // Example start time
+        val endTime = 1733423399999L   // Example end time
+
+        val result = isAllDay(startTime, endTime)
+        Log.i(TAG, "main: ${(if (result) "This is an all-day event." else "This is not an all-day event.")}")
+    }
+
 
     /**
     val firstApproachTime = measureExecutionTime {inside your block of code}

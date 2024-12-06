@@ -13,4 +13,5 @@ object Constants {
     const val KEY_EVENT = "key_event"
 
     const val EVENT_INSERT_SUCCESSFULLY = "Event inserted successfully"
+    const val EVENT_UPDATE_SUCCESSFULLY = "Event update successfully"
 }

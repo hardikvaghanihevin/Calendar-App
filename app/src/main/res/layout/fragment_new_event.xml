@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".presentation.ui.new_event.NewEventFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        tools:context=".presentation.ui.new_event.NewEventFragment"
         tools:ignore="HardcodedText">
 
         <!--    Event Name-->
@@ -49,7 +49,7 @@
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Event name"
+                        android:hint="@string/event_title"
                         android:imeOptions="actionNext"
                         android:includeFontPadding="true"
                         android:inputType="text"

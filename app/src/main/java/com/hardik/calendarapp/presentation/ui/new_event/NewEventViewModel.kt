@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
+import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.domain.repository.EventRepository
@@ -135,7 +136,7 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
-    private suspend fun validateEvent(): String? {
+    private suspend fun validateEvent(eventId: String? = null): String? {
         // Validate event title
         if (title.value.isBlank()) {
             return "Event title cannot be empty."
@@ -153,8 +154,22 @@ class NewEventViewModel @Inject constructor(
             return "Start time cannot be after end time."
         }
 
-        // Check if the event with the same title and type already exists (asynchronously)
-        val existingEvent = getEventByTitleAndType.invoke(title = title.value).firstOrNull()
+        // Check if the event is new or being updated
+        val existingEvent = if (eventId == null) {
+            // Creating a new event, check if a similar event exists
+            getEventByTitleAndType.invoke(title = title.value).firstOrNull()
+        } else {
+            // Updating an existing event, allow duplicates only for the current event ID
+            val result = getEventByTitleAndType.invoke(title = title.value).firstOrNull()
+            if (result?.id == eventId) {
+                // If the event's ID matches the current event ID, return null (no conflict)
+                null
+            } else {
+                // Otherwise, return the conflicting event (indicating a validation error)
+                result
+            }
+        }
+        //Log.d(TAG, "validateEvent: $existingEvent")
 
         if (existingEvent != null) {
             return "An event with this title and type already exists."
@@ -165,7 +180,9 @@ class NewEventViewModel @Inject constructor(
 
 
     suspend fun insertCustomEvent(id: String?): String{
-        val errorMessage = validateEvent()
+        Log.d(TAG, "insertCustomEvent: ")
+        val errorMessage = validateEvent(eventId = id)
+        Log.e(TAG, "insertCustomEvent: $errorMessage", )
         if (errorMessage != null) {
             return errorMessage
         }
@@ -192,7 +209,7 @@ class NewEventViewModel @Inject constructor(
         )
 
         insertEvent(event)
-        return EVENT_INSERT_SUCCESSFULLY // Event inserted successfully
+        return EVENT_INSERT_SUCCESSFULLY.takeIf { id == null } ?: EVENT_UPDATE_SUCCESSFULLY// Event inserted/update successfully
     }
 
     fun resetEventState() {

@@ -47,4 +47,10 @@
         android:label="@string/new_event"
         tools:layout="@layout/fragment_new_event" />
 
+    <fragment
+        android:id="@+id/viewEventFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.view_event.ViewEventFragment"
+        android:label="@string/view_event"
+        tools:layout="@layout/fragment_view_event" />
+
 </navigation>

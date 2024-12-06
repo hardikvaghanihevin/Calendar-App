@@ -44,4 +44,8 @@
     <string name="new_event">New Event</string>
     <string name="update_event">Update Event</string>
     <string name="action_save">Save</string>
+    <string name="action_edit">Edit</string>
+    <string name="view_event">View Event</string>
+    <string name="event_title">Event Title</string>
+    <string name="no_description">No description</string>
 </resources>
