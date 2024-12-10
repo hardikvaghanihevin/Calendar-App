@@ -34,19 +34,19 @@ import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
-import com.hardik.calendarapp.domain.model.CalendarDayModel
-import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearMonthPairList
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
+import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.joda.time.DateTime
@@ -54,7 +54,7 @@ import java.util.Calendar
 
 
 @AndroidEntryPoint
-class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), DateItemClickListener {
+class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private val TAG = BASE_TAG + CalendarMonth1Fragment::class.simpleName
 
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
@@ -184,7 +184,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
                 }
             })
             rvEvent.setHasFixedSize(true)
-            eventAdapter = EventAdapter(ArrayList<Event>(), this@CalendarMonth1Fragment)
+            eventAdapter = EventAdapter(ArrayList<Event>())
             binding.rvEvent.adapter = eventAdapter
             eventAdapter.setConfigureEventCallback {event:Event->
                 // got event update
@@ -225,7 +225,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         // Collecting the StateFlow
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.yearState.collect{
+                viewModel.yearState.collectLatest{
                     Log.e(TAG, "observeViewModelState: $it", )
                     updateToolbarTitle("$it")
                     year = it
@@ -234,14 +234,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         }
 
         lifecycleScope.launch {
-            viewModel.allEventsDateInMapState.collect { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
+            viewModel.allEventsDateInMapState.collectLatest { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
                 _eventsOfDateMap = data
                 //Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
 
         lifecycleScope.launch {
-            viewModel.monthlyEventsState.collect { dataState ->
+            viewModel.monthlyEventsState.collectLatest { dataState ->
                 val safeBinding = _binding // Safely reference the binding
                 if (safeBinding != null) {
 
@@ -296,6 +296,20 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
 
         viewModel.updateYear(year)
 
+        //getDateClickListener
+        pageAdapter.configureCustomView {
+
+            it.getMonthNameClickListener{ year: YearKey, month: MonthKey ->
+                viewModel.getEventsByMonthOfYear(year = year, month = month)
+            }
+
+            it.getDateClickListener{
+                Log.e(TAG, "setupViewPager: ${it}", )
+                val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
+                viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+            }
+        }
+
         // Register a callback to handle swipe events
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NotifyDataSetChanged")
@@ -329,7 +343,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1), Date
         val newPosition = binding.viewPagerCalendarMonth.currentItem + direction
         binding.viewPagerCalendarMonth.setCurrentItem(newPosition, true)
     }
-    override fun onDateClick(position: Int, calendarDayModel: CalendarDayModel) {}
 
     private val toolbar: Toolbar? by lazy {
         requireActivity().findViewById<Toolbar>(R.id.toolbar)

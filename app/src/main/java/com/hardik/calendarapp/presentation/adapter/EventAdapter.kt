@@ -9,12 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ItemEventLayoutBinding
-import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.GsonUtil
+import com.hardik.calendarapp.utillities.LogUtil
 import java.util.Date
 
 //class EventAdapter(private var list: ArrayList<CalendarDetail.Item>, private val dateItemClickListener: DateItemClickListener):
-class EventAdapter(private var list: ArrayList<Event>, private val dateItemClickListener: DateItemClickListener):
+class EventAdapter(private var list: ArrayList<Event>):
     RecyclerView.Adapter<EventAdapter.ViewHolder>() {
     private final val TAG = BASE_TAG + EventAdapter::class.java.simpleName
 
@@ -28,6 +29,9 @@ class EventAdapter(private var list: ArrayList<Event>, private val dateItemClick
         list.clear()
         list.addAll(newData)
         notifyDataSetChanged()
+        val eventJson = GsonUtil.toJson(list)
+        LogUtil.logLongMessage(TAG, "onViewCreated: $eventJson")
+
         Log.e(TAG, "updateData: ${list.size}")
     }
 

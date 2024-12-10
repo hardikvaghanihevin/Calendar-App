@@ -8,6 +8,7 @@ import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetEventByTitleAndType
 import com.hardik.calendarapp.utillities.DateUtil
@@ -205,7 +206,8 @@ class NewEventViewModel @Inject constructor(
             month = date.second,
             date = date.third,
             eventType = EventType.PERSONAL,
-            isHoliday = false
+            isHoliday = false,
+            sourceType = SourceType.LOCAL
         )
 
         insertEvent(event)

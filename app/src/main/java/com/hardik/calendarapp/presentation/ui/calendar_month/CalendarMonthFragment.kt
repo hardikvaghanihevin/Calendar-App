@@ -80,7 +80,7 @@ class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_c
                 }
             })
             rvEvent.setHasFixedSize(true)
-            eventAdapter = EventAdapter(ArrayList<Event>(), this@CalendarMonthFragment)
+            eventAdapter = EventAdapter(ArrayList<Event>())
             binding.rvEvent.adapter = eventAdapter
         }
         getFirstAndLastDateOfMonth(currDate)

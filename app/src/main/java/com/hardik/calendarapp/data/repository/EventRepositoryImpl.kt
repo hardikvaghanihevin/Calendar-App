@@ -40,14 +40,17 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override fun getEventsByMonthOfYear(year: String, month: String): Flow<List<Event>>{
-        return eventDao.getEventsByYearAndMonth(year, month)
+        return eventDao.getEventsByMonthOfYear(year = year, month = month)
     }
+     override fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String): Flow<List<Event>>{
+        return eventDao.getEventsByDateOfMonthOfYear(year = year, month = month, date = date)
+     }
 
     override fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>{
         return eventDao.getEventsByYearAndMonth(year, month)
     }
 
     override fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>{
-        return eventDao.getEventByTitleAndType(title, eventType)
+        return eventDao.getEventByTitleAndType(title = title, eventType = eventType)
     }
 }

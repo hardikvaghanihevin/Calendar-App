@@ -1,9 +1,11 @@
 package com.hardik.calendarapp.presentation
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.DataListState
@@ -13,17 +15,24 @@ import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.data.database.entity.organizeEvents
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetAllEventsUseCase
+import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfYear
 import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.domain.use_case.GetMonthlyEventsUseCase
+import com.hardik.calendarapp.utillities.CursorEvent
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
+import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
+import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -33,12 +42,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val application: Application,
     private val getHolidayApiUseCase: GetHolidayApiUseCase,// For API compatibility
     private val eventRepository: EventRepository,// For Database compatibility
     private val getAllEventsUseCase : GetAllEventsUseCase,// For getting all events (indicator use)
     private val getMonthlyEventsUseCase: GetMonthlyEventsUseCase,// For getting monthly events compatibility (start to end date) (eventAdapter use)
     private val getEventsByMonthOfYear: GetEventsByMonthOfYear,
-) : ViewModel() {
+    private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfYear,
+) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
     private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
@@ -49,6 +60,10 @@ class MainViewModel @Inject constructor(
         getAllEventsDateInMap()
     }
 
+    fun initializeViewModel() {
+        collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
+    }
+
     /**Get holiday list by using API*/
     private fun getHolidayCalendarData() {
         Log.i(TAG, "getHolidayCalendarData: ")
@@ -57,7 +72,9 @@ class MainViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         _holidayApiState.value = DataState(data = result.data);
-                        collectHolidayApiState()//all fetched events (form API)
+                        launch(Dispatchers.IO) {
+                            collectHolidayApiState()// fetched all events (from API)
+                        }
                     }
 
                     is Resource.Error -> {
@@ -113,7 +130,8 @@ class MainViewModel @Inject constructor(
                                     date = date.third,
                                     startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
                                     endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
-                                    isHoliday = true
+                                    isHoliday = true,
+                                    sourceType = SourceType.REMOTE
                                 )
 
                             }
@@ -125,6 +143,39 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun collectCursorEventsState(context: Context){
+        val cursorEvent: List<CursorEvent> = getAllCursorEvents(context = context)
+
+        val events: List<Event> = cursorEvent
+            .mapNotNull { item ->
+
+                val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
+
+                val startTime = DateUtil.separateDateTime(item.startTime).first
+                val endTime = DateUtil.separateDateTime(item.endTime).first
+                Event(
+                    id = "${startTime} | ${item.title}",
+                    title = item.title,
+                    description = item.description ?: "",
+                    startDate = longToString(item.startTime),
+                    endDate = longToString(item.endTime),
+                    year = date.first,
+                    month = date.second,
+                    date = date.third,
+                    startTime = startTime,
+                    endTime = endTime,
+                    isHoliday = true,
+                    sourceType = SourceType.CURSOR
+                )
+
+            }
+            .filterNotNull() // Filter out null values resulting from mapNotNull
+
+        // Insert events into your database or UI
+        insertEvents(events)
+
     }
 
     //----------------------------------------------------------------//
@@ -149,7 +200,7 @@ class MainViewModel @Inject constructor(
 
     private val _monthlyEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
-    fun getMonthlyEvents(startOfMonth: Long, endOfMonth: Long) {
+    fun getMonthlyEvents(startOfMonth: Long, endOfMonth: Long) {//todo: use in CalendarMonthFragment for onMonthSwipe
         Log.i(TAG, "fetchEventsForMonth: ")
         // Set initial loading state
         _monthlyEventsState.value = DataListState(isLoading = true)
@@ -175,7 +226,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getEventsByMonthOfYear(year: String, month: String){
+    fun getEventsByMonthOfYear(year: String, month: String){//todo: use in CalendarMonth1Fragment for onMonthSwipe or onMonthClick
         Log.i(TAG, "getEventsByMonthOfYear: ")
         _monthlyEventsState.value = DataListState(isLoading = true)
 
@@ -195,6 +246,25 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String) {//todo: use in CalendarMonth1Fragment for onDateClick
+        Log.i(TAG, "getEventsByDateOfMonthOfYear: ")
+        _monthlyEventsState.value = DataListState(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date).collectLatest { events ->
+                    // Update state with data
+                    _monthlyEventsState.value = DataListState(isLoading = false, data = events)
+                }
+            } catch (e: Exception){
+                // Handle errors
+                _monthlyEventsState.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
+            }
+        }
+    }
     //----------------------------------------------------------------//
 
     private val _allEventsDateInMapState = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())

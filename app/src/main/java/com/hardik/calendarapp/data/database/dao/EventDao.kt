@@ -32,11 +32,15 @@ interface EventDao {
     @Query("SELECT * FROM events WHERE isHoliday = 1")
     fun getHolidayEventsFlow(): Flow<List<Event>> // Flow-based query
 
-    @Query("SELECT * FROM events WHERE startTime >= :startOfMonth AND startTime <= :endOfMonth ORDER BY startTime ASC")
+    @Query("SELECT * FROM events WHERE startTime >= :startOfMonth AND startTime <= :endOfMonth ORDER BY startTime ASC, endTime DESC, title ASC")//todo: use in CalendarMonthFragment
     fun getEventsForMonth(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>>
 
-    @Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY date ASC")
+    //val sortedEvents = events.sortedWith(compareBy<Event> { it.startTime }.thenBy { it.title })
+    @Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY startTime ASC, endTime ASC")//todo: use in CalendarMonth1Fragment
     fun getEventsByMonthOfYear(year: String, month: String): Flow<List<Event>>
+
+    @Query("SELECT * FROM events WHERE year = :year AND month = :month AND date =:date ORDER BY startTime ASC, endTime ASC")//todo: use in CalendarMonth1Fragment
+    fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String): Flow<List<Event>>
 
     @Query("SELECT * FROM events WHERE year = :year AND month = :month")
     fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>

@@ -414,6 +414,20 @@ object DateUtil {
             Triple(year, month, day)
         }
     }
+    fun stringToDateTriple(stringDate: String, isZeroBased: Boolean = true): Triple<String, String, String> {
+        return stringDate.split("-").let { parts ->
+            val year = parts[0]
+            val month = if (isZeroBased) {
+                (parts[1].toInt() - 1).toString() // Convert 1-based to 0-based
+            } else {
+                parts[1] // Keep 1-based as is
+            }
+            val day = parts[2].toInt().toString() // Day as string
+
+            // Return a Triple with year, month, and day
+            Triple(year, month, day)
+        }
+    }
 
     /**
      * Splits a time string in the format "hh:mm a" into a `Triple` containing the hour, minute, and AM/PM parts.

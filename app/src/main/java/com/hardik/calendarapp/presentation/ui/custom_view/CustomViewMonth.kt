@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
@@ -176,6 +177,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     val screenWidth = displayMetrics.widthPixels // Total screen width in pixels
     val screenHeight = displayMetrics.heightPixels // Total screen height in pixels
 
+    private val monthNameBounds = RectF()
     private val daysBlocks = mutableListOf<Pair<Rect, String>>()
 
 
@@ -271,6 +273,13 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val x = event.x
         val y = event.y
         if (event.action == MotionEvent.ACTION_DOWN) {
+
+            // Check if the month name was clicked
+            if (monthNameBounds.contains(x, y)) {
+                onMonthNameClickListener?.invoke("$currentYear", "$currentMonth") // Trigger the listener
+                return true
+            }
+
             // Check if any date block was clicked
             for (pair in daysBlocks) {
                 val rect = pair.first
@@ -336,6 +345,9 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         var rectRight = (viewWidth - margin).toFloat() // Extend to the right edge of the view
         var rectTop = 0f + margin // Start from the top of the month name area
         var rectBottom = (monthNameHeight - margin).toFloat() // Extend to the full height of the month name area
+
+        // Update the month name bounds
+        monthNameBounds.set(rectLeft, rectTop, rectRight, rectBottom)
 
         // Draw the rectangle
         canvas.drawRect(rectLeft, rectTop, rectRight, rectBottom, paint)
@@ -453,6 +465,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         // Previous month's details
         val prevCalendar = Calendar.getInstance().apply { set(currentYear, currentMonth - 1, 1) }
         val daysInPrevMonth = prevCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val prevMonth = prevCalendar.get(Calendar.MONTH)
 
         // Draw previous month's dates
         var prevDayCounter = daysInPrevMonth - firstDayOfWeek + 1
@@ -478,7 +491,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             // Add the day block to the list
             // Store the rect for the previous month's blocks
             val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-            daysBlocks.add(Pair(rect, "$currentYear-$currentMonth-$prevDayCounter")) // Store the Rect and day
+            daysBlocks.add(Pair(rect, "$currentYear-$prevMonth-$prevDayCounter")) // Store the Rect and day
             prevDayCounter++
         }
 
@@ -546,6 +559,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         }
 
         // Draw next month's dates
+        val nextMonth = (currentMonth + 1) % 12
         var nextDayCounter = 1
         for (index in firstDayOfWeek + daysInMonth until 42) {
             val row = index / 7
@@ -571,7 +585,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
             // Add next month's day block to the list
             val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-            daysBlocks.add(Pair(rect, "$currentYear-$currentMonth-$nextDayCounter")) // Store the Rect and day
+            daysBlocks.add(Pair(rect, "$currentYear-$nextMonth-$nextDayCounter")) // Store the Rect and day
 
             nextDayCounter++
         }
@@ -629,11 +643,11 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         canvas.drawCircle(cx, cy, dotRadius, paint)
     }
 
-    private var onDateItemClickListener : ((String) -> Unit)? = null
+    private var onMonthNameClickListener: ((YearKey, MonthKey) -> Unit)? = null
+    fun getMonthNameClickListener(listener: (YearKey, MonthKey) -> Unit){ onMonthNameClickListener = listener }
 
-    fun getDateClickListener(listener: (String) -> Unit){
-        onDateItemClickListener = listener
-    }
+    private var onDateItemClickListener : ((String) -> Unit)? = null
+    fun getDateClickListener(listener: (String) -> Unit){ onDateItemClickListener = listener }
 }
 fun checkIfDayMatches(dateString: String, targetDay: Int): Boolean {
     // Split the date string into parts: year, month, and day

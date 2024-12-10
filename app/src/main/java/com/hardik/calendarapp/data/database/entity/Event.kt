@@ -21,6 +21,7 @@ data class Event(
     val date: String,
     val isHoliday: Boolean = false, // To differentiate holiday events
     val eventType: EventType = EventType.GLOBAL_HOLIDAY,
+    val sourceType: SourceType = SourceType.REMOTE,
     val description: String = ""
 ) : Parcelable
 
@@ -56,6 +57,9 @@ fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
 }
 enum class EventType {
     PERSONAL, GLOBAL_HOLIDAY, NATIONAL_HOLIDAY, CULTURAL_HOLIDAY, WORK_MEETING
+}
+enum class SourceType(val value: Int) {
+    REMOTE(0), CURSOR(1), LOCAL(2)
 }
 
 typealias YearKey = String

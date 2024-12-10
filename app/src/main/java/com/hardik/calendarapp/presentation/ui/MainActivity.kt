@@ -1,5 +1,7 @@
 package com.hardik.calendarapp.presentation.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -7,6 +9,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -35,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
         val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
+        private const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
 
@@ -43,6 +48,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        checkAndRequestCalendarPermissions()
 
         toolbar = binding.appBarMain.toolbar
         setSupportActionBar(toolbar)
@@ -153,4 +160,53 @@ class MainActivity : AppCompatActivity() {
             .withEndAction { fab.visibility = View.GONE }
             .start()
     }
+
+
+
+    // region Call this function to request permissions as needed
+    private fun checkAndRequestCalendarPermissions() {
+        val permissions = mutableListOf<String>()
+        // Check READ_CALENDAR permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.READ_CALENDAR)
+        }
+        // Check WRITE_CALENDAR permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.WRITE_CALENDAR)
+        }
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
+        } else {
+            // Permissions already granted
+            initializeViewModelIfNeeded()
+        }
+    }
+
+    private fun areCalendarPermissionsGranted(): Boolean {
+        val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
+        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
+        return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun initializeViewModelIfNeeded() {
+        if (areCalendarPermissionsGranted()) {
+            mainViewModel.initializeViewModel() // Call your ViewModel initialization function
+        }
+    }
+
+    // Handle the result of permission requests
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
+            val allPermissionsGranted = permissions.indices.all { grantResults[it] == PackageManager.PERMISSION_GRANTED }
+            if (allPermissionsGranted) {
+                initializeViewModelIfNeeded()
+            } else {
+                Toast.makeText(this, "Calendar permissions are required for the app to function.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        //if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) { when (requestCode) {}}
+
+    }
+    //endregion
 }
