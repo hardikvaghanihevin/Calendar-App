@@ -27,6 +27,7 @@ import java.util.Calendar
 @SuppressLint("CustomViewStyleable")
 class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
     private final val TAG = BASE_TAG + CustomViewMonth::class.java.simpleName
+    private var designMode: Int = 1
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful
@@ -318,7 +319,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val monthNameHeight = viewHeight * 0.15f
         val dayNameHeight = viewHeight * 0.13f
 
-        val availableHeight = viewHeight - monthNameHeight - dayNameHeight -  (2 * verticalPadding) // or (screenHeight - monthNameHeight - dayNameHeight)/6f
+        val availableHeight = viewHeight - monthNameHeight - dayNameHeight -  (1.4f * verticalPadding) // or (screenHeight - monthNameHeight - dayNameHeight)/6f
 
         // Draw the month name
         drawMonthName(canvas, blockWidth, monthNameHeight)
@@ -371,7 +372,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         // If a background drawable is set, draw it
         backgroundDrawableMonth?.let { drawable ->
             // Set bounds for the drawable to fill the entire month name area
-            modifyAndApplyDrawable(drawable,margin.toFloat(),0.0F , 0.0F, viewWidth.toFloat(),monthNameHeight, canvas, Color.WHITE)
+            if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = 0.0F , top = 0.0F, right = viewWidth.toFloat(), bottom = monthNameHeight, canvas, Color.WHITE)
         }
 
         // Set paint properties for text
@@ -397,23 +398,36 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     }
 
     private fun drawDayNames(canvas: Canvas, blockWidth: Float, monthNameHeight: Float, dayNameHeight: Float) {
+        // Define horizontal padding as a percentage of the view width
+        val horizontalPadding = viewWidth * 0.05f // 5% of the view width
+
+        // Adjust the available width for day blocks after applying padding
+        val adjustedBlockWidth = (viewWidth - 2 * horizontalPadding) / 7f
+
         // If the block width is smaller set Char on day names
-        val dayNames = if (blockWidth >= 70F) if(weekStart == WeekStart.SUNDAY) arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") else if (weekStart == WeekStart.MONDAY) arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val dayNames = if ((blockWidth.takeIf { designMode.equals(1) }
+                ?: adjustedBlockWidth) >= 70F) if(weekStart == WeekStart.SUNDAY) arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") else if (weekStart == WeekStart.MONDAY) arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         else throw IllegalArgumentException("Invalid week start value")
         else if(weekStart == WeekStart.SUNDAY) arrayOf("S", "M", "T", "W", "T", "F", "S") else if (weekStart == WeekStart.MONDAY) arrayOf("M", "T", "W", "T", "F", "S", "S")
         else throw IllegalArgumentException("Invalid week start value")
 
-        for (i in dayNames.indices) {
-            val left = i * blockWidth
-            val top = monthNameHeight
-            val right = left + blockWidth
-            val bottom = top + dayNameHeight
+        // If a background drawable is set, draw it
+        backgroundDrawableDay?.let { drawable ->
+            if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = 0.0f , top = monthNameHeight, right = (viewWidth.toFloat()), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))//todo: week(7 days) block background
+            //if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = horizontalPadding , top = monthNameHeight, right = (viewWidth.toFloat() - horizontalPadding), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))//todo: week(7 days) block background
+        }
 
+
+        for (i in dayNames.indices) {
+            val left = (i * blockWidth).takeIf { designMode.equals(1) } ?: (horizontalPadding + i * adjustedBlockWidth)
+            val top = (monthNameHeight).takeIf { designMode.equals(1) } ?: (monthNameHeight)
+            val right = (left + blockWidth).takeIf { designMode.equals(1) } ?: (left + adjustedBlockWidth)
+            val bottom = (top + dayNameHeight).takeIf { designMode.equals(1) } ?: (top + dayNameHeight)
 
             // Draw the background using the drawable if available
             backgroundDrawableDay?.let { drawable ->
                 // Adjust the bounds to include a 1dp margin
-                modifyAndApplyDrawable(drawable,margin.toFloat(),left , top, right ,bottom, canvas, context.getColor(R.color.blue))
+                if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(),left , top, right ,bottom, canvas, context.getColor(R.color.blue))//todo: day block background
                 //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
                 //drawable.draw(canvas)
             } ?: run {
@@ -448,6 +462,14 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         availableHeight: Float
     ) {
         //Log.d(TAG, "drawDateBlocks: ")
+        // Define padding as percentages or fixed values
+        val horizontalPadding = viewWidth * 0.05f // 5% of the view width
+        val verticalPadding = availableHeight * 0.05f // 5% of the available height
+
+        // Adjust the available width and height for date blocks after applying padding
+        val adjustedBlockWidth = (viewWidth - 2 * horizontalPadding) / 7f
+        val adjustedBlockHeight = (availableHeight - 2 * verticalPadding) / 6f
+
         daysBlocks.clear()
 
         val calendar = Calendar.getInstance().apply {
@@ -460,7 +482,13 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) - weekStartDay + 7) % 7 //val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7 //Todo: Adjust -2 for Monday start Or -1 for Sunday start
-        val dateBlockHeight = availableHeight / 6f
+        val dateBlockHeight = (availableHeight / 6f).takeIf { designMode.equals(1) } ?: adjustedBlockHeight
+
+        // If a background drawable is set, draw it
+        backgroundDrawableDate?.let { drawable ->
+            // Set bounds for the drawable to fill the entire Date area
+            if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(),left = 0.0f , top = (monthNameHeight + dayNameHeight), right = viewWidth.toFloat(),bottom =(monthNameHeight + dayNameHeight + 6.7f * adjustedBlockHeight ), canvas, context.getColor(R.color.white))//todo: dates of month block background
+        }
 
         // Previous month's details
         val prevCalendar = Calendar.getInstance().apply { set(currentYear, currentMonth - 1, 1) }
@@ -470,22 +498,24 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         // Draw previous month's dates
         var prevDayCounter = daysInPrevMonth - firstDayOfWeek + 1
         for (col in 0 until firstDayOfWeek) {
-            val left = col * blockWidth
-            val top = monthNameHeight + dayNameHeight
-            val right = left + blockWidth
-            val bottom = top + dateBlockHeight
+            val left = (col * blockWidth).takeIf { designMode.equals(1) } ?: (horizontalPadding + col * adjustedBlockWidth)
+            val top = (monthNameHeight + dayNameHeight).takeIf { designMode.equals(1) } ?: (monthNameHeight + dayNameHeight + verticalPadding)
+            val right = (left + blockWidth).takeIf { designMode.equals(1) } ?: (left + adjustedBlockWidth)
+            val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) } ?:(top + adjustedBlockHeight)
 
 
             if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
                 // Draw the background using the drawable if available
                 backgroundDrawableDate?.let { drawable ->
+                    if(designMode.equals(1))
                     modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
                 } ?: run {
                     // If no drawable is set, use a solid color
                     paint.color = Color.LTGRAY // Color for previous month's dates
                     canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
                 }
-                drawDateText(canvas, prevDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
+                if (designMode.equals(1)) drawDateText(canvas, prevDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
+                if (designMode.equals(2)) drawDateText(canvas, prevDayCounter.toString(), textSizeDate, left, adjustedBlockWidth, top, dateBlockHeight, Color.GRAY)
             }
 
             // Add the day block to the list
@@ -501,10 +531,10 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             for (col in 0 until 7) {
                 val index = row * 7 + col
                 if (index >= firstDayOfWeek && dayCounter <= daysInMonth) {
-                    val left = col * blockWidth
-                    val top = monthNameHeight + dayNameHeight + row * dateBlockHeight
-                    val right = left + blockWidth
-                    val bottom = top + dateBlockHeight
+                    val left = (col * blockWidth).takeIf { designMode.equals(1) } ?: (horizontalPadding + col * adjustedBlockWidth)
+                    val top = (monthNameHeight + dayNameHeight + row * dateBlockHeight).takeIf { designMode.equals(1) } ?: (monthNameHeight + dayNameHeight + verticalPadding + row * adjustedBlockHeight)
+                    val right = (left + blockWidth).takeIf { designMode.equals(1) } ?: (left + adjustedBlockWidth)
+                    val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) } ?: (top + adjustedBlockHeight)
 
 
                     @Suppress("NAME_SHADOWING") val calendar = Calendar.getInstance()
@@ -547,7 +577,8 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                         }
                     }
 
-                    drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
+                    if (designMode.equals(1)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
+                    if (designMode.equals(2)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, adjustedBlockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
 
                     // Store the day block for later click detection
                     val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
@@ -564,23 +595,24 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         for (index in firstDayOfWeek + daysInMonth until 42) {
             val row = index / 7
             val col = index % 7
-            val left = col * blockWidth
-            val top = monthNameHeight + dayNameHeight + row * dateBlockHeight
-            val right = left + blockWidth
-            val bottom = top + dateBlockHeight
+            val left = (col * blockWidth).takeIf { designMode.equals(1) } ?:(horizontalPadding + col * adjustedBlockWidth)
+            val top = (monthNameHeight + dayNameHeight + row * dateBlockHeight).takeIf { designMode.equals(1) } ?:(monthNameHeight + dayNameHeight + verticalPadding + row * adjustedBlockHeight)
+            val right = (left + blockWidth).takeIf { designMode.equals(1) } ?:(left + adjustedBlockWidth)
+            val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) } ?:(top + adjustedBlockHeight)
 
 
             if(monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH){
                 // Draw the background using the drawable if available
                 backgroundDrawableDate?.let { drawable ->
                     // Adjust the bounds to include a 1dp margin
-                    modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
+                    if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
                 } ?: run {
                     // If no drawable is set, use a solid color
                     paint.color = Color.LTGRAY // Color for next month's dates
                     canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
                 }
-                drawDateText(canvas, nextDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
+                if (designMode.equals(1)) drawDateText(canvas, nextDayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, Color.GRAY)
+                if (designMode.equals(2)) drawDateText(canvas, nextDayCounter.toString(), textSizeDate, left, adjustedBlockWidth, top, dateBlockHeight, Color.GRAY)
             }
 
             // Add next month's day block to the list
