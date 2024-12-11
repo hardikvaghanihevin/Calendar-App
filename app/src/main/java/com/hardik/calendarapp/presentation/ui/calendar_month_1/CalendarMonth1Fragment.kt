@@ -2,7 +2,9 @@ package com.hardik.calendarapp.presentation.ui.calendar_month_1
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +15,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -191,6 +194,18 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 // got event update
                 navigateToViewEventFrag(event = event)
             }
+
+            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.day_background_1)
+            if (drawable is GradientDrawable) {
+                // Modify the color of the drawable
+                Color.WHITE.let { drawable.setColor(it)} // Set the desired color
+                drawable.cornerRadius = 10f * requireContext().resources.displayMetrics.density // Example: 10dp corner radius
+                drawable.setStroke(
+                    (1 * requireContext().resources.displayMetrics.density).toInt(), // Stroke width in dp
+                    Color.BLACK // Stroke color
+                )
+            }
+            binding.constraintLayEvents.background = drawable
         }
     }
     private fun navigateToViewEventFrag(event: Event) {
@@ -332,7 +347,22 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 viewModel.updateYear(year)
                 //val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = year, month = month +1)
                 //viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-                viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
+               /** selectedDate?.let {it:String ->
+                    val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
+                    if (year.toString() == date.first && month.toString() == date.second)
+                    viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+                    else viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
+                } ?: viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )*/
+                viewModel.run {
+                    selectedDate?.let { stringToDateTriple(it, isZeroBased = false) }?.takeIf { it.first == year.toString() && it.second == month.toString() }
+                        ?.let { getEventsByDateOfMonthOfYear(year = it.first, month = it.second, date = it.third) }
+                        ?: getEventsByMonthOfYear(year = year.toString(), month = month.toString())
+                }
+                /*pageAdapter.run {
+                    configureCustomView {
+
+                    }
+                }*/
 
                 // Log current position and year/month
                 Log.d(TAG, "onPageSelected: Current Position = $position, Year = $year, Month = $month")

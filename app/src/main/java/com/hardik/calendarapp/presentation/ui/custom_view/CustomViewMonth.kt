@@ -23,7 +23,7 @@ import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.utillities.DateUtil.getFormattedDate
 import java.text.DateFormatSymbols
 import java.util.Calendar
-
+var _selectedDate: String? = null
 @SuppressLint("CustomViewStyleable")
 class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
     private final val TAG = BASE_TAG + CustomViewMonth::class.java.simpleName
@@ -180,7 +180,6 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
     private val monthNameBounds = RectF()
     private val daysBlocks = mutableListOf<Triple<Rect, Canvas, String>>()
-    private var _selectedDate: String? = null
 
     //endregion
     init {
@@ -270,15 +269,25 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             return super.onTouchEvent(event)
         }
 
+        Log.e(TAG, "onTouchEvent: ${event.action}", )
         val x = event.x
         val y = event.y
+        //parent?.requestDisallowInterceptTouchEvent(true)
         when(event.action){
 
             MotionEvent.ACTION_DOWN -> {
-
+                Log.d(TAG, "ACTION_DOWN")
+            }
+            MotionEvent.ACTION_MOVE -> {
+                Log.d(TAG, "ACTION_MOVE")
+            }
+            MotionEvent.ACTION_UP -> {
+                Log.d(TAG, "ACTION_UP")
                 // Check if the month name was clicked
                 if (monthNameBounds.contains(x, y)) {
                     onMonthNameClickListener?.invoke("$currentYear", "$currentMonth") // Trigger the listener
+                    _selectedDate = null
+                    postInvalidate()
                     return true
                 }
 
@@ -294,7 +303,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
                         // Trigger the listener and redraw the view
                         _selectedDate = onDateItemClickListener?.invoke(triple)
-                        invalidate()
+                        postInvalidate()
                         return true
                     }
                 }
@@ -553,8 +562,8 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
                     // Draw the background using the drawable if available
                     backgroundDrawableDate?.let { drawable ->
-                        val color = if(isSelected) if (isToday) Color.YELLOW else Color.GREEN else Color.WHITE
-                        modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isToday) Color.YELLOW else color)
+                        val color = if (isToday) Color.YELLOW else Color.WHITE
+                        modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isSelected) Color.GREEN else color)
                     } ?: run {
                         // If no drawable is set, use a solid color
                         paint.color = if(isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY

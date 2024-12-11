@@ -17,12 +17,13 @@
 
     <ImageButton
         android:id="@+id/btnPrevMonth"
-        android:layout_width="@dimen/_20sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_10sdp"
         android:layout_weight="1"
-        android:background="@drawable/left"
+        android:src="@drawable/left"
+        android:background="@android:color/transparent"
         android:contentDescription="Previous Month"
         app:layout_constraintStart_toStartOf="@id/viewPager_calendarMonth"
         app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
@@ -30,15 +31,16 @@
     <!-- Right Arrow Button -->
     <ImageButton
         android:id="@+id/btnNextMonth"
-        android:layout_width="@dimen/_20sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:layout_marginEnd="@dimen/_15sdp"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
         android:layout_weight="1"
-        android:background="@drawable/right"
+        android:src="@drawable/right"
+        android:background="@android:color/transparent"
         android:contentDescription="Next Month"
         app:layout_constraintEnd_toEndOf="@id/viewPager_calendarMonth"
-        app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
+        app:layout_constraintTop_toTopOf="@id/btnPrevMonth"
+        app:layout_constraintBottom_toBottomOf="@id/btnPrevMonth"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLay_events"
@@ -46,13 +48,15 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_4sdp"
         android:layout_marginBottom="@dimen/_4sdp"
+        android:layout_marginHorizontal="@dimen/_6sdp"
         android:layout_weight="1"
-        android:background="@drawable/month_navigator_shape_1"
+        android:background="@drawable/day_background_1"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/viewPager_calendarMonth"
         app:layout_constraintVertical_bias="0">
+<!--        android:background="@drawable/month_navigator_shape_1"-->
 
         <include
             android:id="@+id/included_progress_layout"
