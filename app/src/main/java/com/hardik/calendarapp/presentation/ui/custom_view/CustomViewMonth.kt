@@ -27,7 +27,7 @@ import java.util.Calendar
 @SuppressLint("CustomViewStyleable")
 class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
     private final val TAG = BASE_TAG + CustomViewMonth::class.java.simpleName
-    private var designMode: Int = 1
+    private var designMode: Int = 2
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful
@@ -179,8 +179,8 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     val screenHeight = displayMetrics.heightPixels // Total screen height in pixels
 
     private val monthNameBounds = RectF()
-    private val daysBlocks = mutableListOf<Pair<Rect, String>>()
-
+    private val daysBlocks = mutableListOf<Triple<Rect, Canvas, String>>()
+    private var _selectedDate: String? = null
 
     //endregion
     init {
@@ -225,7 +225,6 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         paint.textAlign = Paint.Align.CENTER
     }
 
-    
     enum class WeekStart(val value: Int) {
         SUNDAY(0),
         MONDAY(1);
@@ -273,22 +272,31 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
         val x = event.x
         val y = event.y
-        if (event.action == MotionEvent.ACTION_DOWN) {
+        when(event.action){
 
-            // Check if the month name was clicked
-            if (monthNameBounds.contains(x, y)) {
-                onMonthNameClickListener?.invoke("$currentYear", "$currentMonth") // Trigger the listener
-                return true
-            }
+            MotionEvent.ACTION_DOWN -> {
 
-            // Check if any date block was clicked
-            for (pair in daysBlocks) {
-                val rect = pair.first
-                if (rect.contains(x.toInt(), y.toInt())) {
-                    // A date block was clicked, trigger the listener
-                    Log.e(TAG, "onTouchEvent: $pair", )
-                    onDateItemClickListener?.invoke(pair.second) // pair.second is the date (String)
+                // Check if the month name was clicked
+                if (monthNameBounds.contains(x, y)) {
+                    onMonthNameClickListener?.invoke("$currentYear", "$currentMonth") // Trigger the listener
                     return true
+                }
+
+                // Check if any date block was clicked
+                // It's a tap, handle the date selection
+                for (triple in daysBlocks) {
+                    val rect = triple.first
+                    if (rect.contains(x.toInt(), y.toInt())) {
+
+                        //val clickedDate = triple.third
+                        // Update selected date
+                        // _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
+
+                        // Trigger the listener and redraw the view
+                        _selectedDate = onDateItemClickListener?.invoke(triple)
+                        invalidate()
+                        return true
+                    }
                 }
             }
         }
@@ -319,7 +327,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val monthNameHeight = viewHeight * 0.15f
         val dayNameHeight = viewHeight * 0.13f
 
-        val availableHeight = viewHeight - monthNameHeight - dayNameHeight -  (1.4f * verticalPadding) // or (screenHeight - monthNameHeight - dayNameHeight)/6f
+        val availableHeight = viewHeight - monthNameHeight - dayNameHeight -  (1.6f * verticalPadding) // or (screenHeight - monthNameHeight - dayNameHeight)/6f
 
         // Draw the month name
         drawMonthName(canvas, blockWidth, monthNameHeight)
@@ -507,8 +515,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
                 // Draw the background using the drawable if available
                 backgroundDrawableDate?.let { drawable ->
-                    if(designMode.equals(1))
-                    modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
+                    if(designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
                 } ?: run {
                     // If no drawable is set, use a solid color
                     paint.color = Color.LTGRAY // Color for previous month's dates
@@ -521,7 +528,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             // Add the day block to the list
             // Store the rect for the previous month's blocks
             val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-            daysBlocks.add(Pair(rect, "$currentYear-$prevMonth-$prevDayCounter")) // Store the Rect and day
+            daysBlocks.add(Triple(rect, canvas,"$currentYear-$prevMonth-$prevDayCounter")) // Store the Rect and day
             prevDayCounter++
         }
 
@@ -541,10 +548,13 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                     // Check if this is the current day
                     //val isToday = (dayCounter == currentDate && currentMonth == today.get(Calendar.MONTH) && currentYear == today.get(Calendar.YEAR))
                     val isToday = (dayCounter == calendar.get(Calendar.DAY_OF_MONTH) && currentMonth == calendar.get(Calendar.MONTH) && currentYear == calendar.get(Calendar.YEAR))
+                    val dateString = "$currentYear-$currentMonth-$dayCounter"
+                    val isSelected = dateString == _selectedDate
 
                     // Draw the background using the drawable if available
                     backgroundDrawableDate?.let { drawable ->
-                        modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isToday) Color.YELLOW else Color.WHITE)
+                        val color = if(isSelected) if (isToday) Color.YELLOW else Color.GREEN else Color.WHITE
+                        modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isToday) Color.YELLOW else color)
                     } ?: run {
                         // If no drawable is set, use a solid color
                         paint.color = if(isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY
@@ -582,7 +592,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
                     // Store the day block for later click detection
                     val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-                    daysBlocks.add(Pair(rect, "$currentYear-$currentMonth-$dayCounter")) // Store the Rect and day
+                    daysBlocks.add(Triple(rect, canvas, "$currentYear-$currentMonth-$dayCounter")) // Store the Rect and day
 
                     dayCounter++
                 }
@@ -617,7 +627,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
             // Add next month's day block to the list
             val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-            daysBlocks.add(Pair(rect, "$currentYear-$nextMonth-$nextDayCounter")) // Store the Rect and day
+            daysBlocks.add(Triple(rect, canvas, "$currentYear-$nextMonth-$nextDayCounter")) // Store the Rect and day
 
             nextDayCounter++
         }
@@ -678,8 +688,9 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     private var onMonthNameClickListener: ((YearKey, MonthKey) -> Unit)? = null
     fun getMonthNameClickListener(listener: (YearKey, MonthKey) -> Unit){ onMonthNameClickListener = listener }
 
-    private var onDateItemClickListener : ((String) -> Unit)? = null
-    fun getDateClickListener(listener: (String) -> Unit){ onDateItemClickListener = listener }
+    private var onDateItemClickListener : ((Triple<Rect, Canvas, String>) -> String?)? = null
+    fun getDateClickListener(listener: (Triple<Rect, Canvas, String>) -> String?){ onDateItemClickListener = listener }
+
 }
 fun checkIfDayMatches(dateString: String, targetDay: Int): Boolean {
     // Split the date string into parts: year, month, and day

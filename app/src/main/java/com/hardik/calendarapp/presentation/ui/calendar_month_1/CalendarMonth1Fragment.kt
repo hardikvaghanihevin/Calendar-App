@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.calendar_month_1
 
 import android.annotation.SuppressLint
+import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
@@ -279,6 +280,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     }
 
     val pageAdapter = CalendarMonthPageAdapter(yearMonthPairList)
+    private var selectedDate: String? = null
     private suspend fun setupViewPager() {
         Log.d(TAG, "setupViewPager: ")
         yield()
@@ -292,22 +294,32 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         viewPager.adapter = pageAdapter
         pageAdapter.updateEventsOfDate(_eventsOfDateMap)
         //Todo: Start in the middle for infinite scrolling and set to the current month
-        viewPager.setCurrentItem(previousPosition, true)
+        viewPager.setCurrentItem(previousPosition, false)
 
         viewModel.updateYear(year)
 
-        //getDateClickListener
-        pageAdapter.configureCustomView {
 
-            it.getMonthNameClickListener{ year: YearKey, month: MonthKey ->
+        pageAdapter.configureCustomView {customViewMonth ->
+            customViewMonth.getMonthNameClickListener{ year: YearKey, month: MonthKey ->
                 viewModel.getEventsByMonthOfYear(year = year, month = month)
             }
 
-            it.getDateClickListener{
-                Log.e(TAG, "setupViewPager: ${it}", )
-                val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-                viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+            customViewMonth.getDateClickListener{triple: Triple<Rect, Canvas, String> ->
+                Log.v(TAG, "setupViewPager: ${triple}", )
+
+                val clickedDate = triple.third
+                // Update selected date
+                selectedDate = if (selectedDate == clickedDate) null else clickedDate
+                //Log.v(TAG, "setupViewPager: _selectedDate:${selectedDate}", )
+
+                val date: Triple<String, String, String> = stringToDateTriple(triple.third, isZeroBased = false)
+                selectedDate?.let {
+                    viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+                }?: viewModel.getEventsByMonthOfYear(year = date.first, month = date.second)
+                return@getDateClickListener selectedDate
             }
+
+
         }
 
         // Register a callback to handle swipe events
