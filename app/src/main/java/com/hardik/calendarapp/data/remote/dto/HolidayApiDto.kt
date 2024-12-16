@@ -74,7 +74,7 @@ fun HolidayApiDto.toCalendarDetail(): HolidayApiDetail {
         etag = this.etag,
         items = this.items.map { it.toItem() },
         kind = this.kind,
-        nextSyncToken = this.nextSyncToken,
+        nextSyncToken = this.nextSyncToken ?: "",
         summary = this.summary,
         timeZone = this.timeZone,
         updated = this.updated

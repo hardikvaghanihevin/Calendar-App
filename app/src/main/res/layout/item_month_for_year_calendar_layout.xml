@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/m"
+            android:text="@string/short_mon"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/t"
+            android:text="@string/short_tue"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
@@ -67,7 +67,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/w"
+            android:text="@string/short_wed"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
@@ -77,7 +77,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/t"
+            android:text="@string/short_thu"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
@@ -87,7 +87,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/f"
+            android:text="@string/short_fri"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
@@ -97,7 +97,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/s"
+            android:text="@string/short_sat"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
@@ -107,7 +107,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/s"
+            android:text="@string/short_sun"
             android:textSize="7sp"
             android:textAlignment="center"
             android:textColor="@android:color/black" />

@@ -101,6 +101,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                                 viewModel.resetEventState()
                             }
                             findNavController().popBackStack(R.id.newEventFragment.takeIf { EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                            //findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                         }
                         true
                     }

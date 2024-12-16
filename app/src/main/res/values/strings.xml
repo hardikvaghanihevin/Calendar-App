@@ -17,11 +17,13 @@
     <string name="sat">Sat</string>
     <string name="sun">Sun</string>
 
-    <string name="m">M</string>
-    <string name="t">T</string>
-    <string name="w">W</string>
-    <string name="f">F</string>
-    <string name="s">S</string>
+    <string name="short_mon">M</string>
+    <string name="short_tue">T</string>
+    <string name="short_wed">W</string>
+    <string name="short_thu">T</string>
+    <string name="short_fri">F</string>
+    <string name="short_sat">S</string>
+    <string name="short_sun">S</string>
 
     <string name="jan">January</string>
     <string name="fab">February</string>
@@ -35,11 +37,13 @@
     <string name="oct">October</string>
     <string name="nov">November</string>
     <string name="dec">December</string>
+
     <string name="add_event">Add Event</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="calendar_month">Calendar Month</string>
     <string name="calendar_year">Calendar Year</string>
+    <string name="settings">Settings</string>
     <string name="action_refresh">Refresh</string>
     <string name="new_event">New Event</string>
     <string name="update_event">Update Event</string>
@@ -50,4 +54,29 @@
     <string name="no_description">No description</string>
     <string name="action_delete">Delete</string>
     <string name="event_deleted">Event deleted!</string>
+    <!-- Preference Titles -->
+    <string name="language_header">Language</string>
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <string name="all_day">All Day</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="repeat">Repeat</string>
+    <string name="never">Never</string>
+    <string name="alert">Alert</string>
+    <string name="none">None</string>
+    <string name="note">Note</string>
+    <string name="country_header">Country</string>
 </resources>

@@ -66,6 +66,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var eventAdapter: EventAdapter
+    val pageAdapter = CalendarMonthPageAdapter(yearMonthPairList)
 
     var year: Int = Calendar.getInstance().get(Calendar.YEAR)
     var month: Int = Calendar.getInstance().get(Calendar.MONTH)
@@ -252,6 +253,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         lifecycleScope.launch {
             viewModel.allEventsDateInMapState.collectLatest { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
                 _eventsOfDateMap = data
+                pageAdapter.updateEventsOfDate(_eventsOfDateMap)
                 //Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
@@ -294,7 +296,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     }
 
-    val pageAdapter = CalendarMonthPageAdapter(yearMonthPairList)
+
     private var selectedDate: String? = null
     private suspend fun setupViewPager() {
         Log.d(TAG, "setupViewPager: ")

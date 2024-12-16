@@ -1,0 +1,566 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+
+    <!-- week day full or short -->
+    <string-array name="week_1">
+        <item>@string/mon</item>
+        <item>@string/tue</item>
+        <item>@string/wed</item>
+        <item>@string/thu</item>
+        <item>@string/fri</item>
+        <item>@string/sat</item>
+        <item>@string/sun</item>
+    </string-array>
+    <string-array name="week_2">
+        <item>@string/sun</item>
+        <item>@string/mon</item>
+        <item>@string/tue</item>
+        <item>@string/wed</item>
+        <item>@string/thu</item>
+        <item>@string/fri</item>
+        <item>@string/sat</item>
+    </string-array>
+    <string-array name="short_week_1">
+        <item>@string/short_mon</item>
+        <item>@string/short_tue</item>
+        <item>@string/short_wed</item>
+        <item>@string/short_thu</item>
+        <item>@string/short_fri</item>
+        <item>@string/short_sat</item>
+        <item>@string/short_sun</item>
+    </string-array>
+    <string-array name="short_week_2">
+        <item>@string/short_sun</item>
+        <item>@string/short_mon</item>
+        <item>@string/short_tue</item>
+        <item>@string/short_wed</item>
+        <item>@string/short_thu</item>
+        <item>@string/short_fri</item>
+        <item>@string/short_sat</item>
+    </string-array>
+
+    <!-- Index item language UI Preference -->
+    <string-array name="language_entries">
+        <item>🇬🇧 English (Default)</item>
+        <item>🇫🇷 French (Français)</item>
+        <item>🇩🇪 German (Deutsch)</item>
+        <item>🇮🇳 Hindi (हिन्दी)</item>
+        <item>🇮🇹 Italian (Italiano)</item>
+        <item>🇰🇷 Korean (한국어)</item>
+        <item>🇵🇹 Portuguese (Português)</item>
+        <item>🇷🇺 Russian (Русский)</item>
+        <item>🇪🇸 Spanish (Español)</item>
+        <item>🇺🇦 Ukrainian (Українська)</item>
+    </string-array>
+
+    <string-array name="language_values">
+        <item>en</item>
+        <item>fr</item>
+        <item>de</item>
+        <item>hi</item>
+        <item>it</item>
+        <item>ko</item>
+        <item>pt</item>
+        <item>ru</item>
+        <item>es</item>
+        <item>uk</item>
+    </string-array>
+
+
+    <!-- Index item country UI Preference -->
+    <string-array name="country_entries">
+        <item>🇦🇫 Afghanistan</item>
+        <item>🇦🇱 Albania</item>
+        <item>🇩🇿 Algeria</item>
+        <item>🇦🇸 American Samoa</item>
+        <item>🇦🇩 Andorra</item>
+        <item>🇦🇴 Angola</item>
+        <item>🇦🇮 Anguilla</item>
+        <item>🇦🇬 Antigua &amp; Barbuda</item>
+        <item>🇦🇷 Argentina</item>
+        <item>🇦🇲 Armenia</item>
+        <item>🇦🇼 Aruba</item>
+        <item>🇦🇺 Australia</item>
+        <item>🇦🇹 Austria</item>
+        <item>🇦🇿 Azerbaijan</item>
+        <item>🇧🇸 Bahamas</item>
+        <item>🇧🇭 Bahrain</item>
+        <item>🇧🇩 Bangladesh</item>
+        <item>🇧🇧 Barbados</item>
+        <item>🇧🇾 Belarus</item>
+        <item>🇧🇪 Belgium</item>
+        <item>🇧🇿 Belize</item>
+        <item>🇧🇯 Benin</item>
+        <item>🇧🇲 Bermuda</item>
+        <item>🇧🇹 Bhutan</item>
+        <item>🇧🇴 Bolivia</item>
+        <item>🇧🇦 Bosnia &amp; Herzegovina</item>
+        <item>🇧🇼 Botswana</item>
+        <item>🇧🇷 Brazil</item>
+        <item>🇻🇬 British Virgin Islands</item>
+        <item>🇧🇳 Brunei</item>
+        <item>🇧🇬 Bulgaria</item>
+        <item>🇧🇫 Burkina Faso</item>
+        <item>🇧🇮 Burundi</item>
+        <item>🇰🇭 Cambodia</item>
+        <item>🇨🇲 Cameroon</item>
+        <item>🇨🇦 Canada</item>
+        <item>🇨🇻 Cape Verde</item>
+        <item>🇰🇾 Cayman Islands</item>
+        <item>🇨🇫 Central African Republic</item>
+        <item>🇹🇩 Chad</item>
+        <item>🇨🇱 Chile</item>
+        <item>🇨🇳 China</item>
+        <item>🇨🇴 Colombia</item>
+        <item>🇰🇲 Comoros</item>
+        <item>🇨🇬 Congo - Brazzaville</item>
+        <item>🇨🇩 Congo - Kinshasa</item>
+        <item>🇨🇰 Cook Islands</item>
+        <item>🇨🇷 Costa Rica</item>
+        <item>🇨🇮 Côte d’Ivoire</item>
+        <item>🇭🇷 Croatia</item>
+        <item>🇨🇺 Cuba</item>
+        <item>🇨🇼 Curaçao</item>
+        <item>🇨🇾 Cyprus</item>
+        <item>🇨🇿 Czechia</item>
+        <item>🇩🇰 Denmark</item>
+        <item>🇩🇯 Djibouti</item>
+        <item>🇩🇲 Dominica</item>
+        <item>🇩🇴 Dominican Republic</item>
+        <item>🇪🇨 Ecuador</item>
+        <item>🇪🇬 Egypt</item>
+        <item>🇸🇻 El Salvador</item>
+        <item>🇬🇶 Equatorial Guinea</item>
+        <item>🇪🇷 Eritrea</item>
+        <item>🇪🇪 Estonia</item>
+        <item>🇸🇿 Eswatini</item>
+        <item>🇪🇹 Ethiopia</item>
+        <item>🇫🇰 Falkland Islands (Islas Malvinas)</item>
+        <item>🇫🇴 Faroe Islands</item>
+        <item>🇫🇯 Fiji</item>
+        <item>🇫🇮 Finland</item>
+        <item>🇫🇷 France</item>
+        <item>🇬🇫 French Guiana</item>
+        <item>🇵🇫 French Polynesia</item>
+        <item>🇬🇦 Gabon</item>
+        <item>🇬🇲 Gambia</item>
+        <item>🇬🇪 Georgia</item>
+        <item>🇩🇪 Germany</item>
+        <item>🇬🇭 Ghana</item>
+        <item>🇬🇮 Gibraltar</item>
+        <item>🇬🇷 Greece</item>
+        <item>🇬🇱 Greenland</item>
+        <item>🇬🇩 Grenada</item>
+        <item>🇬🇵 Guadeloupe</item>
+        <item>🇬🇺 Guam</item>
+        <item>🇬🇹 Guatemala</item>
+        <item>🇬🇬 Guernsey</item>
+        <item>🇬🇳 Guinea</item>
+        <item>🇬🇼 Guinea-Bissau</item>
+        <item>🇬🇾 Guyana</item>
+        <item>🇭🇹 Haiti</item>
+        <item>🇭🇳 Honduras</item>
+        <item>🇭🇰 Hong Kong</item>
+        <item>🇭🇺 Hungary</item>
+        <item>🇮🇸 Iceland</item>
+        <item>🇮🇳 India</item>
+        <item>🇮🇩 Indonesia</item>
+        <item>🇮🇷 Iran</item>
+        <item>🇮🇶 Iraq</item>
+        <item>🇮🇪 Ireland</item>
+        <item>🇮🇲 Isle of Man</item>
+        <item>🇮🇱 Israel</item>
+        <item>🇮🇹 Italy</item>
+        <item>🇯🇲 Jamaica</item>
+        <item>🇯🇵 Japan</item>
+        <item>🇯🇪 Jersey</item>
+        <item>🇯🇴 Jordan</item>
+        <item>🇰🇿 Kazakhstan</item>
+        <item>🇰🇪 Kenya</item>
+        <item>🇰🇮 Kiribati</item>
+        <item>🇽🇰 Kosovo</item>
+        <item>🇰🇼 Kuwait</item>
+        <item>🇰🇬 Kyrgyzstan</item>
+        <item>🇱🇦 Laos</item>
+        <item>🇱🇻 Latvia</item>
+        <item>🇱🇧 Lebanon</item>
+        <item>🇱🇸 Lesotho</item>
+        <item>🇱🇷 Liberia</item>
+        <item>🇱🇾 Libya</item>
+        <item>🇱🇮 Liechtenstein</item>
+        <item>🇱🇹 Lithuania</item>
+        <item>🇱🇺 Luxembourg</item>
+        <item>🇲🇴 Macao</item>
+        <item>🇲🇬 Madagascar</item>
+        <item>🇲🇼 Malawi</item>
+        <item>🇲🇾 Malaysia</item>
+        <item>🇲🇻 Maldives</item>
+        <item>🇲🇱 Mali</item>
+        <item>🇲🇹 Malta</item>
+        <item>🇲🇭 Marshall Islands</item>
+        <item>🇲🇶 Martinique</item>
+        <item>🇲🇷 Mauritania</item>
+        <item>🇲🇺 Mauritius</item>
+        <item>🇾🇹 Mayotte</item>
+        <item>🇲🇽 Mexico</item>
+        <item>🇫🇲 Micronesia</item>
+        <item>🇲🇩 Moldova</item>
+        <item>🇲🇨 Monaco</item>
+        <item>🇲🇳 Mongolia</item>
+        <item>🇲🇪 Montenegro</item>
+        <item>🇲🇸 Montserrat</item>
+        <item>🇲🇦 Morocco</item>
+        <item>🇲🇿 Mozambique</item>
+        <item>🇲🇲 Myanmar (Burma)</item>
+        <item>🇳🇦 Namibia</item>
+        <item>🇳🇷 Nauru</item>
+        <item>🇳🇵 Nepal</item>
+        <item>🇳🇱 Netherlands</item>
+        <item>🇳🇨 New Caledonia</item>
+        <item>🇳🇿 New Zealand</item>
+        <item>🇳🇮 Nicaragua</item>
+        <item>🇳🇪 Niger</item>
+        <item>🇳🇬 Nigeria</item>
+        <item>🇳🇺 Northern Mariana Islands</item>
+        <item>🇳🇫 North Korea</item>
+        <item>🇲🇵 North Macedonia</item>
+        <item>🇳🇴 Norway</item>
+        <item>🇴🇲 Oman</item>
+        <item>🇵🇰 Pakistan</item>
+        <item>🇵🇼 Palau</item>
+        <item>🇵🇦 Panama</item>
+        <item>🇵🇬 Papua New Guinea</item>
+        <item>🇵🇾 Paraguay</item>
+        <item>🇵🇪 Peru</item>
+        <item>🇵🇭 Philippines</item>
+        <item>🇵🇱 Poland</item>
+        <item>🇵🇹 Portugal</item>
+        <item>🇵🇷 Puerto Rico</item>
+        <item>🇶🇦 Qatar</item>
+        <item>🇷🇪 Réunion</item>
+        <item>🇷🇴 Romania</item>
+        <item>🇷🇺 Russia</item>
+        <item>🇷🇼 Rwanda</item>
+        <item>🇼🇸 Samoa</item>
+        <item>🇸🇲 San Marino</item>
+        <item>🇸🇹 São Tomé &amp; Príncipe</item>
+        <item>🇸🇦 Saudi Arabia</item>
+        <item>🇸🇳 Senegal</item>
+        <item>🇷🇸 Serbia</item>
+        <item>🇸🇨 Seychelles</item>
+        <item>🇸🇱 Sierra Leone</item>
+        <item>🇸🇬 Singapore</item>
+        <item>🇸🇽 Sint Maarten</item>
+        <item>🇸🇰 Slovakia</item>
+        <item>🇸🇮 Slovenia</item>
+        <item>🇸🇧 Solomon Islands</item>
+        <item>🇸🇴 Somalia</item>
+        <item>🇿🇦 South Africa</item>
+        <item>🇰🇷 South Korea</item>
+        <item>🇸🇸 South Sudan</item>
+        <item>🇪🇸 Spain</item>
+        <item>🇱🇰 Sri Lanka</item>
+        <item>🇧🇱 St. Barthélemy</item>
+        <item>🇸🇭 St. Helena</item>
+        <item>🇰🇳 St. Kitts &amp; Nevis</item>
+        <item>🇱🇨 St. Lucia</item>
+        <item>🇲🇫 St. Martin</item>
+        <item>🇵🇲 St. Pierre &amp; Miquelon</item>
+        <item>🇻🇨 St. Vincent &amp; Grenadines</item>
+        <item>🇸🇩 Sudan</item>
+        <item>🇸🇷 Suriname</item>
+        <item>🇸🇪 Sweden</item>
+        <item>🇨🇭 Switzerland</item>
+        <item>🇸🇾 Syria</item>
+        <item>🇹🇼 Taiwan</item>
+        <item>🇹🇯 Tajikistan</item>
+        <item>🇹🇿 Tanzania</item>
+        <item>🇹🇭 Thailand</item>
+        <item>🇹🇱 Timor-Leste</item>
+        <item>🇹🇬 Togo</item>
+        <item>🇹🇴 Tonga</item>
+        <item>🇹🇹 Trinidad &amp; Tobago</item>
+        <item>🇹🇳 Tunisia</item>
+        <item>🇹🇷 Turkey</item>
+        <item>🇹🇲 Turkmenistan</item>
+        <item>🇹🇨 Turks &amp; Caicos Islands</item>
+        <item>🇹🇻 Tuvalu</item>
+        <item>🇻🇮 U.S. Virgin Islands</item>
+        <item>🇺🇬 Uganda</item>
+        <item>🇺🇦 Ukraine</item>
+        <item>🇦🇪 United Arab Emirates</item>
+        <item>🇬🇧 United Kingdom</item>
+        <item>🇺🇸 United States</item>
+        <item>🇺🇾 Uruguay</item>
+        <item>🇺🇿 Uzbekistan</item>
+        <item>🇻🇺 Vanuatu</item>
+        <item>🇻🇦 Vatican City</item>
+        <item>🇻🇪 Venezuela</item>
+        <item>🇻🇳 Vietnam</item>
+        <item>🇼🇫 Wallis &amp; Futuna</item>
+        <item>🇾🇪 Yemen</item>
+        <item>🇿🇲 Zambia</item>
+        <item>🇿🇼 Zimbabwe</item>
+        <!-- <item>🇵🇸 Palestine</item> +-->
+    </string-array>
+    <string-array name="country_values">
+        <item>af</item>
+        <item>al</item>
+        <item>dz</item>
+        <item>as</item>
+        <item>ad</item>
+        <item>ao</item>
+        <item>ai</item>
+        <item>ag</item>
+        <item>ar</item>
+        <item>am</item>
+        <item>aw</item>
+        <item>australian</item>
+        <item>austrian</item>
+        <item>az</item>
+        <item>bs</item>
+        <item>bh</item>
+        <item>bd</item>
+        <item>bb</item>
+        <item>by</item>
+        <item>be</item>
+        <item>bz</item>
+        <item>bj</item>
+        <item>bm</item>
+        <item>bt</item>
+        <item>bo</item>
+        <item>ba</item>
+        <item>bw</item>
+        <item>brazilian</item>
+        <item>vg</item>
+        <item>bn</item>
+        <item>bulgarian</item>
+        <item>bf</item>
+        <item>bi</item>
+        <item>kh</item>
+        <item>cm</item>
+        <item>canadian</item>
+        <item>cv</item>
+        <item>ky</item>
+        <item>cf</item>
+        <item>td</item>
+        <item>cl</item>
+        <item>china</item>
+        <item>co</item>
+        <item>km</item>
+        <item>cg</item>
+        <item>cd</item>
+        <item>ck</item>
+        <item>cr</item>
+        <item>ci</item>
+        <item>croatian</item>
+        <item>cu</item>
+        <item>cw</item>
+        <item>cy</item>
+        <item>czech</item>
+        <item>danish</item>
+        <item>dj</item>
+        <item>dm</item>
+        <item>do</item>
+        <item>ec</item>
+        <item>eg</item>
+        <item>sv</item>
+        <item>gq</item>
+        <item>er</item>
+        <item>ee</item>
+        <item>sz</item>
+        <item>et</item>
+        <item>fk</item>
+        <item>fo</item>
+        <item>fj</item>
+        <item>finnish</item>
+        <item>french</item>
+        <item>gf</item>
+        <item>pf</item>
+        <item>ga</item>
+        <item>gm</item>
+        <item>ge</item>
+        <item>german</item>
+        <item>gh</item>
+        <item>gi</item>
+        <item>greek</item>
+        <item>gl</item>
+        <item>gd</item>
+        <item>gp</item>
+        <item>gu</item>
+        <item>gt</item>
+        <item>gg</item>
+        <item>gn</item>
+        <item>gw</item>
+        <item>gy</item>
+        <item>ht</item>
+        <item>hn</item>
+        <item>hong_kong</item>
+        <item>hungarian</item>
+        <item>is</item>
+        <item>indian</item>
+        <item>indonesian</item>
+        <item>ir</item>
+        <item>iq</item>
+        <item>irish</item>
+        <item>im</item>
+        <item>jewish</item>
+        <item>italian</item>
+        <item>jm</item>
+        <item>japanese</item>
+        <item>je</item>
+        <item>jo</item>
+        <item>kz</item>
+        <item>ke</item>
+        <item>ki</item>
+        <item>xk</item>
+        <item>kw</item>
+        <item>kg</item>
+        <item>la</item>
+        <item>latvian</item>
+        <item>lb</item>
+        <item>ls</item>
+        <item>lr</item>
+        <item>ly</item>
+        <item>li</item>
+        <item>lithuanian</item>
+        <item>lu</item>
+        <item>mo</item>
+        <item>mg</item>
+        <item>mw</item>
+        <item>malaysia</item>
+        <item>mv</item>
+        <item>ml</item>
+        <item>mt</item>
+        <item>mh</item>
+        <item>mq</item>
+        <item>mr</item>
+        <item>mu</item>
+        <item>yt</item>
+        <item>mexican</item>
+        <item>fm</item>
+        <item>md</item>
+        <item>mc</item>
+        <item>mn</item>
+        <item>me</item>
+        <item>ms</item>
+        <item>ma</item>
+        <item>mz</item>
+        <item>mm</item>
+        <item>na</item>
+        <item>nr</item>
+        <item>np</item>
+        <item>dutch</item>
+        <item>nc</item>
+        <item>new_zealand</item>
+        <item>ni</item>
+        <item>ne</item>
+        <item>ng</item>
+        <item>mp</item>
+        <item>kp</item>
+        <item>mk</item>
+        <item>norwegian</item>
+        <item>om</item>
+        <item>pk</item>
+        <item>pw</item>
+        <item>pa</item>
+        <item>pg</item>
+        <item>py</item>
+        <item>pe</item>
+        <item>philippines</item>
+        <item>polish</item>
+        <item>portuguese</item>
+        <item>pr</item>
+        <item>qa</item>
+        <item>re</item>
+        <item>romanian</item>
+        <item>russian</item>
+        <item>rw</item>
+        <item>ws</item>
+        <item>sm</item>
+        <item>st</item>
+        <item>saudiarabian</item>
+        <item>sn</item>
+        <item>rs</item>
+        <item>sc</item>
+        <item>sl</item>
+        <item>singapore</item>
+        <item>sx</item>
+        <item>slovak</item>
+        <item>slovenian</item>
+        <item>sb</item>
+        <item>so</item>
+        <item>sa</item>
+        <item>south_korea</item>
+        <item>ss</item>
+        <item>spain</item>
+        <item>lk</item>
+        <item>bl</item>
+        <item>sh</item>
+        <item>kn</item>
+        <item>lc</item>
+        <item>mf</item>
+        <item>pm</item>
+        <item>vc</item>
+        <item>sd</item>
+        <item>sr</item>
+        <item>swedish</item>
+        <item>ch</item>
+        <item>sy</item>
+        <item>taiwan</item>
+        <item>tj</item>
+        <item>tz</item>
+        <item>th</item>
+        <item>tl</item>
+        <item>tg</item>
+        <item>to</item>
+        <item>tt</item>
+        <item>tn</item>
+        <item>turkish</item>
+        <item>tm</item>
+        <item>tc</item>
+        <item>tv</item>
+        <item>vi</item>
+        <item>ug</item>
+        <item>ukrainian</item>
+        <item>ae</item>
+        <item>uk</item>
+        <item>usa</item>
+        <item>uy</item>
+        <item>uz</item>
+        <item>vu</item>
+        <item>va</item>
+        <item>ve</item>
+        <item>vietnamese</item>
+        <item>wf</item>
+        <item>ye</item>
+        <item>zm</item>
+        <item>zw</item>
+    </string-array>
+    <string-array name="default_country_values">
+        <item>indian</item>
+    </string-array>
+</resources>
+<!--
+en - English (English)
+fr - French (Français)
+de - German (Deutsch)
+hi - Hindi (हिन्दी)
+it - Italian (Italiano)
+ko - Korean (한국어)
+pt - Portuguese (Português)
+ru - Russian (Русский)
+es - Spanish (Español)
+uk - Ukrainian (Українська)
+
+https://gist.github.com/dhoeric/76bd1c15168ee0ee61ad3bf1730dcb65
+-->

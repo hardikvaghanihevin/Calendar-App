@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Applicazione Calendario</string>
+    <string name="navigation_drawer_open">Apri il menu di navigazione</string>
+    <string name="navigation_drawer_close">Chiudi il menu di navigazione</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Intestazione di navigazione</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <string name="menu_home">Home</string>
+
+    <string name="mon">Lun</string>
+    <string name="tue">Mar</string>
+    <string name="wed">Mer</string>
+    <string name="thu">Gio</string>
+    <string name="fri">Ven</string>
+    <string name="sat">Sab</string>
+    <string name="sun">Dom</string>
+
+    <string name="short_mon">L</string>
+    <string name="short_tue">M</string>
+    <string name="short_wed">M</string>
+    <string name="short_thu">G</string>
+    <string name="short_fri">V</string>
+    <string name="short_sat">S</string>
+    <string name="short_sun">D</string>
+
+    <string name="jan">Gennaio</string>
+    <string name="fab">Febbraio</string>
+    <string name="mar">Marzo</string>
+    <string name="apr">Aprile</string>
+    <string name="may">Maggio</string>
+    <string name="jun">Giugno</string>
+    <string name="jul">Luglio</string>
+    <string name="aug">Agosto</string>
+    <string name="sep">Settembre</string>
+    <string name="oct">Ottobre</string>
+    <string name="nov">Novembre</string>
+    <string name="dec">Dicembre</string>
+
+    <string name="add_event">Aggiungi Evento</string>
+
+    <string name="hello_blank_fragment">Ciao frammento vuoto</string>
+    <string name="calendar_month">Mese del Calendario</string>
+    <string name="calendar_year">Anno del Calendario</string>
+    <string name="settings">Impostazioni</string>
+    <string name="action_refresh">Aggiorna</string>
+    <string name="new_event">Nuovo Evento</string>
+    <string name="update_event">Aggiorna Evento</string>
+    <string name="action_save">Salva</string>
+    <string name="action_edit">Modifica</string>
+    <string name="view_event">Visualizza Evento</string>
+    <string name="event_title">Titolo dell‘Evento</string>
+    <string name="no_description">Nessuna descrizione</string>
+    <string name="action_delete">Elimina</string>
+    <string name="event_deleted">Evento eliminato!</string>
+    <!-- Preference Titles -->
+    <string name="language_header">Lingua</string>
+    <string name="messages_header">Messaggi</string>
+    <string name="sync_header">Sincronizza</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">La tua firma</string>
+    <string name="reply_title">Azione di risposta predefinita</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sincronizza email periodicamente</string>
+    <string name="attachment_title">Scarica allegati ricevuti</string>
+    <string name="attachment_summary_on">Scarica automaticamente gli allegati delle email ricevute</string>
+    <string name="attachment_summary_off">Scarica gli allegati solo quando richiesto manualmente</string>
+
+    <string name="all_day">Tutto il giorno</string>
+    <string name="start">Inizio</string>
+    <string name="end">Fine</string>
+    <string name="repeat">Ripeti</string>
+    <string name="never">Mai</string>
+    <string name="alert">Avviso</string>
+    <string name="none">Nessuno</string>
+    <string name="note">Nota</string>
+    <string name="country_header">Country</string>
+</resources>

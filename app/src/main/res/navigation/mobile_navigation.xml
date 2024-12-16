@@ -53,4 +53,9 @@
         android:label="@string/view_event"
         tools:layout="@layout/fragment_view_event" />
 
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingsFragment"
+        android:label="@string/settings" />
+
 </navigation>

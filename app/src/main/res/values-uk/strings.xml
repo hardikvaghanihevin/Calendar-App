@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Додаток Календар</string>
+    <string name="navigation_drawer_open">Відкрити панель навігації</string>
+    <string name="navigation_drawer_close">Закрити панель навігації</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Заголовок навігації</string>
+    <string name="action_settings">Налаштування</string>
+
+    <string name="menu_home">Головна</string>
+
+    <string name="mon">Пн</string>
+    <string name="tue">Вт</string>
+    <string name="wed">Ср</string>
+    <string name="thu">Чт</string>
+    <string name="fri">Пт</string>
+    <string name="sat">Сб</string>
+    <string name="sun">Нд</string>
+
+    <string name="short_mon">П</string>
+    <string name="short_tue">В</string>
+    <string name="short_wed">С</string>
+    <string name="short_thu">Ч</string>
+    <string name="short_fri">П</string>
+    <string name="short_sat">С</string>
+    <string name="short_sun">Н</string>
+
+    <string name="jan">Січень</string>
+    <string name="fab">Лютий</string>
+    <string name="mar">Березень</string>
+    <string name="apr">Квітень</string>
+    <string name="may">Травень</string>
+    <string name="jun">Червень</string>
+    <string name="jul">Липень</string>
+    <string name="aug">Серпень</string>
+    <string name="sep">Вересень</string>
+    <string name="oct">Жовтень</string>
+    <string name="nov">Листопад</string>
+    <string name="dec">Грудень</string>
+
+    <string name="add_event">Додати подію</string>
+
+    <string name="hello_blank_fragment">Привіт, порожній фрагмент</string>
+    <string name="calendar_month">Місяць календаря</string>
+    <string name="calendar_year">Рік календаря</string>
+    <string name="settings">Налаштування</string>
+    <string name="action_refresh">Оновити</string>
+    <string name="new_event">Нова подія</string>
+    <string name="update_event">Оновити подію</string>
+    <string name="action_save">Зберегти</string>
+    <string name="action_edit">Редагувати</string>
+    <string name="view_event">Переглянути подію</string>
+    <string name="event_title">Назва події</string>
+    <string name="no_description">Опис відсутній</string>
+    <string name="action_delete">Видалити</string>
+    <string name="event_deleted">Подію видалено!</string>
+    <!-- Preference Titles -->
+    <string name="language_header">Мова</string>
+    <string name="messages_header">Повідомлення</string>
+    <string name="sync_header">Синхронізувати</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Ваш підпис</string>
+    <string name="reply_title">Дія відповіді за замовчуванням</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Періодично синхронізувати електронну пошту</string>
+    <string name="attachment_title">Завантажити вхідні вкладення</string>
+    <string name="attachment_summary_on">Автоматично завантажувати вкладення для вхідних листів</string>
+    <string name="attachment_summary_off">Завантажувати вкладення лише за ручним запитом</string>
+
+    <string name="all_day">Весь день</string>
+    <string name="start">Початок</string>
+    <string name="end">Кінець</string>
+    <string name="repeat">Повторювати</string>
+    <string name="never">Ніколи</string>
+    <string name="alert">Сповіщення</string>
+    <string name="none">Немає</string>
+    <string name="note">Примітка</string>
+    <string name="country_header">Country</string>
+</resources>

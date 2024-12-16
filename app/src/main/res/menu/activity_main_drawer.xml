@@ -4,10 +4,10 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-<!--        <item-->
-<!--            android:id="@+id/nav_home"-->
-<!--            android:icon="@drawable/ic_menu_camera"-->
-<!--            android:title="@string/menu_home" />-->
+        <!--        <item-->
+        <!--            android:id="@+id/nav_home"-->
+        <!--            android:icon="@drawable/ic_menu_camera"-->
+        <!--            android:title="@string/menu_home" />-->
 
         <item
             android:id="@+id/calendarMonth1Fragment"
@@ -19,7 +19,7 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/calendar_year" />
 
-        <item
+        <!--<item
             android:id="@+id/calendarMonthFragment"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/calendar_month" />
@@ -27,7 +27,12 @@
         <item
             android:id="@+id/calendarYearFragment"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/calendar_year" />
+            android:title="@string/calendar_year" />-->
+
+        <item
+            android:id="@+id/settingsFragment"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/settings" />
 
     </group>
 </menu>

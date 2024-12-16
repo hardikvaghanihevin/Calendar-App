@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">캘린더 앱</string>
+    <string name="navigation_drawer_open">내비게이션 서랍 열기</string>
+    <string name="navigation_drawer_close">내비게이션 서랍 닫기</string>
+    <string name="nav_header_title">안드로이드 스튜디오</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">내비게이션 헤더</string>
+    <string name="action_settings">설정</string>
+
+    <string name="menu_home">홈</string>
+
+    <string name="mon">월</string>
+    <string name="tue">화</string>
+    <string name="wed">수</string>
+    <string name="thu">목</string>
+    <string name="fri">금</string>
+    <string name="sat">토</string>
+    <string name="sun">일</string>
+
+    <string name="short_mon">월</string>
+    <string name="short_tue">화</string>
+    <string name="short_wed">수</string>
+    <string name="short_thu">목</string>
+    <string name="short_fri">금</string>
+    <string name="short_sat">토</string>
+    <string name="short_sun">일</string>
+
+    <string name="jan">1월</string>
+    <string name="fab">2월</string>
+    <string name="mar">3월</string>
+    <string name="apr">4월</string>
+    <string name="may">5월</string>
+    <string name="jun">6월</string>
+    <string name="jul">7월</string>
+    <string name="aug">8월</string>
+    <string name="sep">9월</string>
+    <string name="oct">10월</string>
+    <string name="nov">11월</string>
+    <string name="dec">12월</string>
+
+    <string name="add_event">이벤트 추가</string>
+
+    <string name="hello_blank_fragment">빈 프래그먼트</string>
+    <string name="calendar_month">캘린더 월</string>
+    <string name="calendar_year">캘린더 연도</string>
+    <string name="settings">설정</string>
+    <string name="action_refresh">새로고침</string>
+    <string name="new_event">새 이벤트</string>
+    <string name="update_event">이벤트 업데이트</string>
+    <string name="action_save">저장</string>
+    <string name="action_edit">편집</string>
+    <string name="view_event">이벤트 보기</string>
+    <string name="event_title">이벤트 제목</string>
+    <string name="no_description">설명 없음</string>
+    <string name="action_delete">삭제</string>
+    <string name="event_deleted">이벤트가 삭제되었습니다!</string>
+    <!-- Preference Titles -->
+    <string name="language_header">언어</string>
+    <string name="messages_header">메시지</string>
+    <string name="sync_header">동기화</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">서명</string>
+    <string name="reply_title">기본 응답 작업</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">이메일 주기적으로 동기화</string>
+    <string name="attachment_title">받은 첨부파일 다운로드</string>
+    <string name="attachment_summary_on">받은 이메일의 첨부파일 자동 다운로드</string>
+    <string name="attachment_summary_off">수동으로 요청할 때만 첨부파일 다운로드</string>
+
+    <string name="all_day">하루 종일</string>
+    <string name="start">시작</string>
+    <string name="end">종료</string>
+    <string name="repeat">반복</string>
+    <string name="never">안 함</string>
+    <string name="alert">알림</string>
+    <string name="none">없음</string>
+    <string name="note">메모</string>
+    <string name="country_header">Country</string>
+</resources>

@@ -13,10 +13,10 @@ import javax.inject.Inject
 /**This method used getting holiday events from API. It's used in MainViewModel*/
 class GetHolidayApiUseCase @Inject constructor(private val repository: HolidayApiRepository) {
 
-    operator fun invoke(): Flow<Resource<HolidayApiDetail>> = flow {
+    operator fun invoke(countryCode: String, languageCode : String): Flow<Resource<HolidayApiDetail>> = flow {
         try {
             emit(Resource.Loading<HolidayApiDetail>())
-            val calendar = repository.getHolidayEvents().toCalendarDetail()// data CoinDetailDto to CoinDetail transfer here
+            val calendar = repository.getHolidayEvents(countryCode = countryCode, languageCode = languageCode).toCalendarDetail()// data CoinDetailDto to CoinDetail transfer here
             emit(Resource.Success<HolidayApiDetail>(calendar))
         } catch(e: HttpException) {
             emit(Resource.Error<HolidayApiDetail>(e.localizedMessage ?: "An unexpected error occurred"))

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Приложение Календарь</string>
+    <string name="navigation_drawer_open">Открыть панель навигации</string>
+    <string name="navigation_drawer_close">Закрыть панель навигации</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Заголовок навигации</string>
+    <string name="action_settings">Настройки</string>
+
+    <string name="menu_home">Главная</string>
+
+    <string name="mon">Пн</string>
+    <string name="tue">Вт</string>
+    <string name="wed">Ср</string>
+    <string name="thu">Чт</string>
+    <string name="fri">Пт</string>
+    <string name="sat">Сб</string>
+    <string name="sun">Вс</string>
+
+    <string name="short_mon">П</string>
+    <string name="short_tue">В</string>
+    <string name="short_wed">С</string>
+    <string name="short_thu">Ч</string>
+    <string name="short_fri">П</string>
+    <string name="short_sat">С</string>
+    <string name="short_sun">В</string>
+
+    <string name="jan">Январь</string>
+    <string name="fab">Февраль</string>
+    <string name="mar">Март</string>
+    <string name="apr">Апрель</string>
+    <string name="may">Май</string>
+    <string name="jun">Июнь</string>
+    <string name="jul">Июль</string>
+    <string name="aug">Август</string>
+    <string name="sep">Сентябрь</string>
+    <string name="oct">Октябрь</string>
+    <string name="nov">Ноябрь</string>
+    <string name="dec">Декабрь</string>
+
+    <string name="add_event">Добавить событие</string>
+
+    <string name="hello_blank_fragment">Привет, пустой фрагмент</string>
+    <string name="calendar_month">Месяц календаря</string>
+    <string name="calendar_year">Год календаря</string>
+    <string name="settings">Настройки</string>
+    <string name="action_refresh">Обновить</string>
+    <string name="new_event">Новое событие</string>
+    <string name="update_event">Обновить событие</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_edit">Редактировать</string>
+    <string name="view_event">Просмотр события</string>
+    <string name="event_title">Название события</string>
+    <string name="no_description">Нет описания</string>
+    <string name="action_delete">Удалить</string>
+    <string name="event_deleted">Событие удалено!</string>
+    <!-- Preference Titles -->
+    <string name="language_header">Язык</string>
+    <string name="messages_header">Сообщения</string>
+    <string name="sync_header">Синхронизировать</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Ваша подпись</string>
+    <string name="reply_title">Действие ответа по умолчанию</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Периодически синхронизировать почту</string>
+    <string name="attachment_title">Загрузить входящие вложения</string>
+    <string name="attachment_summary_on">Автоматически загружать вложения для входящих писем</string>
+    <string name="attachment_summary_off">Загружать вложения только по запросу вручную</string>
+
+    <string name="all_day">Весь день</string>
+    <string name="start">Начало</string>
+    <string name="end">Конец</string>
+    <string name="repeat">Повтор</string>
+    <string name="never">Никогда</string>
+    <string name="alert">Оповещение</string>
+    <string name="none">Нет</string>
+    <string name="note">Заметка</string>
+    <string name="country_header">Country</string>
+</resources>

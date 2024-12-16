@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.common.DataState
@@ -56,7 +57,7 @@ class MainViewModel @Inject constructor(
     val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
 
     init {
-        getHolidayCalendarData()
+        //getHolidayCalendarData()
         getAllEventsDateInMap()
     }
 
@@ -65,53 +66,63 @@ class MainViewModel @Inject constructor(
     }
 
     /**Get holiday list by using API*/
-    private fun getHolidayCalendarData() {
+    fun getHolidayCalendarData() {
         Log.i(TAG, "getHolidayCalendarData: ")
         viewModelScope.launch {
-            getHolidayApiUseCase.invoke().collect { result: Resource<HolidayApiDetail> ->
-                when (result) {
-                    is Resource.Success -> {
-                        _holidayApiState.value = DataState(data = result.data);
-                        launch(Dispatchers.IO) {
-                            collectHolidayApiState()// fetched all events (from API)
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
+            val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+            val countryCode: Set<String> = sharedPreferences.getStringSet("countries",setOf("indian")) ?: setOf("indian")
+
+            Log.d(TAG, "getHolidayCalendarData: countryCode:$countryCode")
+            countryCode.forEach { countryCode ->
+                getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode)
+                    .collect { result: Resource<HolidayApiDetail> ->
+                        when (result) {
+                            is Resource.Success -> {
+                                _holidayApiState.value = DataState(data = result.data);
+                                launch(Dispatchers.IO) {
+                                    collectHolidayApiState()// fetched all events (from API)
+                                }
+                            }
+
+                            is Resource.Error -> {
+                                _holidayApiState.value =
+                                    DataState(
+                                        error = result.message ?: "An unexpected error occurred"
+                                    )
+                            }
+
+                            is Resource.Loading -> {
+                                _holidayApiState.value = DataState(isLoading = true)
+                            }
+
+                            else -> {}
                         }
                     }
-
-                    is Resource.Error -> {
-                        _holidayApiState.value =
-                            DataState(error = result.message ?: "An unexpected error occurred")
-                    }
-
-                    is Resource.Loading -> {
-                        _holidayApiState.value = DataState(isLoading = true)
-                    }
-
-                    else -> {}
-                }
             }
         }
     }
 
     /**Observe [holidayApiState] after getting data from API*/
     private fun collectHolidayApiState() {//insert in to DB
-        Log.i(TAG, "collectState: ")
+        Log.i(TAG, "collectHolidayApiState: ")
         viewModelScope.launch {
             holidayApiState.collect { state ->
                 when {
                     state.isLoading -> {
                         // Handle loading state (maybe trigger other UI-related actions or logging)
-                        Log.d(TAG, "collectState: isLoading state: ${state.isLoading}")
+                        Log.d(TAG, "collectHolidayApiState: isLoading state: ${state.isLoading}")
                     }
 
                     state.error.isNotEmpty() -> {
                         // Handle error state (maybe trigger logging, analytics, etc.)
-                        Log.d(TAG, "collectState: Error state: ${state.error}")
+                        Log.d(TAG, "collectHolidayApiState: Error state: ${state.error}")
                     }
 
                     state.data != null -> {
                         // Handle success case (trigger actions like logging, analytics, etc.)
                         val calendarDetails = state.data
-                        Log.d(TAG, "collectState: data available")
+                        Log.d(TAG, "collectHolidayApiState: data available")
 
                         // Process events
                         val events: List<Event> = calendarDetails.items

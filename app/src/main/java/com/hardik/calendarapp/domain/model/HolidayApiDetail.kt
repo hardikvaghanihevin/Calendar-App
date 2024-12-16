@@ -8,7 +8,7 @@ data class HolidayApiDetail(
     val etag: String,
     val items: List<Item>,
     val kind: String,
-    val nextSyncToken: String,
+    val nextSyncToken: String?,
     val summary: String,
     val timeZone: String,
     val updated: String

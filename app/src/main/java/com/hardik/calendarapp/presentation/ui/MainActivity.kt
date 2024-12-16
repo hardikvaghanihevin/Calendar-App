@@ -18,11 +18,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.createYearData
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,9 +34,9 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private final val TAG = BASE_TAG + MainActivity::class.java.simpleName
 
+    val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     lateinit var toolbar: Toolbar
     companion object{
         val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
@@ -45,7 +47,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate: ")
 
+        // Step 1: Retrieve saved language preference
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+        val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+
+        // Step 2: Update the locale before inflating the UI
+        LocaleHelper.setLocale(this, languageCode)
+
+        // Step 3: Inflate the layout and set the content view
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -78,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.newEventFragment, null, navOptions)
         }
 
+        mainViewModel.getHolidayCalendarData()
         // Collecting the StateFlow
         lifecycleScope.launch {
             mainViewModel.holidayApiState.collect { dataState ->
@@ -99,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
         navController.addOnDestinationChangedListener { _, destination, _ ->
             invalidateOptionsMenu()
-            val isFabVisible = destination.id != R.id.newEventFragment
+            val isFabVisible = destination.id != R.id.newEventFragment && destination.id != R.id.settingsFragment
 
             if (isFabVisible) {
                 showFabWithAnimation(binding.appBarMain.fab)

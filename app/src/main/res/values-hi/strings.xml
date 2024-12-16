@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">Calendar App</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+
+    <string name="mon">सोम</string>
+    <string name="tue">मंगल</string>
+    <string name="wed">बुध</string>
+    <string name="thu">गुरु</string>
+    <string name="fri">शुक्र</string>
+    <string name="sat">शनि</string>
+    <string name="sun">रवि</string>
+
+    <string name="short_mon">सो</string>
+    <string name="short_tue">मं</string>
+    <string name="short_wed">बु</string>
+    <string name="short_thu">गु</string>
+    <string name="short_fri">शु</string>
+    <string name="short_sat">श</string>
+    <string name="short_sun">र</string>
+
+    <string name="jan">जनवरी</string>
+    <string name="fab">फरवरी</string>
+    <string name="mar">मार्च</string>
+    <string name="apr">अप्रैल</string>
+    <string name="may">मई</string>
+    <string name="jun">जून</string>
+    <string name="jul">जुलाई</string>
+    <string name="aug">अगस्त</string>
+    <string name="sep">सितंबर</string>
+    <string name="oct">अक्टूबर</string>
+    <string name="nov">नवंबर</string>
+    <string name="dec">दिसंबर</string>
+
+    <string name="add_event">इवेंट जोड़ें</string>
+
+    <string name="hello_blank_fragment">हैलो खाली खंड</string>
+    <string name="calendar_month">कैलेंडर महीना</string>
+    <string name="calendar_year">कैलेंडर वर्ष</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="action_refresh">रिफ्रेश</string>
+    <string name="new_event">नया इवेंट</string>
+    <string name="update_event">इवेंट अपडेट करें</string>
+    <string name="action_save">सहेजें</string>
+    <string name="action_edit">संपादित करें</string>
+    <string name="view_event">इवेंट देखें</string>
+    <string name="event_title">इवेंट का शीर्षक</string>
+    <string name="no_description">कोई विवरण नहीं</string>
+    <string name="action_delete">हटाएं</string>
+    <string name="event_deleted">इवेंट डिलीट हो गया!</string>
+    <!-- Preference Titles -->
+    <string name="language_header">भाषा</string>
+    <string name="messages_header">संदेश</string>
+    <string name="sync_header">सिंक</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">आपका हस्ताक्षर</string>
+    <string name="reply_title">डिफ़ॉल्ट उत्तर क्रिया</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">ईमेल को नियमित रूप से सिंक करें</string>
+    <string name="attachment_title">आने वाली संलग्नक डाउनलोड करें </string>
+    <string name="attachment_summary_on">आने वाली ईमेल्स के लिए स्वचालित रूप से संलग्नक डाउनलोड करें</string>
+    <string name="attachment_summary_off">केवल तब संलग्नक डाउनलोड करें जब मैन्युअली अनुरोध किया जाए</string>
+
+    <string name="all_day">पूरे दिन</string>
+    <string name="start">शुरू</string>
+    <string name="end">समाप्त</string>
+    <string name="repeat">दोहराएं</string>
+    <string name="never">कभी नहीं</string>
+    <string name="alert">अलर्ट</string>
+    <string name="none">कोई नहीं</string>
+    <string name="note">नोट</string>
+    <string name="country_header">Country</string>
+</resources>
