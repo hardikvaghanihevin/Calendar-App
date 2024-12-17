@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.data.database.entity.RepeatOption
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -532,6 +533,45 @@ object DateUtil {
         val endTime = System.nanoTime()
         return endTime - startTime // Returns time in nanoseconds
     }
+
+
+    /** Function to Calculate Next Occurrence:
+    Write a utility function to calculate the next occurrence based on the current time and the selected repeat option. */
+    fun calculateNextOccurrence(startTime: Long, repeatOption: RepeatOption): Long? {
+        if (repeatOption == RepeatOption.ONCE) return null // No repeat
+
+        val calendar = Calendar.getInstance().apply { timeInMillis = startTime }
+        when (repeatOption) {
+            RepeatOption.DAILY -> calendar.add(Calendar.DAY_OF_YEAR, 1)
+            RepeatOption.WEEKLY -> calendar.add(Calendar.WEEK_OF_YEAR, 1)
+            RepeatOption.MONTHLY -> calendar.add(Calendar.MONTH, 1)
+            RepeatOption.YEARLY -> calendar.add(Calendar.YEAR, 1)
+            else -> return null
+        }
+        return calendar.timeInMillis
+    }
+
+
+    /** Optional: Save Recurring Events:
+    If you want to generate and save multiple instances of the recurring events, you can use a function to generate all occurrences within a specified time range.
+
+    val occurrences = generateOccurrences(startTime = System.currentTimeMillis(), repeatOption = RepeatOption.EVERY_MONTH, endTime = System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000 // One year later)
+    */
+    fun generateOccurrences(
+        startTime: Long,
+        repeatOption: RepeatOption,
+        endTime: Long
+    ): List<Long> {
+        val occurrences = mutableListOf<Long>()
+        var currentOccurrence = startTime
+
+        while (currentOccurrence <= endTime) {
+            occurrences.add(currentOccurrence)
+            currentOccurrence = calculateNextOccurrence(currentOccurrence, repeatOption) ?: break
+        }
+        return occurrences
+    }
+
 
 }
 

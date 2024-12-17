@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.widget.addTextChangedListener
@@ -32,6 +33,7 @@ import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.DialogItemDatePickerBinding
+import com.hardik.calendarapp.databinding.DialogItemRepeatBinding
 import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
 import com.hardik.calendarapp.databinding.FragmentNewEventBinding
 import com.hardik.calendarapp.utillities.DateUtil
@@ -88,7 +90,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                             val msg: String = viewModel.run {
                                 val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
                                 Log.e(TAG, "onMenuItemSelected: id: $id", )
-                                insertCustomEvent(id = id)
+                                insertCustomEvent(context = requireContext(),id = id)
                             }
 
                             // Display a message to the user
@@ -219,6 +221,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 }
             }
         }
+        binding.tvRepeat.setOnClickListener { showRepetitionDialog("Never") }
+        binding.tvAlert.setOnClickListener { showAlertRemindDialog() }
         binding.tInEdtEventNote.addTextChangedListener {
             viewModel.updateDescription(it.toString())
         }
@@ -456,5 +460,62 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     }
     private fun updateToolbarTitle(title: String) {
         toolbar?.title = title
+    }
+
+    private var dialogItemRepeatBinding: DialogItemRepeatBinding? = null
+    private fun showRepetitionDialog(selectedRepeatOption: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_item_repeat, null)
+        dialogItemRepeatBinding = DialogItemRepeatBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+
+        dialog.setCancelable(true)
+
+        dialogItemRepeatBinding?.dialogItemRepeatNever?.apply {
+            if (selectedRepeatOption.equals(this.text.toString(), ignoreCase = true)) this.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(requireContext(), R.drawable.checked),  null)
+            setOnClickListener {
+                dialog.dismiss()
+            } }
+        dialogItemRepeatBinding?.dialogItemRepeatEveryDay?.apply {
+            if (selectedRepeatOption.equals(this.text.toString(), ignoreCase = true)) this.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(requireContext(), R.drawable.checked),  null)
+            setOnClickListener {
+                dialog.dismiss()
+            } }
+        dialogItemRepeatBinding?.dialogItemRepeatEveryWeek?.apply {
+            if (selectedRepeatOption.equals(this.text.toString(), ignoreCase = true)) this.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(requireContext(), R.drawable.checked),  null)
+            setOnClickListener {
+                dialog.dismiss()
+            } }
+        dialogItemRepeatBinding?.dialogItemRepeatEveryMonth?.apply {
+            if (selectedRepeatOption.equals(this.text.toString(), ignoreCase = true)) this.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(requireContext(), R.drawable.checked),  null)
+            setOnClickListener {
+                dialog.dismiss()
+            } }
+        dialogItemRepeatBinding?.dialogItemRepeatEveryYear?.apply {
+            if (selectedRepeatOption.equals(this.text.toString(), ignoreCase = true)) this.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(requireContext(), R.drawable.checked),  null)
+            setOnClickListener {
+                dialog.dismiss()
+            } }
+
+        dialog.show()
+    }
+
+    private fun showAlertRemindDialog(){
+
     }
 }

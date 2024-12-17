@@ -20,6 +20,12 @@ interface EventDao {
     @Delete
     suspend fun deleteEvent(event: Event)
 
+    @Query("SELECT * FROM events WHERE eventId = :eventId LIMIT 1")
+    fun getEventById(eventId: Long): Flow<Event>?
+
+    @Query("SELECT eventId FROM events")
+    fun getAllEventIds(): Flow<List<Long>>
+
     @Query("SELECT * FROM events")
     suspend fun getAllEvents(): List<Event>
 

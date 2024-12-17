@@ -1,22 +1,60 @@
 package com.hardik.calendarapp.data.repository
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import android.widget.Toast
+import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.domain.repository.EventRepository
+import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
+import com.hardik.calendarapp.utillities.AlarmScheduler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
-    private val eventDao: EventDao
+    private val eventDao: EventDao,
+    private val context: Context
 ) : EventRepository {
+    private val TAG = BASE_TAG + EventRepositoryImpl::class.simpleName
+
+    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override suspend fun upsertEvent(event: Event) {
+        cancelAlarm(event.eventId) // Cancel any existing alarms for this event
         eventDao.upsertEvent(event)
+        scheduleAlarm(event)       // Set a new alarm for this event
     }
 
     override suspend fun upsertEvents(events: List<Event>) {
+        // Cancel all existing alarms and reschedule
+        cancelAllAlarms()
+
+        // Step 1: Check if the eventId exists
+        events.forEach { event ->
+            // Collect the Flow to check if the eventId exists
+            val exists = eventDao.getEventById(event.eventId)?.firstOrNull() // Collect only the first result (suspendable function)
+
+            if (exists != null) {
+                Log.d(TAG,"UpsertEvents -> Event with ID: ${event.eventId} already exists, updating...")
+            } else {
+                Log.v(TAG,"UpsertEvents ->New event inserted with ID: ${event.eventId}.")
+            }
+        }
         eventDao.upsertEvents(events)
+        events.forEach { event ->
+            scheduleAlarm(event)
+        }
     }
 
     override suspend fun updateEvent(event: Event) {
@@ -25,6 +63,13 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun deleteEvent(event: Event) {
         eventDao.deleteEvent(event)
+    }
+
+    override fun getEventById(eventId: Long): Flow<Event>?{
+        return eventDao.getEventById(eventId)
+    }
+    override fun getAllEventIds(): Flow<List<Long>>{
+        return eventDao.getAllEventIds()
     }
 
     override fun getAllEvents(): Flow<List<Event>> {
@@ -52,5 +97,56 @@ class EventRepositoryImpl @Inject constructor(
 
     override fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>{
         return eventDao.getEventByTitleAndType(title = title, eventType = eventType)
+    }
+
+
+    private fun scheduleAlarm(event: Event) {
+        if (!hasExactAlarmPermission()) {
+            Log.w(TAG, "Exact alarm permission missing.")
+            requestExactAlarmPermission()
+        } else {
+            AlarmScheduler.updateAlarm(context, event)
+            Log.d(TAG, "Alarm scheduled for event: ${event.title}")
+            //Toast.makeText(context, "Alarm set for event: ${event.title}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun cancelAlarm(eventId: Long) {
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            eventId.toInt(),
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+        pendingIntent?.let {
+            alarmManager.cancel(it)
+            Log.d(TAG, "Alarm canceled for eventId: $eventId")
+        }
+    }
+
+    private fun cancelAllAlarms() {
+        CoroutineScope(Dispatchers.IO).launch {
+            eventDao.getAllEvents().forEach { event ->
+                cancelAlarm(event.eventId)
+            }
+        }
+    }
+
+    // Check if the app has the SCHEDULE_EXACT_ALARM permission
+    private fun hasExactAlarmPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            alarmManager.canScheduleExactAlarms() }
+        else { true }// Permission not required on older versions
+    }
+
+    // Request exact alarm permission
+    private fun requestExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = android.net.Uri.parse("package:${context.packageName}") }
+            Toast.makeText(context, "Please allow exact alarm permission.", Toast.LENGTH_LONG).show()
+            context.startActivity(intent) }
+        else {
+            Toast.makeText(context, "Exact alarm permission not needed for this version.", Toast.LENGTH_SHORT).show() }
     }
 }

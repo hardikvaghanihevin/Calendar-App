@@ -68,13 +68,13 @@ class MainViewModel @Inject constructor(
     /**Get holiday list by using API*/
     fun getHolidayCalendarData() {
         Log.i(TAG, "getHolidayCalendarData: ")
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
             val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-            val countryCode: Set<String> = sharedPreferences.getStringSet("countries",setOf("indian")) ?: setOf("indian")
+            val countryCodes: Set<String> = sharedPreferences.getStringSet("countries",setOf("indian")) ?: setOf("indian")
 
-            Log.d(TAG, "getHolidayCalendarData: countryCode:$countryCode")
-            countryCode.forEach { countryCode ->
+            Log.d(TAG, "getHolidayCalendarData: countryCode:$countryCodes")
+            countryCodes.forEach { countryCode ->
                 getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode)
                     .collect { result: Resource<HolidayApiDetail> ->
                         when (result) {
@@ -106,8 +106,8 @@ class MainViewModel @Inject constructor(
     /**Observe [holidayApiState] after getting data from API*/
     private fun collectHolidayApiState() {//insert in to DB
         Log.i(TAG, "collectHolidayApiState: ")
-        viewModelScope.launch {
-            holidayApiState.collect { state ->
+        viewModelScope.launch(Dispatchers.IO) {
+            holidayApiState.collectLatest { state ->
                 when {
                     state.isLoading -> {
                         // Handle loading state (maybe trigger other UI-related actions or logging)
@@ -142,7 +142,8 @@ class MainViewModel @Inject constructor(
                                     startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
                                     endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
                                     isHoliday = true,
-                                    sourceType = SourceType.REMOTE
+                                    sourceType = SourceType.REMOTE,
+                                    eventId = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
                                 )
 
                             }
@@ -178,7 +179,8 @@ class MainViewModel @Inject constructor(
                     startTime = startTime,
                     endTime = endTime,
                     isHoliday = true,
-                    sourceType = SourceType.CURSOR
+                    sourceType = SourceType.CURSOR,
+                    eventId = startTime
                 )
 
             }
@@ -198,7 +200,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun insertEvents(events: List<Event>) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             eventRepository.upsertEvents(events)
         }
     }

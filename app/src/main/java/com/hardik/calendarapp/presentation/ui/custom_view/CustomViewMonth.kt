@@ -27,7 +27,7 @@ var _selectedDate: String? = null
 @SuppressLint("CustomViewStyleable")
 class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
     private final val TAG = BASE_TAG + CustomViewMonth::class.java.simpleName
-    private var designMode: Int = 2
+    private var designMode: Int = 1
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful

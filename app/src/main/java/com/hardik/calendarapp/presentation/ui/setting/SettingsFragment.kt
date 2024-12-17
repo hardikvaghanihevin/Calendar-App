@@ -22,6 +22,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         setListPreferenceLanguage()
 
+        setListPreferenceCountry()
+    }
+
+    private fun setListPreferenceCountry() {
         val listPreferenceCountry = findPreference<MultiSelectListPreference>("countries")!!
 
         // Check if the preference is empty or not initialized
@@ -68,9 +72,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 false // Reject the change if newValue is not a Set
             }
         }
-
     }
-
     private fun updateCountrySummary(preference: MultiSelectListPreference, selectedValues: Set<String>? = null) {
         val selectedCountries = selectedValues ?: preference.values
         if (selectedCountries.isEmpty()) {
@@ -83,6 +85,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
     }
+
     private fun setListPreferenceLanguage() {
         // Find the ListPreference by key
         listPreferenceLanguage  = findPreference<ListPreference>("language")!!

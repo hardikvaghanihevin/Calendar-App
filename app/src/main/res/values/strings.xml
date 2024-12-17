@@ -79,4 +79,8 @@
     <string name="none">None</string>
     <string name="note">Note</string>
     <string name="country_header">Country</string>
+    <string name="every_day">Every Day</string>
+    <string name="every_week">Every Week</string>
+    <string name="every_month">Every Month</string>
+    <string name="every_year">Every Year</string>
 </resources>

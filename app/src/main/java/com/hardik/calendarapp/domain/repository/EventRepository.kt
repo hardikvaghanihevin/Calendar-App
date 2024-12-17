@@ -10,6 +10,8 @@ interface EventRepository {
     suspend fun updateEvent(event: Event)
     suspend fun deleteEvent(event: Event)
 
+    fun getEventById(eventId: Long): Flow<Event>?
+    fun getAllEventIds(): Flow<List<Long>>
     fun getAllEvents(): Flow<List<Event>>
     fun getHolidayEvents(): Flow<List<Event>>
     fun getEventsForMonth(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>>

@@ -30,7 +30,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideEventRepository(eventDao: EventDao): EventRepository {
-        return EventRepositoryImpl(eventDao)
+    fun provideEventRepository(eventDao: EventDao, @ApplicationContext context: Context): EventRepository {
+        return EventRepositoryImpl(eventDao, context)
     }
 }

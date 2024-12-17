@@ -2,15 +2,19 @@ package com.hardik.calendarapp.data.database.entity
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import kotlinx.parcelize.Parcelize
 
-@Entity(tableName = "events")
-
+@Entity(tableName = "events",
+    indices = [Index(value = ["eventId"], unique = true)] // Enforce uniqueness on eventId
+)
 @Parcelize
 data class Event(
-    @PrimaryKey(autoGenerate = false) val id: String = "",
+    @PrimaryKey(autoGenerate = false)
+    val id: String = "", // Primary key
+    var eventId: Long = 0L, // Auto-incremented, unique
     val title: String,
     val startTime: Long, // Timestamp
     val endTime: Long,   // Timestamp
@@ -22,7 +26,9 @@ data class Event(
     val isHoliday: Boolean = false, // To differentiate holiday events
     val eventType: EventType = EventType.GLOBAL_HOLIDAY,
     val sourceType: SourceType = SourceType.REMOTE,
-    val description: String = ""
+    val description: String = "",
+    val repeatOption: RepeatOption = RepeatOption.ONCE,
+    val alertOffset: Long = 0L,
 ) : Parcelable
 
 fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
@@ -60,6 +66,27 @@ enum class EventType {
 }
 enum class SourceType(val value: Int) {
     REMOTE(0), CURSOR(1), LOCAL(2)
+}
+
+enum class RepeatOption {
+    ONCE,
+    DAILY,
+    WEEKLY,
+    MONTHLY,
+    YEARLY
+}
+
+fun getAlertOffset(option: String): Long {
+    return when (option) {
+        "At a time" -> 0L
+        "Before 10 minutes" -> -10 * 60 * 1000
+        "Before 15 minutes" -> -15 * 60 * 1000
+        "Before 30 minutes" -> -30 * 60 * 1000
+        "Before 1 hour" -> -60 * 60 * 1000
+        "Before 12 hours" -> -12 * 60 * 60 * 1000
+        "Before 1 day" -> -24 * 60 * 60 * 1000
+        else -> 0L // Default to "at a time"
+    }
 }
 
 typealias YearKey = String

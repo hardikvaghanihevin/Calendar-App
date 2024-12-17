@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
+import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetEventByTitleAndType
@@ -137,6 +139,9 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
+    //todo: Event Repeat (Never, Daly, Weekly, Monthly, Yearly)
+
+
     private suspend fun validateEvent(eventId: String? = null): String? {
         // Validate event title
         if (title.value.isBlank()) {
@@ -180,7 +185,7 @@ class NewEventViewModel @Inject constructor(
     }
 
 
-    suspend fun insertCustomEvent(id: String?): String{
+    suspend fun insertCustomEvent(context: Context,id: String?): String{
         Log.d(TAG, "insertCustomEvent: ")
         val errorMessage = validateEvent(eventId = id)
         Log.e(TAG, "insertCustomEvent: $errorMessage", )
@@ -207,7 +212,10 @@ class NewEventViewModel @Inject constructor(
             date = date.third,
             eventType = EventType.PERSONAL,
             isHoliday = false,
-            sourceType = SourceType.LOCAL
+            sourceType = SourceType.LOCAL,
+            repeatOption = RepeatOption.ONCE,//*
+            alertOffset = 0L,//*
+            eventId = currentEpochTime,//*
         )
 
         insertEvent(event)
