@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_DAY
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.common.Constants.KEY_MONTH
 import com.hardik.calendarapp.common.Constants.KEY_YEAR
@@ -70,7 +71,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     var year: Int = Calendar.getInstance().get(Calendar.YEAR)
     var month: Int = Calendar.getInstance().get(Calendar.MONTH)
-    var day: Int = 1
+    var day: Int = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
     private lateinit var viewPager: ViewPager2
     private var currDate = DateTime()
@@ -80,7 +81,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         arguments?.let {
             year = it.getInt(KEY_YEAR)
             month = it.getInt(KEY_MONTH)
-            day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+            day = it.getInt(KEY_DAY)
+            selectedDate = "$year-$month-$day"
+            Log.e(TAG, "onCreate: $selectedDate", )
         }
 
         viewModel.updateYear(year)
@@ -230,7 +233,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 //        }
 //        //todo: Fetch events for the first and last dates from the database
 //        viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-        viewModel.getEventsByMonthOfYear(year = year.toString(),month = month.toString())
+        if (arguments?.containsKey(KEY_YEAR) == true && arguments?.containsKey(KEY_MONTH) == true && arguments?.containsKey(KEY_DAY) == true) {
+            viewModel.getEventsByDateOfMonthOfYear(year = year.toString(),month = month.toString(), date = day.toString())// Its come from jump to date
+
+        }else{
+            viewModel.getEventsByMonthOfYear(year = year.toString(),month = month.toString())//Its come from direct month fragment or year fragment
+        }
 
     }
 
@@ -312,14 +320,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         pageAdapter.updateEventsOfDate(_eventsOfDateMap)
         //Todo: Start in the middle for infinite scrolling and set to the current month
         viewPager.setCurrentItem(previousPosition, false)
+        pageAdapter.setSelectedDate(selectedDate)
 
         viewModel.updateYear(year)
 
-
         pageAdapter.configureCustomView {customViewMonth ->
+            //customViewMonth.selectedDate = "2024-11-25"
             customViewMonth.getMonthNameClickListener{ year: YearKey, month: MonthKey ->
-                viewModel.getEventsByMonthOfYear(year = year, month = month)
-            }
+                viewModel.getEventsByMonthOfYear(year = year, month = month) }
 
             customViewMonth.getDateClickListener{triple: Triple<Rect, Canvas, String> ->
                 Log.v(TAG, "setupViewPager: ${triple}", )

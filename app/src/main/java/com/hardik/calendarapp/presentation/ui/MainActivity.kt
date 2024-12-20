@@ -1,28 +1,40 @@
 package com.hardik.calendarapp.presentation.ui
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
+import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
@@ -38,6 +50,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     lateinit var toolbar: Toolbar
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var navController: NavController
     companion object{
         val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
         val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
@@ -67,13 +81,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
+        drawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment
+            setOf(R.id.nav_home, R.id.jumpToDate, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -110,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        navController.addOnDestinationChangedListener { navCont: NavController, destination: NavDestination, _ ->
             invalidateOptionsMenu()
             val isFabVisible = destination.id != R.id.newEventFragment && destination.id != R.id.settingsFragment
 
@@ -120,6 +134,95 @@ class MainActivity : AppCompatActivity() {
                 hideFabWithAnimation(binding.appBarMain.fab)
             }
         }
+
+        navView.setNavigationItemSelectedListener {item: MenuItem ->
+            when (item.itemId) {
+                R.id.jumpToDate -> {
+                    showJumpToDateDialog()//todo:note when cancel its comes to previous page
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    false // Return true to 'mark' the item as handled
+                }
+                else -> {
+                    // Let the NavController handle other menu items
+                    NavigationUI.onNavDestinationSelected(item, navController)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+            }
+        }
+    }
+
+
+    private var dialogJumpToDateBinding: DialogJumpToDateBinding? = null
+    private fun showJumpToDateDialog() {
+        Log.i(TAG, "showJumpToDateDialog: ")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_jump_to_date, null)
+        dialogJumpToDateBinding = DialogJumpToDateBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+
+        dialog.setCancelable(true)
+
+//        navController.popBackStack()
+//        navController.navigate(R.id.calendarMonth1Fragment, null, navOptions)
+        dialog.show()
+
+
+        dialogJumpToDateBinding?.apply {
+            yearPicker.apply {
+                minValue = 2000
+                maxValue = 2100
+                value = 2025
+            }
+            monthPicker.apply {
+                minValue = 1
+                maxValue = 12
+            }
+            dayPicker.apply {
+                minValue = 1
+                maxValue = 31
+            }
+            btnJump.setOnClickListener {
+                val selectedYear = yearPicker.value
+                val selectedMonth = monthPicker.value
+                val selectedDay = dayPicker.value
+                // Perform your "Jump to Date" logic here
+                Log.d(TAG, "showJumpToDateDialog: $selectedYear - $selectedMonth - $selectedDay")
+
+                lifecycleScope.launch {
+                    // Make sure the navigation happens on the main thread
+                    Log.e(TAG, "navigateToCalendarMonth:  ${Thread.currentThread().name}", )
+                    val bundle = Bundle().apply {
+                        putInt(Constants.KEY_YEAR, selectedYear)
+                        putInt(Constants.KEY_MONTH, selectedMonth -1)
+                        putInt(Constants.KEY_DAY, selectedDay)
+                    }
+                    navController.popBackStack()//for repeat entry clear
+                    navController.navigate(R.id.calendarMonth1Fragment, bundle, navOptions)
+                }
+
+                dialog.dismiss()
+            }
+            btnCancel.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {

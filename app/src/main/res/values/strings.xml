@@ -79,8 +79,24 @@
     <string name="none">None</string>
     <string name="note">Note</string>
     <string name="country_header">Country</string>
+    <string name="at_once">At Once</string>
     <string name="every_day">Every Day</string>
     <string name="every_week">Every Week</string>
     <string name="every_month">Every Month</string>
     <string name="every_year">Every Year</string>
+    <string name="at_time">At Time</string>
+    <string name="before_5_minutes">Before 5 minutes</string>
+    <string name="before_10_minutes">Before 10 minutes</string>
+    <string name="before_15_minutes">Before 15 minutes</string>
+    <string name="before_30_minutes">Before 30 minutes</string>
+    <string name="before_1_hour">Before 1 hour</string>
+    <string name="before_12_hours">Before 12 hours</string>
+    <string name="before_1_day">Before 1 day</string>
+    <string name="before_3_days">Before 3 days</string>
+    <string name="before_5_days">Before 5 days</string>
+    <string name="before_1_week">Before 1 week</string>
+    <string name="before_2_weeks">Before 2 weeks</string>
+    <string name="before_1_month">Before 1 month</string>
+    <string name="before_custom_time">Before Custom time</string>
+    <string name="jump_to_date">Jump to date</string>
 </resources>

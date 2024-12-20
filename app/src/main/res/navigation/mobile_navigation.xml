@@ -27,7 +27,7 @@
         android:id="@+id/calendarMonth1Fragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
         android:label="@string/calendar_month"
-        tools:layout="@layout/fragment_calendar_month1" >
+        tools:layout="@layout/fragment_calendar_month1">
 
     </fragment>
 
@@ -35,7 +35,7 @@
         android:id="@+id/calendarYear1Fragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year_1.CalendarYear1Fragment"
         android:label="@string/calendar_year"
-        tools:layout="@layout/fragment_calendar_year1" >
+        tools:layout="@layout/fragment_calendar_year1">
         <action
             android:id="@+id/action_calendarYear1Fragment_to_calendarMonth1Fragment"
             app:destination="@id/calendarMonth1Fragment" />

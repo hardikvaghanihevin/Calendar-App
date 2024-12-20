@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
+import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
@@ -139,8 +140,41 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
-    //todo: Event Repeat (Never, Daly, Weekly, Monthly, Yearly)
+    //todo: Event Repeat (None, Once, Daly, Weekly, Monthly, Yearly)
+    private val _repeatOption = MutableStateFlow(RepeatOption.NEVER)//ONCE
+    val repeatOption:StateFlow<RepeatOption> = _repeatOption
 
+    fun updateRepeatOption(repeatOption: RepeatOption){
+        Log.d(TAG, "updateRepeatOption: $repeatOption")
+        viewModelScope.launch {
+            _repeatOption.value = repeatOption
+        }
+    }
+
+    //todo: Event Alert (Before 5 min,10 min, 15 min, 1 hour, 1 day...)
+    private val _alertOffset = MutableStateFlow(AlertOffset.AT_TIME)
+    val alertOffset: StateFlow<AlertOffset> = _alertOffset
+
+    fun updateAlertOffset(alertOffset: AlertOffset){
+        Log.d(TAG, "updateAlertOffset: $alertOffset")
+        viewModelScope.launch {
+            if(alertOffset != AlertOffset.BEFORE_CUSTOM_TIME) updateCustomAlertOffset()
+            _alertOffset.value = alertOffset
+        }
+    }
+
+    private val _customAlertOffset = MutableStateFlow<Long?>(null)
+    val customAlertOffset: StateFlow<Long?> = _customAlertOffset
+
+    fun updateCustomAlertOffset(customAlertOffset: Long? = null) {
+        Log.d(TAG, "updateCustomAlertOffset: $customAlertOffset")
+        viewModelScope.launch {
+            if (customAlertOffset != null) {
+                updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)
+            }
+            _customAlertOffset.value = customAlertOffset
+        }
+    }
 
     private suspend fun validateEvent(eventId: String? = null): String? {
         // Validate event title
@@ -213,8 +247,9 @@ class NewEventViewModel @Inject constructor(
             eventType = EventType.PERSONAL,
             isHoliday = false,
             sourceType = SourceType.LOCAL,
-            repeatOption = RepeatOption.ONCE,//*
-            alertOffset = 0L,//*
+            repeatOption = repeatOption.value,//*
+            alertOffset = alertOffset.value,//*
+            customAlertOffset = customAlertOffset.value,//*
             eventId = currentEpochTime,//*
         )
 
@@ -223,6 +258,7 @@ class NewEventViewModel @Inject constructor(
     }
 
     fun resetEventState() {
+        Log.d(TAG, "resetEventState: ")
         val date = DateUtil.getStartAndEndOfDay(Calendar.getInstance().timeInMillis)
 
         viewModelScope.launch {
@@ -242,6 +278,9 @@ class NewEventViewModel @Inject constructor(
             _title.value = ""
             _description.value = ""
             _isAllDay.value = false
+            _repeatOption.value = RepeatOption.NEVER//ONCE
+            _alertOffset.value = AlertOffset.AT_TIME
+            _customAlertOffset.value = null
         }
     }
 

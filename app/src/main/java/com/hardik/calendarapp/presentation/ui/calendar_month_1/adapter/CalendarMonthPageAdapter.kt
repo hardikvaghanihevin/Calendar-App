@@ -23,6 +23,12 @@ class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, In
         notifyDataSetChanged()
     }
 
+    private var selectedDate:String? = null
+    @SuppressLint("NotifyDataSetChanged")
+    fun setSelectedDate(yyyy_mm_dd: String?){
+        this.selectedDate = yyyy_mm_dd
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
         val binding = ItemMonthPage1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -36,6 +42,7 @@ class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, In
         holder.binding.customView.apply {
             this.currentYear = year
             this.currentMonth = month
+            this@CalendarMonthPageAdapter.selectedDate?.let { this.selectedDate = it }//"2024-11-25"
             enableTouchEventHandling(enable = true)
             this.eventDateList = eventsOfDateMap
             postInvalidate() // Redraw the custom view if needed

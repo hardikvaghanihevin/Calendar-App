@@ -12,10 +12,12 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.common.DataState
 import com.hardik.calendarapp.common.Resource
+import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
+import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.data.database.entity.organizeEvents
@@ -143,6 +145,9 @@ class MainViewModel @Inject constructor(
                                     endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
                                     isHoliday = true,
                                     sourceType = SourceType.REMOTE,
+                                    repeatOption = RepeatOption.NEVER,//*
+                                    alertOffset = AlertOffset.AT_TIME,//*
+                                    customAlertOffset = null,//*
                                     eventId = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
                                 )
 
@@ -180,7 +185,10 @@ class MainViewModel @Inject constructor(
                     endTime = endTime,
                     isHoliday = true,
                     sourceType = SourceType.CURSOR,
-                    eventId = startTime
+                    repeatOption = RepeatOption.NEVER,//*
+                    alertOffset = AlertOffset.AT_TIME,//*
+                    customAlertOffset = null,//*
+                    eventId = startTime//todo: here to set unique things set for loop by 1 to n list size
                 )
 
             }
@@ -201,7 +209,32 @@ class MainViewModel @Inject constructor(
 
     private fun insertEvents(events: List<Event>) {
         viewModelScope.launch(Dispatchers.IO) {
-            eventRepository.upsertEvents(events)
+            // Get the current counter value
+            var currentCounter = counterEventId.value
+
+            // Update events and increment the counter for each one
+            val updatedEvents = events.map { event ->
+                val updatedEvent = event.copy(eventId = event.eventId + currentCounter)
+                currentCounter += 1 // Increment locally
+                updatedEvent
+            }
+
+            // Update the global counter with the total increment
+            updateCounterEventId(events.size)
+
+            // Insert updated events into the repository
+            eventRepository.upsertEvents(updatedEvents)
+        }
+    }
+
+    // Global counter
+    private val _counterEventId = MutableStateFlow(1L)
+    val counterEventId: StateFlow<Long> = _counterEventId
+
+    fun updateCounterEventId(count:Int = 1 ){
+        viewModelScope.launch(Dispatchers.IO) {
+            // Update the counter atomically
+            _counterEventId.value += count
         }
     }
 

@@ -10,6 +10,7 @@ object Constants {
     const val BASE_TAG = "A_"
     const val KEY_YEAR = "key_year"
     const val KEY_MONTH = "key_month"
+    const val KEY_DAY = "key_day"
     const val KEY_EVENT = "key_event"
 
     const val EVENT_INSERT_SUCCESSFULLY = "Event inserted successfully"

@@ -78,14 +78,3 @@ fun getAllCursorEvents(context: Context): List<CursorEvent> {
 
     return events
 }
-//347
-//215
-//132
-//1706227200000 | Republic Day
-//1706207400000 | Republic Day
-//1737829800000 | Republic Day
-//1	1737829800000 | Republic Day	Republic Day	1737829800000	1737916200000	2025-01-26	2025-01-27	2025	0	26	1	GLOBAL_HOLIDAY	REMOTE	Public holiday
-//2	1706207400000 | Republic Day	Republic Day	1706207400000	1706293800000	2024-01-26	2024-01-27	2024	0	26	1	GLOBAL_HOLIDAY	REMOTE	Public holiday
-//3	1706227200000 | Republic Day	Republic Day	1706227200000	1706313600000	2024-01-26	2024-01-27	2024	0	26	1	GLOBAL_HOLIDAY	CURSOR	Public holiday
-//4	1737849600000 | Republic Day	Republic Day	1737849600000	1737936000000	2025-01-26	2025-01-27	2025	0	26	1	GLOBAL_HOLIDAY	CURSOR	Public holiday
-//select * from events where title = 'Republic Day' and (year = 2024 or year = 2025)

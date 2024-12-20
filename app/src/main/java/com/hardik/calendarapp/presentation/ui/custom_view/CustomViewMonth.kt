@@ -31,6 +31,15 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     val today = Calendar.getInstance()
 
     //region Function for Variables todo:for programmatically useful
+
+    // Getter and Setter for selectedDate
+    var selectedDate: String?
+        get() = _selectedDate
+        set(value) {
+            _selectedDate = value
+            postInvalidate() // Redraw the view when updated externally
+        }
+
     var eventDateList: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>
         get() = _eventDateList
         set(value) {
@@ -293,7 +302,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
                 // Check if any date block was clicked
                 // It's a tap, handle the date selection
-                for (triple in daysBlocks) {
+                /*for (triple in daysBlocks) {
                     val rect = triple.first
                     if (rect.contains(x.toInt(), y.toInt())) {
 
@@ -303,6 +312,21 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
                         // Trigger the listener and redraw the view
                         _selectedDate = onDateItemClickListener?.invoke(triple)
+                        postInvalidate()
+                        return true
+                    }
+                }*/
+                for (triple in daysBlocks) {
+                    val rect = triple.first
+                    if (rect.contains(x.toInt(), y.toInt())) {
+                        // Get the clicked date from the Triple
+                        val clickedDate = triple.third
+
+                        // Update _selectedDate
+                        _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
+
+                        // Trigger the listener and redraw
+                        onDateItemClickListener?.invoke(triple)
                         postInvalidate()
                         return true
                     }
@@ -565,12 +589,13 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                     val isSelected = dateString == _selectedDate
 
                     // Draw the background using the drawable if available
+                    // Draw the background with a selected color
                     backgroundDrawableDate?.let { drawable ->
-                        val color = if (isToday) Color.YELLOW else Color.WHITE
-                        modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, if (isSelected) Color.GREEN else color)
+                        val color = if (isSelected) Color.GREEN else if (isToday) Color.YELLOW else Color.WHITE
+                        modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, color)
                     } ?: run {
                         // If no drawable is set, use a solid color
-                        paint.color = if(isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY
+                        paint.color = if (isSelected) Color.GREEN else if (isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY
                         canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
                     }
 

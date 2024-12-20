@@ -20,8 +20,11 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
+import com.hardik.calendarapp.data.database.entity.AlertOffset
+import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
+import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.databinding.FragmentViewEventBinding
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
@@ -84,9 +87,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
                     R.id.action_delete -> {
                         lifecycleScope.launch {
                             viewModel.deleteEvent(argEvent)
-                            Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG)
-                                .setAnchorView(binding.baseline)
-                                .show()
+                            Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
                             viewModel.resetEventState()
                             findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                         }
@@ -141,6 +142,25 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             timestamp = event.endTime,
             pattern = DateUtil.TIME_FORMAT_hh_mm_a
         )
+
+        binding.tvRepeatPicker.text = RepeatOptionConverter.toDisplayString(
+            context = requireContext(),
+            repeatOption = event.repeatOption
+        )
+        //binding.tvAlertPicker.text = AlertOffsetConverter.toDisplayString(context = requireContext(), alertOffset = event.alertOffset)
+        val minutesTime = if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME)
+            event.customAlertOffset.let {value: Long? ->
+                if (value == null) "Custom time is not set"//"null"
+                else {
+                    //DateUtil.longToString(timestamp = it, pattern = DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm)
+                    "Before ${DateUtil.timestampToMinutes(milliseconds = value)} minute"
+                }
+            }
+        else AlertOffsetConverter.toDisplayString(
+            context = requireContext(),
+            alertOffset = event.alertOffset
+        )
+        binding.tvAlertPicker.text = minutesTime
 
 
         /*// Update ViewModel with the data

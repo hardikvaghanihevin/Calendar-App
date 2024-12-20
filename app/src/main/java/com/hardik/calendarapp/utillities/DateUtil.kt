@@ -22,6 +22,7 @@ object DateUtil {
 
     // Define common date formats
     const val TIME_FORMAT_h_mm_a = "h:mm a"
+    const val TIME_FORMAT_mm = "mm"
     const val TIME_FORMAT_hh_mm_a = "hh:mm a"
     const val DATE_FORMAT_yyyy_MM_dd = "yyyy-MM-dd"
     const val DATE_FORMAT_dd_MM_yyyy = "dd MM yyyy"
@@ -538,7 +539,8 @@ object DateUtil {
     /** Function to Calculate Next Occurrence:
     Write a utility function to calculate the next occurrence based on the current time and the selected repeat option. */
     fun calculateNextOccurrence(startTime: Long, repeatOption: RepeatOption): Long? {
-        if (repeatOption == RepeatOption.ONCE) return null // No repeat
+        //if (repeatOption == RepeatOption.ONCE) return null // No repeat
+        if (repeatOption == RepeatOption.NEVER) return null // No repeat
 
         val calendar = Calendar.getInstance().apply { timeInMillis = startTime }
         when (repeatOption) {
@@ -573,6 +575,25 @@ object DateUtil {
     }
 
 
+    /**
+     * Converts the given number of minutes to milliseconds.
+     *
+     * @param minutes The number of minutes to convert.
+     * @return The equivalent time in milliseconds.
+     */
+    fun minutesToTimestamp(minutes: Int): Long {
+        return minutes * 60 * 1000L
+    }
+
+    /**
+     * Converts the given time in milliseconds to minutes.
+     *
+     * @param milliseconds The time in milliseconds to convert.
+     * @return The equivalent time in minutes.
+     */
+    fun timestampToMinutes(milliseconds: Long): Int {
+        return (milliseconds / 60 / 1000).toInt()
+    }
 }
 
 //// Convert to epoch time
