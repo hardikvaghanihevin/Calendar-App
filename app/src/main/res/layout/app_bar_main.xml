@@ -1,4 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.ui.MainActivity">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/Theme.CalendarApp.PopupOverlay" />
+
+    <!-- Main content -->
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+        <!-- Include main content -->
+        <include layout="@layout/content_main" />
+    </FrameLayout>
+
+    <!-- Floating Action Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/add_event"
+        android:visibility="visible"
+        app:backgroundTint="@color/blue"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"
+        app:srcCompat="@drawable/baseline_add_24" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,10 +61,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.CalendarApp.PopupOverlay" />
-
+            android:background="?attr/colorPrimaryVariant"
+            app:popupTheme="@style/Theme.CalendarApp.PopupOverlay"
+            />
     </com.google.android.material.appbar.AppBarLayout>
+
 
     <include layout="@layout/content_main" />
 
@@ -31,9 +78,9 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/add_event"
         android:visibility="visible"
-        app:fabSize="mini"
         app:backgroundTint="@color/blue"
+        app:fabSize="mini"
         app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"
         app:srcCompat="@drawable/baseline_add_24" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>-->

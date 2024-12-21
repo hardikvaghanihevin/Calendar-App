@@ -6,12 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".presentation.ui.calendar_month_1.CalendarMonth1Fragment">
 
+    <TextView
+        android:id="@+id/tv_month_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:paddingStart="@dimen/_10sdp"
+        tools:text="Month 2000"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        tools:ignore="RtlSymmetry" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager_calendarMonth"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_250sdp"
         android:layout_marginTop="@dimen/_1sdp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_month_title"
         app:layout_constraintVertical_bias="0"
         tools:layout_height="250dp" />
 

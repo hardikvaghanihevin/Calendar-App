@@ -400,7 +400,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         requireActivity().findViewById<Toolbar>(R.id.toolbar)
     }
     private fun updateToolbarTitle(title: String) {
-        toolbar?.title = title
+        toolbar?.title = resources.getString(R.string.app_name)//title
+        binding.tvMonthTitle.text = title
     }
 
 }

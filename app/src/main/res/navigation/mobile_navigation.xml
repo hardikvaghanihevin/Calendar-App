@@ -8,34 +8,34 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.hardik.calendarapp.presentation.ui.home.HomeFragment"
-        android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
+<!--        android:label="@string/menu_home"-->
 
     <fragment
         android:id="@+id/calendarMonthFragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month.CalendarMonthFragment"
-        android:label="@string/calendar_month"
         tools:layout="@layout/fragment_calendar_month" />
+<!--        android:label="@string/calendar_month"-->
 
     <fragment
         android:id="@+id/calendarYearFragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year.CalendarYearFragment"
-        android:label="@string/calendar_year"
         tools:layout="@layout/fragment_calendar_year" />
+<!--        android:label="@string/calendar_year"-->
 
     <fragment
         android:id="@+id/calendarMonth1Fragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
-        android:label="@string/calendar_month"
         tools:layout="@layout/fragment_calendar_month1">
+<!--        android:label="@string/calendar_month"-->
 
     </fragment>
 
     <fragment
         android:id="@+id/calendarYear1Fragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year_1.CalendarYear1Fragment"
-        android:label="@string/calendar_year"
         tools:layout="@layout/fragment_calendar_year1">
+<!--        android:label="@string/calendar_year"-->
         <action
             android:id="@+id/action_calendarYear1Fragment_to_calendarMonth1Fragment"
             app:destination="@id/calendarMonth1Fragment" />

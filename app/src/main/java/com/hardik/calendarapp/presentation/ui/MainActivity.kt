@@ -79,6 +79,8 @@ class MainActivity : AppCompatActivity() {
 
         toolbar = binding.appBarMain.toolbar
         setSupportActionBar(toolbar)
+        // Change the navigation icon color
+        toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.drawerIconColor))
 
 
         drawerLayout = binding.drawerLayout
@@ -86,10 +88,7 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.jumpToDate, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment
-            ), drawerLayout
-        )
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.jumpToDate, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
