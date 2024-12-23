@@ -10,6 +10,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.VectorDrawable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -120,9 +121,20 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     }
 
     private fun getMonthName(month: Int): String {
-        return  if (monthNameWithYear) DateFormatSymbols().months[month]+"-" + currentYear
+        return  if (monthNameWithYear) DateFormatSymbols().months[month]+" " + currentYear
         else DateFormatSymbols().months[month]
     }
+
+    private var _isMonthViewVisible = true
+    var isMonthViewVisible: Boolean
+        get() = _isMonthViewVisible
+        set(value) {
+            if (_isMonthViewVisible != value) {
+                _isMonthViewVisible = value
+                invalidate()  // Redraw the view
+                requestLayout()  // Adjust layout if necessary
+            }
+        }
 
     fun getWeekCount(year: Int, month: Int): Int { return 0 }
 
@@ -147,6 +159,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     fun backgroundDrawableMonth(backgroundDrawableMonth: Drawable?){ this.backgroundDrawableMonth = backgroundDrawableMonth }
     fun backgroundDrawableDay(backgroundDrawableDay: Drawable?){ this.backgroundDrawableDay = backgroundDrawableDay }
     fun backgroundDrawableDate(backgroundDrawableDate: Drawable?){ this.backgroundDrawableDate = backgroundDrawableDate }
+    fun backgroundDrawableDateSelection(backgroundDrawableDateSelection: Drawable?){ this.backgroundDrawableDateSelection = backgroundDrawableDateSelection }
 
 
     //endregion
@@ -177,6 +190,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     private var backgroundDrawableMonth: Drawable? = null
     private var backgroundDrawableDay: Drawable? = null
     private var backgroundDrawableDate: Drawable? = null
+    private var backgroundDrawableDateSelection: Drawable? = null
 
     private val paint: Paint = Paint()
     private var viewWidth: Int = 10
@@ -200,6 +214,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             //Log.d(TAG, "date $currentDate")
 
             _monthNameWithYear = typedArray.getBoolean(R.styleable.CustomView_month_name_with_year, false)
+            _isMonthViewVisible = typedArray.getBoolean(R.styleable.CustomView_is_month_name_view_visible, true)
 
             val valueWeekStart = typedArray.getInt(R.styleable.CustomView_week_start, WeekStart.SUNDAY.value)
             weekStart = WeekStart.values().first{it.value == valueWeekStart} // Default to Sunday
@@ -222,6 +237,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             backgroundDrawableMonth = typedArray.getDrawable(R.styleable.CustomView_background_drawable_month)
             backgroundDrawableDay = typedArray.getDrawable(R.styleable.CustomView_background_drawable_day)
             backgroundDrawableDate = typedArray.getDrawable(R.styleable.CustomView_background_drawable_date)
+            backgroundDrawableDateSelection = typedArray.getDrawable(R.styleable.CustomView_background_drawable_date_selection)
 
             currentMonthName = getMonthName(currentMonth)
         } finally {
@@ -357,13 +373,17 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
         // Calculate basic parameters //// Adjusted heights with padding
         val blockWidth = viewWidth / 7f //(viewWidth - 2 * horizontalPadding) / 7f
-        val monthNameHeight = viewHeight * 0.15f
+        // Adjust monthNameHeight dynamically
+        val monthNameHeight = if (isMonthViewVisible) viewHeight * 0.15f else 0f
         val dayNameHeight = viewHeight * 0.13f
 
         val availableHeight = viewHeight - monthNameHeight - dayNameHeight -  (1.6f * verticalPadding) // or (screenHeight - monthNameHeight - dayNameHeight)/6f
 
         // Draw the month name
-        drawMonthName(canvas, blockWidth, monthNameHeight)
+        // Conditionally draw the month name
+        if (isMonthViewVisible) {
+            drawMonthName(canvas, blockWidth, monthNameHeight)
+        }
 
         // Draw the day names
         // Adjust the starting position for day names
@@ -411,10 +431,9 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         canvas.drawRect(rectLeft, rectTop, rectRight, rectBottom, paint) //todo: if you give background on text view only */
 
         // If a background drawable is set, draw it
-        backgroundDrawableMonth?.let { drawable ->
-            // Set bounds for the drawable to fill the entire month name area
-            if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = 0.0F , top = 0.0F, right = viewWidth.toFloat(), bottom = monthNameHeight, canvas, Color.WHITE)
-        }
+//        backgroundDrawableMonth?.let { drawable ->
+//            // Set bounds for the drawable to fill the entire month name area
+//            if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = 0.0F , top = 0.0F, right = viewWidth.toFloat(), bottom = monthNameHeight, canvas, Color.WHITE) }
 
         // Set paint properties for text
         paint.color = textColorMonth //Color.BLUE //Set the text color
@@ -428,11 +447,15 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val textHeight1 = fontMetrics.descent - fontMetrics.ascent
         val baselineOffset = (textHeight1 / 2) - fontMetrics.descent
 
+        // Calculate the x and y positions
+        val textX = viewWidth / 2f // Add margin or padding to the left //todo: Horizontally centered = 'viewWidth / 2f' or 'margin'
+        val textY = (monthNameHeight / 2) + baselineOffset //todo: Vertically centered
+
         // Draw the text
         canvas.drawText(
             currentMonthName,
-            viewWidth / 2f, //todo: Horizontally centered
-            (monthNameHeight / 2) + baselineOffset, //todo: Vertically centered
+            textX.toFloat(), // Left-aligned
+            textY, // Vertically centered
 //            monthNameHeight / 2 + paint.textSize / 2,
             paint
         )
@@ -484,7 +507,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             //canvas.drawRect(left, top, right, bottom, paint)
 
             // Set text size dynamically
-            textSizeDay = if (textSizeDay > 0) textSizeDay else monthNameHeight * 0.3f
+            textSizeDay = if (textSizeDay > 0) textSizeDay else dayNameHeight * 0.35f
 /**         //todo:Shorted instead of using draw directly
             paint.color = textColorDay//Color.WHITE
             paint.textSize = textSizeDay//dayNameHeight * 0.5f
@@ -522,7 +545,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         }
 
         // Set text size dynamically
-        textSizeDate = if (textSizeDate > 0) textSizeDate else monthNameHeight * 0.35f
+        textSizeDate = if (textSizeDate > 0) textSizeDate else dayNameHeight * 0.35f
         val weekStartDay:Int =  if(weekStart == WeekStart.SUNDAY) 1 else if (weekStart == WeekStart.MONDAY) 2 else throw IllegalArgumentException("Invalid week start value")
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -532,7 +555,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         // If a background drawable is set, draw it
         backgroundDrawableDate?.let { drawable ->
             // Set bounds for the drawable to fill the entire Date area
-            if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(),left = 0.0f , top = (monthNameHeight + dayNameHeight), right = viewWidth.toFloat(),bottom =(monthNameHeight + dayNameHeight + 6.7f * adjustedBlockHeight ), canvas, context.getColor(R.color.white))//todo: dates of month block background
+            if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(),left = 0.0f , top = (monthNameHeight + dayNameHeight), right = viewWidth.toFloat(),bottom =(monthNameHeight + dayNameHeight + 6.7f * adjustedBlockHeight ), canvas, context.getColor(R.color.background_primary))//todo: dates of month block background
         }
 
         // Previous month's details
@@ -581,7 +604,24 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                     val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) } ?: (top + adjustedBlockHeight)
 
 
+
                     @Suppress("NAME_SHADOWING") val calendar = Calendar.getInstance()
+                    // Check if this is Sunday
+                    // Calculate the date for the last column in the current week
+                    val lastDayOfWeekCounter = dayCounter
+                    var isSunday = false
+                    // Check if it is within valid range
+                    if (lastDayOfWeekCounter <= daysInMonth) {
+                        val calendar = Calendar.getInstance()
+                        calendar.set(Calendar.YEAR, currentYear)
+                        calendar.set(Calendar.MONTH, currentMonth)
+                        calendar.set(Calendar.DAY_OF_MONTH, lastDayOfWeekCounter)
+
+                        isSunday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+                        // Add your custom logic for weeks ending on Sunday
+                        if (isSunday) { paint.color = resources.getColor(R.color.error, null) }
+                    }
+
                     // Check if this is the current day
                     //val isToday = (dayCounter == currentDate && currentMonth == today.get(Calendar.MONTH) && currentYear == today.get(Calendar.YEAR))
                     val isToday = (dayCounter == calendar.get(Calendar.DAY_OF_MONTH) && currentMonth == calendar.get(Calendar.MONTH) && currentYear == calendar.get(Calendar.YEAR))
@@ -590,13 +630,38 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
                     // Draw the background using the drawable if available
                     // Draw the background with a selected color
-                    backgroundDrawableDate?.let { drawable ->
-                        val color = if (isSelected) Color.GREEN else if (isToday) Color.YELLOW else Color.WHITE
+                  /*  backgroundDrawableDate?.let { drawable ->
+                        val color = if (isSelected) R.color.accent_primary else if (isToday) R.color.accent_primary else R.color.background_primary
                         modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, color)
                     } ?: run {
                         // If no drawable is set, use a solid color
-                        paint.color = if (isSelected) Color.GREEN else if (isToday) Color.YELLOW else Color.WHITE//Color.LTGRAY
+                        paint.color = if (isSelected) resources.getColor(R.color.accent_primary,null) else if (isToday) resources.getColor(R.color.accent_primary,null) else resources.getColor(R.color.background_primary,null)//Color.LTGRAY
                         canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)//canvas.drawRect(left, top, right, bottom, paint)
+                    }*/
+                    if(isSelected){
+                        val color = resources.getColor(if (isSunday) R.color.error else R.color.text_primary, null)
+                        paint.color = resources.getColor(if (isSunday) R.color.error else R.color.text_primary, null)
+
+                        backgroundDrawableDateSelection?.let { drawable -> modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, color, squareSize = (textSizeDate + 1).toInt() ) } ?: run {
+                            // If no drawable is set, use a solid color
+                            canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)}//canvas.drawRect(left, top, right, bottom, paint)
+                    }
+                    else if(isToday){
+                        val color = resources.getColor(if (isSunday) R.color.error else R.color.accent_primary, null)
+                        paint.color =resources.getColor(if (isSunday) R.color.error else R.color.accent_primary, null)
+
+                        backgroundDrawableDateSelection?.let { drawable -> modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, color, squareSize = (textSizeDate + 1).toInt() ) } ?: run {
+                            // If no drawable is set, use a solid color
+                            canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)}//canvas.drawRect(left, top, right, bottom, paint)
+
+                    }
+                    else{
+                        val color = resources.getColor(R.color.background_primary, null)
+                        paint.color = resources.getColor(R.color.background_primary, null)//Color.LTGRAY
+
+                        backgroundDrawableDate?.let { drawable -> modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, color, squareSize = (textSizeDate + 1).toInt() ) } ?: run {
+                            // If no drawable is set, use a solid color
+                            canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paint)}//canvas.drawRect(left, top, right, bottom, paint)
                     }
 
                     //todo: here to show indicator for events
@@ -625,8 +690,16 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                         }
                     }
 
-                    if (designMode.equals(1)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
-                    if (designMode.equals(2)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, adjustedBlockWidth, top, dateBlockHeight, if (isToday) Color.BLACK else textColorDate)
+                    val color = when {
+                        isToday -> resources.getColor(R.color.background_secondary, null)
+                        isSelected -> resources.getColor(R.color.background_secondary, null)
+                        isSunday -> resources.getColor(R.color.error, null)
+                        else -> textColorDate // Default fallback color
+                    }
+                    if (designMode.equals(1)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, color)
+                    if (designMode.equals(2)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, color)
+//                    if (designMode.equals(1)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, blockWidth, top, dateBlockHeight, if (isToday) resources.getColor(R.color.background_secondary, null) else if (isSelected) resources.getColor(R.color.background_secondary, null) else textColorDate)
+//                    if (designMode.equals(2)) drawDateText(canvas, dayCounter.toString(), textSizeDate, left, adjustedBlockWidth, top, dateBlockHeight, if (isToday) resources.getColor(R.color.background_secondary, null) else if(isSelected) resources.getColor(R.color.background_secondary, null) else textColorDate)
 
                     // Store the day block for later click detection
                     val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
@@ -673,26 +746,45 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
 
 
-    private fun modifyAndApplyDrawable(drawable: Drawable, margin: Float, left: Float, top: Float, right: Float, bottom: Float, canvas: Canvas, color: Int?) {
-        // Ensure the drawable is a GradientDrawable
-        if (drawable is GradientDrawable) {
-            // Modify the color of the drawable
-            color?.let { drawable.setColor(it)} // Set the desired color
-            drawable.cornerRadius = 10f * context.resources.displayMetrics.density // Example: 10dp corner radius
-            drawable.setStroke(
-                (1 * context.resources.displayMetrics.density).toInt(), // Stroke width in dp
-                Color.BLACK // Stroke color
-            )
+    private fun modifyAndApplyDrawable(drawable: Drawable, margin: Float, left: Float, top: Float, right: Float, bottom: Float, canvas: Canvas, color: Int?, squareSize: Int? = null) {
+        // Modify the color of the drawable
+        when (drawable) {
+            is GradientDrawable -> { // Ensure the drawable is a GradientDrawable
+                // Handle manual shape drawable
+                color?.let { drawable.setColor(it) } // Set the desired color
+                drawable.cornerRadius = 10f * context.resources.displayMetrics.density // Example: 10dp corner radius
+                drawable.setStroke(
+                    (1 * context.resources.displayMetrics.density).toInt(), // Stroke width in dp
+                    Color.BLACK // Stroke color
+                )
+            }
+            is VectorDrawable -> {
+                // Handle SVG vector drawable
+                color?.let { tint ->
+                    drawable.setTint(tint) // Apply tint to the vector drawable
+                }
+            }
+            else -> {
+                Log.e("DrawableModifier", "Unsupported drawable type: ${drawable::class.java}")
+            }
         }
 
         // Set bounds with margin adjustment
-        drawable.setBounds(
-            (left + margin).toInt(),
-            (top + margin).toInt(),
-            (right - margin).toInt(),
-            (bottom - margin).toInt()
-        )
+        // Calculate the square size in pixels
+        val squarePx = squareSize?.let { (it * context.resources.displayMetrics.density).toInt() } ?: 0
 
+        // Calculate center coordinates
+        val centerX = (left + right) / 2
+        val centerY = (top + bottom) / 2
+
+        // Calculate bounds to center the drawable
+        val halfSquare = squarePx / 2
+        drawable.setBounds(
+            (centerX - halfSquare).toInt(),
+            (centerY - halfSquare).toInt(),
+            (centerX + halfSquare).toInt(),
+            (centerY + halfSquare).toInt()
+        )
         // Draw the drawable on the canvas
         drawable.draw(canvas)
     }
@@ -700,6 +792,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     private fun drawDateText(canvas: Canvas, text: String, textSize: Float, left: Float, blockWidth: Float, top: Float, dateBlockHeight: Float, color: Int = Color.BLACK) {
         paint.color = color
         paint.textSize = textSize
+        paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
             text,
             left + blockWidth / 2,

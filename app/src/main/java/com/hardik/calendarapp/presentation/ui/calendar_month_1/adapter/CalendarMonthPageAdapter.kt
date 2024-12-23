@@ -42,6 +42,7 @@ class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, In
         holder.binding.customView.apply {
             this.currentYear = year
             this.currentMonth = month
+            this.monthNameWithYear = true
             this@CalendarMonthPageAdapter.selectedDate?.let { this.selectedDate = it }//"2024-11-25"
             enableTouchEventHandling(enable = true)
             this.eventDateList = eventsOfDateMap

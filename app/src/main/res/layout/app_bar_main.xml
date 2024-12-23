@@ -12,9 +12,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/transparent"
-        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:background="@color/background_primary"
+        android:theme="@style/Theme.CalendarApp.AppBarOverlay"
         app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@color/text_primary"
         app:popupTheme="@style/Theme.CalendarApp.PopupOverlay" />
 
     <!-- Main content -->

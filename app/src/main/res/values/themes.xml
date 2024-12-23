@@ -5,6 +5,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">true</item><!--Use light(false) | dark(true) text/icons-->
+
         <item name="iconDrawable">@drawable/hamburger_icon</item>
         <item name="iconBackArrow">@drawable/back_arrow</item>
 
@@ -18,6 +19,12 @@
         <item name="iconRateApp">@drawable/rate_our_app_icon</item>
         <item name="iconPrivacy">@drawable/privacy_policy_icon</item>
         <item name="iconDeviceInfo">@drawable/device_information_icon</item>
+
+        <item name="iconLeft">@drawable/left_icon</item>
+        <item name="iconRight">@drawable/right_icon</item>
+
+        <item name="iconSelectedDateBackground">@drawable/date_background</item>
+
     </style>
 
     <style name="Theme.CalendarApp.NoActionBar">
@@ -25,9 +32,22 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.CalendarApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <!-- Toolbar Theme -->
+    <style name="Theme.CalendarApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light">//"ThemeOverlay.AppCompat.Dark.ActionBar"
+<!--        <item name="titleTextAppearance">@style/CustomToolbarTitleStyle</item>-->
+    </style>
 
     <style name="Theme.CalendarApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+
+
+
+
+
+
+
+
 
 
 

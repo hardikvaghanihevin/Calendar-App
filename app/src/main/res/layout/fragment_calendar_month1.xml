@@ -12,48 +12,62 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_4sdp"
         android:paddingStart="@dimen/_10sdp"
-        tools:text="Month 2000"
-        android:textAlignment="textStart"
-        android:textSize="20sp"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible"
+        android:textAlignment="textStart"
+        android:textColor="@color/text_primary"
+        android:fontFamily="@font/post_nord_sans_medium"
+        android:textSize="20sp"
+        tools:text="Month 2000"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlSymmetry" />
+
+    <ImageButton
+        android:id="@+id/btnPrevMonth"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_weight="1"
+        android:src="?attr/iconLeft"
+        android:background="@android:color/transparent"
+        android:contentDescription="Previous Month"
+        app:layout_constraintTop_toTopOf="@id/tv_month_title"
+        app:layout_constraintBottom_toBottomOf="@id/tv_month_title"
+        app:layout_constraintEnd_toStartOf="@id/btnNextMonth"
+        />
+
+    <!-- Right Arrow Button -->
+    <ImageButton
+        android:id="@+id/btnNextMonth"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_weight="1"
+        android:src="?attr/iconRight"
+        android:background="@android:color/transparent"
+        android:contentDescription="Next Month"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnPrevMonth"
+        app:layout_constraintBottom_toBottomOf="@id/btnPrevMonth"/>
+
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/border_surface"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintTop_toBottomOf="@id/tv_month_title"
+        app:layout_constraintBottom_toTopOf="@id/viewPager_calendarMonth"
+        />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager_calendarMonth"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_250sdp"
         android:layout_marginTop="@dimen/_1sdp"
-        app:layout_constraintTop_toBottomOf="@id/tv_month_title"
+        app:layout_constraintTop_toBottomOf="@id/v_divider"
+        app:layout_constraintBottom_toTopOf="@id/constraintLay_events"
         app:layout_constraintVertical_bias="0"
         tools:layout_height="250dp" />
-
-    <ImageButton
-        android:id="@+id/btnPrevMonth"
-        android:layout_width="@dimen/_55sdp"
-        android:layout_height="@dimen/_35sdp"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_weight="1"
-        android:src="@drawable/left"
-        android:background="@android:color/transparent"
-        android:contentDescription="Previous Month"
-        app:layout_constraintStart_toStartOf="@id/viewPager_calendarMonth"
-        app:layout_constraintTop_toTopOf="@id/viewPager_calendarMonth" />
-
-    <!-- Right Arrow Button -->
-    <ImageButton
-        android:id="@+id/btnNextMonth"
-        android:layout_width="@dimen/_55sdp"
-        android:layout_height="@dimen/_35sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_weight="1"
-        android:src="@drawable/right"
-        android:background="@android:color/transparent"
-        android:contentDescription="Next Month"
-        app:layout_constraintEnd_toEndOf="@id/viewPager_calendarMonth"
-        app:layout_constraintTop_toTopOf="@id/btnPrevMonth"
-        app:layout_constraintBottom_toBottomOf="@id/btnPrevMonth"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLay_events"

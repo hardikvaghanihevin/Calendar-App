@@ -22,4 +22,11 @@
     <style name="ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="android:textColor">@android:color/black</item>
     </style>
+
+   <!-- <style name="CustomToolbarTitleStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:fontFamily">@font/post_nord_sans_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:text">Toolbar</item>
+    </style>-->
+
 </resources>

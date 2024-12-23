@@ -6,6 +6,7 @@
         <attr name="running_date" format="integer" />
 
         <attr name="month_name_with_year" format="boolean" />
+        <attr name="is_month_name_view_visible" format="boolean" />
 
         <attr name="text_size_month" format="dimension" />
         <attr name="text_size_day" format="dimension" />
@@ -22,6 +23,7 @@
         <attr name="background_drawable_month" format="reference"/>
         <attr name="background_drawable_day" format="reference"/>
         <attr name="background_drawable_date" format="reference"/>
+        <attr name="background_drawable_date_selection" format="reference"/>
 
         <attr name="week_start" format="enum">
             <enum name="sunday" value="0" />
@@ -47,6 +49,11 @@
         <attr name="iconRateApp" format="reference" />
         <attr name="iconPrivacy" format="reference" />
         <attr name="iconDeviceInfo" format="reference" />
+
+        <attr name="iconLeft" format="reference"/>
+        <attr name="iconRight" format="reference"/>
+
+        <attr name="iconSelectedDateBackground" format="reference"/>
 
 
 

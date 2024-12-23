@@ -325,6 +325,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         viewModel.updateYear(year)
 
         pageAdapter.configureCustomView {customViewMonth ->
+            val monthName = customViewMonth.currentMonthName
+            binding.tvMonthTitle.text = monthName
             //customViewMonth.selectedDate = "2024-11-25"
             customViewMonth.getMonthNameClickListener{ year: YearKey, month: MonthKey ->
                 viewModel.getEventsByMonthOfYear(year = year, month = month) }
@@ -401,7 +403,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     }
     private fun updateToolbarTitle(title: String) {
         toolbar?.title = resources.getString(R.string.app_name)//title
-        binding.tvMonthTitle.text = title
     }
 
 }

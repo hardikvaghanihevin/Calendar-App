@@ -5,6 +5,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">false</item><!--Use light(false) | dark(true) text/icons-->
+
         <item name="iconDrawable">@drawable/hamburger_icon_night</item>
         <item name="iconBackArrow">@drawable/back_arrow_night</item>
 
@@ -18,6 +19,12 @@
         <item name="iconRateApp">@drawable/rate_our_app_icon_night</item>
         <item name="iconPrivacy">@drawable/privacy_policy_icon_night</item>
         <item name="iconDeviceInfo">@drawable/device_information_icon_night</item>
+
+        <item name="iconLeft">@drawable/left_icon_night</item>
+        <item name="iconRight">@drawable/right_icon_night</item>
+
+        <item name="iconSelectedDateBackground">@drawable/date_background_night</item>
+
 
     </style>
 
