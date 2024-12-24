@@ -1,17 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_primary"
     tools:context=".presentation.ui.calendar_year_1.CalendarYear1Fragment">
+
+    <TextView
+        android:id="@+id/tv_year_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:fontFamily="@font/post_nord_sans_medium"
+        android:paddingStart="@dimen/_10sdp"
+        android:textAlignment="textStart"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlSymmetry"
+        tools:text="2000"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/btnPrevYear"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="Previous Month"
+        android:src="?attr/iconLeft"
+        app:layout_constraintBottom_toBottomOf="@id/tv_year_title"
+        app:layout_constraintEnd_toStartOf="@id/btnNextYear"
+        app:layout_constraintTop_toTopOf="@id/tv_year_title" />
+
+    <!-- Right Arrow Button -->
+    <ImageButton
+        android:id="@+id/btnNextYear"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="Next Month"
+        android:src="?attr/iconRight"
+        app:layout_constraintBottom_toBottomOf="@id/btnPrevYear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnPrevYear" />
+
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:background="@color/border_surface"
+        app:layout_constraintBottom_toTopOf="@id/viewPager_calendarYear"
+        app:layout_constraintTop_toBottomOf="@id/tv_year_title" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager_calendarYear"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/_2sdp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_divider"
         app:layout_constraintVertical_bias="0" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,6 +23,11 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.ShapeAbleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item> <!-- Adjust the corner radius as per your requirement -->
+    </style>
+
    <!-- <style name="CustomToolbarTitleStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:fontFamily">@font/post_nord_sans_medium</item>
         <item name="android:textColor">@color/text_primary</item>

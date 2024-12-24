@@ -23,6 +23,7 @@ import com.hardik.calendarapp.common.Constants.KEY_MONTH
 import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearList
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.getPositionFromYear
@@ -48,6 +49,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     companion object{
         var year:Int = 0
     }
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -90,6 +92,20 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
 
+        /** Back to current year */
+        (activity as MainActivity).binding.backToDateIcon.setOnClickListener {
+            val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
+            // Get the position of the key in the yearList
+            val yearKeyPos: Int? = getPositionFromYear(yearList,backToCurrentYear)
+            // Get the yearKey at the given position
+            val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
+            if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
+            //Log.d(TAG, "refreshToYear: $yearKeyPos = $yearKeyAtPosition")
+            if (::viewPager.isInitialized) {
+                if (yearKeyPos != null) { viewPager.setCurrentItem(yearKeyPos, true) } // Navigate to the desired position
+                adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
+            }
+        }
     }
 
     override fun onResume() {
@@ -111,10 +127,19 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             // Safely collect yearState during STARTED state
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.yearState.collect{//collectLatest
+                    Log.i(TAG, "setupUI: year:$it")
                     updateToolbarTitle("$it")
                     year = it
-                    Log.i(TAG, "setupUI: year:$it")
+                    binding.tvYearTitle.text = "$it"
                 }
+            }
+        }
+        binding.apply {
+            btnPrevYear.setOnClickListener {
+                navigateToYear(-1)
+            }
+            btnNextYear.setOnClickListener {
+                navigateToYear(1)
             }
         }
     }
@@ -164,7 +189,11 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     }
 
-
+    private fun navigateToYear(direction: Int) {
+        // Update ViewPager position and display the new month and year
+        val newPosition = binding.viewPagerCalendarYear.currentItem + direction
+        binding.viewPagerCalendarYear.setCurrentItem(newPosition, true)
+    }
 
     private fun navigateToCalendarMonth(year: Int, month: Int) {
         lifecycleScope.launch {
@@ -175,7 +204,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 putInt(KEY_MONTH, month)
             }
             val action = CalendarYear1FragmentDirections.actionCalendarYear1FragmentToCalendarMonth1Fragment()
-            findNavController().navigate(R.id.calendarMonth1Fragment, bundle, navOptions)
+            findNavController().navigate(R.id.nav_month, bundle, navOptions)
         }
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }

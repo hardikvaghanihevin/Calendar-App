@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -22,25 +21,27 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
-import com.google.android.material.navigation.NavigationView
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.imageview.ShapeableImageView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.presentation.adapter.DrawerMenuAdapter
+import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
+import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.createYearData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     lateinit var toolbar: Toolbar
     lateinit var drawerLayout: DrawerLayout
     lateinit var navController: NavController
@@ -77,6 +78,11 @@ class MainActivity : AppCompatActivity() {
 
         checkAndRequestCalendarPermissions()
 
+        setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
+        setupToolbar() //setupNavigation Function: Centralized navigation setup, including AppBarConfiguration.
+        setupDrawerMenu() //setupDrawerMenu Function: Cleanly handles drawer menu initialization.
+
+       /*
         toolbar = binding.appBarMain.toolbar
         setSupportActionBar(toolbar)
         // Change the navigation icon color
@@ -90,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.jumpToDate, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        navView.setupWithNavController(navController)*/
 
 //        binding.appBarMain.toolbar.navigationIcon = null
         //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).setAnchorView(R.id.fab).show()
@@ -98,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         //val currentDestination = navController.currentDestination?.id
         //if (currentDestination != R.id.newEventFragment)
 
-        binding.appBarMain.fab.setOnClickListener { view ->
+        binding.fab.setOnClickListener { view ->
             Log.i(TAG, "onCreate: clicked fab:")
             navController.navigate(R.id.newEventFragment, null, navOptions)
         }
@@ -128,13 +134,13 @@ class MainActivity : AppCompatActivity() {
             val isFabVisible = destination.id != R.id.newEventFragment && destination.id != R.id.settingsFragment
 
             if (isFabVisible) {
-                showFabWithAnimation(binding.appBarMain.fab)
+                showFabWithAnimation(binding.fab)
             } else {
-                hideFabWithAnimation(binding.appBarMain.fab)
+                hideFabWithAnimation(binding.fab)
             }
         }
 
-        navView.setNavigationItemSelectedListener {item: MenuItem ->
+        /*navView.setNavigationItemSelectedListener {item: MenuItem ->
             when (item.itemId) {
                 R.id.jumpToDate -> {
                     showJumpToDateDialog()//todo:note when cancel its comes to previous page
@@ -148,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
             }
-        }
+        }*/
     }
 
 
@@ -212,8 +218,8 @@ class MainActivity : AppCompatActivity() {
                         putInt(Constants.KEY_MONTH, selectedMonth -1)
                         putInt(Constants.KEY_DAY, selectedDay)
                     }
-                    navController.popBackStack()//for repeat entry clear
-                    navController.navigate(R.id.calendarMonth1Fragment, bundle, navOptions)
+                    //navController.popBackStack()//for repeat entry clear
+                    navController.navigate(R.id.nav_month, bundle, navOptions)
                 }
 
                 dialog.dismiss()
@@ -250,10 +256,131 @@ class MainActivity : AppCompatActivity() {
 //        return super.onPrepareOptionsMenu(menu)
 //    }
 
+    /**
+     * Sets up the navigation component and the app bar configuration.
+     */
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.nav_year,), // Top-level destinations
+            binding.drawerLayout
+        )
+
+        // Listen for destination changes to update the navigation icon
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            updateSelectedDrawerItem(destination.id)
+            val navIcon = binding.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
+            if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
+                //navIcon.setImageResource(R.drawable.hamburger_icon)
+                val iconDrawable = getDrawableFromAttribute(this, R.attr.iconDrawable)
+                navIcon.setImageDrawable(iconDrawable)
+                navIcon.contentDescription = getString(R.string.open_drawer)
+            } else {
+                //navIcon.setImageResource(R.drawable.back_arrow)
+                val iconDrawableBackArrow = getDrawableFromAttribute(this, R.attr.iconBackArrow)
+                navIcon.setImageDrawable(iconDrawableBackArrow)
+                navIcon.contentDescription = getString(R.string.navigate_up)
+            }
+        }
+    }
+
+    private fun updateSelectedDrawerItem(selectedId: Int) {
+        val adapter = binding.drawerRecyclerView.adapter
+        if (adapter is DrawerMenuAdapter) {
+            adapter.updateSelectedItem(selectedId)
+        } else {
+            Log.e("MainActivity", "Adapter is not of type DrawerMenuAdapter")
+        }
+    }
+
+    /**
+     * Configures the custom toolbar and sets up click listeners for navigation and actions.
+     */
+    private fun setupToolbar() {
+        val navIcon = binding.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
+        navIcon.setOnClickListener { handleNavigationIconClick() }
+
+        binding.searchIcon.setOnClickListener {
+            Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.backToDateIcon.apply {
+            text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        }
+    }
+
+    /**
+     * Configures the drawer menu items and their click listeners.
+     */
+    private fun setupDrawerMenu() {
+        val drawerMenuItems = listOf(
+            DrawerMenuItem(R.attr.iconYear, "Year", R.id.nav_year,true),
+            DrawerMenuItem(R.attr.iconMonth, "Month", R.id.nav_month),
+            DrawerMenuItem(R.attr.iconCountry, "Select Country", R.id.nav_select_country),
+            DrawerMenuItem(R.attr.iconLanguage, "Select Language", R.id.nav_select_language),
+            DrawerMenuItem(R.attr.iconCalendar, "First Day of the Week", R.id.nav_first_day_of_week),
+            DrawerMenuItem(R.attr.iconJumpToDate, "Jump to Date", R.id.nav_jump_to_date),
+            DrawerMenuItem(R.attr.iconTheme, "App Theme", R.id.nav_app_theme),
+            DrawerMenuItem(R.attr.iconRateApp, "Rate Our App", R.id.nav_rate_app),
+            DrawerMenuItem(R.attr.iconPrivacy, "Privacy Policy", R.id.nav_privacy_policy),
+            DrawerMenuItem(R.attr.iconDeviceInfo, "Device Information", R.id.nav_device_info)
+        )
+
+        // Initialize the adapter
+        val drawerMenuAdapter = DrawerMenuAdapter(drawerMenuItems) { menuItem ->
+            // Handle item click
+            handleMenuClick(menuItem)
+        }
+
+        // Set the adapter to the RecyclerView
+        binding.drawerRecyclerView.adapter = drawerMenuAdapter
+        binding.drawerRecyclerView.layoutManager = LinearLayoutManager(this)
+    }
+
+    /**
+     * Handles click events on drawer menu items.
+     */
+    private fun handleMenuClick(item: DrawerMenuItem) {
+        when (item.id) {
+            R.id.nav_year -> navController.navigate(R.id.nav_year)
+            R.id.nav_month -> navController.navigate(R.id.nav_month)
+            R.id.nav_jump_to_date -> showJumpToDateDialog()
+            // Handle other cases here...
+        }
+        toggleDrawer()
+    }
+
+    /**
+     * Handles navigation icon click events (hamburger/back icon).
+     */
+    private fun handleNavigationIconClick() {
+        val currentDestination = navController.currentDestination
+        if (currentDestination != null &&
+            appBarConfiguration.topLevelDestinations.contains(currentDestination.id)
+        ) {
+            toggleDrawer()
+        } else {
+            navController.navigateUp(appBarConfiguration)
+        }
+    }
+
+    /**
+     * Toggles the drawer state (open/close).
+     */
+    private fun toggleDrawer() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
     // Function to show FAB with animation
     private fun showFabWithAnimation(fab: View) {
         fab.animate()

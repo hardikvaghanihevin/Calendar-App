@@ -38,6 +38,8 @@
 
         <attr name="iconDrawable" format="reference" />
         <attr name="iconBackArrow" format="reference" />
+        <attr name="iconSearch" format="reference" />
+        <attr name="iconBackToDate" format="reference" />
 
         <attr name="iconYear" format="reference" />
         <attr name="iconMonth" format="reference" />

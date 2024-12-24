@@ -7,7 +7,9 @@
         <item name="android:windowLightStatusBar">false</item><!--Use light(false) | dark(true) text/icons-->
 
         <item name="iconDrawable">@drawable/hamburger_icon_night</item>
-        <item name="iconBackArrow">@drawable/back_arrow_night</item>
+        <item name="iconBackArrow">@drawable/back_arrow_icon_night</item>
+        <item name="iconSearch">@drawable/search_icon_night</item>
+        <item name="iconBackToDate">@drawable/back_to_date_icon_night</item>
 
         <item name="iconYear">@drawable/year_icon_night</item>
         <item name="iconMonth">@drawable/month_icon_night</item>

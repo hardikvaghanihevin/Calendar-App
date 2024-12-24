@@ -2,6 +2,11 @@
     <string name="app_name">Calendar App</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="open_drawer">Open</string>
+    <string name="close_drawer">Close</string>
+    <string name="navigate_up">Navigate up</string>
+
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>

@@ -605,26 +605,26 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
 
 
-                    @Suppress("NAME_SHADOWING") val calendar = Calendar.getInstance()
+                    val calendarT = Calendar.getInstance()
                     // Check if this is Sunday
                     // Calculate the date for the last column in the current week
                     val lastDayOfWeekCounter = dayCounter
                     var isSunday = false
                     // Check if it is within valid range
                     if (lastDayOfWeekCounter <= daysInMonth) {
-                        val calendar = Calendar.getInstance()
-                        calendar.set(Calendar.YEAR, currentYear)
-                        calendar.set(Calendar.MONTH, currentMonth)
-                        calendar.set(Calendar.DAY_OF_MONTH, lastDayOfWeekCounter)
+                        val calendarS = Calendar.getInstance()
+                        calendarS.set(Calendar.YEAR, currentYear)
+                        calendarS.set(Calendar.MONTH, currentMonth)
+                        calendarS.set(Calendar.DAY_OF_MONTH, lastDayOfWeekCounter)
 
-                        isSunday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+                        isSunday = calendarS.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
                         // Add your custom logic for weeks ending on Sunday
                         if (isSunday) { paint.color = resources.getColor(R.color.error, null) }
                     }
 
                     // Check if this is the current day
                     //val isToday = (dayCounter == currentDate && currentMonth == today.get(Calendar.MONTH) && currentYear == today.get(Calendar.YEAR))
-                    val isToday = (dayCounter == calendar.get(Calendar.DAY_OF_MONTH) && currentMonth == calendar.get(Calendar.MONTH) && currentYear == calendar.get(Calendar.YEAR))
+                    val isToday = (dayCounter == calendarT.get(Calendar.DAY_OF_MONTH) && currentMonth == calendarT.get(Calendar.MONTH) && currentYear == calendarT.get(Calendar.YEAR))
                     val dateString = "$currentYear-$currentMonth-$dayCounter"
                     val isSelected = dateString == _selectedDate
 
