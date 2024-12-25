@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -12,10 +13,16 @@ import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.ItemMonthPage1Binding
 import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
-class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, Int>>) :
+class CalendarMonthPageAdapter(private var yearMonthPairList : List<Pair<Int, Int>>) :
     RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
     private val TAG = BASE_TAG + CalendarMonthPageAdapter::class.java.simpleName
 
+    // Method to update yearList and refresh the RecyclerView
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateYearMonthPairList(newYearMonthPairList: List<Pair<Int, Int>>) {
+        yearMonthPairList = newYearMonthPairList
+        notifyDataSetChanged()
+    }
     private var eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
     @SuppressLint("NotifyDataSetChanged")
     fun updateEventsOfDate(dates: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>) {
@@ -26,6 +33,7 @@ class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, In
     private var selectedDate:String? = null
     @SuppressLint("NotifyDataSetChanged")
     fun setSelectedDate(yyyy_mm_dd: String?){
+        Log.e(TAG, "setSelectedDate: $yyyy_mm_dd", )
         this.selectedDate = yyyy_mm_dd
         notifyDataSetChanged()
     }
@@ -73,10 +81,6 @@ class CalendarMonthPageAdapter(private val yearMonthPairList : List<Pair<Int, In
     private var configureCustomViewCallback: ((CustomViewMonth) -> Unit)? = null
     fun configureCustomView(callback: (CustomViewMonth) -> Unit) {
         this.configureCustomViewCallback = callback
-    }
-    private var getYearMonth: ((Int) -> Unit)? = null
-    fun getYearMonth(block: (Int) -> Unit) {
-        getYearMonth = block
     }
 }
 

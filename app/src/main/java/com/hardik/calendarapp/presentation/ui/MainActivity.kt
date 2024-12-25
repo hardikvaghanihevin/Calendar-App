@@ -38,7 +38,6 @@ import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
 import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
-import com.hardik.calendarapp.utillities.createYearData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -53,9 +52,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
     lateinit var drawerLayout: DrawerLayout
     lateinit var navController: NavController
+
+
     companion object{
-        val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
-        val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
+        //val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
+        //val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
         private const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
@@ -137,6 +138,30 @@ class MainActivity : AppCompatActivity() {
                 showFabWithAnimation(binding.fab)
             } else {
                 hideFabWithAnimation(binding.fab)
+            }
+
+            val isSaveEventIconVisible = destination.id == R.id.newEventFragment || destination.id == R.id.viewEventFragment
+
+            if (isSaveEventIconVisible){
+                showFabWithAnimation(binding.saveEventIcon)
+            }else{
+                hideFabWithAnimation(binding.saveEventIcon)
+            }
+
+            val isSearchIconVisible = destination.id == R.id.nav_year || destination.id == R.id.nav_month
+
+            if (isSearchIconVisible){
+                showFabWithAnimation(binding.searchIcon)
+            }else{
+                hideFabWithAnimation(binding.searchIcon)
+            }
+
+            val isBackToDateIconVisible = destination.id == R.id.nav_year || destination.id == R.id.nav_month
+
+            if (isBackToDateIconVisible){
+                showFabWithAnimation(binding.backToDateIcon)
+            }else{
+                hideFabWithAnimation(binding.backToDateIcon)
             }
         }
 
@@ -264,7 +289,7 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_year,), // Top-level destinations
+            setOf(R.id.nav_year, R.id.nav_month), // Top-level destinations
             binding.drawerLayout
         )
 
@@ -308,6 +333,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.backToDateIcon.apply {
             text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        }
+
+        binding.saveEventIcon.apply {
+
         }
     }
 

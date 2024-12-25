@@ -22,6 +22,9 @@ import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.utillities.DateUtil.getFormattedDate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.util.Calendar
 var _selectedDate: String? = null
@@ -308,43 +311,33 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             }
             MotionEvent.ACTION_UP -> {
                 Log.d(TAG, "ACTION_UP")
-                // Check if the month name was clicked
-                if (monthNameBounds.contains(x, y)) {
-                    onMonthNameClickListener?.invoke("$currentYear", "$currentMonth") // Trigger the listener
-                    _selectedDate = null
-                    postInvalidate()
-                    return true
-                }
-
-                // Check if any date block was clicked
-                // It's a tap, handle the date selection
-                /*for (triple in daysBlocks) {
-                    val rect = triple.first
-                    if (rect.contains(x.toInt(), y.toInt())) {
-
-                        //val clickedDate = triple.third
-                        // Update selected date
-                        // _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
-
-                        // Trigger the listener and redraw the view
-                        _selectedDate = onDateItemClickListener?.invoke(triple)
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Check if the month name was clicked
+                    if (monthNameBounds.contains(x, y)) {
+                        onMonthNameClickListener?.invoke("$currentYear", "$currentMonth") // Trigger the listener
+                        _selectedDate = null
                         postInvalidate()
-                        return true
+                        return@launch
                     }
-                }*/
-                for (triple in daysBlocks) {
-                    val rect = triple.first
-                    if (rect.contains(x.toInt(), y.toInt())) {
-                        // Get the clicked date from the Triple
-                        val clickedDate = triple.third
 
-                        // Update _selectedDate
-                        _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
+                    // Check if any date block was clicked
+                    // Handle the date selection
+                    for (triple in daysBlocks) {
+                        val rect = triple.first
+                        if (rect.contains(x.toInt(), y.toInt())) {
+                            // Update selected date asynchronously
 
-                        // Trigger the listener and redraw
-                        onDateItemClickListener?.invoke(triple)
-                        postInvalidate()
-                        return true
+                            // Get the clicked date from the Triple
+                            val clickedDate = triple.third
+                            // Update selected date
+                             _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
+                            // Trigger the listener and redraw the view
+                            onDateItemClickListener?.invoke(triple)//todo: OR
+
+                            //_selectedDate = onDateItemClickListener?.invoke(triple)
+                            postInvalidate()
+                            return@launch
+                        }
                     }
                 }
             }

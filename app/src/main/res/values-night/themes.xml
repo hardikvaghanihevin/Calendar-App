@@ -26,7 +26,7 @@
         <item name="iconRight">@drawable/right_icon_night</item>
 
         <item name="iconSelectedDateBackground">@drawable/date_background_night</item>
-
+        <item name="eventBackground">@drawable/rectangle_bg_night</item>
 
     </style>
 

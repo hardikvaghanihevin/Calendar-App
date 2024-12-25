@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.databinding.ItemYearPage1Binding
 
-class CalendarYearPageAdapter(private val yearList: Map<Int, Map<Int, List<Int>>>) :
+class CalendarYearPageAdapter(private var yearList: Map<Int, Map<Int, List<Int>>>) :
     RecyclerView.Adapter<CalendarYearPageAdapter.MonthViewHolder>() {
 
     private var yr:Int = 0
@@ -18,6 +18,13 @@ class CalendarYearPageAdapter(private val yearList: Map<Int, Map<Int, List<Int>>
         yr = year
         notifyItemChanged(year)
         Log.i("TAG", "updateYear: $yr")
+    }
+
+    // Method to update yearList and refresh the RecyclerView
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateYearList(newYearList: Map<Int, Map<Int, List<Int>>>) {
+        yearList = newYearList
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {

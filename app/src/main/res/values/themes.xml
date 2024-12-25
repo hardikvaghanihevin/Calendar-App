@@ -26,6 +26,7 @@
         <item name="iconRight">@drawable/right_icon</item>
 
         <item name="iconSelectedDateBackground">@drawable/date_background</item>
+        <item name="eventBackground">@drawable/rectangle_bg</item>
 
     </style>
 
@@ -92,6 +93,6 @@
         <item name="cornerFamilyTopRight">rounded</item>
         <item name="cornerFamilyBottomLeft">rounded</item>
         <item name="cornerFamilyBottomRight">rounded</item>
-        <item name="cornerSize">8dp</item>
+        <item name="cornerSize">@dimen/_20sdp</item>
     </style>
 </resources>

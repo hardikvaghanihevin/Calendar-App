@@ -68,6 +68,11 @@ fun createYearData(startYear: Int, endYear: Int, isZeroBased: Boolean): Map<Int,
     return yearMap
 }
 
+fun createYearMonthPairs(startYear: Int, endYear: Int, isZeroBased: Boolean): List<Pair<Int, Int>> {
+    val yearList = createYearData(startYear, endYear, isZeroBased)
+    return yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
+}
+
 /**
  * Returns the number of days in a given month for a specific year.
  *
@@ -113,6 +118,10 @@ fun isLeapYear(year: Int): Boolean {
  */
 fun findIndexOfYearMonth(yearMonthPairList: List<Pair<Int, Int>>, targetYear: Int, targetMonth: Int): Int {
     return yearMonthPairList.indexOfFirst { (year, month) -> year == targetYear && month == targetMonth }
+}
+
+fun getCurrentYearPosition(currentYear: Int, startYear: Int = 2000): Int {
+    return currentYear - startYear
 }
 
 /**

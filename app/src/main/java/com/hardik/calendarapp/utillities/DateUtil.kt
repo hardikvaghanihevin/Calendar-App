@@ -594,6 +594,40 @@ object DateUtil {
     fun timestampToMinutes(milliseconds: Long): Int {
         return (milliseconds / 60 / 1000).toInt()
     }
+
+    // Get day name from date string
+    fun getDayName(date: String): String {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate = format.parse(date)
+        return SimpleDateFormat("EEE", Locale.getDefault()).format(parsedDate ?: Date())
+    }
+
+    // Get week range (e.g., "5-11 Jan 2025")
+    fun getWeekRange(startDate: String, startOfWeek: Int): String {
+        val format = SimpleDateFormat("d-MM-yyyy", Locale.getDefault())
+        val parsedDate = format.parse(startDate)
+        val calendar = Calendar.getInstance().apply { time = parsedDate ?: Date() }
+
+        // Adjust calendar to the start of the week
+        calendar.firstDayOfWeek = startOfWeek
+        while (calendar.get(Calendar.DAY_OF_WEEK) != startOfWeek) {
+            calendar.add(Calendar.DAY_OF_WEEK, -1)
+        }
+        val startOfWeekDate = calendar.time
+
+        // Calculate the end of the week
+        calendar.add(Calendar.DAY_OF_WEEK, 6)
+        val endOfWeekDate = calendar.time
+
+        // Format start and end of the week
+        val startFormat = SimpleDateFormat("d", Locale.getDefault())
+        val endFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
+
+        val weekStart = startFormat.format(startOfWeekDate)
+        val weekEnd = endFormat.format(endOfWeekDate)
+
+        return "$weekStart - $weekEnd"
+    }
 }
 
 //// Convert to epoch time

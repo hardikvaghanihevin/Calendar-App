@@ -3,13 +3,8 @@ package com.hardik.calendarapp.presentation.ui.calendar_year_1
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -24,14 +19,15 @@ import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
-import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.yearList
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
+import com.hardik.calendarapp.utillities.getCurrentYearPosition
 import com.hardik.calendarapp.utillities.getPositionFromYear
 import com.hardik.calendarapp.utillities.getYearKeyAtPosition
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -43,12 +39,12 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarYear1Binding? = null
     private val viewModel: MainViewModel by activityViewModels()
+    private val year = Calendar.getInstance().get(Calendar.YEAR)
+    var yearList: Map<Int, Map<Int, List<Int>>> = emptyMap()
+    val adapter = CalendarYearPageAdapter(yearList)
 
     private lateinit var viewPager: ViewPager2
 
-    companion object{
-        var year:Int = 0
-    }
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,11 +53,10 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         CoroutineScope(Dispatchers.Main).launch {
             val job = launch { setupUI() }
             job.join()
-            Log.i(TAG, "onViewCreated: year: $year")
             val job1 = launch { setupViewPager() }
 
         }
-
+/*
         val menuHost: MenuHost = requireActivity()
 
         menuHost.addMenuProvider(object : MenuProvider {
@@ -91,7 +86,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
-
+*/
         /** Back to current year */
         (activity as MainActivity).binding.backToDateIcon.setOnClickListener {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
@@ -123,13 +118,26 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     }
 
     private fun setupUI() {
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.yearList.collectLatest{
+                Log.e(TAG, "observeViewModelState: $it", )
+                yearList = it
+                launch(Dispatchers.Main){
+                    adapter.updateYearList(it)
+
+                    val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
+
+                    viewPager.setCurrentItem(yearPosition,false)
+                }
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.Main) {
             // Safely collect yearState during STARTED state
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.yearState.collect{//collectLatest
+                viewModel.yearState.collectLatest{//collectLatest
                     Log.i(TAG, "setupUI: year:$it")
                     updateToolbarTitle("$it")
-                    year = it
                     binding.tvYearTitle.text = "$it"
                 }
             }
@@ -145,13 +153,9 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     }
 
 
-    val adapter = CalendarYearPageAdapter(yearList)
-
     private fun setupViewPager(){
-        Log.i(TAG, "setupViewPager: $year ")
-        val currentYear = year
-        val startYear = 2000
-        val yearPosition = currentYear - startYear // Calculate the position of the current year
+        Log.i(TAG, "setupViewPager: ")
+        val yearPosition = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
 
         // When swipe happens, update the year in your adapter based on the position
         // todo: this is necessary to give previous position (which are you want)
@@ -161,7 +165,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         viewPager.adapter = adapter
 
         // Set the current item to the calculated position of the current year
-        viewPager.setCurrentItem(previousPosition, false)
+        viewPager.setCurrentItem(24, false)
 
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){

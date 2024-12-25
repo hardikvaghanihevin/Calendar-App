@@ -33,6 +33,8 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
 import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
+import com.hardik.calendarapp.utillities.createYearData
+import com.hardik.calendarapp.utillities.createYearMonthPairs
 import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +42,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -59,9 +62,39 @@ class MainViewModel @Inject constructor(
     val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
 
     init {
+        generateYearList(2000, 2100, isZeroBased = true)
         //getHolidayCalendarData()
         getAllEventsDateInMap()
     }
+
+    private val _yearList = MutableStateFlow<Map<Int, Map<Int, List<Int>>>>(emptyMap())
+    val yearList: StateFlow<Map<Int, Map<Int, List<Int>>>> = _yearList
+
+    /** The yearList and perform the data generation in a coroutine.*/
+    private fun generateYearList(startYear: Int, endYear: Int, isZeroBased: Boolean) {
+        viewModelScope.launch {
+            val data = withContext(Dispatchers.Default) {
+                createYearData(startYear, endYear, isZeroBased)
+            }
+            generateYearMonthPairs(startYear,endYear,isZeroBased)
+            _yearList.value = data
+        }
+    }
+
+    private val _yearMonthPairList = MutableStateFlow<List<Pair<Int, Int>>>(emptyList())
+    val yearMonthPairList: StateFlow<List<Pair<Int, Int>>> = _yearMonthPairList
+
+    /** The yearMonthPairList and perform the data generation in a coroutine.*/
+    private fun generateYearMonthPairs(startYear: Int, endYear: Int, isZeroBased: Boolean) {
+        viewModelScope.launch {
+            val data = withContext(Dispatchers.Default) {
+                createYearMonthPairs(startYear, endYear, isZeroBased)
+            }
+            _yearMonthPairList.value = data
+        }
+    }
+
+
 
     fun initializeViewModel() {
         collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
@@ -273,7 +306,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getEventsByMonthOfYear(year: String, month: String){//todo: use in CalendarMonth1Fragment for onMonthSwipe or onMonthClick
-        Log.i(TAG, "getEventsByMonthOfYear: ")
+        Log.i(TAG, "getEventsByMonthOfYear: $year-$month")
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
@@ -293,7 +326,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String) {//todo: use in CalendarMonth1Fragment for onDateClick
-        Log.i(TAG, "getEventsByDateOfMonthOfYear: ")
+        Log.i(TAG, "getEventsByDateOfMonthOfYear: $year-$month-$date")
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
@@ -351,7 +384,7 @@ class MainViewModel @Inject constructor(
         Log.i(TAG, "updateYear: $year")
         viewModelScope.launch {
             _yearMonthState.value = Pair(year, month)
-            _yearState.value = year
+            //_yearState.value = year
         }
     }
 
@@ -362,8 +395,17 @@ class MainViewModel @Inject constructor(
         Log.i(TAG, "updateYear: $year")
         viewModelScope.launch {
             _yearMonthDateState.value = Triple(year, month, date)
-            _yearMonthState.value = Pair(year, month)
-            _yearState.value = year
+            //_yearMonthState.value = Pair(year, month)
+            //_yearState.value = year
+        }
+    }
+
+    private val _selectedDate = MutableStateFlow<String?>(null)//null, "2000-0-1"
+    val selectedDate: StateFlow<String?> = _selectedDate
+
+    fun updateSelectedDate(selectedDate: String?){
+        viewModelScope.launch {
+            _selectedDate.value = selectedDate
         }
     }
 
