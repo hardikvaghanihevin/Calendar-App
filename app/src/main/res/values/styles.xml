@@ -34,4 +34,9 @@
         <item name="android:text">Toolbar</item>
     </style>-->
 
+    <style name="CustomSwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/switch_thumb</item>
+        <item name="android:track">@drawable/switch_track</item>
+    </style>
+
 </resources>

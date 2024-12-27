@@ -331,8 +331,10 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.allEventsDateInMapState.collectLatest { data: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> ->
-                _eventsOfDateMap = data
-                pageAdapter.updateEventsOfDate(_eventsOfDateMap)
+                launch(Dispatchers.Main) {
+                    _eventsOfDateMap = data
+                    pageAdapter.updateEventsOfDate(_eventsOfDateMap)
+                }
                 //Log.v(TAG, "observeViewModelState: $_eventsOfDateMap")
             }
         }
@@ -446,12 +448,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
                 //val (firstDayOfMonth, lastDayOfMonth) = getFirstAndLastDateOfMonth(year = year, month = month +1)
                 //viewModel.getMonthlyEvents(startOfMonth = firstDayOfMonth, endOfMonth = lastDayOfMonth)
-               selectedDate?.let {it:String ->
+                selectedDate?.let {it:String ->
                     val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
                     if (year.toString() == date.first && month.toString() == date.second)
-                    viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+                        viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
                     else viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
-                    } ?: viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
+                } ?: viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
 
                 pageAdapter.run { configureCustomView { it.selectedDate = selectedDate} }
 

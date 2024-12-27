@@ -28,6 +28,8 @@
         <item name="iconSelectedDateBackground">@drawable/date_background</item>
         <item name="eventBackground">@drawable/rectangle_bg</item>
 
+        <item name="switchStyle">@style/CustomSwitchStyle</item>
+
     </style>
 
     <style name="Theme.CalendarApp.NoActionBar">

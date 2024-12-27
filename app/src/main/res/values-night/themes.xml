@@ -28,6 +28,8 @@
         <item name="iconSelectedDateBackground">@drawable/date_background_night</item>
         <item name="eventBackground">@drawable/rectangle_bg_night</item>
 
+        <item name="switchStyle">@style/CustomSwitchStyle</item>
+
     </style>
 
 

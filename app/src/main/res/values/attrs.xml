@@ -20,6 +20,10 @@
         <attr name="background_color_day" format="color"/>
         <attr name="background_color_date" format="color"/>
 
+        <attr name="text_font_month" format="reference" />
+        <attr name="text_font_day" format="reference" />
+        <attr name="text_font_date" format="reference" />
+
         <attr name="background_drawable_month" format="reference"/>
         <attr name="background_drawable_day" format="reference"/>
         <attr name="background_drawable_date" format="reference"/>

@@ -7,9 +7,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -17,8 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -42,6 +37,7 @@ import com.hardik.calendarapp.databinding.DialogItemEventCustomAlertMinuteBindin
 import com.hardik.calendarapp.databinding.DialogItemEventRepeatBinding
 import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
 import com.hardik.calendarapp.databinding.FragmentNewEventBinding
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,7 +76,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentNewEventBinding.bind(view)
 
-        val menuHost: MenuHost = requireActivity()
+        /*val menuHost: MenuHost = requireActivity()
 
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -115,7 +111,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     else -> false
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle */
 
         if (arguments?.containsKey(KEY_EVENT) == true){
             Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
@@ -192,15 +188,15 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 }
                 launch {
                     viewModel.title.collectLatest { title ->
-                        if (binding.tInEdtEventName.text.toString() != title) {
-                            binding.tInEdtEventName.setText(title) // Update UI if needed
+                        if (binding.edtEventName.text.toString() != title) {
+                            binding.edtEventName.setText(title) // Update UI if needed
                         }
                     }
                 }
                 launch {
                     viewModel.description.collectLatest{ description ->
-                        if (binding.tInEdtEventNote.text.toString()!= description) {
-                            binding.tInEdtEventNote.setText(description) // Update UI if needed
+                        if (binding.edtEventNote.text.toString()!= description) {
+                            binding.edtEventNote.setText(description) // Update UI if needed
                         }
                     }
                 }
@@ -246,7 +242,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         binding.tvEndTimePicker.setOnClickListener {
             showTimePickerDialog(isStartTime = false)
         }
-        binding.tInEdtEventName.addTextChangedListener { text ->
+        binding.edtEventName.addTextChangedListener { text ->
             text?.let {
                 if (viewModel.title.value != it.toString()) {
                     viewModel.updateTitle(it.toString()) // Update ViewModel state
@@ -255,10 +251,30 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
         binding.tvRepeat.setOnClickListener { showRepetitionDialog() }
         binding.tvAlert.setOnClickListener { showAlertRemindDialog() }
-        binding.tInEdtEventNote.addTextChangedListener { viewModel.updateDescription(it.toString()) }
+        binding.edtEventNote.addTextChangedListener { viewModel.updateDescription(it.toString()) }
         binding.switchAllDay.setOnCheckedChangeListener { buttonView, isChecked -> viewModel.updateAllDayStatus(isChecked) }
 
+        /** Save Event  */
+        (activity as MainActivity).binding.saveEventIcon.setOnClickListener {
+            lifecycleScope.launch {
+                val msg: String = viewModel.run {
+                    val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                    Log.e(TAG, "eventId is -> id: $id", )
+                    insertCustomEvent(context = requireContext(),id = id)
+                }
 
+                // Display a message to the user
+                //Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+                // Reset the fields after successful insertion
+                if (msg == EVENT_INSERT_SUCCESSFULLY || msg == EVENT_UPDATE_SUCCESSFULLY) {
+                    viewModel.resetEventState()
+                }
+                findNavController().popBackStack(R.id.newEventFragment.takeIf { EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                //findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -269,8 +285,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private fun populateEventData(event: Event) {
         Log.e(TAG, "populateEventData: ${DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)}", )
         // Populate the title and description
-        /* binding.tInEdtEventName.setText(event.title)
-        binding.tInEdtEventNote.setText(event.description)
+        /* binding.edtEventName.setText(event.title)
+        binding.edtEventNote.setText(event.description)
 
         // Populate start and end dates
         binding.tvStartDatePicker.text = DateUtil.stringToString(

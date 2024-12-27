@@ -81,20 +81,22 @@
                 android:text="31"
                 android:textColor="@color/background_secondary"
                 android:textSize="@dimen/_8ssp"
+                android:layout_marginEnd="@dimen/_8sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- save event button-->
             <TextView
                 android:id="@+id/save_event_icon"
                 android:layout_width="@dimen/_46sdp"
                 android:layout_height="@dimen/_21sdp"
                 android:background="@drawable/save_event_icon"
                 android:gravity="center"
-                android:padding="0dp"
-                android:text="31"
+                android:text=""
                 android:textColor="@color/background_secondary"
                 android:textSize="@dimen/_8ssp"
+                android:layout_marginEnd="@dimen/_8sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

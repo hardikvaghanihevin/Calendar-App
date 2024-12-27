@@ -39,6 +39,8 @@ import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -132,36 +134,74 @@ class MainActivity : AppCompatActivity() {
         }
         navController.addOnDestinationChangedListener { navCont: NavController, destination: NavDestination, _ ->
             invalidateOptionsMenu()
-            val isFabVisible = destination.id != R.id.newEventFragment && destination.id != R.id.settingsFragment
+            hideAllViewsWithAnimation()
+            /*val isFabVisible = destination.id != R.id.newEventFragment || destination.id != R.id.settingsFragment
 
             if (isFabVisible) {
-                showFabWithAnimation(binding.fab)
+                showViewWithAnimation(binding.fab)
             } else {
-                hideFabWithAnimation(binding.fab)
+                hideViewWithAnimation(binding.fab)
             }
 
             val isSaveEventIconVisible = destination.id == R.id.newEventFragment || destination.id == R.id.viewEventFragment
 
             if (isSaveEventIconVisible){
-                showFabWithAnimation(binding.saveEventIcon)
+                showViewWithAnimation(binding.saveEventIcon)
             }else{
-                hideFabWithAnimation(binding.saveEventIcon)
+                hideViewWithAnimation(binding.saveEventIcon)
             }
 
             val isSearchIconVisible = destination.id == R.id.nav_year || destination.id == R.id.nav_month
 
             if (isSearchIconVisible){
-                showFabWithAnimation(binding.searchIcon)
+                showViewWithAnimation(binding.searchIcon)
             }else{
-                hideFabWithAnimation(binding.searchIcon)
+                hideViewWithAnimation(binding.searchIcon)
             }
 
             val isBackToDateIconVisible = destination.id == R.id.nav_year || destination.id == R.id.nav_month
 
             if (isBackToDateIconVisible){
-                showFabWithAnimation(binding.backToDateIcon)
+                showViewWithAnimation(binding.backToDateIcon)
             }else{
-                hideFabWithAnimation(binding.backToDateIcon)
+                hideViewWithAnimation(binding.backToDateIcon)
+            }*/
+
+            when (destination.id) {
+                // Destinations where FAB should be hidden
+                R.id.newEventFragment -> {
+                    showViewWithAnimation(binding.saveEventIcon)
+                    hideViewWithAnimation(binding.fab)
+                    hideViewWithAnimation(binding.searchIcon)
+                    hideViewWithAnimation(binding.backToDateIcon)
+                }
+
+                // Destinations where Save Event Icon should be shown
+                R.id.viewEventFragment -> {
+                    showViewWithAnimation(binding.saveEventIcon)
+                    hideViewWithAnimation(binding.fab)
+                    hideViewWithAnimation(binding.searchIcon)
+                    hideViewWithAnimation(binding.backToDateIcon)
+                }
+
+                // Destinations for Year and Month navigation
+                R.id.nav_year, R.id.nav_month -> {
+                    showViewWithAnimation(binding.searchIcon)
+                    showViewWithAnimation(binding.backToDateIcon)
+                    showViewWithAnimation(binding.fab)
+                    hideViewWithAnimation(binding.saveEventIcon)
+                }
+
+                R.id.settingsFragment -> {
+                    
+                }
+                // Default case: Hide everything except FAB
+                else -> {
+                    showViewWithAnimation(binding.fab)
+                    hideViewWithAnimation(binding.saveEventIcon)
+                    hideViewWithAnimation(binding.searchIcon)
+                    hideViewWithAnimation(binding.backToDateIcon)
+                }
             }
         }
 
@@ -386,9 +426,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun handleNavigationIconClick() {
         val currentDestination = navController.currentDestination
-        if (currentDestination != null &&
-            appBarConfiguration.topLevelDestinations.contains(currentDestination.id)
-        ) {
+        if (currentDestination != null && appBarConfiguration.topLevelDestinations.contains(currentDestination.id)) {
             toggleDrawer()
         } else {
             navController.navigateUp(appBarConfiguration)
@@ -411,25 +449,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Function to show FAB with animation
-    private fun showFabWithAnimation(fab: View) {
-        fab.animate()
-            .alpha(1f)
-            .scaleX(1f)
-            .scaleY(1f)
-            .setDuration(200) // animation duration in milliseconds
-            .withStartAction { fab.visibility = View.VISIBLE }
-            .start()
+    private fun showViewWithAnimation(fab: View) {
+        CoroutineScope(Dispatchers.Main).launch {
+            fab.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(200) // animation duration in milliseconds
+                .withStartAction { fab.visibility = View.VISIBLE }
+                .start()
+        }
     }
 
     // Function to hide FAB with animation
-    private fun hideFabWithAnimation(fab: View) {
-        fab.animate()
-            .alpha(0f)
-            .scaleX(0f)
-            .scaleY(0f)
-            .setDuration(200) // animation duration in milliseconds
-            .withEndAction { fab.visibility = View.GONE }
-            .start()
+    private fun hideViewWithAnimation(fab: View) {
+        CoroutineScope(Dispatchers.Main).launch {
+            fab.animate()
+                .alpha(0f)
+                .scaleX(0f)
+                .scaleY(0f)
+                .setDuration(200) // animation duration in milliseconds
+                .withEndAction { fab.visibility = View.GONE }
+                .start()
+        }
+    }
+
+    private fun hideAllViewsWithAnimation() {
+        val viewList = listOf(binding.fab,binding.searchIcon,binding.backToDateIcon,binding.saveEventIcon,)
+        viewList.forEach { hideViewWithAnimation(it) }
     }
 
 
