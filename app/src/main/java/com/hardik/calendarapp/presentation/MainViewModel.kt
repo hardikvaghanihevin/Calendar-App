@@ -377,29 +377,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _yearMonthState = MutableStateFlow<Pair<Int, Int>>(Pair(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH)))
-    val yearMonthState: StateFlow<Pair<Int, Int>> = _yearMonthState
-
-    fun updateYearMonth(year: Int, month: Int) {
-        Log.i(TAG, "updateYear: $year")
-        viewModelScope.launch {
-            _yearMonthState.value = Pair(year, month)
-            //_yearState.value = year
-        }
-    }
-
-    private val _yearMonthDateState = MutableStateFlow<Triple<Int, Int, Int>>(Triple(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH)))
-    val yearMonthDateState: StateFlow<Triple<Int, Int, Int>> = _yearMonthDateState
-
-    fun updateYearMonthDate(year: Int, month: Int, date: Int) {
-        Log.i(TAG, "updateYear: $year")
-        viewModelScope.launch {
-            _yearMonthDateState.value = Triple(year, month, date)
-            //_yearMonthState.value = Pair(year, month)
-            //_yearState.value = year
-        }
-    }
-
     private val _selectedDate = MutableStateFlow<String?>(null)//null, "2000-0-1"
     val selectedDate: StateFlow<String?> = _selectedDate
 

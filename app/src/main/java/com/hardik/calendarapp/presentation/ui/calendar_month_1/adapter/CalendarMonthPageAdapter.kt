@@ -13,29 +13,37 @@ import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.ItemMonthPage1Binding
 import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
-class CalendarMonthPageAdapter(private var yearMonthPairList : List<Pair<Int, Int>>) :
+class CalendarMonthPageAdapter() :
     RecyclerView.Adapter<CalendarMonthPageAdapter.MonthViewHolder>() {
     private val TAG = BASE_TAG + CalendarMonthPageAdapter::class.java.simpleName
 
+    private var yearMonthPairList : List<Pair<Int, Int>> = emptyList()
+    private var eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
+
+    private var selectedDate: String? = null
     // Method to update yearList and refresh the RecyclerView
+    // Update year and month list
     @SuppressLint("NotifyDataSetChanged")
     fun updateYearMonthPairList(newYearMonthPairList: List<Pair<Int, Int>>) {
         yearMonthPairList = newYearMonthPairList
         notifyDataSetChanged()
     }
-    private var eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
+
+    // Update event date map
     @SuppressLint("NotifyDataSetChanged")
     fun updateEventsOfDate(dates: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>) {
-        this.eventsOfDateMap = dates
+        eventsOfDateMap = dates
         notifyDataSetChanged()
     }
 
-    private var selectedDate:String? = null
+    // Set selected date
     @SuppressLint("NotifyDataSetChanged")
-    fun setSelectedDate(yyyy_mm_dd: String?){
-        Log.e(TAG, "setSelectedDate: $yyyy_mm_dd", )
-        this.selectedDate = yyyy_mm_dd
-        notifyDataSetChanged()
+    fun setSelectedDate(yyyy_mm_dd: String?) {
+        Log.e(TAG, "setSelectedDate: $yyyy_mm_dd")
+        if (selectedDate != yyyy_mm_dd) {
+            selectedDate = yyyy_mm_dd
+            notifyDataSetChanged()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
@@ -47,15 +55,20 @@ class CalendarMonthPageAdapter(private var yearMonthPairList : List<Pair<Int, In
         //val monthIndex = position % 12
         val (year, month) = yearMonthPairList[position]
 
-        holder.binding.customView.apply {
-            this.currentYear = year
-            this.currentMonth = month
-            this.monthNameWithYear = true
-            this.selectedDate = this@CalendarMonthPageAdapter.selectedDate//"2024-11-25"
-            enableTouchEventHandling(enable = true)
-            this.eventDateList = eventsOfDateMap
-            postInvalidate() // Redraw the custom view if needed
-            configureCustomViewCallback?.invoke(this) // Optional callback for further customization
+        holder.binding.also {
+
+            val cvm: CustomViewMonth = it.customView.apply {
+                this.currentYear = year
+                this.currentMonth = month
+                this.monthNameWithYear = true
+                this.selectedDate = this@CalendarMonthPageAdapter.selectedDate//"2024-11-25"
+                enableTouchEventHandling(enable = true)
+                this.eventDateList = eventsOfDateMap
+                postInvalidate() // Redraw the custom view if needed
+
+                selectedDate
+            }
+            configureCustomViewCallback?.invoke(cvm) // Optional callback for further customization
         }
         //holder.bind(eventsOfDateMap)
     }
@@ -82,6 +95,16 @@ class CalendarMonthPageAdapter(private var yearMonthPairList : List<Pair<Int, In
     fun configureCustomView(callback: (CustomViewMonth) -> Unit) {
         this.configureCustomViewCallback = callback
     }
+}
+
+private var dateSelectedCallback: ((String?) -> Unit)? = null
+fun setDateSelectedCallback(callback: (String?) -> Unit) {
+    dateSelectedCallback = callback
+}
+
+// Call this method when a date is selected
+fun notifyDateSelected(date: String?) {
+    dateSelectedCallback?.invoke(date)
 }
 
 

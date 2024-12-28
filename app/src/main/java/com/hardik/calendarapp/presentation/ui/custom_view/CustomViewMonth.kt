@@ -316,7 +316,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             return super.onTouchEvent(event)
         }
 
-        Log.e(TAG, "onTouchEvent: ${event.action}", )
+        //Log.e(TAG, "onTouchEvent: ${event.action}", )
         val x = event.x
         val y = event.y
         //parent?.requestDisallowInterceptTouchEvent(true)
@@ -349,8 +349,9 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                             // Get the clicked date from the Triple
                             val clickedDate = triple.third
                             // Update selected date
-                             _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
-                            Log.i(TAG, "onTouchEvent: $_selectedDate")
+                            Log.i(TAG, "onTouchEvent A : selected Date: $_selectedDate")
+                            _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
+                            Log.i(TAG, "onTouchEvent B : selected Date: $_selectedDate")
                             // Trigger the listener and redraw the view
                             onDateItemClickListener?.invoke(triple)//todo: OR
 
@@ -583,38 +584,82 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(),left = 0.0f , top = (monthNameHeight + dayNameHeight), right = viewWidth.toFloat(),bottom =(monthNameHeight + dayNameHeight + 6.7f * adjustedBlockHeight ), canvas, context.getColor(R.color.background_primary))//todo: dates of month block background
         }
 
-        // Previous month's details
-        val prevCalendar = Calendar.getInstance().apply { set(currentYear, currentMonth - 1, 1) }
-        val daysInPrevMonth = prevCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val prevMonth = prevCalendar.get(Calendar.MONTH)
 
         // Draw previous month's dates
-        var prevDayCounter = daysInPrevMonth - firstDayOfWeek + 1
-        for (col in 0 until firstDayOfWeek) {
-            val left = (col * blockWidth).takeIf { designMode.equals(1) } ?: (horizontalPadding + col * adjustedBlockWidth)
-            val top = (monthNameHeight + dayNameHeight).takeIf { designMode.equals(1) } ?: (monthNameHeight + dayNameHeight + verticalPadding)
-            val right = (left + blockWidth).takeIf { designMode.equals(1) } ?: (left + adjustedBlockWidth)
-            val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) } ?:(top + adjustedBlockHeight)
+        if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH) {
+            // Previous month's details
+            val prevCalendar = Calendar.getInstance().apply { set(currentYear, currentMonth - 1, 1) }
+            val daysInPrevMonth = prevCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val prevMonth = prevCalendar.get(Calendar.MONTH)
+
+            var prevDayCounter = daysInPrevMonth - firstDayOfWeek + 1
+            for (col in 0 until firstDayOfWeek) {
+                val left = (col * blockWidth).takeIf { designMode.equals(1) }
+                    ?: (horizontalPadding + col * adjustedBlockWidth)
+                val top = (monthNameHeight + dayNameHeight).takeIf { designMode.equals(1) }
+                    ?: (monthNameHeight + dayNameHeight + verticalPadding)
+                val right = (left + blockWidth).takeIf { designMode.equals(1) }
+                    ?: (left + adjustedBlockWidth)
+                val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) }
+                    ?: (top + adjustedBlockHeight)
 
 
-            if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH){
-                // Draw the background using the drawable if available
-                backgroundDrawableDate?.let { drawable ->
-                    if(designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY,)
-                } ?: run {
-                    // If no drawable is set, use a solid color
-                    paintDate.color = Color.LTGRAY // Color for previous month's dates
-                    canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paintDate)//canvas.drawRect(left, top, right, bottom, paint)
+                if (monthDisplayOption == MonthDisplayOption.PREVIOUS || monthDisplayOption == MonthDisplayOption.BOTH) {
+                    // Draw the background using the drawable if available
+                    backgroundDrawableDate?.let { drawable ->
+                        if (designMode.equals(1)) modifyAndApplyDrawable(
+                            drawable,
+                            margin.toFloat(),
+                            left,
+                            top,
+                            right,
+                            bottom,
+                            canvas,
+                            Color.LTGRAY,
+                        )
+                    } ?: run {
+                        // If no drawable is set, use a solid color
+                        paintDate.color = Color.LTGRAY // Color for previous month's dates
+                        canvas.drawRect(
+                            left + margin,
+                            top + margin,
+                            right - margin,
+                            bottom - margin,
+                            paintDate
+                        )//canvas.drawRect(left, top, right, bottom, paint)
+                    }
+                    if (designMode.equals(1)) drawDateText(
+                        canvas,
+                        prevDayCounter.toString(),
+                        paintDate,
+                        left,
+                        blockWidth,
+                        top,
+                        dateBlockHeight
+                    )
+                    if (designMode.equals(2)) drawDateText(
+                        canvas,
+                        prevDayCounter.toString(),
+                        paintDate,
+                        left,
+                        adjustedBlockWidth,
+                        top,
+                        dateBlockHeight
+                    )
                 }
-                if (designMode.equals(1)) drawDateText(canvas, prevDayCounter.toString(), paintDate, left, blockWidth, top, dateBlockHeight)
-                if (designMode.equals(2)) drawDateText(canvas, prevDayCounter.toString(), paintDate, left, adjustedBlockWidth, top, dateBlockHeight)
-            }
 
-            // Add the day block to the list
-            // Store the rect for the previous month's blocks
-            val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-            daysBlocks.add(Triple(rect, canvas,"$currentYear-$prevMonth-$prevDayCounter")) // Store the Rect and day
-            prevDayCounter++
+                // Add the day block to the list
+                // Store the rect for the previous month's blocks
+                val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+                daysBlocks.add(
+                    Triple(
+                        rect,
+                        canvas,
+                        "$currentYear-$prevMonth-$prevDayCounter"
+                    )
+                ) // Store the Rect and day
+                prevDayCounter++
+            }
         }
 
         // Draw current month's dates
@@ -737,36 +782,80 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         }
 
         // Draw next month's dates
-        val nextMonth = (currentMonth + 1) % 12
-        var nextDayCounter = 1
-        for (index in firstDayOfWeek + daysInMonth until 42) {
-            val row = index / 7
-            val col = index % 7
-            val left = (col * blockWidth).takeIf { designMode.equals(1) } ?:(horizontalPadding + col * adjustedBlockWidth)
-            val top = (monthNameHeight + dayNameHeight + row * dateBlockHeight).takeIf { designMode.equals(1) } ?:(monthNameHeight + dayNameHeight + verticalPadding + row * adjustedBlockHeight)
-            val right = (left + blockWidth).takeIf { designMode.equals(1) } ?:(left + adjustedBlockWidth)
-            val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) } ?:(top + adjustedBlockHeight)
+        if (monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH) {
+            val nextMonth = (currentMonth + 1) % 12
+            var nextDayCounter = 1
+            for (index in firstDayOfWeek + daysInMonth until 42) {
+                val row = index / 7
+                val col = index % 7
+                val left = (col * blockWidth).takeIf { designMode.equals(1) }
+                    ?: (horizontalPadding + col * adjustedBlockWidth)
+                val top = (monthNameHeight + dayNameHeight + row * dateBlockHeight).takeIf {
+                    designMode.equals(1)
+                } ?: (monthNameHeight + dayNameHeight + verticalPadding + row * adjustedBlockHeight)
+                val right = (left + blockWidth).takeIf { designMode.equals(1) }
+                    ?: (left + adjustedBlockWidth)
+                val bottom = (top + dateBlockHeight).takeIf { designMode.equals(1) }
+                    ?: (top + adjustedBlockHeight)
 
 
-            if(monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH){
-                // Draw the background using the drawable if available
-                backgroundDrawableDate?.let { drawable ->
-                    // Adjust the bounds to include a 1dp margin
-                    if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(), left, top, right, bottom, canvas, Color.LTGRAY)
-                } ?: run {
-                    // If no drawable is set, use a solid color
-                    paintDate.color = Color.LTGRAY // Color for next month's dates
-                    canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paintDate)//canvas.drawRect(left, top, right, bottom, paint)
+                if (monthDisplayOption == MonthDisplayOption.NEXT || monthDisplayOption == MonthDisplayOption.BOTH) {
+                    // Draw the background using the drawable if available
+                    backgroundDrawableDate?.let { drawable ->
+                        // Adjust the bounds to include a 1dp margin
+                        if (designMode.equals(1)) modifyAndApplyDrawable(
+                            drawable,
+                            margin.toFloat(),
+                            left,
+                            top,
+                            right,
+                            bottom,
+                            canvas,
+                            Color.LTGRAY
+                        )
+                    } ?: run {
+                        // If no drawable is set, use a solid color
+                        paintDate.color = Color.LTGRAY // Color for next month's dates
+                        canvas.drawRect(
+                            left + margin,
+                            top + margin,
+                            right - margin,
+                            bottom - margin,
+                            paintDate
+                        )//canvas.drawRect(left, top, right, bottom, paint)
+                    }
+                    if (designMode.equals(1)) drawDateText(
+                        canvas,
+                        nextDayCounter.toString(),
+                        paintDate,
+                        left,
+                        blockWidth,
+                        top,
+                        dateBlockHeight
+                    )
+                    if (designMode.equals(2)) drawDateText(
+                        canvas,
+                        nextDayCounter.toString(),
+                        paintDate,
+                        left,
+                        adjustedBlockWidth,
+                        top,
+                        dateBlockHeight
+                    )
                 }
-                if (designMode.equals(1)) drawDateText(canvas, nextDayCounter.toString(), paintDate, left, blockWidth, top, dateBlockHeight )
-                if (designMode.equals(2)) drawDateText(canvas, nextDayCounter.toString(), paintDate, left, adjustedBlockWidth, top, dateBlockHeight )
+
+                // Add next month's day block to the list
+                val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+                daysBlocks.add(
+                    Triple(
+                        rect,
+                        canvas,
+                        "$currentYear-$nextMonth-$nextDayCounter"
+                    )
+                ) // Store the Rect and day
+
+                nextDayCounter++
             }
-
-            // Add next month's day block to the list
-            val rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
-            daysBlocks.add(Triple(rect, canvas, "$currentYear-$nextMonth-$nextDayCounter")) // Store the Rect and day
-
-            nextDayCounter++
         }
     }
 

@@ -39,7 +39,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarYear1Binding? = null
     private val viewModel: MainViewModel by activityViewModels()
-    private val year = Calendar.getInstance().get(Calendar.YEAR)
+    private var year = Calendar.getInstance().get(Calendar.YEAR)
     var yearList: Map<Int, Map<Int, List<Int>>> = emptyMap()
     val adapter = CalendarYearPageAdapter(yearList)
 
@@ -48,6 +48,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated: ")
 
         _binding = FragmentCalendarYear1Binding.bind(view)
         CoroutineScope(Dispatchers.Main).launch {
@@ -91,7 +92,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         (activity as MainActivity).binding.backToDateIcon.setOnClickListener {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
             // Get the position of the key in the yearList
-            val yearKeyPos: Int? = getPositionFromYear(yearList,backToCurrentYear)
+            val yearKeyPos: Int? = getPositionFromYear(yearList, backToCurrentYear)
             // Get the yearKey at the given position
             val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
             if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
@@ -105,43 +106,53 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     override fun onResume() {
         super.onResume()
+        Log.i(TAG, "onResume: ")
         requireActivity().invalidateOptionsMenu()
     }
 
     override fun onDestroy() {
+        Log.i(TAG, "onDestroy: ")
         lifecycleScope.coroutineContext.cancelChildren()
         super.onDestroy()
     }
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i(TAG, "onDestroyView: ")
         _binding = null
     }
 
     private fun setupUI() {
+        Log.i(TAG, "setupUI: ")
+
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.yearList.collectLatest{
-                Log.e(TAG, "observeViewModelState: $it", )
-                yearList = it
-                launch(Dispatchers.Main){
-                    adapter.updateYearList(it)
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                viewModel.yearList.collectLatest{
+                    Log.e(TAG, "observeViewModelState: $it", )
+                    yearList = it
+                    launch(Dispatchers.Main){
+                        adapter.updateYearList(it)
 
-                    val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
+                        val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
+                        Log.i(TAG, "setupUI: current year: $year")
 
-                    viewPager.setCurrentItem(yearPosition,false)
+                        viewPager.setCurrentItem(yearPosition,false)
+                    }
                 }
             }
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
             // Safely collect yearState during STARTED state
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.yearState.collectLatest{//collectLatest
-                    Log.i(TAG, "setupUI: year:$it")
-                    updateToolbarTitle("$it")
+                    Log.i(TAG, "setupUI: year: $it")
                     binding.tvYearTitle.text = "$it"
+                    updateToolbarTitle("$it")
+                    year = it
                 }
             }
         }
+
         binding.apply {
             btnPrevYear.setOnClickListener {
                 navigateToYear(-1)
@@ -156,6 +167,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private fun setupViewPager(){
         Log.i(TAG, "setupViewPager: ")
         val yearPosition = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
+        Log.i(TAG, "setupViewPager: $year")
 
         // When swipe happens, update the year in your adapter based on the position
         // todo: this is necessary to give previous position (which are you want)
@@ -165,7 +177,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         viewPager.adapter = adapter
 
         // Set the current item to the calculated position of the current year
-        viewPager.setCurrentItem(24, false)
+        viewPager.setCurrentItem( previousPosition, false )
 
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
