@@ -32,6 +32,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
 import com.hardik.calendarapp.data.database.entity.YearKey
+import com.hardik.calendarapp.data.database.entity.dummyEvent
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter1
@@ -69,10 +70,13 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     var month: Int = Calendar.getInstance().get(Calendar.MONTH)
     var day: Int = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
+    var bundle: Bundle? = null
+
     private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate: ")
         arguments?.let {
             year = it.getInt(KEY_YEAR)
             month = it.getInt(KEY_MONTH)//0 base month 0-11 (jan-dec0
@@ -91,6 +95,22 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated: ")
+
+        /** For back word store data set when it go to click when use go to viewEvent*/
+        bundle?.let {
+            val argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getParcelable(KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
+            } else {
+                @Suppress("DEPRECATION")
+                it.getParcelable(KEY_EVENT) ?: throw IllegalArgumentException("Event is missing")
+            }
+            year = argEvent.year.toInt()
+            month = argEvent.month.toInt()//0 base month 0-11 (jan-dec0
+            day = argEvent.date.toInt()
+            selectedDate = if(day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
+            Log.e(TAG, "onViewCreated: $selectedDate", )
+        }
 
         _binding = FragmentCalendarMonth1Binding.bind(view)
         viewPager = binding.viewPagerCalendarMonth
@@ -165,22 +185,28 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     override fun onResume() {
         super.onResume()
+        Log.i(TAG, "onResume: ")
         requireActivity().invalidateOptionsMenu()
     }
 
     override fun onDestroy() {
+        Log.i(TAG, "onDestroy: ")
         lifecycleScope.coroutineContext.cancelChildren()
         super.onDestroy()
     }
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i(TAG, "onDestroyView: ")
 
+        bundle = (bundle ?: Bundle()).apply {
+            putParcelable(KEY_EVENT, dummyEvent.copy( year = year.toString(), month = month.toString(), date = day.toString() ) )
+        }
         // Check if arguments are present and contain the required keys
         if (arguments?.containsKey(KEY_YEAR) == true && arguments?.containsKey(KEY_MONTH) == true) {
             year = arguments?.getInt(KEY_YEAR) ?: Calendar.getInstance().get(Calendar.YEAR)
             month = arguments?.getInt(KEY_MONTH) ?: Calendar.getInstance().get(Calendar.MONTH)
             day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-            viewModel.updateYear(year)
+            //viewModel.updateYear(year)
         } else {
             // Fallback: No arguments, use the current year
             viewModel.updateYear(Calendar.getInstance().get(Calendar.YEAR))
@@ -192,6 +218,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     @SuppressLint("SetTextI18n")
     private fun setupUI(){
+        Log.i(TAG, "setupUI: ")
         binding.apply {
             tvMonthTitle.text = DateFormatSymbols().months[month]+" " + year
 
@@ -256,10 +283,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         }
     }
     private fun navigateToViewEventFrag(event: Event) {
+        Log.i(TAG, "navigateToViewEventFrag: ")
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
             Log.e(TAG, "navigateToViewEventFrag:  ${Thread.currentThread().name}", )
-            val bundle = Bundle().apply {
+            bundle = (bundle ?: Bundle()).apply {
                 putParcelable(KEY_EVENT, event)// Pass the event object
             }
             findNavController().navigate(R.id.viewEventFragment, bundle, navOptions)
@@ -268,6 +296,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }
     private fun fetchEventsForSelectedMonth() {
+        Log.i(TAG, "fetchEventsForSelectedMonth: ")
 //        val (firstDayOfMonth, lastDayOfMonth) = if (year == 0 && month == 0) {
 //            val today = DateTime.now()
 //            getFirstAndLastDateOfMonth(today)
@@ -289,6 +318,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
+        Log.i(TAG, "observeViewModelState: ")
         //Log.d(TAG, "observeViewModelState: ")
         // Collecting the StateFlow
         lifecycleScope.launch(Dispatchers.IO) {

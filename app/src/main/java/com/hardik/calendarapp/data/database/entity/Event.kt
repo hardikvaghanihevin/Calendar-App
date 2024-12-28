@@ -273,3 +273,24 @@ fun getAllKeysAsList(
 
     return keyList
 }
+
+
+val dummyEvent = Event(
+    id = "", // Unique ID
+    eventId = 1L, // Example auto-incremented ID
+    title = "Dummy Event",
+    startTime = 0L, // Current timestamp
+    endTime = 0L, // Two hours later
+    startDate = "", // Example start date
+    endDate = "", // Example end date
+    year = "", // Year of the event
+    month = "", // April (0-based index)
+    date = "", // 13th day of the month
+    isHoliday = false, // Not a holiday
+    eventType = EventType.PERSONAL, // Example event type
+    sourceType = SourceType.LOCAL, // Example source type
+    description = "Dummy event",
+    repeatOption = RepeatOption.NEVER, // Occurs once
+    alertOffset = AlertOffset.AT_TIME, // Alert 10 minutes before
+    customAlertOffset = null // No custom alert offset
+)

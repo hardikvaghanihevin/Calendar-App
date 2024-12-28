@@ -30,6 +30,7 @@ import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -182,6 +183,25 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             }
             findNavController().navigate(R.id.newEventFragment, bundle, navOptions)
         }
+    }
+
+    override fun onDestroy() {
+        Log.i(TAG, "onDestroy: ")
+        lifecycleScope.coroutineContext.cancelChildren()
+        super.onDestroy()
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i(TAG, "onDestroyView: ")
+
+        // Check if arguments are present and contain the required keys
+        if ( arguments?.containsKey(Constants.KEY_EVENT) == true ) {
+
+        } else {
+            // Fallback: No arguments,
+        }
+
+        _binding = null
     }
 
 

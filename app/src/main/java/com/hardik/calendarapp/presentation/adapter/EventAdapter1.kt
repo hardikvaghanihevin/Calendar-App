@@ -10,6 +10,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ItemEventLayout1Binding
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.LogUtil
 import java.util.Calendar
@@ -103,7 +104,7 @@ class EventAdapter1(private var list: ArrayList<Event>):
                 eventTitle.text = event.title
 
                 // Set "All day" or time period based on start and end time
-                eventTimePeriod.text = if (event.startTime == event.endTime) "All day"
+                eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) "All day"
                 else "${DateUtil.longToString(event.startTime, "HH:mm")} - ${DateUtil.longToString(event.endTime, "HH:mm")}"
                 //eventTimePeriod.text = DateUtil.longToString(event.endTime, DateUtil.DATE_FORMAT_yyyy_MM_dd)
 

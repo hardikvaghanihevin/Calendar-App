@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var drawerLayout: DrawerLayout
     lateinit var navController: NavController
 
+    var bundle: Bundle? = null
 
     companion object{
         //val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
@@ -109,6 +110,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener { view ->
             Log.i(TAG, "onCreate: clicked fab:")
+
+            bundle = (bundle ?: Bundle()).apply {
+                //putParcelable(Constants.KEY_EVENT, dummyEvent.copy( year = "2025", month = "2", date = "0") )
+            }
+
             navController.navigate(R.id.newEventFragment, null, navOptions)
         }
 
