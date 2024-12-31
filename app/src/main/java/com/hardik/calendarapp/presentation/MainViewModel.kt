@@ -461,8 +461,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-//    val _languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-
     //todo: Combined StateFlow to generate the full date string (eg.Monday 1 January 2025)
     val fullDateJTD: StateFlow<String> = combine(_yearJTD, _monthJTD, _dateJTD, _languageCode) { year, month, date, languageCode ->
         getFormattedDate(year, month, date, languageCode)

@@ -51,10 +51,17 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         Log.i(TAG, "onViewCreated: ")
 
         _binding = FragmentCalendarYear1Binding.bind(view)
+
         CoroutineScope(Dispatchers.Main).launch {
-            val job = launch { setupUI() }
-            job.join()
-            val job1 = launch { setupViewPager() }
+            try {
+                // Launch setupUI inside lifecycleScope
+                setupUI()
+
+                // Launch setupViewPager after setupUI is complete
+                setupViewPager()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during setup: ${e.message}")
+            }
 
         }
 /*
@@ -125,7 +132,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         Log.i(TAG, "setupUI: ")
 
         lifecycleScope.launch(Dispatchers.IO) {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.yearList.collectLatest{
                     Log.e(TAG, "observeViewModelState: $it", )
                     yearList = it

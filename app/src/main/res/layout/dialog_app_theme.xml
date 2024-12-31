@@ -21,14 +21,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:padding="16dp"
-            android:text="@string/first_date_of_the_week"
+            android:text="@string/app_theme"
             android:textAlignment="textStart"
             android:textColor="@color/text_primary"
             android:fontFamily="@font/post_nord_sans_medium"
             android:textSize="@dimen/_18ssp"
             android:textStyle="bold" />
-
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -38,73 +36,73 @@
             android:weightSum="2.8">
 
             <TextView
-                android:id="@+id/dialogFirstDayOfTheWeek_Sunday"
+                android:id="@+id/dialogAppTheme_DarkTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sunday"
+                android:text="@string/dark_theme"
                 android:textSize="@dimen/_16ssp"
                 android:textColor="@color/text_primary"
                 android:fontFamily="@font/post_nord_sans_regular"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/dialogFirstDayOfTheWeek_Monday"
+                app:layout_constraintBottom_toTopOf="@id/dialogAppTheme_LightTheme"
                 />
 
             <ImageView
-                android:id="@+id/dialogFirstDayOfTheWeek_Sunday_icon"
+                android:id="@+id/dialogAppTheme_DarkTheme_icon"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Sunday"
-                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Sunday"
+                app:layout_constraintTop_toTopOf="@id/dialogAppTheme_DarkTheme"
+                app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_DarkTheme"
                 android:src="@drawable/unchecked_icon"/>
 
             <TextView
-                android:id="@+id/dialogFirstDayOfTheWeek_Monday"
+                android:id="@+id/dialogAppTheme_LightTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="@dimen/_10sdp"
-                android:text="@string/monday"
+                android:text="@string/light_theme"
                 android:textSize="@dimen/_16ssp"
                 android:textColor="@color/text_primary"
                 android:fontFamily="@font/post_nord_sans_regular"
-                app:layout_constraintStart_toStartOf="@id/dialogFirstDayOfTheWeek_Sunday"
-                app:layout_constraintTop_toBottomOf="@id/dialogFirstDayOfTheWeek_Sunday"
-                app:layout_constraintBottom_toTopOf="@id/dialogFirstDayOfTheWeek_Saturday"
+                app:layout_constraintStart_toStartOf="@id/dialogAppTheme_DarkTheme"
+                app:layout_constraintTop_toBottomOf="@id/dialogAppTheme_DarkTheme"
+                app:layout_constraintBottom_toTopOf="@id/dialogAppTheme_SystemTheme"
                 />
 
             <ImageView
-                android:id="@+id/dialogFirstDayOfTheWeek_Monday_icon"
+                android:id="@+id/dialogAppTheme_LightTheme_icon"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Monday"
-                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Monday"
+                app:layout_constraintTop_toTopOf="@id/dialogAppTheme_LightTheme"
+                app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_LightTheme"
                 android:src="@drawable/unchecked_icon"/>
 
             <TextView
-                android:id="@+id/dialogFirstDayOfTheWeek_Saturday"
+                android:id="@+id/dialogAppTheme_SystemTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/saturday"
+                android:text="@string/system_theme"
                 android:textSize="@dimen/_16ssp"
                 android:textColor="@color/text_primary"
                 android:fontFamily="@font/post_nord_sans_regular"
-                app:layout_constraintStart_toStartOf="@id/dialogFirstDayOfTheWeek_Monday"
-                app:layout_constraintTop_toBottomOf="@id/dialogFirstDayOfTheWeek_Monday"
+                app:layout_constraintStart_toStartOf="@id/dialogAppTheme_LightTheme"
+                app:layout_constraintTop_toBottomOf="@id/dialogAppTheme_LightTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 />
 
             <ImageView
-                android:id="@+id/dialogFirstDayOfTheWeek_saturday_icon"
+                android:id="@+id/dialogAppTheme_SystemTheme_icon"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Saturday"
-                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Saturday"
+                app:layout_constraintTop_toTopOf="@id/dialogAppTheme_SystemTheme"
+                app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_SystemTheme"
                 android:src="@drawable/unchecked_icon"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

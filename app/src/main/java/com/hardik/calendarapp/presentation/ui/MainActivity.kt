@@ -13,6 +13,7 @@ import android.view.Window
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,6 +33,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
+import com.hardik.calendarapp.databinding.DialogAppThemeBinding
 import com.hardik.calendarapp.databinding.DialogFirstDayOfTheWeekBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
 import com.hardik.calendarapp.presentation.MainViewModel
@@ -73,15 +75,22 @@ class MainActivity : AppCompatActivity() {
 
         // Step 1: Retrieve saved language preference
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
         val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
-        val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
+        val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
+        val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
 
+        // Step 2: Set the theme before locale
+        when (appTheme) {
+            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
 
-        // Step 2: Update the locale before inflating the UI
+        // Step 3: Update the locale after setting the theme and before inflating the UI
         LocaleHelper.setLocale(this, languageCode)
 
-        // Step 3: Inflate the layout and set the content view
+        // Step 4: Inflate the layout and set the content view
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -179,7 +188,7 @@ class MainActivity : AppCompatActivity() {
             }*/
 
             when (destination.id) {
-                // Destinations where FAB should be hidden
+                // Destinations where FAB/Menu should be hidden
                 R.id.newEventFragment -> {
                     showViewWithAnimation(binding.saveEventIcon)
                     hideViewWithAnimation(binding.fab)
@@ -233,7 +242,7 @@ class MainActivity : AppCompatActivity() {
 
     private var dialogFirstDayOfTheWeekBinding: DialogFirstDayOfTheWeekBinding? = null
     private fun showFirstDayOfTheWeek(){
-        Log.i(TAG, "showJumpToDateDialog: ")
+        Log.i(TAG, "showFirstDayOfTheWeek: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_first_day_of_the_week, null)
         dialogFirstDayOfTheWeekBinding = DialogFirstDayOfTheWeekBinding.bind(dialogView)
 
@@ -384,10 +393,6 @@ class MainActivity : AppCompatActivity() {
 
         dialog.setCancelable(true)
 
-        dialog.show()
-
-
-        var fuldate = ""
         dialogJumpToDateBinding?.apply {
             yearPicker.apply {
                 minValue = 2000
@@ -481,14 +486,139 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // Function to get the min and max days for a specific year and month for jump to date
-    private fun getMinMaxDays(year: Int, month: Int): Pair<Int?, Int?> {
-        val daysInMonth = mainViewModel.yearList.value[year]?.get(month)
-        return if (daysInMonth != null) {
-            Pair(daysInMonth.minOrNull(), daysInMonth.maxOrNull())
-        } else {
-            Pair(null, null) // If no days are found for the month, return null
+    private var dialogAppThemeBinding: DialogAppThemeBinding? = null
+    private fun showAppThemeDialog(){
+        Log.i(TAG, "showAppThemeDialog: ")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_app_theme, null)
+        dialogAppThemeBinding = DialogAppThemeBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
         }
+
+        dialog.setCancelable(true)
+
+        dialogAppThemeBinding?.apply {
+            val darkThemeIcon = this.dialogAppThemeDarkThemeIcon
+            val darkThemeText = this.dialogAppThemeDarkTheme
+            val lightThemeIcon = this.dialogAppThemeLightThemeIcon
+            val lightThemeText = this.dialogAppThemeLightTheme
+            val systemThemeIcon = this.dialogAppThemeSystemThemeIcon
+            val systemThemeText = this.dialogAppThemeSystemTheme
+
+            //rest all icon and text
+            fun resetSelections(){
+                darkThemeIcon.setImageResource(R.drawable.unchecked_icon)
+                lightThemeIcon.setImageResource(R.drawable.unchecked_icon)
+                systemThemeIcon.setImageResource(R.drawable.unchecked_icon)
+
+                darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+
+                darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+
+            }
+
+            // Set the initial selection based on the saved preference
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+            val appTheme = sharedPreferences.getString("app_theme", "system")// Default to system theme
+
+            when(appTheme){
+                "dark" -> {
+                    darkThemeIcon.setImageResource(R.drawable.checked_icon)
+                    darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                    darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                }
+                "light" -> {
+                    lightThemeIcon.setImageResource(R.drawable.checked_icon)
+                    lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                    lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                }
+                "system" -> {
+                    systemThemeIcon.setImageResource(R.drawable.checked_icon)
+                    systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                    systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                }
+            }
+
+            // Handle darkTheme click
+            darkThemeText.setOnClickListener {
+                resetSelections()
+
+                darkThemeIcon.setImageResource(R.drawable.checked_icon)
+                darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) // Dark Theme
+
+                // Save selection to SharedPreferences
+                sharedPreferences.edit().putString("app_theme", "dark").apply()
+
+            }
+
+            // Handle lightTheme click
+            lightThemeText.setOnClickListener {
+                resetSelections()
+
+                lightThemeIcon.setImageResource(R.drawable.checked_icon)
+                lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Light Theme
+
+                // Save selection to SharedPreferences
+                sharedPreferences.edit().putString("app_theme", "light").apply()
+
+            }
+
+            // Handle systemTheme click
+            systemThemeText.setOnClickListener {
+                resetSelections()
+
+                systemThemeIcon.setImageResource(R.drawable.checked_icon)
+                systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) // System Default Theme
+
+                // Save selection to SharedPreferences
+                sharedPreferences.edit().putString("app_theme", "system").apply()
+
+            }
+
+            btnDone.setOnClickListener {
+                val selectedTheme = sharedPreferences.getString("app_theme", "system") // Get saved preference
+
+                // Apply the selected theme
+                when (selectedTheme) {
+                    "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) // Dark Theme
+                    "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Light Theme
+                    "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) // System Default Theme
+                }
+                dialog.dismiss()
+            }
+
+            btnCancel.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
     }
 
     /**
@@ -588,9 +718,14 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_month -> navController.navigate(R.id.nav_month)
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
+            R.id.nav_app_theme -> showAppThemeDialog()
             R.id.nav_settings -> navController.navigate(R.id.nav_settings)
 
         }
+
+        // Update selected item in the drawer
+        updateSelectedDrawerItem(item.id)
+
         toggleDrawer()
     }
 

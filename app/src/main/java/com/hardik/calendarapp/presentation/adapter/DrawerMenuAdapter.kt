@@ -58,16 +58,31 @@ class DrawerMenuAdapter(
         }
 
         // Handle item click
-        holder.container.setOnClickListener { onClick(item) ; setSelectedPosition(position) }
+        holder.container.setOnClickListener {
+            // Store the current selected position before updating
+            val previousSelectedPosition = selectedPosition
+
+            onClick(item) ;
+            //setSelectedPosition(position)
+
+            // Check if the item title is "Jump to Date", "App Theme", or "First Day of the Week"
+            if (item.title == "Jump to Date" || item.title == "App Theme" || item.title == "First Day of the Week") {
+                // If title matches, unselect the item (clear selection)
+                selectedPosition = previousSelectedPosition//-1 // or any other logic for unselecting
+
+            } else {
+                // Otherwise, set the selected position
+                setSelectedPosition(position)
+            }
+        }
     }
 
     override fun getItemCount(): Int = items.size
 
     // Method to update the selected position and notify the adapter to update the UI
     fun updateSelectedItem(selectedId: Int) {
-        // Find the item with the selectedId
+        // Find the item with the selectedId and update the selected position
         val newSelectedPosition = items.indexOfFirst { it.id == selectedId }
-
         if (newSelectedPosition != -1 && newSelectedPosition != selectedPosition) {
             setSelectedPosition(newSelectedPosition)
         }

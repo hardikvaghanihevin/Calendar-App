@@ -115,5 +115,9 @@
     <string name="sunday">Sunday</string>
     <string name="monday">Monday</string>
     <string name="saturday">Saturday</string>
+    <string name="app_theme">App theme</string>
+    <string name="dark_theme">Dark theme</string>
+    <string name="light_theme">Light theme</string>
+    <string name="system_theme">System theme</string>
 
 </resources>
