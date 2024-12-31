@@ -119,5 +119,13 @@
     <string name="dark_theme">Dark theme</string>
     <string name="light_theme">Light theme</string>
     <string name="system_theme">System theme</string>
+    <string name="device_information">Device information</string>
+    <string name="brand">Brand</string>
+    <string name="device">Device</string>
+    <string name="app_version">App Version</string>
+    <string name="os">Os</string>
+    <string name="abi">ABI</string>
+    <string name="version">Version</string>
+    <string name="okay">Okay</string>
 
 </resources>

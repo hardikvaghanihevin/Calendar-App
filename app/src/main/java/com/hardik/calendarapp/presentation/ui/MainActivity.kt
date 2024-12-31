@@ -1,10 +1,13 @@
 package com.hardik.calendarapp.presentation.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -34,6 +37,7 @@ import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.databinding.DialogAppThemeBinding
+import com.hardik.calendarapp.databinding.DialogDeviceInformationBinding
 import com.hardik.calendarapp.databinding.DialogFirstDayOfTheWeekBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
 import com.hardik.calendarapp.presentation.MainViewModel
@@ -621,6 +625,64 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private var dialogDeviceInformationBinding: DialogDeviceInformationBinding? = null
+    @SuppressLint("SetTextI18n")
+    private fun showDeviceInfoDialog(){
+        Log.i(TAG, "showDeviceInfoDialog: ")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_device_information, null)
+        dialogDeviceInformationBinding = DialogDeviceInformationBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+
+        dialog.setCancelable(true)
+
+        dialogDeviceInformationBinding?.apply {
+            val brand = Build.BRAND // Brand of the device
+            val device = Build.DEVICE // Device codename
+            val os = "Android ${Build.VERSION.RELEASE}" // OS version
+            val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "Unknown ABI" // ABI info
+            //val version = Build.DISPLAY // Build version
+            // Sanitize version string by removing 'release-keys' or any sensitive information
+            val version = Build.DISPLAY.replace("release-keys", "").trim()
+
+            val appVersion = try {
+                val packageInfo: PackageInfo = packageManager.getPackageInfo(packageName, 0)
+                packageInfo.versionName // App version name
+            } catch (e: PackageManager.NameNotFoundException) {
+                "Unknown Version"
+            }
+
+            this.dialogDeviceInformationBrand.apply { text = "$text: $brand" }
+            this.dialogDeviceInformationDevice.apply { text = "$text: $device" }
+            this.dialogDeviceInformationAppVersion.apply { text = "$text: $appVersion" }
+            this.dialogDeviceInformationOs.apply { text = "$text: $os" }
+            this.dialogDeviceInformationABI.apply { text = "$text: $abi" }
+            this.dialogDeviceInformationVersion.apply { text = "$text: $version" }
+
+            this.btnOkay.setOnClickListener {
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
     /**
      * Sets up the navigation component and the app bar configuration.
      */
@@ -719,6 +781,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
             R.id.nav_app_theme -> showAppThemeDialog()
+            R.id.nav_device_info -> showDeviceInfoDialog()
             R.id.nav_settings -> navController.navigate(R.id.nav_settings)
 
         }

@@ -66,7 +66,7 @@ class DrawerMenuAdapter(
             //setSelectedPosition(position)
 
             // Check if the item title is "Jump to Date", "App Theme", or "First Day of the Week"
-            if (item.title == "Jump to Date" || item.title == "App Theme" || item.title == "First Day of the Week") {
+            if (item.title == "Jump to Date" || item.title == "App Theme" || item.title == "First Day of the Week" || item.title == "Device Information") {
                 // If title matches, unselect the item (clear selection)
                 selectedPosition = previousSelectedPosition//-1 // or any other logic for unselecting
 
