@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +32,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.ActivityMainBinding
+import com.hardik.calendarapp.databinding.DialogFirstDayOfTheWeekBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuAdapter
@@ -41,6 +43,7 @@ import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -72,6 +75,8 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
         val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+        val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
+
 
         // Step 2: Update the locale before inflating the UI
         LocaleHelper.setLocale(this, languageCode)
@@ -198,9 +203,7 @@ class MainActivity : AppCompatActivity() {
                     hideViewWithAnimation(binding.saveEventIcon)
                 }
 
-                R.id.settingsFragment -> {
-                    
-                }
+                R.id.nav_settings -> { }
                 // Default case: Hide everything except FAB
                 else -> {
                     showViewWithAnimation(binding.fab)
@@ -228,6 +231,132 @@ class MainActivity : AppCompatActivity() {
         }*/
     }
 
+    private var dialogFirstDayOfTheWeekBinding: DialogFirstDayOfTheWeekBinding? = null
+    private fun showFirstDayOfTheWeek(){
+        Log.i(TAG, "showJumpToDateDialog: ")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_first_day_of_the_week, null)
+        dialogFirstDayOfTheWeekBinding = DialogFirstDayOfTheWeekBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+
+        dialog.setCancelable(true)
+
+        dialogFirstDayOfTheWeekBinding?.apply {
+            val sundayIcon = this.dialogFirstDayOfTheWeekSundayIcon
+            val sundayText = this.dialogFirstDayOfTheWeekSunday
+            val mondayIcon = this.dialogFirstDayOfTheWeekMondayIcon
+            val mondayText = this.dialogFirstDayOfTheWeekMonday
+            val saturdayIcon = this.dialogFirstDayOfTheWeekSaturdayIcon
+            val saturdayText = this.dialogFirstDayOfTheWeekSaturday
+
+            //rest all icon and text
+            fun resetSelections(){
+                sundayIcon.setImageResource(R.drawable.unchecked_icon)
+                mondayIcon.setImageResource(R.drawable.unchecked_icon)
+                saturdayIcon.setImageResource(R.drawable.unchecked_icon)
+
+                sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+
+                sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+
+            }
+
+
+            // Set the initial selection based on the saved preference
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+            val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
+
+            when (firstDayOfTheWeek) {
+                "Sunday" -> {
+                    sundayIcon.setImageResource(R.drawable.checked_icon)
+                    sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                    sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                }
+                "Monday" -> {
+                    mondayIcon.setImageResource(R.drawable.checked_icon)
+                    mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                    mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                }
+                "Saturday" -> {
+                    saturdayIcon.setImageResource(R.drawable.checked_icon)
+                    saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                    saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                }
+            }
+
+            // Handle Sunday click
+            sundayText.setOnClickListener {
+                resetSelections()
+
+                sundayIcon.setImageResource(R.drawable.checked_icon)
+                sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                // Save selection to SharedPreferences
+                sharedPreferences.edit().putString("firstDayOfWeek", "Sunday").apply()
+            }
+
+            // Handle Monday click
+            mondayText.setOnClickListener {
+                resetSelections()
+
+                mondayIcon.setImageResource(R.drawable.checked_icon)
+                mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                // Save selection to SharedPreferences
+                sharedPreferences.edit().putString("firstDayOfWeek", "Monday").apply()
+            }
+
+            // Handle Saturday click
+            saturdayText.setOnClickListener {
+                resetSelections()
+
+                saturdayIcon.setImageResource(R.drawable.checked_icon)
+                saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                // Save selection to SharedPreferences
+                sharedPreferences.edit().putString("firstDayOfWeek", "Saturday").apply()
+            }
+        }
+
+        dialogFirstDayOfTheWeekBinding?.apply {
+
+
+            btnDone.setOnClickListener {
+                lifecycleScope.launch {
+                    // Make sure the navigation happens on the main thread
+                    PreferenceManager.getDefaultSharedPreferences(this@MainActivity).getString("firstDayOfWeek", "Sunday")
+                        ?.let { it1 -> mainViewModel.updateFirstDayOfTheWeek(refresh = it1) }
+                }
+                dialog.dismiss()
+            }
+            btnCancel.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
+    }
 
     private var dialogJumpToDateBinding: DialogJumpToDateBinding? = null
     private fun showJumpToDateDialog() {
@@ -255,29 +384,80 @@ class MainActivity : AppCompatActivity() {
 
         dialog.setCancelable(true)
 
-//        navController.popBackStack()
-//        navController.navigate(R.id.calendarMonth1Fragment, null, navOptions)
         dialog.show()
 
 
+        var fuldate = ""
         dialogJumpToDateBinding?.apply {
             yearPicker.apply {
                 minValue = 2000
                 maxValue = 2100
-                value = 2025
+                //value = Calendar.getInstance().get(Calendar.YEAR)//2025
+
+                lifecycleScope.launch {
+                    mainViewModel.yearJTD.collectLatest {
+                        value = it
+                    }
+                }
+
+                this.setOnValueChangedListener { picker, oldVal, newVal ->
+                    mainViewModel.updateYearJTD( year = newVal )
+                }
             }
             monthPicker.apply {
                 minValue = 1
                 maxValue = 12
+                //value = Calendar.getInstance().get(Calendar.MONTH) + 1 //12
+
+                lifecycleScope.launch {
+                    mainViewModel.monthJTD.collectLatest {
+                        value = it
+                    }
+                }
+
+                this.setOnValueChangedListener { picker, oldVal, newVal ->
+                    mainViewModel.updateMonthJTD( month = newVal )
+                }
             }
-            dayPicker.apply {
+            datePicker.apply {
                 minValue = 1
-                maxValue = 31
+                //maxValue = 28
+                //value = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+                lifecycleScope.launch {
+                    mainViewModel.dateMaxJTD.collectLatest {
+                        maxValue = it
+                    }
+                }
+
+                lifecycleScope.launch {
+                    mainViewModel.dateJTD.collectLatest {
+                        value = it
+                    }
+                }
+
+                this.setOnValueChangedListener { picker, oldVal, newVal ->
+                    mainViewModel.updateDateJTD( date = newVal )
+                }
+
+               /* // Listen for changes in the month picker value
+                monthPicker.setOnValueChangedListener { _, _, newMonth ->
+
+                    val maxDays = getMinMaxDays(yearPicker.value, newMonth -1 )
+
+                    datePicker.maxValue = maxDays.second ?: 1
+                }*/
+            }
+
+            lifecycleScope.launch {
+                mainViewModel.fullDateJTD.collectLatest {
+                    tvSelectedDate.text = it //todo set fullDate (eg.Monday 1 January 2025)
+                }
             }
             btnJump.setOnClickListener {
                 val selectedYear = yearPicker.value
                 val selectedMonth = monthPicker.value
-                val selectedDay = dayPicker.value
+                val selectedDay = datePicker.value
                 // Perform your "Jump to Date" logic here
                 Log.d(TAG, "showJumpToDateDialog: $selectedYear - $selectedMonth - $selectedDay")
 
@@ -301,31 +481,15 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        menuInflater.inflate(R.menu.main, menu)
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        val navController = findNavController(R.id.nav_host_fragment_content_main)
-//        val currentDestination = navController.currentDestination
-//
-//            if (currentDestination?.id == R.id.nav_home || currentDestination?.id == R.id.calendarYear1Fragment) {
-//                when(item.itemId) {R.id.action_settings -> {;return true } }
-//            }
-//
-//        return super.onOptionsItemSelected(item)
-//    }
-//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-//        val navController = findNavController(R.id.nav_host_fragment_content_main)
-//        val currentDestination = navController.currentDestination
-//
-//        // Adjust menu visibility dynamically
-//        menu?.findItem(R.id.action_settings)?.isVisible = currentDestination?.id == R.id.nav_home || currentDestination?.id == R.id.calendarYear1Fragment
-//
-//        return super.onPrepareOptionsMenu(menu)
-//    }
+    // Function to get the min and max days for a specific year and month for jump to date
+    private fun getMinMaxDays(year: Int, month: Int): Pair<Int?, Int?> {
+        val daysInMonth = mainViewModel.yearList.value[year]?.get(month)
+        return if (daysInMonth != null) {
+            Pair(daysInMonth.minOrNull(), daysInMonth.maxOrNull())
+        } else {
+            Pair(null, null) // If no days are found for the month, return null
+        }
+    }
 
     /**
      * Sets up the navigation component and the app bar configuration.
@@ -400,7 +564,8 @@ class MainActivity : AppCompatActivity() {
             DrawerMenuItem(R.attr.iconTheme, "App Theme", R.id.nav_app_theme),
             DrawerMenuItem(R.attr.iconRateApp, "Rate Our App", R.id.nav_rate_app),
             DrawerMenuItem(R.attr.iconPrivacy, "Privacy Policy", R.id.nav_privacy_policy),
-            DrawerMenuItem(R.attr.iconDeviceInfo, "Device Information", R.id.nav_device_info)
+            DrawerMenuItem(R.attr.iconDeviceInfo, "Device Information", R.id.nav_device_info),
+            DrawerMenuItem(R.attr.iconDeviceInfo, "Settings", R.id.nav_settings)
         )
 
         // Initialize the adapter
@@ -421,8 +586,10 @@ class MainActivity : AppCompatActivity() {
         when (item.id) {
             R.id.nav_year -> navController.navigate(R.id.nav_year)
             R.id.nav_month -> navController.navigate(R.id.nav_month)
+            R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
-            // Handle other cases here...
+            R.id.nav_settings -> navController.navigate(R.id.nav_settings)
+
         }
         toggleDrawer()
     }
@@ -484,8 +651,6 @@ class MainActivity : AppCompatActivity() {
         val viewList = listOf(binding.fab,binding.searchIcon,binding.backToDateIcon,binding.saveEventIcon,)
         viewList.forEach { hideViewWithAnimation(it) }
     }
-
-
 
     // region Call this function to request permissions as needed
     private fun checkAndRequestCalendarPermissions() {

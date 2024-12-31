@@ -17,7 +17,8 @@
         android:textAlignment="textStart"
         android:textColor="@color/text_primary"
         android:fontFamily="@font/post_nord_sans_medium"
-        android:textSize="20sp"
+        android:textSize="@dimen/_16ssp"
+        android:textStyle="bold"
         tools:text="Month 2000"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlSymmetry" />

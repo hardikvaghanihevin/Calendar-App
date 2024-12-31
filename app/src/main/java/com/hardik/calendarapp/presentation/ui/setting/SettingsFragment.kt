@@ -102,6 +102,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             // Update the locale
             LocaleHelper.setLocale(requireContext(), selectedValue)//todo: selectedLanguageCode is selectedValue
 
+            viewModel.updateLanguageCode( languageCode = selectedValue )
             // Recreate the activity to apply the language change
             requireActivity().recreate()
 //            viewModel.getHolidayCalendarData()

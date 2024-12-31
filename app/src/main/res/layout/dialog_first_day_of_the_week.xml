@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+
+<!--        android:background="@drawable/dialog_background"-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/jumpToDateBackground"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:padding="16dp"
+            android:text="@string/first_date_of_the_week"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/post_nord_sans_medium"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="bold" />
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:padding="@dimen/_16sdp"
+            android:weightSum="2.8">
+
+            <TextView
+                android:id="@+id/dialogFirstDayOfTheWeek_Sunday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sunday"
+                android:textSize="@dimen/_16ssp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/post_nord_sans_regular"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/dialogFirstDayOfTheWeek_Monday"
+                />
+
+            <ImageView
+                android:id="@+id/dialogFirstDayOfTheWeek_Sunday_icon"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Sunday"
+                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Sunday"
+                android:src="@drawable/unchecked_icon"/>
+
+            <TextView
+                android:id="@+id/dialogFirstDayOfTheWeek_Monday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/monday"
+                android:textSize="@dimen/_16ssp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/post_nord_sans_regular"
+                app:layout_constraintStart_toStartOf="@id/dialogFirstDayOfTheWeek_Sunday"
+                app:layout_constraintTop_toBottomOf="@id/dialogFirstDayOfTheWeek_Sunday"
+                app:layout_constraintBottom_toTopOf="@id/dialogFirstDayOfTheWeek_Saturday"
+                />
+
+            <ImageView
+                android:id="@+id/dialogFirstDayOfTheWeek_Monday_icon"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Monday"
+                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Monday"
+                android:src="@drawable/unchecked_icon"/>
+
+            <TextView
+                android:id="@+id/dialogFirstDayOfTheWeek_Saturday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/saturday"
+                android:textSize="@dimen/_16ssp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/post_nord_sans_regular"
+                app:layout_constraintStart_toStartOf="@id/dialogFirstDayOfTheWeek_Monday"
+                app:layout_constraintTop_toBottomOf="@id/dialogFirstDayOfTheWeek_Monday"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+            <ImageView
+                android:id="@+id/dialogFirstDayOfTheWeek_saturday_icon"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Saturday"
+                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Saturday"
+                android:src="@drawable/unchecked_icon"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:paddingVertical="0dp">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:text="@string/cancel"
+                android:textAlignment="center"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btn_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:text="@string/done"
+                android:textAlignment="center"
+                android:textColor="@color/error"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

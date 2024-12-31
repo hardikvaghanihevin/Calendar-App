@@ -75,7 +75,7 @@
             android:icon="?attr/iconDeviceInfo"
             android:title="Device information" />
         <item
-            android:id="@+id/settingsFragment"
+            android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/settings" />
 

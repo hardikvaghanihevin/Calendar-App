@@ -39,11 +39,16 @@ import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,6 +62,17 @@ class MainViewModel @Inject constructor(
     private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfYear,
 ) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
+
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
+
+    private val _languageCode = MutableStateFlow<String>(sharedPreferences.getString("language", "en") ?: "en")
+    val languageCode: StateFlow<String> = _languageCode // Public read-only StateFlow
+
+    fun updateLanguageCode(languageCode: String){
+        viewModelScope.launch {
+            _languageCode.value = languageCode
+        }
+    }
 
     private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
     val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
@@ -104,7 +120,6 @@ class MainViewModel @Inject constructor(
     fun getHolidayCalendarData() {
         Log.i(TAG, "getHolidayCalendarData: ")
         viewModelScope.launch(Dispatchers.IO) {
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
             val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
             val countryCodes: Set<String> = sharedPreferences.getStringSet("countries",setOf("indian")) ?: setOf("indian")
 
@@ -388,6 +403,94 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
+    //Todo: First day of the week
+    private val defaultFirstDayOfWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")?: "Sunday"// Default to Sunday
+    private val _firstDayOfTheWeek = MutableStateFlow<String>(defaultFirstDayOfWeek)
+    val firstDayOfTheWeek: StateFlow<String> = _firstDayOfTheWeek
+
+    fun updateFirstDayOfTheWeek(refresh: String = "Sunday"){
+        viewModelScope.launch {
+            _firstDayOfTheWeek.value = refresh
+        }
+    }
+
+    //----------------------------------------------------------------//
+
+    //Todo:Jump to date
+    private val _yearJTD = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.YEAR))
+    val yearJTD: StateFlow<Int> = _yearJTD
+    fun updateYearJTD(year: Int){
+        viewModelScope.launch {
+            _yearJTD.value = year
+        }
+    }
+
+    private val _monthJTD = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.MONTH) + 1)
+    val monthJTD: StateFlow<Int> = _monthJTD
+    fun updateMonthJTD(month: Int){
+        viewModelScope.launch {
+            _monthJTD.value = month
+        }
+    }
+
+    private val _dateJTD = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+    val dateJTD: StateFlow<Int> = _dateJTD
+    fun updateDateJTD(date: Int){
+        viewModelScope.launch {
+            _dateJTD.value = date
+        }
+    }
+
+    //todo: Dynamically compute dateMaxJTD based on yearJTD and monthJTD changes (jan,fab,mar,apr..eg.31,29/29,31,30)
+    val dateMaxJTD: StateFlow<Int> = combine(_yearJTD, _monthJTD) { year, month ->
+        val maxDays = getMinMaxDays(year, month - 1) // Adjust to 0-based month
+        maxDays.second ?: 1
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        Calendar.getInstance().get(Calendar.DAY_OF_MONTH) // Initial default value
+    )
+
+    // Function to get the min and max days for a specific year and month for jump to date
+    private fun getMinMaxDays(year: Int, month: Int): Pair<Int?, Int?> {
+        val daysInMonth = yearList.value[year]?.get(month)
+        return if (daysInMonth != null) {
+            Pair(daysInMonth.minOrNull(), daysInMonth.maxOrNull())
+        } else {
+            Pair(null, null) // If no days are found for the month, return null
+        }
+    }
+
+//    val _languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+
+    //todo: Combined StateFlow to generate the full date string (eg.Monday 1 January 2025)
+    val fullDateJTD: StateFlow<String> = combine(_yearJTD, _monthJTD, _dateJTD, _languageCode) { year, month, date, languageCode ->
+        getFormattedDate(year, month, date, languageCode)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        getFormattedDate(
+            _yearJTD.value,
+            _monthJTD.value,
+            _dateJTD.value,
+            _languageCode.value
+        ) // Initial value
+    )
+
+    private fun getFormattedDate(year: Int, month: Int, day: Int, languageCode: String): String {//todo: generate the full date string (eg.Monday 1 January 2025)
+        // Create a Calendar instance and set the provided year, month, and day
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day) // month - 1 because Calendar months are 0-based
+
+        // Set the appropriate Locale based on the language code
+        val locale = Locale(languageCode)
+
+        // Format the date
+        val dateFormat = SimpleDateFormat("EEEE dd MMMM yyyy", locale)
+        return dateFormat.format(calendar.time)
+    }
+    //----------------------------------------------------------------//
+
     //Todo: Event start date
     /*private val _startDate= MutableStateFlow<Long>(Calendar.getInstance().timeInMillis)
     val startDate: StateFlow<Long> = _startDate
@@ -508,4 +611,9 @@ class MainViewModel @Inject constructor(
     }
 */
 
+    // Unregister listener to avoid memory leaks when ViewModel is cleared
+    override fun onCleared() {
+        super.onCleared()
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener { _, _ -> }
+    }
 }

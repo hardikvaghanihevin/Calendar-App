@@ -103,5 +103,17 @@
     <string name="before_2_weeks">Before 2 weeks</string>
     <string name="before_1_month">Before 1 month</string>
     <string name="before_custom_time">Before Custom time</string>
+
     <string name="jump_to_date">Jump to date</string>
+    <string name="number_picker_formatter_year">%04d</string>
+    <string name="number_picker_formatter_month">%02d</string>
+    <string name="number_picker_formatter_date">%02d</string>
+    <string name="cancel">Cancel</string>
+    <string name="jump">Jump</string>
+    <string name="first_date_of_the_week">First date of the week</string>
+    <string name="done">Done</string>
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+    <string name="saturday">Saturday</string>
+
 </resources>

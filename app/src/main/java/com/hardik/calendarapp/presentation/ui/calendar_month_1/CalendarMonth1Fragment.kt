@@ -97,20 +97,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG, "onViewCreated: ")
 
-        /** For back word store data set when it go to click when use go to viewEvent*/
-        bundle?.let {
-            val argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
-            } else {
-                @Suppress("DEPRECATION")
-                it.getParcelable(KEY_EVENT) ?: throw IllegalArgumentException("Event is missing")
-            }
-            year = argEvent.year.toInt()
-            month = argEvent.month.toInt()//0 base month 0-11 (jan-dec0
-            day = argEvent.date.toInt()
-            selectedDate = if(day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
-            Log.e(TAG, "onViewCreated: $selectedDate", )
-        }
 
         _binding = FragmentCalendarMonth1Binding.bind(view)
         viewPager = binding.viewPagerCalendarMonth
@@ -129,39 +115,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
         }
 
-        /*menuHost = requireActivity()
-
-        menuProvider = object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Inflate the menu resource for the fragment
-                menuInflater.inflate(R.menu.main, menu)
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.action_refresh -> {
-                        val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
-                        val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
-                        val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)
-                        // Get the position of the key in the yearList
-                        val yearKeyPos: Int = MainActivity.yearList.keys.toList().indexOf(backToCurrentYear)
-                        // Get the yearKey at the given position
-                        val yearKeyAtPosition = MainActivity.yearList.keys.toList().getOrNull(yearKeyPos)
-                        if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
-                        Log.d(TAG, "onMenuItemSelected: action_refresh: keyPosition:$yearKeyPos = year:$yearKeyAtPosition")
-                        if (::viewPager.isInitialized) {
-                            viewPager.setCurrentItem(currentMonthPosition, true) // Navigate to the desired position
-                            pageAdapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
-                        }
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }
-        // Add menu provider to the fragment's lifecycle
-        menuHost.addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)*/
 
         /** Back to current month */
         (activity as MainActivity).binding.backToDateIcon.setOnClickListener {
@@ -267,33 +220,19 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 }
             })
 
-            /*// set background and set there color directly
-            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.day_background_1)
-            if (drawable is GradientDrawable) {
-                // Modify the color of the drawable
-                //Color.WHITE.let { drawable.setColor(it)} // Set the desired color
-                resources.getColor(R.color.background_primary,null).let { drawable.setColor(it)} // Set the desired color
-                drawable.cornerRadius = 10f * requireContext().resources.displayMetrics.density // Example: 10dp corner radius
-                drawable.setStroke(
-                    (1 * requireContext().resources.displayMetrics.density).toInt(), // Stroke width in dp
-                    Color.BLACK // Stroke color
-                )
-            }
-            binding.constraintLayEvents.background = drawable*/
         }
     }
     private fun navigateToViewEventFrag(event: Event) {
         Log.i(TAG, "navigateToViewEventFrag: ")
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToViewEventFrag:  ${Thread.currentThread().name}", )
+            Log.e(TAG, "navigateToViewEventFrag:  ${Thread.currentThread().name}",)
             bundle = (bundle ?: Bundle()).apply {
                 putParcelable(KEY_EVENT, event)// Pass the event object
             }
             findNavController().navigate(R.id.viewEventFragment, bundle, navOptions)
             //findNavController().navigate(R.id.newEventFragment, bundle)
         }
-        // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }
     private fun fetchEventsForSelectedMonth() {
         Log.i(TAG, "fetchEventsForSelectedMonth: ")
@@ -319,7 +258,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
         Log.i(TAG, "observeViewModelState: ")
-        //Log.d(TAG, "observeViewModelState: ")
         // Collecting the StateFlow
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.yearList.collectLatest{
@@ -327,6 +265,15 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 yearList = it
             }
         }
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                viewModel.firstDayOfTheWeek.collectLatest { firstDay->
+                    pageAdapter.updateFirstDayOfTheWeek(firstDay)
+                }
+            }
+        }
+
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.yearMonthPairList.collectLatest{
                 Log.e(TAG, "observeViewModelState: $it", )

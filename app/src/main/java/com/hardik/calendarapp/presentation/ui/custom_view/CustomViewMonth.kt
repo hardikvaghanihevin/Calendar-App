@@ -273,7 +273,8 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
     enum class WeekStart(val value: Int) {
         SUNDAY(0),
-        MONDAY(1);
+        MONDAY(1),
+        SATURDAY(2),
     }
     enum class MonthDisplayOption(val value: Int) {
         NONE(0),
@@ -486,14 +487,9 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val adjustedBlockWidth = (viewWidth - 2 * horizontalPadding) / 7f
 
         // If the block width is smaller set Char on day names
-        context.resources.getStringArray(R.array.week_1)
-        /*val dayNames = if ((blockWidth.takeIf { designMode.equals(1) } ?: adjustedBlockWidth) >= 70F) if(weekStart == WeekStart.SUNDAY) arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") else if (weekStart == WeekStart.MONDAY) arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val dayNames = if ((blockWidth.takeIf { designMode.equals(1) } ?: adjustedBlockWidth) >= 70F) if(weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.week_2) else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.week_1) else if (weekStart == WeekStart.SATURDAY) context.resources.getStringArray(R.array.week_3)
         else throw IllegalArgumentException("Invalid week start value")
-        else if(weekStart == WeekStart.SUNDAY) arrayOf("S", "M", "T", "W", "T", "F", "S") else if (weekStart == WeekStart.MONDAY) arrayOf("M", "T", "W", "T", "F", "S", "S")
-        else throw IllegalArgumentException("Invalid week start value")*/
-        val dayNames = if ((blockWidth.takeIf { designMode.equals(1) } ?: adjustedBlockWidth) >= 70F) if(weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.week_2) else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.week_1)
-        else throw IllegalArgumentException("Invalid week start value")
-        else if(weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.short_week_2) else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.short_week_1)
+        else if(weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.short_week_2) else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.short_week_1) else if (weekStart == WeekStart.SATURDAY) context.resources.getStringArray(R.array.short_week_3)
         else throw IllegalArgumentException("Invalid week start value")
 
         // If a background drawable is set, draw it
@@ -572,7 +568,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         paintDate.textSize = textSizeDate
         paintDate.textAlign = Paint.Align.CENTER
 
-        val weekStartDay:Int =  if(weekStart == WeekStart.SUNDAY) 1 else if (weekStart == WeekStart.MONDAY) 2 else throw IllegalArgumentException("Invalid week start value")
+        val weekStartDay:Int =  if(weekStart == WeekStart.SUNDAY) 1 else if (weekStart == WeekStart.MONDAY) 2 else if (weekStart == WeekStart.SATURDAY) 7 else throw IllegalArgumentException("Invalid week start value")
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) - weekStartDay + 7) % 7 //val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7 //Todo: Adjust -2 for Monday start Or -1 for Sunday start

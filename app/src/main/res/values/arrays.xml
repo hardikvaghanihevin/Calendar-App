@@ -29,6 +29,15 @@
         <item>@string/fri</item>
         <item>@string/sat</item>
     </string-array>
+    <string-array name="week_3">
+        <item>@string/sat</item>
+        <item>@string/sun</item>
+        <item>@string/mon</item>
+        <item>@string/tue</item>
+        <item>@string/wed</item>
+        <item>@string/thu</item>
+        <item>@string/fri</item>
+    </string-array>
     <string-array name="short_week_1">
         <item>@string/short_mon</item>
         <item>@string/short_tue</item>
@@ -46,6 +55,15 @@
         <item>@string/short_thu</item>
         <item>@string/short_fri</item>
         <item>@string/short_sat</item>
+    </string-array>
+    <string-array name="short_week_3">
+        <item>@string/short_sat</item>
+        <item>@string/short_sun</item>
+        <item>@string/short_mon</item>
+        <item>@string/short_tue</item>
+        <item>@string/short_wed</item>
+        <item>@string/short_thu</item>
+        <item>@string/short_fri</item>
     </string-array>
 
     <!-- Index item language UI Preference -->

@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/day_background_2"
+        android:background="?attr/jumpToDateBackground"
         android:orientation="vertical"
         android:padding="16dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
@@ -19,11 +19,13 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:paddingBottom="8dp"
-            android:text="Jump to date"
-            android:textSize="18sp"
+            android:layout_gravity="start"
+            android:padding="16dp"
+            android:text="@string/jump_to_date"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/post_nord_sans_medium"
+            android:textSize="@dimen/_18ssp"
             android:textStyle="bold" />
 
         <TextView
@@ -31,35 +33,97 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:gravity="center"
             android:paddingBottom="16dp"
             android:text="Monday 1 January 2025"
-            android:textSize="14sp" />
+            android:textAlignment="center"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/post_nord_sans_regular"
+            android:textSize="@dimen/_15ssp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="140dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:weightSum="3">
+            android:weightSum="2.8">
 
+            <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
+                android:id="@+id/year_picker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                app:np_width="64dp"
+                app:np_height="180dp"
+                app:np_dividerColor="@android:color/transparent"
+                app:np_formatter="@string/number_picker_formatter_year"
+                app:np_max="2100"
+                app:np_min="2000"
+                app:np_selectedTextColor="@color/accent_primary"
+                app:np_selectedTextSize="@dimen/_16ssp"
+                app:np_textColor="@color/text_primary"
+                app:np_textSize="@dimen/_14ssp"
+                app:np_fadingEdgeEnabled="false"
+                app:np_value="2025" />
+
+            <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
+                android:id="@+id/month_picker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                app:np_width="64dp"
+                app:np_height="180dp"
+                app:np_dividerColor="@android:color/transparent"
+                app:np_formatter="@string/number_picker_formatter_month"
+                app:np_max="12"
+                app:np_min="1"
+                app:np_selectedTextColor="@color/accent_primary"
+                app:np_selectedTextSize="@dimen/_16ssp"
+                app:np_textColor="@color/text_primary"
+                app:np_textSize="@dimen/_14ssp"
+                app:np_fadingEdgeEnabled="false"
+                app:np_value="1" />
+
+            <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
+                android:id="@+id/date_picker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                app:np_width="64dp"
+                app:np_height="180dp"
+                app:np_dividerColor="@android:color/transparent"
+                app:np_formatter="@string/number_picker_formatter_date"
+                app:np_max="31"
+                app:np_min="1"
+                app:np_selectedTextColor="@color/accent_primary"
+                app:np_selectedTextSize="@dimen/_16ssp"
+                app:np_textColor="@color/text_primary"
+                app:np_textSize="@dimen/_14ssp"
+                app:np_fadingEdgeEnabled="false"
+                app:np_value="3" />
+<!--
             <NumberPicker
                 android:id="@+id/year_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:theme="@style/CustomNumberPicker"/>
 
             <NumberPicker
                 android:id="@+id/month_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:theme="@style/CustomNumberPicker"/>
 
             <NumberPicker
                 android:id="@+id/day_picker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:theme="@style/CustomNumberPicker"/>-->
         </LinearLayout>
 
         <LinearLayout
@@ -67,24 +131,31 @@
             android:layout_height="wrap_content"
             android:gravity="end"
             android:orientation="horizontal"
-            android:paddingTop="16dp">
+            android:paddingVertical="1dp">
 
             <Button
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
-                android:text="Cancel"
-                android:textColor="@android:color/darker_gray" />
+                android:text="@string/cancel"
+                android:textAlignment="center"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"/>
 
             <Button
                 android:id="@+id/btn_jump"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackground"
-                android:text="Jump"
-                android:textColor="@android:color/holo_red_light" />
+                android:text="@string/jump"
+                android:textAlignment="center"
+                android:textColor="@color/error"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

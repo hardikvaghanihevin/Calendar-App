@@ -46,6 +46,13 @@ class CalendarMonthPageAdapter() :
         }
     }
 
+    private var firstDayOfTheWeek = "Sunday"
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateFirstDayOfTheWeek(firstDay: String) {
+        firstDayOfTheWeek = firstDay
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
         val binding = ItemMonthPage1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MonthViewHolder(binding)
@@ -55,11 +62,17 @@ class CalendarMonthPageAdapter() :
         //val monthIndex = position % 12
         val (year, month) = yearMonthPairList[position]
 
+        val weekStart = when(firstDayOfTheWeek){
+            "Sunday" -> CustomViewMonth.WeekStart.SUNDAY
+            "Monday" -> CustomViewMonth.WeekStart.MONDAY
+            else -> { CustomViewMonth.WeekStart.SATURDAY }
+        }
         holder.binding.also {
 
             val cvm: CustomViewMonth = it.customView.apply {
                 this.currentYear = year
                 this.currentMonth = month
+                weekStart(weekStart)
                 this.monthNameWithYear = true
                 this.selectedDate = this@CalendarMonthPageAdapter.selectedDate//"2024-11-25"
                 enableTouchEventHandling(enable = true)
@@ -75,21 +88,7 @@ class CalendarMonthPageAdapter() :
 
     override fun getItemCount(): Int = yearMonthPairList.size
 
-    inner class MonthViewHolder(val binding: ItemMonthPage1Binding) :
-        RecyclerView.ViewHolder(binding.root) {
-        /*fun bind(eventMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()) {
-            binding.apply {
-                customView.apply {
-                    this.currentYear = 2024
-                    this.currentMonth = 11
-                    enableTouchEventHandling(enable = true)
-                    this.eventDateList = this@CalendarMonthPageAdapter.eventsOfDateMap
-                    postInvalidate() // Redraw the custom view if needed
-                    configureCustomViewCallback?.invoke(this) // Optional callback for further customization
-                }
-            }
-        }*/
-    }
+    inner class MonthViewHolder(val binding: ItemMonthPage1Binding) : RecyclerView.ViewHolder(binding.root)
 
     private var configureCustomViewCallback: ((CustomViewMonth) -> Unit)? = null
     fun configureCustomView(callback: (CustomViewMonth) -> Unit) {

@@ -142,6 +142,14 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                viewModel.firstDayOfTheWeek.collectLatest { firstDay->
+                    adapter.updateFirstDayOfTheWeek(firstDay)
+                }
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.Main) {
             // Safely collect yearState during STARTED state
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.yearState.collectLatest{//collectLatest
