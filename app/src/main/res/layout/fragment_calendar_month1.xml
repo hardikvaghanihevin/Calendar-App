@@ -102,7 +102,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_event"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_event_layout1"
             tools:visibility="visible" />

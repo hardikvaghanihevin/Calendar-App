@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_primary"
+    android:padding="16dp"
+    tools:context=".presentation.ui.language.LanguageFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/countryRecViewHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/v_divider"
+        android:dividerHeight="1dp"/>
+
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:background="@color/border_surface"
+        app:layout_constraintBottom_toTopOf="@id/countryRecView"
+        app:layout_constraintTop_toBottomOf="@id/countryRecViewHorizontal" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/countryRecView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/v_divider"
+        android:dividerHeight="1dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/eventBackground"
+    android:layout_marginVertical="@dimen/_6sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/itemSelection_text"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:fontFamily="@font/post_nord_sans_regular"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="@string/language_header"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/_16ssp"
+        android:layout_marginStart="@dimen/_8sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/itemSelection_text_icon"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:src="@drawable/unchecked_icon"
+        app:layout_constraintBottom_toBottomOf="@id/itemSelection_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/itemSelection_text" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

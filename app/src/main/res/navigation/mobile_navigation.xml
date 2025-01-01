@@ -58,4 +58,16 @@
         android:name="com.hardik.calendarapp.presentation.ui.setting.SettingsFragment"
         android:label="@string/settings" />
 
+    <fragment
+        android:id="@+id/nav_select_language"
+        android:name="com.hardik.calendarapp.presentation.ui.language.LanguageFragment"
+        android:label="@string/language_header"
+        tools:layout="@layout/fragment_language" />
+
+    <fragment
+        android:id="@+id/nav_select_country"
+        android:name="com.hardik.calendarapp.presentation.ui.country.CountryFragment"
+        android:label="@string/country_header"
+        tools:layout="@layout/fragment_country" />
+
 </navigation>

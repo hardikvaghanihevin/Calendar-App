@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.data.repository
 
 import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -12,14 +11,16 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
-import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
 import com.hardik.calendarapp.utillities.AlarmScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
@@ -52,8 +53,11 @@ class EventRepositoryImpl @Inject constructor(
             }
         }
         eventDao.upsertEvents(events)
-        events.forEach { event ->
-            scheduleAlarm(event)
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
+        events.forEach { event:Event ->
+            if (event.year == currentYear) {
+                scheduleAlarm(event)
+            }
         }
     }
 
@@ -63,6 +67,10 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun deleteEvent(event: Event) {
         eventDao.deleteEvent(event)
+    }
+
+    override suspend fun deleteEventsHoliday(){
+        eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
     }
 
     override fun getEventById(eventId: Long): Flow<Event>?{
@@ -112,23 +120,26 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     private fun cancelAlarm(eventId: Long) {
-        val intent = Intent(context, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            eventId.toInt(),
-            intent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
-        pendingIntent?.let {
-            alarmManager.cancel(it)
-            Log.d(TAG, "Alarm canceled for eventId: $eventId")
-        }
+//        val intent = Intent(context, NotificationReceiver::class.java)
+//        val pendingIntent = PendingIntent.getBroadcast(
+//            context,
+//            eventId.toInt(),
+//            intent,
+//            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+//        )
+//        pendingIntent?.let {
+//            alarmManager.cancel(it)
+//            Log.d(TAG, "Alarm canceled for eventId: $eventId")
+//        }
+        AlarmScheduler.cancelAlarm(context , eventId.toInt())
     }
 
     private fun cancelAllAlarms() {
         CoroutineScope(Dispatchers.IO).launch {
-            eventDao.getAllEvents().forEach { event ->
-                cancelAlarm(event.eventId)
+            //eventDao.getAllEvents().forEach { event -> cancelAlarm(event.eventId) }
+            eventDao.getAllEventIds().collectLatest {
+                val ids: List<Int> = it.map { it.toInt() }
+                AlarmScheduler.cancelAllScheduledAlarms(context, ids)
             }
         }
     }

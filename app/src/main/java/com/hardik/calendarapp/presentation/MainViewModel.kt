@@ -38,6 +38,8 @@ import com.hardik.calendarapp.utillities.createYearMonthPairs
 import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -71,6 +73,22 @@ class MainViewModel @Inject constructor(
     fun updateLanguageCode(languageCode: String){
         viewModelScope.launch {
             _languageCode.value = languageCode
+        }
+    }
+
+    private val _selectedCountries = MutableStateFlow<MutableSet<String>>(mutableSetOf())
+    val selectedCountries: StateFlow<MutableSet<String>> get() = _selectedCountries
+
+    fun updateCountrySelection(countryCode: Set<String>) {
+        viewModelScope.launch {
+//            val selectedSet = _selectedCountries.value ?: mutableSetOf()
+//            if (selectedSet.contains(countryCode)) {
+//                selectedSet.remove(countryCode)
+//            } else {
+//                selectedSet.add(countryCode)
+//            }
+//            _selectedCountries.value = selectedSet
+            _selectedCountries.value = countryCode.toMutableSet()
         }
     }
 
@@ -119,27 +137,28 @@ class MainViewModel @Inject constructor(
     /**Get holiday list by using API*/
     fun getHolidayCalendarData() {
         Log.i(TAG, "getHolidayCalendarData: ")
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch (Dispatchers.IO) {
+            //todo: delete all event which already in DB from 'REMOTE'
+            eventRepository.deleteEventsHoliday()
+
             val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
             val countryCodes: Set<String> = sharedPreferences.getStringSet("countries",setOf("indian")) ?: setOf("indian")
 
             Log.d(TAG, "getHolidayCalendarData: countryCode:$countryCodes")
-            countryCodes.forEach { countryCode ->
-                getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode)
-                    .collect { result: Resource<HolidayApiDetail> ->
+            // Create a list of deferred results for API calls
+            val apiCalls = countryCodes.map { countryCode ->
+                async {
+                    // Call the API for each country and collect results
+                    getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
                         when (result) {
                             is Resource.Success -> {
-                                _holidayApiState.value = DataState(data = result.data);
-                                launch(Dispatchers.IO) {
-                                    collectHolidayApiState()// fetched all events (from API)
-                                }
+                                _holidayApiState.value = DataState(data = result.data)
+                                collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
                             }
 
                             is Resource.Error -> {
                                 _holidayApiState.value =
-                                    DataState(
-                                        error = result.message ?: "An unexpected error occurred"
-                                    )
+                                    DataState(error = result.message ?: "An unexpected error occurred")
                             }
 
                             is Resource.Loading -> {
@@ -149,12 +168,40 @@ class MainViewModel @Inject constructor(
                             else -> {}
                         }
                     }
+                }
             }
+
+            // Await all API calls to finish
+            apiCalls.awaitAll()
+
+            /*countryCodes.forEach { countryCode ->
+                getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _holidayApiState.value = DataState(data = result.data);
+                            launch(Dispatchers.IO) {
+                                collectHolidayApiState()// fetched all events (from API)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            _holidayApiState.value =
+                                DataState(error = result.message ?: "An unexpected error occurred")
+                        }
+
+                        is Resource.Loading -> {
+                            _holidayApiState.value = DataState(isLoading = true)
+                        }
+
+                        else -> {}
+                    }
+                }
+            }*/
         }
     }
 
     /**Observe [holidayApiState] after getting data from API*/
-    private fun collectHolidayApiState() {//insert in to DB
+    private suspend fun collectHolidayApiState() {//insert in to DB
         Log.i(TAG, "collectHolidayApiState: ")
         viewModelScope.launch(Dispatchers.IO) {
             holidayApiState.collectLatest { state ->

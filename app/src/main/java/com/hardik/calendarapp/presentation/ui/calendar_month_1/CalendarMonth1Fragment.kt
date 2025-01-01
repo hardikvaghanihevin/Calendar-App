@@ -186,6 +186,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             //region Event handlers
             //endregion
             rvEvent.layoutManager = LinearLayoutManager(requireContext())
+            rvEvent.setHasFixedSize(true)
+
+            // Add a custom ItemDecoration to handle padding/margin
             rvEvent.addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
                     outRect: Rect,
@@ -193,18 +196,29 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    outRect.top = 0
-                    outRect.bottom = 0
+                    //outRect.top = 0
+                    //outRect.bottom = 0
+
+                    val position = parent.getChildAdapterPosition(view)
+                    val totalItemCount = state.itemCount
+
+                    if (position == totalItemCount - 1) {
+                        // Apply bottom padding/margin for the last item
+                        outRect.bottom = 80.dpToPx()
+                    } else {
+                        // No additional padding/margin for other items
+                        outRect.bottom = 0
+                    }
                 }
             })
-            rvEvent.setHasFixedSize(true)
             eventAdapter = EventAdapter1(ArrayList<Event>())
             binding.rvEvent.adapter = eventAdapter
+            eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event:Event->
                 // got event update
                 navigateToViewEventFrag(event = event)
             }
-            rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            /*rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -214,11 +228,22 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     //todo: If we're at the last item, add bottom padding
                     if (lastVisibleItemPosition == totalItemCount - 1) {
                         recyclerView.setPadding(0, 0, 0, 80.dpToPx()) // Add padding at the bottom
+
+                        // Add margin at the bottom
+//                        val params = recyclerView.layoutParams as ViewGroup.MarginLayoutParams
+//                        params.bottomMargin = 80.dpToPx() // Add margin at the bottom
+//                        recyclerView.layoutParams = params
+
                     } else {
                         recyclerView.setPadding(0, 0, 0, 0) // Remove padding when not at the last item
+
+                        // Remove margin when not at the last item
+//                        val params = recyclerView.layoutParams as ViewGroup.MarginLayoutParams
+//                        params.bottomMargin = 0 // Reset margin
+//                        recyclerView.layoutParams = params
                     }
                 }
-            })
+            })*/
 
         }
     }
@@ -270,6 +295,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
                 viewModel.firstDayOfTheWeek.collectLatest { firstDay->
                     pageAdapter.updateFirstDayOfTheWeek(firstDay)
+                    when(firstDay){
+                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
+                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
+                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
+                    }
+
                 }
             }
         }

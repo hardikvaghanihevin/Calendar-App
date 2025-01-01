@@ -10,6 +10,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ItemEventLayout1Binding
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
 import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.LogUtil
@@ -57,16 +58,19 @@ class EventAdapter1(private var list: ArrayList<Event>):
         notifyItemChanged(position)
     }
 
+    var weekStart = Calendar.SUNDAY
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateFirstDayOfWeek(weekStart: Int = Calendar.SUNDAY) {
+        this.weekStart = weekStart
+        notifyDataSetChanged()
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding =
-            ItemEventLayout1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-        val lp = RecyclerView.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-        )
-        binding.root.apply {
-            layoutParams = lp
-        }
+        val binding = ItemEventLayout1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
+//        val lp = RecyclerView.LayoutParams(
+//            ViewGroup.LayoutParams.MATCH_PARENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+//        )
+//        binding.root.apply { layoutParams = lp }
         return ViewHolder(binding)
     }
 
@@ -88,6 +92,10 @@ class EventAdapter1(private var list: ArrayList<Event>):
         @SuppressLint("SetTextI18n")
         fun bind(event: Event, previousEvent: Event?, position: Int) {
             binding.apply {
+                // Check if the current event's week is the same as the previous event
+                val currentEventWeek = DateUtil.getWeekOfYear(event.startDate, DATE_FORMAT_yyyy_MM_dd)
+                val previousEventWeek = previousEvent?.let { DateUtil.getWeekOfYear(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
+
                 // Check if the current event's date is the same as the previous event
                 if (previousEvent != null && previousEvent.startDate == event.startDate) {
                     // Hide day name and date for duplicate dates
@@ -97,7 +105,19 @@ class EventAdapter1(private var list: ArrayList<Event>):
                     // Show day name and date
                     eventDayDate.visibility = View.VISIBLE
                     eventDayDate.text = "${DateUtil.getDayName(event.startDate)}\n${event.date}" // e.g., Wed, 1
-                    eventFullWeekDate.visibility = View.VISIBLE
+                    //eventFullWeekDate.visibility = View.VISIBLE
+                    // Display the week range for the first event of each week
+                    if (previousEventWeek != currentEventWeek) {
+
+                        // Set week range if applicable
+                        // Display the full week range header for the first event of the week
+                        val dateForWeek = "${event.date}-${event.month.toInt().plus(1)}-${event.year}"
+                        eventFullWeekDate.visibility = View.VISIBLE
+                        eventFullWeekDate.text = DateUtil.getWeekRange(dateForWeek, weekStart)
+
+                    } else {
+                        eventFullWeekDate.visibility = View.GONE
+                    }
                 }
 
                 // Set event title
@@ -107,12 +127,6 @@ class EventAdapter1(private var list: ArrayList<Event>):
                 eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) "All day"
                 else "${DateUtil.longToString(event.startTime, "HH:mm")} - ${DateUtil.longToString(event.endTime, "HH:mm")}"
                 //eventTimePeriod.text = DateUtil.longToString(event.endTime, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-
-                // Set week range if applicable
-                // Display week range below events if it's the last event of the week or the last item
-                val dateForWeek = "${event.date}-${event.month.toInt().plus(1)}-${event.year}"
-                eventFullWeekDate.text = DateUtil.getWeekRange(dateForWeek, Calendar.SUNDAY)
-
 
                 // Handle item clicks
                 itemEventLayout.setOnClickListener { configureEventCallBack?.invoke(event) }

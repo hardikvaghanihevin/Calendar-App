@@ -55,10 +55,13 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 // Launch setupUI inside lifecycleScope
-                setupUI()
-
-                // Launch setupViewPager after setupUI is complete
-                setupViewPager()
+                if (isAdded){//TODO: Use isAdded check to confirm that the fragment is still attached.
+                    setupUI()
+                    // Launch setupViewPager after setupUI is complete
+                    setupViewPager()
+                }else {
+                    Log.d("LanguageFragment", "Fragment is not added, skipping repeatOnLifecycle")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error during setup: ${e.message}")
             }
@@ -131,19 +134,18 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private fun setupUI() {
         Log.i(TAG, "setupUI: ")
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.yearList.collectLatest{
                     Log.e(TAG, "observeViewModelState: $it", )
+
                     yearList = it
-                    launch(Dispatchers.Main){
-                        adapter.updateYearList(it)
+                    adapter.updateYearList(it)
 
-                        val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
-                        Log.i(TAG, "setupUI: current year: $year")
+                    val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
+                    Log.i(TAG, "setupUI: current year: $year")
 
-                        viewPager.setCurrentItem(yearPosition,false)
-                    }
+                    viewPager.setCurrentItem(yearPosition,false)
                 }
             }
         }

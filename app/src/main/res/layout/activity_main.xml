@@ -65,6 +65,7 @@
                 android:contentDescription="Search Icon"
                 android:padding="8dp"
                 android:src="?attr/iconSearch"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/back_to_date_icon"
                 app:layout_constraintTop_toTopOf="parent"
@@ -82,6 +83,7 @@
                 android:textColor="@color/background_secondary"
                 android:textSize="@dimen/_8ssp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -97,9 +99,28 @@
                 android:textColor="@color/background_secondary"
                 android:textSize="@dimen/_8ssp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- save select language button-->
+            <TextView
+                android:id="@+id/save_select_language_icon"
+                android:layout_width="@dimen/_31sdp"
+                android:layout_height="@dimen/_21sdp"
+                android:background="@drawable/done_icon"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@color/background_secondary"
+                android:textSize="@dimen/_8ssp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.fragment.app.FragmentContainerView

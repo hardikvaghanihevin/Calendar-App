@@ -3,6 +3,7 @@ package com.hardik.calendarapp.data.database.dao
 import androidx.room.*
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
+import com.hardik.calendarapp.data.database.entity.SourceType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,6 +20,10 @@ interface EventDao {
 
     @Delete
     suspend fun deleteEvent(event: Event)
+
+    @Query("DELETE FROM events WHERE sourceType = :sourceType")
+    suspend fun deleteEventsBySourceType(sourceType: SourceType = SourceType.REMOTE) // For deleting all events with a specific source type
+    //select count(*) from events where sourceType = "LOCAL"// CURSOR/REMOTE
 
     @Query("SELECT * FROM events WHERE eventId = :eventId LIMIT 1")
     fun getEventById(eventId: Long): Flow<Event>?

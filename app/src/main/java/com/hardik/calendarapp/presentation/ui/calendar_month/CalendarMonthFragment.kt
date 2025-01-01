@@ -23,6 +23,7 @@ import com.hardik.calendarapp.domain.repository.DateItemClickListener
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CalendarMonthPagerAdapter
+import com.hardik.calendarapp.presentation.ui.language.LanguageFragment
 import com.hardik.calendarapp.utillities.createDate
 import com.hardik.calendarapp.utillities.getMonth
 import com.hardik.calendarapp.utillities.isItToday
@@ -34,6 +35,17 @@ import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import javax.inject.Inject
 
+
+/**
+ * A simple [Fragment] subclass.
+ * Use the [LanguageFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ * @param param1 Parameter 1.
+ * @return A
+ * * @param param1 Parameter 1.
+ *          * @param param2 Parameter 2.
+ *          * @return A new instance of fragment LanguageFragment.
+ */
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
 class CalendarMonthFragment @Inject constructor() : Fragment(R.layout.fragment_calendar_month), DateItemClickListener {

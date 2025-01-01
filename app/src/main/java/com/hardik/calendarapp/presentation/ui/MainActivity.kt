@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         Log.i(TAG, "onCreate: ")
 
         // Step 1: Retrieve saved language preference
@@ -93,6 +92,8 @@ class MainActivity : AppCompatActivity() {
 
         // Step 3: Update the locale after setting the theme and before inflating the UI
         LocaleHelper.setLocale(this, languageCode)
+
+        super.onCreate(savedInstanceState)
 
         // Step 4: Inflate the layout and set the content view
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -198,6 +199,7 @@ class MainActivity : AppCompatActivity() {
                     hideViewWithAnimation(binding.fab)
                     hideViewWithAnimation(binding.searchIcon)
                     hideViewWithAnimation(binding.backToDateIcon)
+                    hideViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
 
                 // Destinations where Save Event Icon should be shown
@@ -206,6 +208,7 @@ class MainActivity : AppCompatActivity() {
                     hideViewWithAnimation(binding.fab)
                     hideViewWithAnimation(binding.searchIcon)
                     hideViewWithAnimation(binding.backToDateIcon)
+                    hideViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
 
                 // Destinations for Year and Month navigation
@@ -214,8 +217,24 @@ class MainActivity : AppCompatActivity() {
                     showViewWithAnimation(binding.backToDateIcon)
                     showViewWithAnimation(binding.fab)
                     hideViewWithAnimation(binding.saveEventIcon)
+                    hideViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
 
+                R.id.nav_select_country -> {
+                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    hideViewWithAnimation(binding.saveEventIcon)
+                    hideViewWithAnimation(binding.fab)
+                    hideViewWithAnimation(binding.searchIcon)
+                    hideViewWithAnimation(binding.backToDateIcon)
+                }
+
+                R.id.nav_select_language -> {
+                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    hideViewWithAnimation(binding.saveEventIcon)
+                    hideViewWithAnimation(binding.fab)
+                    hideViewWithAnimation(binding.searchIcon)
+                    hideViewWithAnimation(binding.backToDateIcon)
+                }
                 R.id.nav_settings -> { }
                 // Default case: Hide everything except FAB
                 else -> {
@@ -356,7 +375,6 @@ class MainActivity : AppCompatActivity() {
 
         dialogFirstDayOfTheWeekBinding?.apply {
 
-
             btnDone.setOnClickListener {
                 lifecycleScope.launch {
                     // Make sure the navigation happens on the main thread
@@ -365,6 +383,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 dialog.dismiss()
             }
+
             btnCancel.setOnClickListener { dialog.dismiss() }
         }
 
@@ -778,6 +797,8 @@ class MainActivity : AppCompatActivity() {
         when (item.id) {
             R.id.nav_year -> navController.navigate(R.id.nav_year)
             R.id.nav_month -> navController.navigate(R.id.nav_month)
+            R.id.nav_select_country -> navController.navigate(R.id.nav_select_country, null, navOptions = navOptions, null)
+            R.id.nav_select_language -> navController.navigate(R.id.nav_select_language, null, navOptions = navOptions, null)
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
             R.id.nav_app_theme -> showAppThemeDialog()
@@ -846,7 +867,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideAllViewsWithAnimation() {
-        val viewList = listOf(binding.fab,binding.searchIcon,binding.backToDateIcon,binding.saveEventIcon,)
+        val viewList = listOf( binding.fab, binding.searchIcon, binding.backToDateIcon, binding.saveEventIcon, binding.saveSelectLanguageIcon, )
         viewList.forEach { hideViewWithAnimation(it) }
     }
 

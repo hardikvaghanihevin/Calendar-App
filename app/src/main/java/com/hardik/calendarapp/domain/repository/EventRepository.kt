@@ -9,6 +9,7 @@ interface EventRepository {
     suspend fun upsertEvents(events: List<Event>)
     suspend fun updateEvent(event: Event)
     suspend fun deleteEvent(event: Event)
+    suspend fun deleteEventsHoliday()
 
     fun getEventById(eventId: Long): Flow<Event>?
     fun getAllEventIds(): Flow<List<Long>>

@@ -9,10 +9,12 @@ import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.IsoFields
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -627,6 +629,33 @@ object DateUtil {
         val weekEnd = endFormat.format(endOfWeekDate)
 
         return "$weekStart - $weekEnd"
+    }
+
+    // Function to get the week number of the year based on the provided date format
+    fun getWeekOfYear(startDate: String, dateFormat: String): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // For Android O (API 26) and above, use java.time.LocalDate and DateTimeFormatter
+            val formatter = DateTimeFormatter.ofPattern(dateFormat)
+            val date = LocalDate.parse(startDate, formatter)
+
+            // Using IsoFields.WEEK_OF_WEEK_BASED_YEAR for API >= 26
+            date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+        } else {
+            // For versions below Android O, use SimpleDateFormat
+            val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+            val date = formatter.parse(startDate)
+
+            // Use Calendar to get the week number of the year
+            val calendar = Calendar.getInstance()
+            if (date != null) {
+                calendar.time = date
+                // Using Calendar.WEEK_OF_YEAR for versions below API 26
+                return calendar.get(Calendar.WEEK_OF_YEAR)
+            } else {
+                // Handle the case when date parsing fails (return a default value or throw an exception)
+                throw IllegalArgumentException("Invalid date format or date.")
+            }
+        }
     }
 }
 

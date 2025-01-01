@@ -24,7 +24,7 @@ object AlarmScheduler {
     fun updateAlarm(context: Context, event: Event) {
         CoroutineScope(Dispatchers.IO).launch {
             launch {
-                cancelAlarm(context, event)
+                cancelAlarm(context, event.eventId.toInt())
             }.join()
             scheduleNotification(context, event)
         }
@@ -156,17 +156,17 @@ object AlarmScheduler {
     }
 
     // Cancel existing alarms if any.
-    fun cancelAlarm(context: Context, event: Event) {
+    fun cancelAlarm(context: Context, alarmId: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            event.eventId.hashCode(),
+            alarmId,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
-        Log.d(TAG, "Alarm canceled for event: ${event.title}")
+        Log.d(TAG, "Alarm canceled for eventId: $alarmId")
     }
 
     fun cancelAllScheduledAlarms(context: Context, alarmIds: List<Int>) {
