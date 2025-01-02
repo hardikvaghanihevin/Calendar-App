@@ -222,9 +222,9 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.nav_select_country -> {
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    showViewWithAnimation(binding.searchIcon)
                     hideViewWithAnimation(binding.saveEventIcon)
                     hideViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.searchIcon)
                     hideViewWithAnimation(binding.backToDateIcon)
                 }
 
@@ -750,6 +750,20 @@ class MainActivity : AppCompatActivity() {
 
         binding.searchIcon.setOnClickListener {
             Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show()
+            if (navController.currentDestination?.id == R.id.nav_select_country) {
+                showViewWithAnimation(binding.searchView)
+                // Expand SearchView
+                binding.searchView.setIconified(false)
+
+                // Request focus to display keyboard
+                binding.searchView.requestFocus()
+            }
+            else if (navController.currentDestination?.id == R.id.nav_select_country) {
+                showViewWithAnimation(binding.searchView)
+            }
+            else {
+                Log.e(TAG,"NavigationError ->: Destination on SearchView")
+            }
         }
 
         binding.backToDateIcon.apply {
@@ -840,34 +854,34 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    // Function to show FAB with animation
+    // Function to show VIEW with animation
     private fun showViewWithAnimation(fab: View) {
         CoroutineScope(Dispatchers.Main).launch {
             fab.animate()
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(200) // animation duration in milliseconds
+                .setDuration(300) // animation duration in milliseconds
                 .withStartAction { fab.visibility = View.VISIBLE }
                 .start()
         }
     }
 
-    // Function to hide FAB with animation
+    // Function to hide VIEW with animation
     private fun hideViewWithAnimation(fab: View) {
         CoroutineScope(Dispatchers.Main).launch {
             fab.animate()
                 .alpha(0f)
                 .scaleX(0f)
                 .scaleY(0f)
-                .setDuration(200) // animation duration in milliseconds
+                .setDuration(300) // animation duration in milliseconds
                 .withEndAction { fab.visibility = View.GONE }
                 .start()
         }
     }
 
     private fun hideAllViewsWithAnimation() {
-        val viewList = listOf( binding.fab, binding.searchIcon, binding.backToDateIcon, binding.saveEventIcon, binding.saveSelectLanguageIcon, )
+        val viewList = listOf( binding.fab, binding.searchIcon, binding.backToDateIcon, binding.saveEventIcon, binding.saveSelectLanguageIcon, binding.searchView )
         viewList.forEach { hideViewWithAnimation(it) }
     }
 

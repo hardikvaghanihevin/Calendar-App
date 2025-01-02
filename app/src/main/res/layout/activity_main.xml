@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:background="@color/background_primary"
     tools:ignore="HardcodedText,NewApi"
-    tools:showIn="@layout/activity_main">
+    >
+<!--    tools:showIn="@layout/activity_main"-->
 
     <!-- Main content -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,74 +53,123 @@
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/_18ssp"
                 android:textStyle="bold"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/search_icon"
+                app:layout_constraintEnd_toStartOf="@id/toolbarMenuIcon"
                 app:layout_constraintStart_toEndOf="@id/siv_navigation_icon"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Search Icon -->
-            <ImageView
-                android:id="@+id/search_icon"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/toolbarMenuIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Search Icon"
-                android:padding="8dp"
-                android:src="?attr/iconSearch"
-                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/back_to_date_icon"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- Search Icon -->
+                    <ImageView
+                        android:id="@+id/search_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="Search Icon"
+                        android:padding="8dp"
+                        android:src="?attr/iconSearch"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/back_to_date_icon"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/text_primary" />
+
+                    <!-- Back to date Icon -->
+                    <TextView
+                        android:id="@+id/back_to_date_icon"
+                        android:layout_width="@dimen/_21sdp"
+                        android:layout_height="@dimen/_21sdp"
+                        android:background="?attr/iconBackToDate"
+                        android:gravity="center"
+                        android:padding="0dp"
+                        android:text="31"
+                        android:textColor="@color/background_secondary"
+                        android:textSize="@dimen/_8ssp"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/search_icon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- save event button-->
+                    <TextView
+                        android:id="@+id/save_event_icon"
+                        android:layout_width="@dimen/_46sdp"
+                        android:layout_height="@dimen/_21sdp"
+                        android:background="@drawable/save_event_icon"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/background_secondary"
+                        android:textSize="@dimen/_8ssp"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- save select language button-->
+                    <TextView
+                        android:id="@+id/save_select_language_icon"
+                        android:layout_width="@dimen/_31sdp"
+                        android:layout_height="@dimen/_21sdp"
+                        android:background="@drawable/done_icon"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/background_secondary"
+                        android:textSize="@dimen/_8ssp"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_8sdp"
+                android:background="@drawable/item_background"
+                android:paddingVertical="1dp"
+                android:iconifiedByDefault="false"
+                app:animateMenuItems="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                app:closeIcon="@android:drawable/btn_dialog"
+                app:dividerPadding="@dimen/_2sdp"
+                app:queryBackground="@null"
+                app:searchHintIcon="@null"
+                app:showDividers="none"
+                app:searchIcon="?attr/iconSearch"
+                app:theme="@style/SearchViewStyle"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/text_primary" />
-
-            <!-- Back to date Icon -->
-            <TextView
-                android:id="@+id/back_to_date_icon"
-                android:layout_width="@dimen/_21sdp"
-                android:layout_height="@dimen/_21sdp"
-                android:background="?attr/iconBackToDate"
-                android:gravity="center"
-                android:padding="0dp"
-                android:text="31"
-                android:textColor="@color/background_secondary"
-                android:textSize="@dimen/_8ssp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- save event button-->
-            <TextView
-                android:id="@+id/save_event_icon"
-                android:layout_width="@dimen/_46sdp"
-                android:layout_height="@dimen/_21sdp"
-                android:background="@drawable/save_event_icon"
-                android:gravity="center"
-                android:text=""
-                android:textColor="@color/background_secondary"
-                android:textSize="@dimen/_8ssp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- save select language button-->
-            <TextView
-                android:id="@+id/save_select_language_icon"
-                android:layout_width="@dimen/_31sdp"
-                android:layout_height="@dimen/_21sdp"
-                android:background="@drawable/done_icon"
-                android:gravity="center"
-                android:text=""
-                android:textColor="@color/background_secondary"
-                android:textSize="@dimen/_8ssp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="@id/toolbar_title"
+                app:layout_constraintEnd_toEndOf="@id/toolbarMenuIcon"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

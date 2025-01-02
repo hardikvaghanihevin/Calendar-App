@@ -77,6 +77,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    //----------------------------------------------------------------//
+
     // StateFlow to hold the list of countries
     private val _countryItems = MutableStateFlow<List<CountryItem>>(emptyList())
     val countryItems: StateFlow<List<CountryItem>> get() = _countryItems
@@ -95,6 +97,22 @@ class MainViewModel @Inject constructor(
 
     // Toggle selection for a country
     fun toggleCountrySelection(countryCode: String) {
+        //todo: at least one last item always contain in list
+
+        // Get the list of selected country codes
+        val selectedCountryCodes: Set<String> = _countryItems.value
+            .filter { it.isSelected } // Filter only selected items
+            .map { it.code }          // Map to country codes
+            .toSet()
+
+        Log.e(TAG, "toggleCountrySelection: $selectedCountryCodes", )
+        // Check if only one item is selected and it matches the last item
+        if (selectedCountryCodes.size == 1 && selectedCountryCodes.contains(countryCode)) {
+            // Prevent unselecting the last item if it's the only one selected
+            return
+        }
+
+        //todo: clean all items when unselect all items its allow
         _countryItems.value = _countryItems.value.map { country ->
             if (country.code == countryCode) {
                 country.copy(isSelected = !country.isSelected)
@@ -103,6 +121,15 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    // Save selected countries
+    fun saveSelectedCountries(selectedCountries: Set<String>) {
+        sharedPreferences.edit()
+            .putStringSet("countries", selectedCountries)
+            .apply()
+    }
+
+    //----------------------------------------------------------------//
 
     private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
     val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
