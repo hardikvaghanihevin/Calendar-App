@@ -14,7 +14,6 @@ import com.hardik.calendarapp.databinding.FragmentCountryBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CountryAdapter
-import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CountryItem
 import kotlinx.coroutines.launch
 
 
@@ -55,16 +54,23 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         val countryCodes = resources.getStringArray(R.array.country_values)
 
         // Step 4: Map country data to CountryItem, setting isSelected based on selectedCountries
-        val countryItems = countries.mapIndexed { index, name ->
-            CountryItem(
-                name = name,
-                code = countryCodes[index],
-                isSelected = selectedCountries.contains(countryCodes[index]) // Check if the country is pre-selected
-            )
-        }
+        viewModel.initializeCountries(savedCountries, countries, countryCodes)
+//        val countryItems = countries.mapIndexed { index, name ->
+//            CountryItem(
+//                name = name,
+//                code = countryCodes[index],
+//                isSelected = selectedCountries.contains(countryCodes[index]) // Check if the country is pre-selected
+//            )
+//        }
 
+        // Step 5: Observe countryItems and update RecyclerView
+        lifecycleScope.launch {
+            viewModel.countryItems.collect { countryItems ->
+                countryAdapter.submitList(countryItems)
+            }
+        }
         // Step 5: Submit the list to the adapter to update the UI
-        countryAdapter.submitList(countryItems)
+        //countryAdapter.submitList(countryItems)
 
         // Step 6: Set up the RecyclerView
         binding.countryRecView.apply {
@@ -77,7 +83,13 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         (activity as MainActivity).binding.saveSelectLanguageIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
-                    saveSelectedCountries(selectedCountries)
+                    saveSelectedCountries(
+                        viewModel.countryItems.value
+                            .filter { it.isSelected } // Filter only selected items
+                            .map { it.code }          // Map to country codes
+                            .toSet()                  // Convert to a Set
+                    )
+                    //saveSelectedCountries(selectedCountries)
                     findNavController().popBackStack(R.id.nav_select_country, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                 }
             }
@@ -93,11 +105,12 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
     }
 
     private fun onCountrySelected(countryCode: String, isSelected: Boolean) {
-        if (isSelected) {
-            selectedCountries.add(countryCode) // Add to the selected list
-        } else {
-            selectedCountries.remove(countryCode) // Remove from the selected list
-        }
+        viewModel.toggleCountrySelection(countryCode)
+//        if (isSelected) {
+//            selectedCountries.add(countryCode) // Add to the selected list
+//        } else {
+//            selectedCountries.remove(countryCode) // Remove from the selected list
+//        }
 
         // Optional: Update ViewModel or trigger side effects
         //viewModel.getHolidayCalendarData()

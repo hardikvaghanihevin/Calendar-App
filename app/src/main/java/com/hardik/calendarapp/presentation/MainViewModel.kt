@@ -28,6 +28,7 @@ import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfYear
 import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.domain.use_case.GetMonthlyEventsUseCase
+import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CountryItem
 import com.hardik.calendarapp.utillities.CursorEvent
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
@@ -76,19 +77,30 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _selectedCountries = MutableStateFlow<MutableSet<String>>(mutableSetOf())
-    val selectedCountries: StateFlow<MutableSet<String>> get() = _selectedCountries
+    // StateFlow to hold the list of countries
+    private val _countryItems = MutableStateFlow<List<CountryItem>>(emptyList())
+    val countryItems: StateFlow<List<CountryItem>> get() = _countryItems
 
-    fun updateCountrySelection(countryCode: Set<String>) {
-        viewModelScope.launch {
-//            val selectedSet = _selectedCountries.value ?: mutableSetOf()
-//            if (selectedSet.contains(countryCode)) {
-//                selectedSet.remove(countryCode)
-//            } else {
-//                selectedSet.add(countryCode)
-//            }
-//            _selectedCountries.value = selectedSet
-            _selectedCountries.value = countryCode.toMutableSet()
+    // Initialize the list with saved and default data
+    fun initializeCountries(savedCodes: Set<String>, countryNames: Array<String>, countryCodes: Array<String>) {
+        val countries = countryNames.mapIndexed { index, name ->
+            CountryItem(
+                name = name,
+                code = countryCodes[index],
+                isSelected = savedCodes.contains(countryCodes[index])
+            )
+        }
+        _countryItems.value = countries
+    }
+
+    // Toggle selection for a country
+    fun toggleCountrySelection(countryCode: String) {
+        _countryItems.value = _countryItems.value.map { country ->
+            if (country.code == countryCode) {
+                country.copy(isSelected = !country.isSelected)
+            } else {
+                country
+            }
         }
     }
 
