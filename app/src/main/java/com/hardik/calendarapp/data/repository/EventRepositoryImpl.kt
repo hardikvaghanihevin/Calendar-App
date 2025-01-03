@@ -32,7 +32,8 @@ class EventRepositoryImpl @Inject constructor(
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override suspend fun upsertEvent(event: Event) {
-        cancelAlarm(event.eventId) // Cancel any existing alarms for this event
+        Log.d(TAG, "upsertEvent() called with: event = $event")
+        //cancelAlarm(event.eventId) // Cancel any existing alarms for this event
         eventDao.upsertEvent(event)
         scheduleAlarm(event)       // Set a new alarm for this event
     }
@@ -66,10 +67,12 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteEvent(event: Event) {
+        cancelAlarm(event.eventId)
         eventDao.deleteEvent(event)
     }
 
     override suspend fun deleteEventsHoliday(){
+        //todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
         eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
     }
 
@@ -114,7 +117,7 @@ class EventRepositoryImpl @Inject constructor(
             requestExactAlarmPermission()
         } else {
             AlarmScheduler.updateAlarm(context, event)
-            Log.d(TAG, "Alarm scheduled for event: ${event.title}")
+            Log.i(TAG, "Alarm scheduled for event: ${event}")
             //Toast.makeText(context, "Alarm set for event: ${event.title}", Toast.LENGTH_SHORT).show()
         }
     }

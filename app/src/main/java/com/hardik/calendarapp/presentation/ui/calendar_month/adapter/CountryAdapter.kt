@@ -28,8 +28,8 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
     Filterable {
     private val TAG = BASE_TAG + CountryAdapter::class.java.simpleName
 
-    private var originalList = listOf<CountryItem>() // To store the full list
-    private var filteredList = listOf<CountryItem>() // To store the filtered list
+    private var originalList = listOf<CountryItem>() // Store the full list
+    private var filteredList = listOf<CountryItem>() // Store the filtered list
 
     // Update the adapter list
     fun submitFullList(list: List<CountryItem>) {
@@ -127,13 +127,11 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
                     originalList.filter { it.name.lowercase().contains(query) }
                 }
 
-                val filterResults = FilterResults()
-                filterResults.values = results
-                return filterResults
+                return FilterResults().apply { values = results }
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredList = results?.values as List<CountryItem>
+                filteredList = results?.values as List<CountryItem> ?: originalList
                 submitList(filteredList)
             }
         }

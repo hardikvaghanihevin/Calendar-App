@@ -1,368 +1,351 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_primary"
     android:fillViewport="true"
     android:fitsSystemWindows="true"
-    android:background="@color/background_primary"
+    android:padding="@dimen/_16sdp"
     tools:context=".presentation.ui.view_event.ViewEventFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <!--    Event Name-->
+        <LinearLayout
+            android:id="@+id/ll_first"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
+            android:background="@drawable/day_background_1"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_2sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!--    Event Name-->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_first"
+            <EditText
+                android:id="@+id/edt_eventName"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_46sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/post_nord_sans_regular"
+                android:hint="@string/event_title"
+                android:imeOptions="actionNext"
+                android:includeFontPadding="true"
+                android:inputType="text"
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="normal" />
+        </LinearLayout>
+
+        <!--    Event Data-->
+        <LinearLayout
+            android:id="@+id/ll_second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@drawable/day_background_1"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_first">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/cornerSize"
-                app:cardUseCompatPadding="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_margin="@dimen/_2sdp"
+                android:background="@android:color/transparent"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_26sdp">
 
-                <LinearLayout
-                    android:id="@+id/ll_fist"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvAllDay"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="@dimen/_2sdp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:text="@string/all_day"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/_16ssp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tInLay_eventName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/_2sdp"
-                        app:boxBackgroundColor="@color/white"
-                        app:boxBackgroundMode="outline"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.TextInputLayout.Rounded">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/tInEdt_eventName"
-                            style="@style/TextAppearance.MaterialComponents.Body2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:cursorVisible="false"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:hint="@string/event_title"
-                            android:imeOptions="actionNext"
-                            android:includeFontPadding="true"
-                            android:inputType="text"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/blue"
-                            android:textSize="@dimen/_16ssp"
-                            android:textStyle="normal" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!--    Event Data-->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_second"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/cornerSize"
-                app:cardUseCompatPadding="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cv_first">
-
-                <LinearLayout
-                    android:id="@+id/ll_second"
-                    android:layout_width="match_parent"
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchAllDay"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:thumb="@drawable/switch_thumb"
+                    app:layout_constraintBottom_toBottomOf="@id/tvAllDay"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvAllDay"
+                    app:track="@drawable/switch_track" />
+                <!--
+                    android:textOn="on"
+                    android:textOff="off"
+                    app:showText="true"
+                    app:thumbTint="@color/grey"
+                    app:trackTint="@color/blue"
+                -->
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_2sdp"
-                        android:background="@drawable/day_background_2"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="@dimen/_10sdp">
-
-                        <TextView
-                            android:id="@+id/tvAllDay"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/all_day"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <!-- Right Section -->
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchAllDay"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:enabled="false"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:thumbTint="@color/grey"
-                            app:trackTint="@color/blue" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40sdp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/_2sdp"
-                        android:background="@drawable/day_background_2"
-                        android:paddingHorizontal="@dimen/_10sdp">
-
-                        <TextView
-                            android:id="@+id/tvStart"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/start"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvStart_date_picker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:layout_marginEnd="@dimen/_12sdp"
-                            android:gravity="center_vertical"
-                            android:text="2 Dec 2024"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/tvStart_time_picker"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvStart_time_picker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="4:19 PM"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40sdp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/_2sdp"
-                        android:background="@drawable/day_background_2"
-                        android:paddingHorizontal="@dimen/_10sdp">
-
-                        <TextView
-                            android:id="@+id/tvEnd"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/end"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvEnd_date_picker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:layout_marginEnd="@dimen/_12sdp"
-                            android:gravity="center_vertical"
-                            android:text="2 Dec 2024"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/tvEnd_time_picker"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvEnd_time_picker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="5:18 PM"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40sdp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/_2sdp"
-                        android:background="@drawable/day_background_2"
-                        android:paddingHorizontal="@dimen/_10sdp">
-
-                        <TextView
-                            android:id="@+id/tvRepeat"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/repeat"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-
-                        <TextView
-                            android:id="@+id/tvRepeat_picker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/never"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!--    Alert-->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_third"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/cornerSize"
-                app:cardUseCompatPadding="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cv_second">
-
-                <LinearLayout
-                    android:id="@+id/ll_third"
+                <View
+                    android:id="@+id/v_divider"
                     android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginEnd="@dimen/_1sdp"
+                    android:background="@color/border_surface"
+                    app:layout_constraintTop_toBottomOf="@id/tvAllDay" />
+
+                <TextView
+                    android:id="@+id/tvStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/start"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/_16ssp"
+                    app:layout_constraintEnd_toStartOf="@id/siv_startToEnd_icon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/v_divider" />
+
+                <TextView
+                    android:id="@+id/tvStart_date_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:fontFamily="@font/post_nord_sans_medium"
+                    android:gravity="center_vertical"
+                    android:text="2 Dec 2024"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintEnd_toEndOf="@id/tvStart"
+                    app:layout_constraintStart_toStartOf="@id/tvStart"
+                    app:layout_constraintTop_toBottomOf="@id/tvStart" />
+
+                <TextView
+                    android:id="@+id/tvStart_time_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/post_nord_sans_medium"
+                    android:gravity="center_vertical"
+                    android:text="5:18 PM"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintEnd_toEndOf="@id/tvStart"
+                    app:layout_constraintStart_toStartOf="@id/tvStart"
+                    app:layout_constraintTop_toBottomOf="@id/tvStart_date_picker" />
+
+                <!--                icon arrow -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/siv_startToEnd_icon"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:contentDescription="Start date to end date"
+                    android:padding="8dp"
+                    android:rotation="180"
+                    android:src="?attr/iconBackArrow"
+                    app:layout_constraintBottom_toBottomOf="@id/tvEnd_date_picker"
+                    app:layout_constraintEnd_toStartOf="@id/tvEnd"
+                    app:layout_constraintStart_toEndOf="@id/tvStart"
+                    app:layout_constraintTop_toTopOf="@id/tvEnd_date_picker"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ShapeAbleImageView" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40sdp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/_2sdp"
-                        android:background="@drawable/day_background_2"
-                        android:paddingHorizontal="@dimen/_10sdp">
+                <TextView
+                    android:id="@+id/tvEnd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/end"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/_16ssp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/siv_startToEnd_icon"
+                    app:layout_constraintTop_toTopOf="@id/tvStart" />
 
-                        <TextView
-                            android:id="@+id/tvAlert"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/alert"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tvEnd_date_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:fontFamily="@font/post_nord_sans_medium"
+                    android:gravity="center_vertical"
+                    android:text="2 Dec 2024"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintEnd_toEndOf="@id/tvEnd"
+                    app:layout_constraintStart_toStartOf="@id/tvEnd"
+                    app:layout_constraintTop_toBottomOf="@id/tvEnd" />
 
-                        <TextView
-                            android:id="@+id/tvAlert_picker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:text="@string/none"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/tvEnd_time_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/post_nord_sans_medium"
+                    android:gravity="center_vertical"
+                    android:text="5:18 PM"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintEnd_toEndOf="@id/tvEnd"
+                    app:layout_constraintStart_toStartOf="@id/tvEnd"
+                    app:layout_constraintTop_toBottomOf="@id/tvEnd_date_picker" />
 
-            <!--    Note-->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_forth"
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_third"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@drawable/day_background_1"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/ll_second">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/cornerSize"
-                app:cardUseCompatPadding="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cv_third">
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/_2sdp"
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="@dimen/_10sdp">
 
-                <LinearLayout
-                    android:id="@+id/ll_forth"
+                <TextView
+                    android:id="@+id/tvRepeat"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="@dimen/_2sdp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/repeat"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/_16ssp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tInLay_evenNote"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/_2sdp"
-                        app:boxBackgroundColor="@color/white"
-                        app:boxBackgroundMode="outline"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.TextInputLayout.Rounded">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/tInEdt_eventNote"
-                            style="@style/TextAppearance.MaterialComponents.Body2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:cursorVisible="false"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:gravity="start|top"
-                            android:hint="@string/note"
-                            android:imeOptions="actionSend"
-                            android:includeFontPadding="true"
-                            android:inputType="textMultiLine"
-                            android:lines="4"
-                            android:maxLines="6"
-                            android:scrollbars="vertical"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/blue"
-                            android:textSize="@dimen/_16ssp"
-                            android:textStyle="normal" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/tvRepeat_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/never"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
-            <!--    base view-->
-            <View
-                android:id="@+id/baseline"
+        <!--    Alert-->
+        <LinearLayout
+            android:id="@+id/ll_forth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@drawable/day_background_1"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/ll_third">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/_2sdp"
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="@dimen/_10sdp">
+
+                <TextView
+                    android:id="@+id/tvAlert"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/alert"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/_16ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvAlert_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/post_nord_sans_regular"
+                    android:gravity="center_vertical"
+                    android:text="@string/none"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+
+        <!--    Note-->
+        <LinearLayout
+            android:id="@+id/ll_fifth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@drawable/day_background_1"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/_8sdp"
+            android:paddingHorizontal="@dimen/_2sdp"
+            app:layout_constraintTop_toBottomOf="@id/ll_forth">
+
+            <EditText
+                android:id="@+id/edt_eventNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_55sdp"
-                app:layout_constraintTop_toBottomOf="@id/cv_forth" />
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:background="@drawable/day_background_1"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/post_nord_sans_regular"
+                android:gravity="start|top"
+                android:hint="@string/note"
+                android:imeOptions="actionSend"
+                android:includeFontPadding="true"
+                android:inputType="textMultiLine"
+                android:lines="4"
+                android:maxLines="6"
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:scrollbars="vertical"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="normal" />
+        </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+        <!--    base view-->
+        <View
+            android:id="@+id/baseline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_55sdp"
+            app:layout_constraintTop_toBottomOf="@id/ll_forth" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
+
 

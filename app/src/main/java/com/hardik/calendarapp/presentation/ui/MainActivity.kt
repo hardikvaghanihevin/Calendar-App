@@ -3,6 +3,7 @@ package com.hardik.calendarapp.presentation.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -196,19 +198,12 @@ class MainActivity : AppCompatActivity() {
                 // Destinations where FAB/Menu should be hidden
                 R.id.newEventFragment -> {
                     showViewWithAnimation(binding.saveEventIcon)
-                    hideViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.searchIcon)
-                    hideViewWithAnimation(binding.backToDateIcon)
-                    hideViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
 
                 // Destinations where Save Event Icon should be shown
                 R.id.viewEventFragment -> {
-                    showViewWithAnimation(binding.saveEventIcon)
-                    hideViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.searchIcon)
-                    hideViewWithAnimation(binding.backToDateIcon)
-                    hideViewWithAnimation(binding.saveSelectLanguageIcon)
+                    showViewWithAnimation(binding.deleteEventIcon)
+                    showViewWithAnimation(binding.saveEventIcon)//but it's for edit option not save use
                 }
 
                 // Destinations for Year and Month navigation
@@ -216,32 +211,20 @@ class MainActivity : AppCompatActivity() {
                     showViewWithAnimation(binding.searchIcon)
                     showViewWithAnimation(binding.backToDateIcon)
                     showViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.saveEventIcon)
-                    hideViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
 
                 R.id.nav_select_country -> {
+                    showViewWithAnimation(binding.searchView)
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
-                    showViewWithAnimation(binding.searchIcon)
-                    hideViewWithAnimation(binding.saveEventIcon)
-                    hideViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.backToDateIcon)
                 }
 
                 R.id.nav_select_language -> {
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
-                    hideViewWithAnimation(binding.saveEventIcon)
-                    hideViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.searchIcon)
-                    hideViewWithAnimation(binding.backToDateIcon)
                 }
                 R.id.nav_settings -> { }
                 // Default case: Hide everything except FAB
                 else -> {
-                    showViewWithAnimation(binding.fab)
-                    hideViewWithAnimation(binding.saveEventIcon)
-                    hideViewWithAnimation(binding.searchIcon)
-                    hideViewWithAnimation(binding.backToDateIcon)
+                    hideAllViewsWithAnimation()
                 }
             }
         }
@@ -832,6 +815,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun handleNavigationIconClick() {
         val currentDestination = navController.currentDestination
+        hideKeyboard()
         if (currentDestination != null && appBarConfiguration.topLevelDestinations.contains(currentDestination.id)) {
             toggleDrawer()
         } else {
@@ -868,7 +852,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Function to hide VIEW with animation
-    private fun hideViewWithAnimation(fab: View) {
+    fun hideViewWithAnimation(fab: View) {
         CoroutineScope(Dispatchers.Main).launch {
             fab.animate()
                 .alpha(0f)
@@ -881,8 +865,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideAllViewsWithAnimation() {
-        val viewList = listOf( binding.fab, binding.searchIcon, binding.backToDateIcon, binding.saveEventIcon, binding.saveSelectLanguageIcon, binding.searchView )
+        val viewList = listOf( binding.fab, binding.searchIcon, binding.backToDateIcon, binding.saveEventIcon, binding.saveSelectLanguageIcon, binding.searchView, binding.deleteEventIcon)
         viewList.forEach { hideViewWithAnimation(it) }
+    }
+
+    // Function to close the SearchView and hide the keyboard
+    private fun hideKeyboard() {
+        // Hide SearchView
+        val searchView = binding.searchView
+        searchView.clearFocus() // Clear focus from SearchView
+        searchView.isIconified = true // Collapse the SearchView
+
+        // Hide keyboard
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusView = currentFocus
+
+        if (currentFocusView != null) {
+            imm.hideSoftInputFromWindow(currentFocusView.windowToken, 0)
+            imm.hideSoftInputFromWindow(searchView.windowToken, 0)//specific view to hide
+        }
     }
 
     // region Call this function to request permissions as needed

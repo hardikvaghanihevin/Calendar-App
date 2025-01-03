@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -40,6 +41,9 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         onCountrySelected(selectedCountry, isChecked)
     } , viewType = HORIZONTAL)
 
+    // Variable to store the current query for search
+    private var currentQuery: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let { }
@@ -67,15 +71,22 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         // Step 5: Observe countryItems and update RecyclerView
         lifecycleScope.launch {
             viewModel.countryItems.collectLatest { countryItems ->
+
                 //countryAdapter.submitList(countryItems) // Use Default item of list if needed
-                countryAdapter.submitFullList(countryItems) // Use the filtered list
+                countryAdapter.apply {
+                    submitFullList(countryItems) // Use the filtered list
+                    //currentQuery?.let { this.filter.filter(it) } //IndexOutOfBoundsException: Index: 9, Size: 9
+                }
+
                 val selectedCountryItems = countryItems.filter { it.isSelected } // Filter only selected items
                 //Log.i(TAG, "onViewCreated: selectedCountry $selectedItems", )
                 //selectedCountryAdapter.submitList(selectedCountryItems) // Use Default item of list if needed
                 selectedCountryAdapter.submitFullList(selectedCountryItems) // Use the filtered list
 
-                delay(400)
-                //countryAdapter.filter.filter("ind")
+                delay(100)
+                // Reapply the current query after updating the data for search
+                //currentQuery?.let { countryAdapter.filter.filter(it) }
+
             }
         }
 
@@ -149,6 +160,10 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                             .map { it.code }          // Map to country codes
                             .toSet()                  // Convert to a Set
                     )
+
+                    // Optional: Update ViewModel or trigger side effects
+                    viewModel.getHolidayCalendarData()
+                    
                     if (findNavController().currentDestination?.id == R.id.nav_select_country) {
                         findNavController().popBackStack(R.id.nav_select_country, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                     } else {
@@ -158,18 +173,43 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
             }
         }
 
+        /** Search view for Country */
         (activity as MainActivity).binding.searchView.apply {
             if (isAdded){
+                // Set inactive background (null)
+                this.setBackgroundResource(0) // 0 removes any background
                 // Ensure SearchView stays expanded and doesn't collapse
-                this.isIconified = false
-                this.setIconifiedByDefault(false)
+                //this.isIconified = false
+                //this.setIconifiedByDefault(false)
 
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus) {
+                    if (hasFocus) {
+                        // Set active background
+                        this.setBackgroundResource(R.drawable.item_background)
+                        /*this.setPadding(
+                            resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
+                        // Adjust margins dynamically
+                        val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                            setMargins(
+                                resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
+                                0,  // Top margin
+                                resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
+                                0   // Bottom margin
+                            )
+                        }
+
+                    } else {
                         // Refocus the SearchView if it loses focus
-                        this.requestFocus()
+                        //this.requestFocus()
+
+                        // Set inactive background (null)
+                        this.setBackgroundResource(0) // 0 removes any background
+                        val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                            setMargins(0, 0, 0,0 )
+                        }
                     }
+
                 }
 
                 // Set query text listener for filtering and search actions
@@ -178,6 +218,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         // Handle query submission
                         if (!query.isNullOrBlank()) {
                             // Perform search or filtering based on the query
+                            currentQuery = query // Save the query
                             countryAdapter.filter.filter(query)
                         }
                         return true
@@ -185,6 +226,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
                     override fun onQueryTextChange(newText: String?): Boolean {
                         // Handle query text changes
+                        currentQuery = newText // Save the query
                         countryAdapter.filter.filter(newText ?: "")
                         return true
                     }
@@ -193,6 +235,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 // Handle the close action of SearchView
                 this.setOnCloseListener {
                     // Reset filter when the SearchView is closed
+                    currentQuery = null // Clear the query
                     countryAdapter.filter.filter("")
                     false // Return false if the event hasn't been consumed yet
                 }

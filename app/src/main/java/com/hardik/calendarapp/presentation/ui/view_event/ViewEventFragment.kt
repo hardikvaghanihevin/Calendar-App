@@ -26,6 +26,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.databinding.FragmentViewEventBinding
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
@@ -104,12 +105,45 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             populateEventData(event = argEvent)
 
         }
+
+        /** Delete Event  */
+        (activity as MainActivity).binding.deleteEventIcon.apply {
+
+            if (arguments?.containsKey(KEY_EVENT) == true){
+                if (argEvent.eventType != EventType.PERSONAL){
+                    (activity as MainActivity).hideViewWithAnimation(this)
+                }
+            }
+
+            text = resources.getString(R.string.action_delete)
+            setOnClickListener {
+                lifecycleScope.launch {
+                    viewModel.deleteEvent(argEvent)
+                    Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
+                    viewModel.resetEventState()
+                    findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                }
+            }
+        }
+
+        /** Edit Event  */
+        (activity as MainActivity).binding.saveEventIcon.apply {
+
+            if (arguments?.containsKey(KEY_EVENT) == true){
+                if (argEvent.eventType != EventType.PERSONAL){
+                    (activity as MainActivity).hideViewWithAnimation(this)
+                }
+            }
+
+            text = resources.getString(R.string.action_edit)
+            setOnClickListener { navigateToNewEventFragForEdit(argEvent) }
+        }
     }
 
     private fun populateEventData(event: Event) {
         // Populate the title and description
-        binding.tInEdtEventName.setText(event.title)
-        binding.tInEdtEventNote.setText(event.description.takeUnless { it.isBlank() } ?: resources.getString(R.string.no_description))
+        binding.edtEventName.setText(event.title)
+        binding.edtEventNote.setText(event.description.takeUnless { it.isBlank() } ?: resources.getString(R.string.no_description))
         binding.switchAllDay.isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
 
         // Set the "All Day" status

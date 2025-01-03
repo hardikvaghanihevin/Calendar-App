@@ -38,6 +38,7 @@ import com.hardik.calendarapp.databinding.DialogItemEventRepeatBinding
 import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
 import com.hardik.calendarapp.databinding.FragmentNewEventBinding
 import com.hardik.calendarapp.presentation.ui.MainActivity
+import com.hardik.calendarapp.utillities.AlarmScheduler
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
 import dagger.hilt.android.AndroidEntryPoint
@@ -259,7 +260,9 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             lifecycleScope.launch {
                 val msg: String = viewModel.run {
                     val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                    val eventId = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.eventId else 0
                     Log.e(TAG, "eventId is -> id: $id", )
+                    AlarmScheduler.cancelAlarm(requireContext(), eventId.toInt())
                     insertCustomEvent(context = requireContext(),id = id)
                 }
 
@@ -337,8 +340,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         bindingDatePicker = DialogItemDatePickerBinding.bind(dialogView)
 
         val datePicker = bindingDatePicker?.datePicker
-        val btnOkay = bindingDatePicker?.mBtnOky
-        val btnCancel = bindingDatePicker?.mBtnCancel
+        val btnOkay = bindingDatePicker?.btnDone
+        val btnCancel = bindingDatePicker?.btnCancel
 
         // Get the current date
         val calendar = Calendar.getInstance()
@@ -418,8 +421,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         bindingTimePicker = DialogItemTimePickerBinding.bind(dialogView)
 
         val timePicker = bindingTimePicker?.timePicker
-        val btnOky = bindingTimePicker?.mBtnOky
-        val btnCancel = bindingTimePicker?.mBtnCancel
+        val btnOky = bindingTimePicker?.btnDone
+        val btnCancel = bindingTimePicker?.btnCancel
 
         // Configure TimePicker
         timePicker?.apply {

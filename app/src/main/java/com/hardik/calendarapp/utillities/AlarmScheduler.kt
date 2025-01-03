@@ -23,9 +23,7 @@ object AlarmScheduler {
     // Update alarm logic: reschedule and cancel any existing alarm first.
     fun updateAlarm(context: Context, event: Event) {
         CoroutineScope(Dispatchers.IO).launch {
-            launch {
-                cancelAlarm(context, event.eventId.toInt())
-            }.join()
+            //launch { cancelAlarm(context, event.eventId.toInt()) }.join()
             scheduleNotification(context, event)
         }
     }
@@ -53,11 +51,11 @@ object AlarmScheduler {
 
         val requestCode = event.eventId.toInt()
 
-        val existingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+        /*val existingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
         if (existingIntent != null) {
             Log.d(TAG, "Alarm already exists for event ID: ${event.eventId}")
             return
-        }
+        }*/
 
         val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)// Unique request code
 
@@ -69,7 +67,7 @@ object AlarmScheduler {
         // Calculate the trigger time using event's start time and alert offset.
         var triggerTime = event.startTime - beforeTime
         //val triggerTime = SystemClock.elapsedRealtime() + 5000 // 5 seconds from now
-        Log.e(TAG, "scheduleNotification: TriggerTime:$triggerTime")
+        Log.e(TAG, "scheduleNotification: TriggerTime:$triggerTime, EventName:${event.title}")
         // If the trigger time is in the past, adjust it based on the repeat option
         while (triggerTime < System.currentTimeMillis()) {
             triggerTime = when (event.repeatOption) {
