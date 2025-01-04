@@ -22,10 +22,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
-import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_ALERT
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_REPEAT
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
@@ -38,9 +39,9 @@ import com.hardik.calendarapp.databinding.DialogItemEventRepeatBinding
 import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
 import com.hardik.calendarapp.databinding.FragmentNewEventBinding
 import com.hardik.calendarapp.presentation.ui.MainActivity
-import com.hardik.calendarapp.utillities.AlarmScheduler
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
+import com.hardik.calendarapp.utillities.MyNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -57,6 +58,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private lateinit var argEvent:Event
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate: ")
         arguments?.let {
             argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getParcelable(KEY_EVENT, Event::class.java)
@@ -67,6 +69,16 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     ?: throw IllegalArgumentException("Event is missing")
             }
         }
+
+        if (arguments?.containsKey(KEY_EVENT) == true){
+            Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
+            populateEventData(event = argEvent)
+            updateToolbarTitle(resources.getString(R.string.update_event))
+        }else{
+            Log.e(TAG, "onViewCreated: argEvent is null", )
+            viewModel.resetEventState()
+            updateToolbarTitle(resources.getString(R.string.new_event))
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) { super.onActivityCreated(savedInstanceState) }
@@ -75,6 +87,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated: ")
         _binding = FragmentNewEventBinding.bind(view)
 
         /*val menuHost: MenuHost = requireActivity()
@@ -114,7 +127,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle */
 
-        if (arguments?.containsKey(KEY_EVENT) == true){
+        /*if (arguments?.containsKey(KEY_EVENT) == true){
             Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
             populateEventData(event = argEvent)
             updateToolbarTitle(resources.getString(R.string.update_event))
@@ -122,7 +135,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             Log.e(TAG, "onViewCreated: argEvent is null", )
             viewModel.resetEventState()
             updateToolbarTitle(resources.getString(R.string.new_event))
-        }
+        }*/
 
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -250,38 +263,46 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 }
             }
         }
-        binding.tvRepeat.setOnClickListener { showRepetitionDialog() }
-        binding.tvAlert.setOnClickListener { showAlertRemindDialog() }
+        binding.tvRepeat.setOnClickListener { navigateToRepeatOptionFrag() ; //showRepetitionDialog()
+        }
+        binding.tvAlert.setOnClickListener { navigateToAlertOptionFrag(); //showAlertRemindDialog()
+        }
         binding.edtEventNote.addTextChangedListener { viewModel.updateDescription(it.toString()) }
         binding.switchAllDay.setOnCheckedChangeListener { buttonView, isChecked -> viewModel.updateAllDayStatus(isChecked) }
 
         /** Save Event  */
-        (activity as MainActivity).binding.saveEventIcon.setOnClickListener {
-            lifecycleScope.launch {
-                val msg: String = viewModel.run {
-                    val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
-                    val eventId = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.eventId else 0
-                    Log.e(TAG, "eventId is -> id: $id", )
-                    AlarmScheduler.cancelAlarm(requireContext(), eventId.toInt())
-                    insertCustomEvent(context = requireContext(),id = id)
-                }
+        (activity as MainActivity).binding.saveEventIcon.apply {
+            text = resources.getString(R.string.action_save)
+            setOnClickListener {
+                lifecycleScope.launch {
+                    val msg: String = viewModel.run {
+                        val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                        val eventId = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.eventId else 0
+                        Log.e(TAG, "eventId is -> id: $id", )
+                        //AlarmScheduler.cancelAlarm(requireContext(), eventId.toInt())
+                        if (id != null) { viewModel.cancelAlarm(id) }
+                        insertCustomEvent(context = requireContext(),id = id)
+                    }
 
-                // Display a message to the user
-                //Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    // Display a message to the user
+                    //Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 
-                // Reset the fields after successful insertion
-                if (msg == EVENT_INSERT_SUCCESSFULLY || msg == EVENT_UPDATE_SUCCESSFULLY) {
-                    viewModel.resetEventState()
+                    // Reset the fields after successful insertion
+                    if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
+                        viewModel.resetEventState()
+                    }
+                    findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                    //findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                 }
-                findNavController().popBackStack(R.id.newEventFragment.takeIf { EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
-                //findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
             }
         }
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i(TAG, "onDestroyView: ")
         _binding = null
     }
 
@@ -837,5 +858,28 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
 
         dialog.show()
+    }
+
+    private fun navigateToRepeatOptionFrag() {
+        lifecycleScope.launch {
+            // Make sure the navigation happens on the main thread
+            Log.e(TAG, "navigateToRepeatOptionFrag():  ${Thread.currentThread().name}", )
+            val repeatOpt: String = RepeatOptionConverter.toDisplayString(requireContext(), viewModel.repeatOption.value)
+            val bundle = Bundle().apply {
+                putString(KEY_EVENT_REPEAT,  repeatOpt)
+            }
+
+            findNavController().navigate(R.id.repeatOptionFragment, bundle, MyNavigation.navOptions)
+        }
+    }
+
+    private fun navigateToAlertOptionFrag() {
+        lifecycleScope.launch {
+            // Make sure the navigation happens on the main thread
+            Log.e(TAG, "navigateToAlertOptionFrag():  ${Thread.currentThread().name}", )
+            val alertOpt: String = AlertOffsetConverter.toDisplayString(requireContext(), viewModel.alertOffset.value)
+            val bundle = Bundle().apply { putString(KEY_EVENT_ALERT, alertOpt) }
+            findNavController().navigate(R.id.alertOptionFragment, bundle, MyNavigation.navOptions)
+        }
     }
 }

@@ -117,37 +117,40 @@
                         android:id="@+id/delete_event_icon"
                         android:layout_width="@dimen/_46sdp"
                         android:layout_height="@dimen/_21sdp"
-                        android:background="@android:drawable/ic_delete"
-                        android:gravity="center"
-                        android:text=""
-                        android:textColor="@color/background_secondary"
-                        android:textSize="@dimen/_8ssp"
                         android:layout_marginEnd="@dimen/_8sdp"
+                        android:background="@drawable/txt_btn_bg"
+                        android:gravity="center"
+                        android:text="@string/action_delete"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_8ssp"
+                        android:textStyle="bold"
                         android:visibility="gone"
-                        tools:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:visibility="visible" />
 
 
                     <!-- save event button-->
+                    <!-- android:background="@drawable/save_event_icon"-->
                     <TextView
                         android:id="@+id/save_event_icon"
                         android:layout_width="@dimen/_46sdp"
                         android:layout_height="@dimen/_21sdp"
-                        android:background="@drawable/save_event_icon"
-                        android:gravity="center"
-                        android:text=""
-                        android:textColor="@color/background_secondary"
-                        android:textSize="@dimen/_8ssp"
                         android:layout_marginEnd="@dimen/_8sdp"
+                        android:background="@drawable/txt_btn_bg"
+                        android:gravity="center"
+                        android:text="@string/action_save"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_8ssp"
+                        android:textStyle="bold"
                         android:visibility="gone"
-                        tools:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:visibility="visible" />
 
                     <!-- Search view -->
                     <androidx.appcompat.widget.SearchView

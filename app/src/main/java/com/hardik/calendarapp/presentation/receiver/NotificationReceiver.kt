@@ -16,14 +16,15 @@ class NotificationReceiver : BroadcastReceiver() {
             val title = intent.getStringExtra("event_title") ?: "Event Reminder"
             val description = intent.getStringExtra("event_description") ?: "You have an event!"
             val eventId = intent.getLongExtra("event_id", 0L)
-            Log.d(TAG, "onReceive: $eventId")
+            val id = intent.getStringExtra("id") ?: "0"
+            Log.d(TAG, "onReceive: $id")
 
-            showNotification(context, title, description, eventId)
+            showNotification(context, title, description, id)
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun showNotification(context: Context, title: String, description: String, eventId: Long) {
+    private fun showNotification(context: Context, title: String, description: String, id: String) {
         val notificationManager = NotificationManagerCompat.from(context)
 
         // Build notification
@@ -35,7 +36,7 @@ class NotificationReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(eventId.toInt(), notification)
+        notificationManager.notify(id.hashCode(), notification)
     }
    /* override fun onReceive(context: Context?, intent: Intent?) {
         Toast.makeText(context, "Alarm Triggered!", Toast.LENGTH_SHORT).show()

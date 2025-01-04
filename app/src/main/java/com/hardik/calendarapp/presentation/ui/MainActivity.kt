@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        checkAndRequestCalendarPermissions()
+        checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
 
         setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
         setupToolbar() //setupNavigation Function: Centralized navigation setup, including AppBarConfiguration.
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.newEventFragment, null, navOptions)
         }
 
-        mainViewModel.getHolidayCalendarData()
+        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
         // Collecting the StateFlow
         lifecycleScope.launch {
             mainViewModel.holidayApiState.collect { dataState ->
@@ -222,6 +222,10 @@ class MainActivity : AppCompatActivity() {
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
                 R.id.nav_settings -> { }
+
+                R.id.repeatOptionFragment -> { showViewWithAnimation(binding.saveSelectLanguageIcon) }
+
+                R.id.alertOptionFragment -> { showViewWithAnimation(binding.saveSelectLanguageIcon) }
                 // Default case: Hide everything except FAB
                 else -> {
                     hideAllViewsWithAnimation()

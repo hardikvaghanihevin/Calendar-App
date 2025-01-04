@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.data.repository
 
 import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -13,12 +14,11 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
+import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
 import com.hardik.calendarapp.utillities.AlarmScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -40,26 +40,23 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun upsertEvents(events: List<Event>) {
         // Cancel all existing alarms and reschedule
-        cancelAllAlarms()
+        //cancelAllAlarms()
 
-        // Step 1: Check if the eventId exists
+        /*// Step 1: Check if the eventId exists
         events.forEach { event ->
             // Collect the Flow to check if the eventId exists
             val exists = eventDao.getEventById(event.eventId)?.firstOrNull() // Collect only the first result (suspendable function)
 
             if (exists != null) {
-                Log.d(TAG,"UpsertEvents -> Event with ID: ${event.eventId} already exists, updating...")
+                Log.d(TAG,"UpsertEvents -> Event with ID: ${event.id} already exists, updating...")
             } else {
-                Log.v(TAG,"UpsertEvents ->New event inserted with ID: ${event.eventId}.")
+                Log.v(TAG,"UpsertEvents ->New event inserted with ID: ${event.id}.")
             }
-        }
+        }*/
         eventDao.upsertEvents(events)
+
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
-        events.forEach { event:Event ->
-            if (event.year == currentYear) {
-                scheduleAlarm(event)
-            }
-        }
+        events.forEach { event:Event -> if (event.year == currentYear) { scheduleAlarm(event) } }//todo : schedule alarm if current year
     }
 
     override suspend fun updateEvent(event: Event) {
@@ -67,7 +64,7 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteEvent(event: Event) {
-        cancelAlarm(event.eventId)
+        cancelAlarm(event.id) // before delete
         eventDao.deleteEvent(event)
     }
 
@@ -117,33 +114,35 @@ class EventRepositoryImpl @Inject constructor(
             requestExactAlarmPermission()
         } else {
             AlarmScheduler.updateAlarm(context, event)
-            Log.i(TAG, "Alarm scheduled for event: ${event}")
+            Log.v(TAG, "Alarm scheduled for event: ${event}")
             //Toast.makeText(context, "Alarm set for event: ${event.title}", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun cancelAlarm(eventId: Long) {
-//        val intent = Intent(context, NotificationReceiver::class.java)
-//        val pendingIntent = PendingIntent.getBroadcast(
-//            context,
-//            eventId.toInt(),
-//            intent,
-//            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-//        )
-//        pendingIntent?.let {
-//            alarmManager.cancel(it)
-//            Log.d(TAG, "Alarm canceled for eventId: $eventId")
-//        }
-        AlarmScheduler.cancelAlarm(context , eventId.toInt())
+    override suspend fun cancelAlarm(id: String) {
+        Log.i(TAG, "cancelAlarm: id:$id")
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            id.hashCode(),
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+        pendingIntent?.let {
+            alarmManager.cancel(it)
+            Log.d(TAG, "Alarm canceled for eventId: ${id.hashCode()}")
+        }
+        //AlarmScheduler.cancelAlarm(context , eventId.toInt())
     }
 
     private fun cancelAllAlarms() {
+        Log.i(TAG, "cancelAllAlarms: ")
         CoroutineScope(Dispatchers.IO).launch {
-            //eventDao.getAllEvents().forEach { event -> cancelAlarm(event.eventId) }
-            eventDao.getAllEventIds().collectLatest {
-                val ids: List<Int> = it.map { it.toInt() }
-                AlarmScheduler.cancelAllScheduledAlarms(context, ids)
-            }
+            eventDao.getAllEvents().forEach { event -> cancelAlarm(event.id) }// currently no use
+//            eventDao.getAllEventIds().collectLatest {
+//                val ids: List<Int> = it.map { it.toInt() }
+//                AlarmScheduler.cancelAllScheduledAlarms(context, ids)
+//            }
         }
     }
 

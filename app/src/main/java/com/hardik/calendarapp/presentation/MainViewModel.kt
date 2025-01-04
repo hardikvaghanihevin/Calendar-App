@@ -34,6 +34,7 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
 import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
+import com.hardik.calendarapp.utillities.LogUtil
 import com.hardik.calendarapp.utillities.createYearData
 import com.hardik.calendarapp.utillities.createYearMonthPairs
 import com.hardik.calendarapp.utillities.getAllCursorEvents
@@ -41,6 +42,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +50,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -170,7 +174,9 @@ class MainViewModel @Inject constructor(
 
 
     fun initializeViewModel() {
-        collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
+        viewModelScope.launch(Dispatchers.IO) {
+            collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
+        }
     }
 
     /**Get holiday list by using API*/
@@ -267,7 +273,7 @@ class MainViewModel @Inject constructor(
                                 val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
                                 Event(
-                                    id = "${DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT_yyyy_MM_dd)} | ${item.summary}",
+                                    id = item.id,//"${DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT_yyyy_MM_dd)} | ${item.summary}",
                                     title = item.summary,
                                     description = item.description,
                                     startDate = item.start.date,
@@ -282,7 +288,7 @@ class MainViewModel @Inject constructor(
                                     repeatOption = RepeatOption.NEVER,//*
                                     alertOffset = AlertOffset.AT_TIME,//*
                                     customAlertOffset = null,//*
-                                    eventId = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
+                                    eventId = item.id.hashCode().toLong()//DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
                                 )
 
                             }
@@ -296,7 +302,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun collectCursorEventsState(context: Context){
+    private suspend fun collectCursorEventsState(context: Context){
         val cursorEvent: List<CursorEvent> = getAllCursorEvents(context = context)
 
         val events: List<Event> = cursorEvent
@@ -306,8 +312,9 @@ class MainViewModel @Inject constructor(
 
                 val startTime = DateUtil.separateDateTime(item.startTime).first
                 val endTime = DateUtil.separateDateTime(item.endTime).first
+                val id = "$startTime | ${item.title}"
                 Event(
-                    id = "${startTime} | ${item.title}",
+                    id = id,
                     title = item.title,
                     description = item.description ?: "",
                     startDate = longToString(item.startTime),
@@ -322,7 +329,7 @@ class MainViewModel @Inject constructor(
                     repeatOption = RepeatOption.NEVER,//*
                     alertOffset = AlertOffset.AT_TIME,//*
                     customAlertOffset = null,//*
-                    eventId = startTime//todo: here to set unique things set for loop by 1 to n list size
+                    eventId = id.hashCode().toLong()//todo: here to set unique things set for loop by 1 to n list size
                 )
 
             }
@@ -341,26 +348,28 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun insertEvents(events: List<Event>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            // Get the current counter value
-            var currentCounter = counterEventId.value
+    private val insertEventsMutex = Mutex()
+    private suspend fun insertEvents(events: List<Event>) {
+        // Ensure only one coroutine executes this block at a time
+        LogUtil.logLongMessage(TAG, "$events")
+        insertEventsMutex.withLock {
+            try {
+                // Cancel all alarms concurrently (Cancel all existing alarms first)
+                //val cancelJobs = events.map { event -> async(Dispatchers.IO) { eventRepository.cancelAlarm(event.id) } } // before UpsertEvents
+                val cancelJobs = coroutineScope { events.map { event -> async { withContext(Dispatchers.IO) { eventRepository.cancelAlarm(event.id) } } } } // before UpsertEvents
+                // Wait for all cancellation jobs to complete
+                cancelJobs.awaitAll()
 
-            // Update events and increment the counter for each one
-            val updatedEvents = events.map { event ->
-                val updatedEvent = event.copy(eventId = event.eventId + currentCounter)
-                currentCounter += 1 // Increment locally
-                updatedEvent
+                //eventRepository.upsertEvents(events)
+                // Upsert events after all alarms are canceled
+                withContext(Dispatchers.IO) { eventRepository.upsertEvents(events) }
+
+            } catch (e: Exception) {
+                // Handle any errors
+                Log.e("InsertEvents", "Error inserting events", e)
             }
-
-            // Update the global counter with the total increment
-            updateCounterEventId(events.size)
-
-            // Insert updated events into the repository
-            eventRepository.upsertEvents(updatedEvents)
         }
     }
-
     // Global counter
     private val _counterEventId = MutableStateFlow(1L)
     val counterEventId: StateFlow<Long> = _counterEventId
@@ -445,6 +454,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
     //----------------------------------------------------------------//
 
     private val _allEventsDateInMapState = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())

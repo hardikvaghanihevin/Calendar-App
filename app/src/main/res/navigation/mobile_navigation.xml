@@ -70,4 +70,16 @@
         android:label="@string/country_header"
         tools:layout="@layout/fragment_country" />
 
+    <fragment
+        android:id="@+id/repeatOptionFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.repeat_option.RepeatOptionFragment"
+        android:label="@string/repeat"
+        tools:layout="@layout/fragment_repeat_option" />
+
+    <fragment
+        android:id="@+id/alertOptionFragment"
+        android:name="com.hardik.calendarapp.presentation.alert_option.AlertOptionFragment"
+        android:label="@string/alert"
+        tools:layout="@layout/fragment_alert_option" />
+
 </navigation>

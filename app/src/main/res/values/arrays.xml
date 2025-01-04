@@ -567,6 +567,34 @@
     <string-array name="default_country_values">
         <item>indian</item>
     </string-array>
+
+    <!-- RepeatOption -->
+    <string-array name="repeat_options">
+        <item>@string/never</item>
+        <item>@string/every_day</item>
+        <item>@string/every_week</item>
+        <item>@string/every_month</item>
+        <item>@string/every_year</item>
+    </string-array>
+    <!-- AlertOption -->
+    <string-array name="alert_offset_options">
+        <item>@string/none</item>
+        <item>@string/at_time</item>
+        <item>@string/before_5_minutes</item>
+        <item>@string/before_10_minutes</item>
+        <item>@string/before_15_minutes</item>
+        <item>@string/before_30_minutes</item>
+        <item>@string/before_1_hour</item>
+        <item>@string/before_12_hours</item>
+        <item>@string/before_1_day</item>
+        <item>@string/before_3_days</item>
+        <item>@string/before_5_days</item>
+        <item>@string/before_1_week</item>
+        <item>@string/before_2_weeks</item>
+        <item>@string/before_1_month</item>
+        <item>@string/before_custom_time</item>
+    </string-array>
+
 </resources>
 <!--
 en - English (English)

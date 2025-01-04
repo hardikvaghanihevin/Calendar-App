@@ -21,4 +21,6 @@ interface EventRepository {
     fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>
 
     fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>
+
+    suspend fun cancelAlarm(id: String)
 }

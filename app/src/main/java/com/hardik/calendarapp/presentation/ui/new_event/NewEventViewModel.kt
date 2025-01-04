@@ -219,7 +219,7 @@ class NewEventViewModel @Inject constructor(
     }
 
 
-    suspend fun insertCustomEvent(context: Context,id: String?): String{
+    suspend fun insertCustomEvent(context: Context, id: String?): String{
         Log.d(TAG, "insertCustomEvent: ")
         val errorMessage = validateEvent(eventId = id)
         Log.e(TAG, "insertCustomEvent: $errorMessage", )
@@ -247,10 +247,10 @@ class NewEventViewModel @Inject constructor(
             eventType = EventType.PERSONAL,
             isHoliday = false,
             sourceType = SourceType.LOCAL,
-            repeatOption = repeatOption.value,//*
-            alertOffset = alertOffset.value,//*
-            customAlertOffset = customAlertOffset.value,//*
-            eventId = currentEpochTime,//*
+            repeatOption = repeatOption.value,
+            alertOffset = alertOffset.value,
+            customAlertOffset = customAlertOffset.value,
+            eventId = currentEpochTime,
         )
 
         insertEvent(event)
@@ -286,6 +286,11 @@ class NewEventViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
+    fun cancelAlarm(id: String){
+        viewModelScope.launch {
+            eventRepository.cancelAlarm(id = id)// cancel when update single event from newEventFrag
+        }
+    }
     private fun insertEvent(event: Event) {
         viewModelScope.launch {
             eventRepository.upsertEvent(event)
