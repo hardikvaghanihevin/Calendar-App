@@ -8,6 +8,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.data.database.entity.AlertOffset
+import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
@@ -17,8 +18,11 @@ import com.hardik.calendarapp.domain.use_case.GetEventByTitleAndType
 import com.hardik.calendarapp.utillities.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -51,6 +55,9 @@ class NewEventViewModel @Inject constructor(
         Log.i(TAG, "updateStartDate: ${date.first}")
         viewModelScope.launch {
             _startDate.value = date.first
+
+            //This is for current start time set when date change
+            updateStartTime( DateUtil.mergeDateAndTime(dateEpoch =  date.first, timeEpoch = _startTime.value) )
         }
     }
 
@@ -62,6 +69,10 @@ class NewEventViewModel @Inject constructor(
         Log.i(TAG, "updateEndDate: ${date.second}")
         viewModelScope.launch {
             _endDate.value = date.second
+
+            //This is for current start time set when date change
+            updateEndTime( DateUtil.mergeDateAndTime(dateEpoch =  date.second, timeEpoch = _endTime.value) )
+
         }
     }
 
@@ -176,6 +187,24 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
+    private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime) { alertOffset, startTime ->
+        Log.e(TAG, "trigger: alert:$alertOffset | startTime:$startTime", )
+
+        val alertOffsetValue = if (alertOffset == AlertOffset.BEFORE_CUSTOM_TIME) { _customAlertOffset.value }
+        else { AlertOffsetConverter.toMilliseconds(alertOffset) }
+
+        Log.i(TAG, "trigger Time alertOffsetValue: $alertOffsetValue")
+        if (alertOffsetValue != null) {
+            startTime - alertOffsetValue
+        } else {
+            null
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        AlertOffsetConverter.toMilliseconds(alertOffset.value)//null // Default value, if no trigger time has been set
+    )
+
     private suspend fun validateEvent(eventId: String? = null): String? {
         // Validate event title
         if (title.value.isBlank()) {
@@ -222,7 +251,7 @@ class NewEventViewModel @Inject constructor(
     suspend fun insertCustomEvent(context: Context, id: String?): String{
         Log.d(TAG, "insertCustomEvent: ")
         val errorMessage = validateEvent(eventId = id)
-        Log.e(TAG, "insertCustomEvent: $errorMessage", )
+        Log.e(TAG, "insertCustomEvent(): validateEvent message:- $errorMessage", )
         if (errorMessage != null) {
             return errorMessage
         }
@@ -232,6 +261,9 @@ class NewEventViewModel @Inject constructor(
         val date: Triple<String, String, String> = DateUtil.epochToDateTriple(
             startDate.value
         )
+
+        // Get the latest trigger time value
+        val latestTriggerTime = triggerTime.firstOrNull() // Use `firstOrNull` to get the latest value synchronously
 
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
@@ -251,6 +283,7 @@ class NewEventViewModel @Inject constructor(
             alertOffset = alertOffset.value,
             customAlertOffset = customAlertOffset.value,
             eventId = currentEpochTime,
+            triggerTime = latestTriggerTime ?: 0L, // todo: set triggerTime as start time
         )
 
         insertEvent(event)

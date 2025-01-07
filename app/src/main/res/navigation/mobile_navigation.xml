@@ -82,4 +82,10 @@
         android:label="@string/alert"
         tools:layout="@layout/fragment_alert_option" />
 
+    <fragment
+        android:id="@+id/searchEventFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.search_event.SearchEventFragment"
+        android:label="@string/view_event"
+        tools:layout="@layout/fragment_search_event" />
+
 </navigation>

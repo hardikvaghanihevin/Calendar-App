@@ -28,6 +28,7 @@ object DateUtil {
     const val TIME_FORMAT_hh_mm_a = "hh:mm a"
     const val DATE_FORMAT_yyyy_MM_dd = "yyyy-MM-dd"
     const val DATE_FORMAT_dd_MM_yyyy = "dd MM yyyy"
+    const val DATE_FORMAT_dd_MM_yyyy_1 = "dd-MM-yyyy"
     const val DATE_FORMAT_dd_MMM_yyyy =  "dd MMM yyyy" // For "03 Dec 2024" format
     const val DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm = "yyyy-MM-dd HH:mm"
     const val DATE_TIME_FORMAT_yyyy_MM_dd_T_HH_MM_ss_Z = "yyyy-MM-dd'T'HH:mm:ss'Z'"
@@ -599,14 +600,14 @@ object DateUtil {
 
     // Get day name from date string
     fun getDayName(date: String): String {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val format = SimpleDateFormat(DATE_FORMAT_yyyy_MM_dd, Locale.getDefault())
         val parsedDate = format.parse(date)
         return SimpleDateFormat("EEE", Locale.getDefault()).format(parsedDate ?: Date())
     }
 
-    // Get week range (e.g., "5-11 Jan 2025")
+    // Get week range (e.g., "5-11 Jan 2025 | 26 Jan - 1 Feb 2025 | 29 Dec 2024 - 4 Jan 2025")
     fun getWeekRange(startDate: String, startOfWeek: Int): String {
-        val format = SimpleDateFormat("d-MM-yyyy", Locale.getDefault())
+        val format = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy_1, Locale.getDefault())
         val parsedDate = format.parse(startDate)
         val calendar = Calendar.getInstance().apply { time = parsedDate ?: Date() }
 
@@ -622,13 +623,29 @@ object DateUtil {
         val endOfWeekDate = calendar.time
 
         // Format start and end of the week
-        val startFormat = SimpleDateFormat("d", Locale.getDefault())
-        val endFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("dd", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault()) // 3-letter month
+        val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
 
-        val weekStart = startFormat.format(startOfWeekDate)
-        val weekEnd = endFormat.format(endOfWeekDate)
+        val startDay = dayFormat.format(startOfWeekDate)
+        val endDay = dayFormat.format(endOfWeekDate)
+        val startMonth = monthFormat.format(startOfWeekDate)
+        val endMonth = monthFormat.format(endOfWeekDate)
+        val startYear = yearFormat.format(startOfWeekDate)
+        val endYear = yearFormat.format(endOfWeekDate)
 
-        return "$weekStart - $weekEnd"
+        // Check if the week spans across months or years
+        return when {
+            startMonth == endMonth -> { // Same month
+                "$startDay-$endDay $startMonth $startYear"
+            }
+            startYear == endYear -> { // Different months within the same year
+                "$startDay $startMonth - $endDay $endMonth $startYear"
+            }
+            else -> { // Week spans across years
+                "$startDay $startMonth $startYear - $endDay $endMonth $endYear"
+            }
+        }
     }
 
     // Function to get the week number of the year based on the provided date format
@@ -655,6 +672,19 @@ object DateUtil {
                 // Handle the case when date parsing fails (return a default value or throw an exception)
                 throw IllegalArgumentException("Invalid date format or date.")
             }
+        }
+    }
+
+    // Function to extract the month name from a date string
+    fun getMonthName(dateString: String, dateFormat: String): String {
+        val dateFormat = SimpleDateFormat(dateFormat, Locale.getDefault())
+        val date = dateFormat.parse(dateString)
+        return if (date != null) {
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) ?: ""
+        } else {
+            "" // Return an empty string if date parsing fails
         }
     }
 }

@@ -308,36 +308,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
     private fun populateEventData(event: Event) {
         Log.e(TAG, "populateEventData: ${DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)}", )
-        // Populate the title and description
-        /* binding.edtEventName.setText(event.title)
-        binding.edtEventNote.setText(event.description)
-
-        // Populate start and end dates
-        binding.tvStartDatePicker.text = DateUtil.stringToString(
-            dateString = event.startDate,
-            inputPattern = DateUtil.DATE_FORMAT_yyyy_MM_dd,
-            outputPattern = DateUtil.DATE_FORMAT_dd_MMM_yyyy
-        )
-        binding.tvEndDatePicker.text = DateUtil.stringToString(
-            dateString = event.endDate,
-            inputPattern = DateUtil.DATE_FORMAT_yyyy_MM_dd,
-            outputPattern = DateUtil.DATE_FORMAT_dd_MMM_yyyy
-        )
-
-        // Populate start and end times
-        binding.tvStartTimePicker.text = DateUtil.longToString(
-            timestamp = event.startTime,
-            pattern = DateUtil.TIME_FORMAT_hh_mm_a
-        )
-        binding.tvEndTimePicker.text = DateUtil.longToString(
-            timestamp = event.endTime,
-            pattern = DateUtil.TIME_FORMAT_hh_mm_a
-        )
-
-        // Set the "All Day" status
-        binding.switchAllDay.isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
-        */
-
         // Update ViewModel with the data
         viewModel.updateTitle(event.title)
         viewModel.updateDescription(event.description)

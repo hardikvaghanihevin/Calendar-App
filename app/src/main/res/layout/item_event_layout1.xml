@@ -9,6 +9,18 @@
     android:paddingBottom="@dimen/_8sdp"
     tools:ignore="HardcodedText">
 
+    <!-- Divider Image for month transition -->
+    <ImageView
+        android:id="@+id/monthTransitionImage"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_100sdp"
+        android:background="@drawable/month_transition_image"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintStart_toStartOf="@id/eventDayDate"
+        app:layout_constraintEnd_toEndOf="@id/constraintLay1"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/eventFullWeekDate"
@@ -22,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="@id/constraintLay1"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/constraintLay1"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/monthTransitionImage" />
 
     <TextView
         android:id="@+id/eventDayDate"

@@ -1,4 +1,4 @@
-package com.hardik.calendarapp.presentation.ui.calendar_month.adapter
+package com.hardik.calendarapp.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -24,8 +24,7 @@ data class CountryItem(
 )
 const val VERTICAL = 0
 const val HORIZONTAL = 1
-class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, private val viewType: Int = VERTICAL) : ListAdapter<CountryItem, CountryAdapter.CountryViewHolder>(CountryDiffCallback()) ,
-    Filterable {
+class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, private val viewType: Int = VERTICAL) : ListAdapter<CountryItem, CountryAdapter.CountryViewHolder>(CountryDiffCallback()) , Filterable {
     private val TAG = BASE_TAG + CountryAdapter::class.java.simpleName
 
     private var originalList = listOf<CountryItem>() // Store the full list

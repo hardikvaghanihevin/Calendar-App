@@ -28,7 +28,7 @@ import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfYear
 import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.domain.use_case.GetMonthlyEventsUseCase
-import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CountryItem
+import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.utillities.CursorEvent
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
@@ -272,6 +272,8 @@ class MainViewModel @Inject constructor(
 
                                 val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
+                                val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+
                                 Event(
                                     id = item.id,//"${DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT_yyyy_MM_dd)} | ${item.summary}",
                                     title = item.summary,
@@ -281,14 +283,15 @@ class MainViewModel @Inject constructor(
                                     year = date.first,
                                     month = date.second,
                                     date = date.third,
-                                    startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
+                                    startTime = startTime,
                                     endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
                                     isHoliday = true,
                                     sourceType = SourceType.REMOTE,
                                     repeatOption = RepeatOption.NEVER,//*
                                     alertOffset = AlertOffset.AT_TIME,//*
                                     customAlertOffset = null,//*
-                                    eventId = item.id.hashCode().toLong()//DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
+                                    eventId = item.id.hashCode().toLong(),//DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
+                                    triggerTime = startTime, // todo: set triggerTime as start time
                                 )
 
                             }
@@ -326,10 +329,11 @@ class MainViewModel @Inject constructor(
                     endTime = endTime,
                     isHoliday = true,
                     sourceType = SourceType.CURSOR,
-                    repeatOption = RepeatOption.NEVER,//*
-                    alertOffset = AlertOffset.AT_TIME,//*
-                    customAlertOffset = null,//*
-                    eventId = id.hashCode().toLong()//todo: here to set unique things set for loop by 1 to n list size
+                    repeatOption = RepeatOption.NEVER,
+                    alertOffset = AlertOffset.AT_TIME,
+                    customAlertOffset = null,
+                    eventId = id.hashCode().toLong(),//todo: here to set unique things set for loop by 1 to n list size
+                    triggerTime = startTime, // todo: set triggerTime as start time
                 )
 
             }
@@ -457,6 +461,29 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
+    private val _allEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
+    val allEventsState: StateFlow<DataListState<Event>> get() = _allEventsState
+    fun getAllEvents() {//todo: use in CalendarMonthFragment for onMonthSwipe
+        Log.i(TAG, "fetchEventsForMonth: ")
+        // Set initial loading state
+        _allEventsState.value = DataListState(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                getAllEventsUseCase.invoke().collectLatest { events ->
+                    // Update state with data
+                    _allEventsState.value = DataListState(isLoading = false, data = events )
+                }
+            } catch (e: Exception) {
+                // Handle errors
+                _allEventsState.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
+            }
+        }
+    }
+
     private val _allEventsDateInMapState = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())
     val allEventsDateInMapState: StateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>> get() = _allEventsDateInMapState
 
@@ -466,7 +493,7 @@ class MainViewModel @Inject constructor(
         Log.i(TAG, "fetchAllEventsOfDateMap: ")
         viewModelScope.launch {
             try {
-                getAllEventsUseCase.invoke().collect{ events: List<Event> ->
+                getAllEventsUseCase.invoke().collectLatest{ events: List<Event> ->
                     val organizedEvents = organizeEvents(events)
                     _allEventsDateInMapState.emit(organizedEvents)
                 }

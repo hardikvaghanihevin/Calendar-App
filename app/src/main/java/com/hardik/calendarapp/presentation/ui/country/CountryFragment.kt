@@ -17,10 +17,10 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.databinding.FragmentCountryBinding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.presentation.adapter.CountryAdapter
+import com.hardik.calendarapp.presentation.adapter.HORIZONTAL
+import com.hardik.calendarapp.presentation.adapter.VERTICAL
 import com.hardik.calendarapp.presentation.ui.MainActivity
-import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.CountryAdapter
-import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.HORIZONTAL
-import com.hardik.calendarapp.presentation.ui.calendar_month.adapter.VERTICAL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -1,346 +1,227 @@
+package calendar.schedule.tasks.shiftwork.reminder.event.latest.calendarplanner.agendaplanner.callEnd.utils
 
-item_day.xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="01.5dp"
-    android:background="@drawable/cell_background"
-    android:gravity="center"
-    android:orientation="vertical">
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import calendar.schedule.tasks.shiftwork.reminder.event.latest.calendarplanner.agendaplanner.dbimp.DataConverter
+import calendar.schedule.tasks.shiftwork.reminder.event.latest.calendarplanner.agendaplanner.dbimp.EventInfoConverter
+import calendar.schedule.tasks.shiftwork.reminder.event.latest.calendarplanner.agendaplanner.dbimp.IntDataConverter
+import calendar.schedule.tasks.shiftwork.reminder.event.latest.calendarplanner.agendaplanner.models.EventInfo
+import java.io.Serializable
 
-    <!-- TextView for the date -->
-    <TextView
-        android:id="@+id/dayText"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_margin="1dp"
-        android:background="@drawable/day_background"
-        android:gravity="center"
-        android:padding="0.5dp"
-        android:text="01"
-        android:textColor="#000"
-        android:textSize="8sp" />
-</LinearLayout>
-
-item_month.xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/cell_background"
-    android:orientation="vertical"
-    android:padding="2dp"
-    android:layout_margin="2dp">
-
-    <!-- Month Name -->
-    <TextView
-        android:id="@+id/monthName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="4dp"
-        android:text="January"
-        android:gravity="center_vertical"
-        android:textColor="#000"
-        android:textSize="14sp" />
-
-    <!-- Weekdays Row-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <!-- Repeat for 7 weekdays-->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="M"
-            android:textSize="8sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="T"
-            android:textSize="8sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="W"
-            android:textSize="8sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="T"
-            android:textSize="8sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="F"
-            android:textSize="8sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="S"
-            android:textSize="8sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="S"
-            android:textSize="8sp" />
-    </LinearLayout>
-
-    <!-- Days RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/monthDaysRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
-
-item_year.xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="4dp">
-
-    <!-- Year Title -->
-    <TextView
-        android:id="@+id/yearTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:gravity="center"
-        android:background="@drawable/cell_background"
-        android:text="Year"
-        android:textColor="#000"
-        android:textSize="16sp" />
-
-    <!-- RecyclerView for displaying months -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/monthsRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="0dp"
-        android:background="@drawable/day_background" />
-</LinearLayout>
-
-cell_background.xml
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#E0E0E0" />
-    <corners android:radius="8dp" />
-</shape>
-
-day_background.xml
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="#FFFFFF" />
-    <corners android:radius="8dp" />
-    <stroke android:width="1dp" android:color="#DDDDDD" />
-</shape>
-
-activity_main.xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    tools:context=".MainActivity">
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/yearViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</LinearLayout>
-
-MainActivity.kt
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        // Find the ViewPager2 in the layout
-        val yearViewPager: ViewPager2 = findViewById(R.id.yearViewPager)
-
-        // Generate years and months data
-        val years = (2020..2030).map { year ->
-            YearModel(year, generateMonths(year))
-        }
-
-        // Set up the YearAdapter
-        val yearAdapter = YearAdapter(years)
-        yearViewPager.adapter = yearAdapter
-
-        // Optional: Keep the current year centered when starting
-        yearViewPager.setCurrentItem(years.indexOfFirst { it.year == Calendar.getInstance().get(Calendar.YEAR) }, false)
-
-    }
-}
-
-WorkWithAdapters.kt
-
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import java.util.Calendar
-import java.util.Locale
-
-class MonthAdapter(private val days: List<DayModel>) : RecyclerView.Adapter<MonthAdapter.DayViewHolder>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_day, parent, false)
-        return DayViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
-        val day = days[position]
-        holder.bind(day)
-    }
-
-    override fun getItemCount(): Int = days.size
-
-    class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val dayText: TextView = itemView.findViewById(R.id.dayText)
-
-        fun bind(day: DayModel) {
-            Log.d("TAG", "bind: ${day?.date}")
-            dayText.text = day.date.toString()
-            if (day.date==-1)
-            dayText.visibility= View.GONE
+/*
+object MeetingReminderUtils {
+    fun setMeetingReminderAlarm(eventInfo: EventInfo, context: Context) {
+        try {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(
+                context,
+                MeetingReminderReceiver::class.java
+            )
+            intent.putExtra("meetingReminderTitle", eventInfo.title)
+            intent.putExtra("meetingReminderTime", eventInfo.meetingReminderTime)
+            intent.putExtra("meetingReminderId", eventInfo.id)
+            Log.d("TAG", "setMeetingReminderAlarm: ----------------->before pending intent")
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                eventInfo.id.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            AlarmManagerCompat.setExact(
+                alarmManager,
+                AlarmManager.RTC_WAKEUP,
+                eventInfo.meetingReminderTime,
+                pendingIntent
+            )
+            Log.d("TAG", "setMeetingReminderAlarm: ----------------->after pending intent")
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
-
-class MonthGridAdapter(private val months: List<MonthModel>) :
-    RecyclerView.Adapter<MonthGridAdapter.MonthViewHolder>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_month, parent, false)
-        return MonthViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
-        val month = months[position]
-        holder.bind(month)
-    }
-
-    override fun getItemCount(): Int = months.size
-
-    class MonthViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val monthNameText: TextView = itemView.findViewById(R.id.monthName)
-        private val daysRecyclerView: RecyclerView = itemView.findViewById(R.id.monthDaysRecyclerView)
-
-        fun bind(month: MonthModel) {
-            monthNameText.text = month.name
-
-            // Set the GridLayoutManager programmatically
-            daysRecyclerView.layoutManager = GridLayoutManager(itemView.context, 7) // 7 columns for days
-            daysRecyclerView.adapter = MonthAdapter(month.days)
+class ReminderReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val reminderId = intent.getLongExtra("reminderId", 0)
+        val reminder =
+            EventInfoDatabase.getInstance(context).reminderDao().getReminderById(reminderId)
+        if (reminder == null || reminder.reminderTittle == null || reminder.reminderTime == 0L) {
+            return  // Exit if the reminder data is invalid
         }
-    }
-}
-
-
-class YearAdapter(private val years: List<YearModel>) : RecyclerView.Adapter<YearAdapter.YearViewHolder>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YearViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_year, parent, false)
-        return YearViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: YearViewHolder, position: Int) {
-        val year = years[position]
-        holder.bind(year)
-    }
-
-    override fun getItemCount(): Int = years.size
-
-    class YearViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val yearTitle: TextView = itemView.findViewById(R.id.yearTitle)
-        private val monthsRecyclerView: RecyclerView = itemView.findViewById(R.id.monthsRecyclerView)
-
-        fun bind(year: YearModel) {
-            yearTitle.text = year.year.toString()
-
-            // Set the GridLayoutManager programmatically
-            monthsRecyclerView.layoutManager = GridLayoutManager(itemView.context, 3) // 3 columns for months
-            monthsRecyclerView.adapter = MonthGridAdapter(year.months)
-        }
-    }
-}
-
-
-data class YearModel(val year: Int, val months: List<MonthModel>)
-data class MonthModel(val name: String, val days: List<DayModel>)
-data class DayModel(val date: Int, val dayOfWeek: String)
-
-
-fun generateMonth(year: Int, month: Int): MonthModel {
-    val calendar = Calendar.getInstance()
-    calendar.set(year, month, 1) // Set the calendar to the first day of the given month
-
-    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-    // Get the day of the week for the 1st day of the month (e.g., Monday is 2, Sunday is 1)
-    val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-
-    // Calculate the number of placeholders needed to align the first date with Monday
-    val emptySlots = if (firstDayOfWeek == Calendar.MONDAY) 0 else (firstDayOfWeek + 5) % 7
-
-    // Create a list of empty days using a placeholder (e.g., date = -1, and an empty string for dayOfWeek)
-    val emptyDays: List<DayModel> = List(emptySlots) {
-        DayModel(date = -1, dayOfWeek = "") // Placeholder DayModel
-    }
-
-    // Create the actual days of the month
-    val days: List<DayModel> = (1..daysInMonth).map { date ->
-        calendar.set(Calendar.DAY_OF_MONTH, date) // Update calendar to the current date
-        DayModel(
-            date = date,
-            dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) ?: ""
+        Log.d(
+            "TAG",
+            "onReceive: ----------------->received the notification" + " " + reminder.reminderTittle
         )
+        showNotification(context, reminder)
     }
 
-    // Combine empty days and actual days
-    val allDays: List<DayModel> = emptyDays + days
+    private fun showNotification(context: Context, reminder: Reminder) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Reminder Notifications",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val notificationManager = context.getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager?.createNotificationChannel(channel)
+        }
 
-    return MonthModel(
-        name = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) ?: "",
-        days = allDays
-    )
-}
+        // Format the reminder time
+        val sdf = SimpleDateFormat(
+            "EEEE, dd-MMM-yyyy HH:mm",
+            Locale(AppClass.sharedPreferences.getString("selectedLan", "en"))
+        )
+        val formattedTime: String
+        formattedTime = if (reminder.meetingTime > 0) {
+            sdf.format(Date(reminder.meetingTime))
+        } else {
+            sdf.format(Date(reminder.reminderTime))
+        }
 
 
-fun generateMonths(year: Int): List<MonthModel> {
-    return (0..11).map { month ->
-        generateMonth(year, month)
+        // Create an intent for the notification click action
+        val intent = Intent(
+            context,
+            MainActivity::class.java
+        ) // Replace with your activity to handle reminders
+        intent.putExtra("reminderId", reminder.id)
+        val pendingIntent = PendingIntent.getActivity(
+            context, reminder.id.toInt(),
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Build the notification
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(IconCompat.createWithBitmap(createDayBitmap(context, Date().date)))
+            .setContentTitle(reminder.reminderTittle)
+            .setContentText(formattedTime)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+
+        // Display the notification
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager?.notify(reminder.id.toInt(), notificationBuilder.build())
+    }
+
+    private fun createDayBitmap(context: Context, dayOfMonth: Int): Bitmap {
+        val width = context.resources.getDimensionPixelSize(R.dimen._50sdp)
+        val height = context.resources.getDimensionPixelSize(R.dimen._50sdp)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.TRANSPARENT)
+        val paint = Paint()
+        paint.style = Paint.Style.FILL
+        paint.color = Color.BLACK
+        paint.textSize = context.resources.getDimensionPixelSize(R.dimen._40sdp).toFloat()
+        paint.typeface = Typeface.DEFAULT_BOLD
+        paint.textAlign = Paint.Align.CENTER
+        canvas.drawText(dayOfMonth.toString(), width / 2f, height / 1.25f, paint)
+        return bitmap
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "Reminder_Channel"
     }
 }
+private open fun addNewOrUpdateMeeting() {
+    if (isEditMode && !isFromCreate) {
+    }
+    val title: String = binding.etNameCreateMeeting.getText().toString().trim()
+    if (title.isEmpty()) {
+        try {
+            binding.etNameCreateMeeting.setError(getString(calendar.schedule.tasks.shiftwork.reminder.event.latest.calendarplanner.agendaplanner.R.string.please_enter_title))
+            binding.etNameCreateMeeting.requestFocus()
+        } catch (e: Exception) {
+        }
+        return
+    }
+    val meetingTime: Long = sCalendar.getTimeInMillis()
+    val reminderOption = AppClass.sharedPreferences.getInt("savedReminder", 1)
+    if (reminderOption == 1) {
+        saveMeetingWithoutReminder(title, isFromCreate, isEditMode)
+        return
+    }
+    val reminderTime: Long = calculateReminderTime(meetingTime, reminderOption)
+    if (reminderTime > System.currentTimeMillis()) {
+        val savedDurationNumber = AppClass.sharedPreferences.getInt("savedDuration", 1)
+        val meetingInfo = EventInfo()
+        meetingInfo.id = System.currentTimeMillis().toString()
+        meetingInfo.title = title
+        meetingInfo.timezone = TimeZone.getDefault().id
+        meetingInfo.meetingDuration = AppClass.sharedPreferences.getInt("savedDuration", 1)
+        meetingInfo.starttime = sCalendar.getTimeInMillis()
+        meetingInfo.endtime = calculateEndTime(sCalendar.getTimeInMillis(), savedDurationNumber)
+        meetingInfo.meetingLocation = binding.etAddLocationCreateMeeting.getText().toString().trim()
+        meetingInfo.description = binding.etAddDescriptionCreateMeeting.getText().toString().trim()
+        meetingInfo.meetingReminderTime = reminderTime
+        meetingInfo.dataType = 1
+        if (!isFromCreate && isEditMode) {
+            database.eventInfoDao().updateEventInfo(meetingInfo)
+            Toast.makeText(this, "Updated with reminder", Toast.LENGTH_SHORT).show()
+        } else {
+            database.eventInfoDao().insert(meetingInfo)
+            Toast.makeText(this, "Inserted with reminder", Toast.LENGTH_SHORT).show()
+        }
+        MeetingReminderUtils.setMeetingReminderAlarm(meetingInfo, this@CreateMeetingsActivity)
+        //Toast.makeText(this, "Meeting saved with reminder.", Toast.LENGTH_SHORT).show();
+    } else {
+        Toast.makeText(this, "Reminder cannot be set for elapsed time!", Toast.LENGTH_SHORT).show()
+    }
+}
+@Entity(tableName = "events")
+@TypeConverters([IntDataConverter::class, DataConverter::class, EventInfoConverter::class])
+class EventInfo : Serializable {
+    @PrimaryKey
+    var id: String = null
+    var eventtitles: Array<String>
+    var isallday = false
+    var accountname: String? = null
+    var noofdayevent = 0
+    var nextnode: EventInfo? = null
+    var starttime: Long = 0
+    var endtime: Long = 0
+    var title: String? = null
+    var timezone: String? = null
+    var eventcolor = 0
+    var isSelect = true
+    var isEvent = false
+    var reminder: Array<Int>
+    var description: String? = null
+    var meetingDuration = 0 // New column
+    var meetingLocation: String? = null // New column
+    var meetingReminderTime: Long? = null // New column
+    var dataType = 0
+
+    constructor(eventtitles: Array<String>) {
+        this.eventtitles = eventtitles
+    }
+
+    constructor()
+    constructor(eventInfo: EventInfo) {
+        eventtitles = eventInfo.eventtitles
+        isallday = eventInfo.isallday
+        id = eventInfo.id
+        accountname = eventInfo.accountname
+        noofdayevent = eventInfo.noofdayevent
+        starttime = eventInfo.starttime
+        endtime = eventInfo.endtime
+        title = eventInfo.title
+        timezone = eventInfo.timezone
+        eventcolor = eventInfo.eventcolor
+        isEvent = eventInfo.isEvent
+        reminder = eventInfo.reminder
+        description = eventInfo.description
+        isSelect = eventInfo.isSelect
+        meetingDuration = eventInfo.meetingDuration
+        meetingLocation = eventInfo.meetingLocation
+        meetingReminderTime = eventInfo.meetingReminderTime
+        dataType = eventInfo.dataType
+    }
+}
+*/

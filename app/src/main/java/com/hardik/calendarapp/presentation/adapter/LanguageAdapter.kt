@@ -1,4 +1,4 @@
-package com.hardik.calendarapp.presentation.ui.calendar_month.adapter
+package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context

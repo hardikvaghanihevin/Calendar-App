@@ -46,6 +46,7 @@ import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuAdapter
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
 import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
+import com.hardik.calendarapp.utillities.AlarmScheduler
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         //val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
         //val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
-        private const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
+        const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
 
@@ -226,6 +227,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.repeatOptionFragment -> { showViewWithAnimation(binding.saveSelectLanguageIcon) }
 
                 R.id.alertOptionFragment -> { showViewWithAnimation(binding.saveSelectLanguageIcon) }
+
+                R.id.searchEventFragment -> { showViewWithAnimation(binding.searchView) }
                 // Default case: Hide everything except FAB
                 else -> {
                     hideAllViewsWithAnimation()
@@ -737,6 +740,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.searchIcon.setOnClickListener {
             Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show()
+
+            // todo: navigate to show all events
+            navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
+
             if (navController.currentDestination?.id == R.id.nav_select_country) {
                 showViewWithAnimation(binding.searchView)
                 // Expand SearchView
@@ -901,6 +908,11 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.WRITE_CALENDAR)
         }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
         if (permissions.isNotEmpty()) {
             ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
         } else {
@@ -912,7 +924,8 @@ class MainActivity : AppCompatActivity() {
     private fun areCalendarPermissionsGranted(): Boolean {
         val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
-        return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED
+        val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) } else { PackageManager.PERMISSION_GRANTED }
+        return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED && postNotificationPermission == PackageManager.PERMISSION_GRANTED
     }
 
     private fun initializeViewModelIfNeeded() {
@@ -932,6 +945,15 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Calendar permissions are required for the app to function.", Toast.LENGTH_SHORT).show()
             }
         }
+        if (AlarmScheduler.handlePermissionResult(requestCode = requestCode, permissions = permissions, grantResults = grantResults)) {
+            if (grantResults.isNotEmpty() && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "onRequestPermissionsResult: Permission granted, schedule the alarm", )
+            }else{
+                // Permission denied, show a message to the user
+                Toast.makeText(this, "Permission required to show notifications", Toast.LENGTH_SHORT).show()
+            }
+        }
+        else { super.onRequestPermissionsResult(requestCode, permissions, grantResults) }
         //if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) { when (requestCode) {}}
 
     }

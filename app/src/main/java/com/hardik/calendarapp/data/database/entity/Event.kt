@@ -32,6 +32,7 @@ data class Event(
     val repeatOption: RepeatOption = RepeatOption.NEVER,//ONCE
     val alertOffset: AlertOffset = AlertOffset.AT_TIME,
     val customAlertOffset: Long? = null,
+    val triggerTime: Long = 0L,
 ) : Parcelable
 
 fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
@@ -72,8 +73,6 @@ enum class SourceType(val value: Int) {
 }
 
 enum class RepeatOption {
-    //NONE,
-    //ONCE,
     NEVER,
     DAILY,
     WEEKLY,
@@ -85,8 +84,6 @@ object RepeatOptionConverter {
     // Convert enum to display string using string resources
     fun toDisplayString(context: Context, repeatOption: RepeatOption): String {
         return when (repeatOption) {
-            //RepeatOption.NONE -> context.getString(R.string.none)
-            //RepeatOption.ONCE -> context.getString(R.string.at_once)
             RepeatOption.NEVER -> context.getString(R.string.never)
             RepeatOption.DAILY -> context.getString(R.string.every_day)
             RepeatOption.WEEKLY -> context.getString(R.string.every_week)
@@ -98,14 +95,23 @@ object RepeatOptionConverter {
     // Convert a display string to enum
     fun fromDisplayString(context: Context, displayString: String): RepeatOption? {
         return when (displayString) {
-            //context.getString(R.string.none) -> RepeatOption.NONE
-            //context.getString(R.string.at_once) -> RepeatOption.ONCE
             context.getString(R.string.never) -> RepeatOption.NEVER
             context.getString(R.string.every_day) -> RepeatOption.DAILY
             context.getString(R.string.every_week) -> RepeatOption.WEEKLY
             context.getString(R.string.every_month) -> RepeatOption.MONTHLY
             context.getString(R.string.every_year) -> RepeatOption.YEARLY
             else -> null // Handle invalid strings gracefully
+        }
+    }
+
+    // Convert RepeatOption enum to its value in milliseconds
+    fun toMilliseconds(repeatOption: RepeatOption): Long? {
+        return when (repeatOption) {
+            RepeatOption.NEVER -> null // No interval for "NEVER"
+            RepeatOption.DAILY -> 24 * 60 * 60 * 1000L // 1 day in milliseconds
+            RepeatOption.WEEKLY -> 7 * 24 * 60 * 60 * 1000L // 1 week in milliseconds
+            RepeatOption.MONTHLY -> 30 * 24 * 60 * 60 * 1000L // 1 month (approximation) in milliseconds
+            RepeatOption.YEARLY -> 365 * 24 * 60 * 60 * 1000L // 1 year (approximation) in milliseconds
         }
     }
 }
@@ -128,26 +134,6 @@ enum class AlertOffset{
     BEFORE_1_MONTH,
     BEFORE_CUSTOM_TIME,
 }
-/*enum class AlertOffset(val value: String) {
-    NONE("None"),
-    AT_TIME("At Time"),
-    BEFORE_5_MINUTES("Before 5 Minutes"),
-    BEFORE_10_MINUTES("Before 10 Minutes"),
-    BEFORE_15_MINUTES("Before 15 Minutes"),
-    BEFORE_30_MINUTES("Before 30 Minutes"),
-    BEFORE_1_HOUR("Before 1 Hour"),
-    BEFORE_12_HOURS("Before 12 Hours"),
-    BEFORE_1_DAY("Before 1 Day"),
-    BEFORE_3_DAYS("Before 3 Days"),
-    BEFORE_5_DAYS("Before 5 Days"),
-    BEFORE_1_WEEK("Before 1 Week"),
-    BEFORE_2_WEEKS("Before 2 Weeks"),
-    BEFORE_1_MONTH("Before 1 Month"),
-    BEFORE_CUSTOM_TIME("Before Custom Time");
-}*/
-
-
-
 object AlertOffsetConverter {
 
     // Convert enum to display string using string resources
@@ -224,12 +210,20 @@ object AlertOffsetConverter {
     private const val HOUR_1 = 60 * 60 * 1000L
     private const val HOURS_12 = 12 * 60 * 60 * 1000L
     private const val DAY_1 = 24 * 60 * 60 * 1000L
-    private const val DAYS_3 = 3 * DAY_1
-    private const val DAYS_5 = 5 * DAY_1
-    private const val WEEK_1 = 7 * DAY_1
-    private const val WEEKS_2 = 2 * WEEK_1
-    private const val MONTH_1 = 30L * DAY_1 // Approximation
-    private const val CUSTOM_TIME = -1L // Here store custom time (long) get from user
+    private const val DAYS_3 = 3 * 24 * 60 * 60 * 1000L
+    private const val DAYS_5 = 5 * 24 * 60 * 60 * 1000L
+    private const val WEEK_1 = 7 * 24 * 60 * 60 * 1000L
+    private const val WEEKS_2 = 2 * 7 * 24 * 60 * 60 * 1000L
+    private const val MONTH_1 = 30L * 24 * 60 * 60 * 1000L // Approximation
+    private var CUSTOM_TIME = -1L // Here store custom time (long) get from user
+
+    // Get the current custom time
+    fun getCustomTime(): Long = CUSTOM_TIME
+
+    // Update the custom time
+    fun setCustomTime(newTime: Long) {
+        CUSTOM_TIME = newTime
+    }
 }
 
 typealias YearKey = String

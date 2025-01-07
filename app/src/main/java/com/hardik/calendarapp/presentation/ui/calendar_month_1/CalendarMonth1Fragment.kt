@@ -35,7 +35,7 @@ import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.data.database.entity.dummyEvent
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
-import com.hardik.calendarapp.presentation.adapter.EventAdapter1
+import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
@@ -61,7 +61,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private var _binding: FragmentCalendarMonth1Binding? = null
 
     private val viewModel: MainViewModel by activityViewModels()
-    private lateinit var eventAdapter: EventAdapter1
+    private lateinit var eventAdapter: EventAdapter
     private var yearMonthPairList: List<Pair<Int, Int>> = emptyList()
     private var yearList: Map<Int, Map<Int, List<Int>>> = emptyMap()
     var pageAdapter = CalendarMonthPageAdapter()
@@ -211,7 +211,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                 }
             })
-            eventAdapter = EventAdapter1(ArrayList<Event>())
+            eventAdapter = EventAdapter(ArrayList<Event>())
             binding.rvEvent.adapter = eventAdapter
             eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event:Event->

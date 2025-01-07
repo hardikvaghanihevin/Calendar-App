@@ -56,7 +56,9 @@ class EventRepositoryImpl @Inject constructor(
         eventDao.upsertEvents(events)
 
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
-        events.forEach { event:Event -> if (event.year == currentYear) { scheduleAlarm(event) } }//todo : schedule alarm if current year
+        events.forEach { event:Event -> if (event.year == currentYear) { scheduleAlarm(event) }
+//            scheduleAlarm(event)
+        }//todo : schedule alarm if current year
     }
 
     override suspend fun updateEvent(event: Event) {
@@ -128,21 +130,14 @@ class EventRepositoryImpl @Inject constructor(
             intent,
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
-        pendingIntent?.let {
-            alarmManager.cancel(it)
-            Log.d(TAG, "Alarm canceled for eventId: ${id.hashCode()}")
-        }
-        //AlarmScheduler.cancelAlarm(context , eventId.toInt())
+        pendingIntent?.let { alarmManager.cancel(it) }
+        Log.d(TAG, "Alarm canceled for eventId: ${id.hashCode()}")
     }
 
     private fun cancelAllAlarms() {
         Log.i(TAG, "cancelAllAlarms: ")
         CoroutineScope(Dispatchers.IO).launch {
             eventDao.getAllEvents().forEach { event -> cancelAlarm(event.id) }// currently no use
-//            eventDao.getAllEventIds().collectLatest {
-//                val ids: List<Int> = it.map { it.toInt() }
-//                AlarmScheduler.cancelAllScheduledAlarms(context, ids)
-//            }
         }
     }
 

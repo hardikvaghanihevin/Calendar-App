@@ -1,145 +1,111 @@
 package com.hardik.calendarapp.utillities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.AlertOffset
-import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
-import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
-import java.util.Calendar
+import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.REQUEST_CODE_CALENDAR_PERMISSIONS
 
 object AlarmScheduler {
     private val TAG = BASE_TAG + AlarmScheduler::class.simpleName
 
-    // Update alarm logic: reschedule and cancel any existing alarm first.
-    fun updateAlarm(context: Context, event: Event) {
-        cancelAlarm(context, event)
-        scheduleNotification(context, event)
+    // Method to check and request POST_NOTIFICATIONS permission
+    private fun ensureNotificationPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionStatus = ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            )
+
+            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+                // Request the permission from the user
+                ActivityCompat.requestPermissions(
+                    (context as Activity),
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_CODE_CALENDAR_PERMISSIONS
+                )
+            }
+        }
     }
 
-    // Schedule the notification based on repeat option.
+    // Handle the result of the permission request
+    fun handlePermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
+        if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
+            return if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "POST_NOTIFICATIONS permission granted.")
+                true
+            } else {
+                Log.e(TAG, "POST_NOTIFICATIONS permission denied.")
+                false
+            }
+        }
+        return false
+    }
+
+    // Rest of the AlarmScheduler code
+    fun updateAlarm( context: Context, event: Event, isComingFromNotificationReceiver: Boolean = false ) {
+        Log.i(TAG, "updateAlarm: ${event.date} ${event.month} ${event.year} | ${event.id}")
+        ensureNotificationPermission(context) // Ensure permission before setting an alarm
+        cancelAlarm(context, event)
+
+        if (event.alertOffset != AlertOffset.NONE){
+            Log.i(TAG, "updateAlarm: alertOffset is valid")
+            if (event.triggerTime < System.currentTimeMillis() - 5000L){
+                Log.i(TAG, "updateAlarm: TriggerTime is past time from current!")
+            }else{
+                scheduleExactTime(context, event.triggerTime, event)
+            }
+
+        }else{
+            // do not set  any alarm
+            Log.i(TAG, "updateAlarm: alertOffset is NONE")
+        }
+    }
+
+
+    // Schedule the notification for a specific time.
     @SuppressLint("ScheduleExactAlarm")
-    fun scheduleNotification(context: Context, event: Event) {
-        Log.e(TAG, "scheduleNotification: ", )
+    fun scheduleExactTime(context: Context, triggerTime: Long, event: Event) {
+        Log.i(TAG, "scheduleExactTime: ")
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        if (alarmManager == null) {
+            Log.e(TAG, "AlarmManager is null, cannot schedule notification.")
+            return
+        }
 
-        // Early return for NONE: No notification should be scheduled.
-        //if (event.repeatOption == RepeatOption.NONE) { Log.d(TAG, "No notification scheduled for event: ${event.title} (RepeatOption.NONE)"); return }
-        if (event.alertOffset == AlertOffset.NONE) { Log.d(TAG, "No notification scheduled for event: ${event.title} (AlertOffset.NONE)"); return }
-
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java).apply {
-            putExtra("event_title", event.title)           // Pass event title
-            putExtra("event_description", event.description) // Pass event description
-            putExtra("id", event.id)            // Pass event ID
+            putExtra("event", event)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            event.id.hashCode(), // Unique request code
+            event.id.hashCode(), // Unique request code for each event
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val beforeTime: Long = if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
-            event.customAlertOffset ?: 0L
-        }else{
-            AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
-        }
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerTime,
+            pendingIntent
+        )
 
-        // Calculate the trigger time using event's start time and alert offset.
-        var triggerTime = event.startTime - beforeTime
-        //val triggerTime = SystemClock.elapsedRealtime() + 5000 // 5 seconds from now
-        Log.e(TAG, "scheduleNotification: TriggerTime:$triggerTime", )
-        // If the trigger time is in the past, adjust it based on the repeat option
-        while (triggerTime < System.currentTimeMillis()) {
-            Log.i(TAG, "scheduleNotification: If the trigger time is in the past, adjust it based on the repeat option")
-            when (event.repeatOption) {
-//                RepeatOption.NEVER -> { Log.e(TAG, "scheduleNotification: Cannot set alarm for a past time!", );break }// Exit if the event is a one-time event
-//                RepeatOption.DAILY -> { triggerTime + AlarmManager.INTERVAL_DAY }
-//                RepeatOption.WEEKLY -> { triggerTime + AlarmManager.INTERVAL_DAY * 7 }
-//                RepeatOption.MONTHLY -> { val calendar = Calendar.getInstance().apply { timeInMillis = triggerTime; add(Calendar.MONTH, 1) }; calendar.timeInMillis }
-//                RepeatOption.YEARLY -> { val calendar = Calendar.getInstance().apply { timeInMillis = triggerTime; add(Calendar.YEAR, 1) }; calendar.timeInMillis }
-//                RepeatOption.NEVER -> { triggerTime }// Exit if the event is a one-time event
-//                RepeatOption.DAILY -> { triggerTime }
-//                RepeatOption.WEEKLY -> { triggerTime }
-//                RepeatOption.MONTHLY -> { triggerTime }
-//                RepeatOption.YEARLY -> { triggerTime }
-                RepeatOption.NEVER -> { Log.e(TAG, "scheduleNotification: Cannot set alarm for a past time!", );break }// Exit if the event is a one-time event
-                RepeatOption.DAILY -> { triggerTime - AlarmManager.INTERVAL_DAY }
-                RepeatOption.WEEKLY -> { triggerTime - AlarmManager.INTERVAL_DAY * 7 }
-                RepeatOption.MONTHLY -> { val calendar = Calendar.getInstance().apply { timeInMillis = triggerTime; add(Calendar.MONTH, 1) }; calendar.timeInMillis }
-                RepeatOption.YEARLY -> { val calendar = Calendar.getInstance().apply { timeInMillis = triggerTime; add(Calendar.YEAR, 1) }; calendar.timeInMillis }
-//
-
-            }
-        }
-
-        // Depending on the repeat option, schedule the alarm accordingly.
-        // Schedule the alarm with the updated trigger time
-        when (event.repeatOption) {
-            //RepeatOption.NONE -> { return }
-            //RepeatOption.ONCE -> { alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent) }
-            RepeatOption.NEVER -> {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    pendingIntent
-                )
-            }
-            RepeatOption.DAILY -> {
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    AlarmManager.INTERVAL_DAY,
-                    pendingIntent
-                )
-            }
-            RepeatOption.WEEKLY -> {
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    AlarmManager.INTERVAL_DAY * 7,
-                    pendingIntent
-                )
-            }
-            RepeatOption.MONTHLY, RepeatOption.YEARLY -> {
-                // For monthly or yearly events, reschedule using the exact calculated time
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-            }
-//             RepeatOption.MONTHLY -> {
-//                 val interval = 30L * 24 * 60 * 60 * 1000 // Approx. 30 days in milliseconds
-//                 alarmManager.setRepeating(
-//                     AlarmManager.RTC_WAKEUP,
-//                     triggerTime,
-//                     interval,
-//                     pendingIntent
-//                 )
-//             }
-//             RepeatOption.YEARLY -> {
-//                 val interval = 365L * 24 * 60 * 60 * 1000 // Approx. 365 days in milliseconds
-//                 alarmManager.setRepeating(
-//                     AlarmManager.RTC_WAKEUP,
-//                     triggerTime,
-//                     interval,
-//                     pendingIntent
-//                 )
-//             }
-        }
-
-        // Show a Toast confirming the alarm is set.
-        Log.d(TAG, "Alarm scheduled for event: ${event.title} id: ${event.id.hashCode()}, Repeat: ${event.repeatOption}, Trigger: $triggerTime")
-        //Toast.makeText(context, "Alarm scheduled for: ${event.title}", Toast.LENGTH_SHORT).show()
+        Log.d(TAG, "Exact notification scheduled for event ID:- ${event.id} | at:- $triggerTime")
     }
 
-    // Cancel existing alarms if any.
-    fun cancelAlarm(context: Context, event: Event) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    // Cancel the alarm for a specific event.
+    private fun cancelAlarm(context: Context, event: Event) {
         val intent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -147,188 +113,13 @@ object AlarmScheduler {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager.cancel(pendingIntent)
-        Log.d(TAG, "Alarm canceled for event: ${event.title}")
-    }
-
-    fun cancelAllScheduledAlarms(context: Context, events: List<Event>) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        for (alarmId in events) {
-            val intent = Intent(context, NotificationReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                alarmId.id.hashCode(),
-                intent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
-            if (pendingIntent != null) {
-                alarmManager.cancel(pendingIntent)
-            }
-        }
-        Log.d("AlarmManager", "All alarms canceled.")
-    }
-}
-
-/*object AlarmScheduler {
-    private val TAG = BASE_TAG + AlarmScheduler::class.simpleName
-
-    // Update alarm logic: reschedule and cancel any existing alarm first.
-    fun updateAlarm(context: Context, event: Event) {
-        //launch { cancelAlarm(context, event.eventId.toInt()) }.join()
-        scheduleNotification(context, event)
-    }
-
-    // Schedule the notification based on repeat option.
-    @SuppressLint("ScheduleExactAlarm")
-    fun scheduleNotification(context: Context, event: Event) {
-        Log.e(TAG, "scheduleNotification: ")
-
-        // Early return for NONE: No notification should be scheduled.
-        //if (event.repeatOption == RepeatOption.NONE) { Log.d(TAG, "No notification scheduled for event: ${event.title} (RepeatOption.NONE)"); return }
-        if (event.alertOffset == AlertOffset.NONE) { Log.d(TAG, "No notification scheduled for event: ${event.title} (AlertOffset.NONE)"); return }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-        if (alarmManager == null) {
-            Log.e(TAG, "AlarmManager is not available.")
-            return
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent)
+            Log.d(TAG, "Alarm canceled for event ID: ${event.id}")
+        } else {
+            Log.e(TAG, "AlarmManager is null, cannot cancel alarm.")
         }
-
-        val intent = Intent(context, NotificationReceiver::class.java).apply {
-            putExtra("event_title", event.title)           // Pass event title
-            putExtra("event_description", event.description) // Pass event description
-            putExtra("event_id", event.eventId)            // Pass event ID
-        }
-
-        val requestCode = event.eventId.toInt()
-
-        val existingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
-        if (existingIntent != null) {
-            Log.d(TAG, "Alarm already exists for event ID: ${event.eventId}")
-            return
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)// Unique request code
-
-        val beforeTime: Long = if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
-            event.customAlertOffset ?: 0L
-        }else{
-            AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
-        }
-        // Calculate the trigger time using event's start time and alert offset.
-        var triggerTime = event.startTime - beforeTime
-        //val triggerTime = SystemClock.elapsedRealtime() + 5000 // 5 seconds from now
-        Log.e(TAG, "scheduleNotification: TriggerTime:$triggerTime, EventName:${event.title}")
-        // If the trigger time is in the past, adjust it based on the repeat option
-        while (triggerTime < System.currentTimeMillis()) {
-            triggerTime = when (event.repeatOption) {
-                //RepeatOption.NONE -> { return }
-                //RepeatOption.ONCE -> { Log.e(TAG, "scheduleNotification: Cannot set alarm for a past time!", );return }// Exit if the event is a one-time event
-                RepeatOption.NEVER -> { Log.e(TAG, "scheduleNotification: Cannot set alarm for a past time!");return }// Exit if the event is a one-time event
-                RepeatOption.DAILY -> triggerTime + AlarmManager.INTERVAL_DAY
-                RepeatOption.WEEKLY -> triggerTime + AlarmManager.INTERVAL_DAY * 7
-                RepeatOption.MONTHLY -> {
-                    val calendar = Calendar.getInstance().apply {
-                        timeInMillis = triggerTime
-                        add(Calendar.MONTH, 1)
-                    }
-                    calendar.timeInMillis
-                }
-                RepeatOption.YEARLY -> {
-                    val calendar = Calendar.getInstance().apply {
-                        timeInMillis = triggerTime
-                        add(Calendar.YEAR, 1)
-                    }
-                    calendar.timeInMillis
-                }
-            }
-        }
-
-        // Depending on the repeat option, schedule the alarm accordingly.
-        // Schedule the alarm with the updated trigger time
-        when (event.repeatOption) {
-            //RepeatOption.NONE -> { return }
-            //RepeatOption.ONCE -> { alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent) }
-            RepeatOption.NEVER -> {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    pendingIntent
-                )
-            }
-            RepeatOption.DAILY -> {
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    AlarmManager.INTERVAL_DAY,
-                    pendingIntent
-                )
-            }
-            RepeatOption.WEEKLY -> {
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    AlarmManager.INTERVAL_DAY * 7,
-                    pendingIntent
-                )
-            }
-            RepeatOption.MONTHLY, RepeatOption.YEARLY -> {
-                // For monthly or yearly events, reschedule using the exact calculated time
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-            }
-             RepeatOption.MONTHLY -> {
-                 val interval = 30L * 24 * 60 * 60 * 1000 // Approx. 30 days in milliseconds
-                 alarmManager.setRepeating(
-                     AlarmManager.RTC_WAKEUP,
-                     triggerTime,
-                     interval,
-                     pendingIntent
-                 )
-             }
-            RepeatOption.YEARLY -> {
-                val interval = 365L * 24 * 60 * 60 * 1000 // Approx. 365 days in milliseconds
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTime,
-                    interval,
-                    pendingIntent
-                )
-            }
-        }
-
-        // Show a Toast confirming the alarm is set.
-        Log.d(TAG, "Alarm scheduled for event: ${event.title}, Repeat: ${event.repeatOption}, Next Trigger: $triggerTime")
-        //Toast.makeText(context, "Alarm scheduled for: ${event.title}", Toast.LENGTH_SHORT).show()
     }
-
-    // Cancel existing alarms if any.
-    fun cancelAlarm(context: Context, alarmId: Int) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            alarmId,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.cancel(pendingIntent)
-        Log.d(TAG, "Alarm canceled for eventId: $alarmId")
-    }
-
-    fun cancelAllScheduledAlarms(context: Context, alarmIds: List<Int>) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        for (alarmId in alarmIds) {
-            val intent = Intent(context, NotificationReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                alarmId,
-                intent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
-            if (pendingIntent != null) {
-                alarmManager.cancel(pendingIntent)
-            }
-        }
-        Log.d("AlarmManager", "All alarms canceled.")
-    }
-
-}*/
+}
