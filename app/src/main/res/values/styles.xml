@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="ShapeAppearanceOverlay.MyApp.Button.Rounded" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/cornerSize</item>
     </style>
+
     <style name="GoodGrip.Button" parent="Widget.MaterialComponents.Button">
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.Button.Rounded</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.Button.Rounded
+        </item>
     </style>
 
     <style name="ShapeAppearanceOverlay.MyApp.ImageView.Rounded" parent="">
@@ -28,7 +31,7 @@
         <item name="cornerSize">50%</item> <!-- Adjust the corner radius as per your requirement -->
     </style>
 
-   <!-- <style name="CustomToolbarTitleStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <!-- <style name="CustomToolbarTitleStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:fontFamily">@font/post_nord_sans_medium</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:text">Toolbar</item>
@@ -40,7 +43,7 @@
     </style>
 
     <style name="CustomNumberPicker" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
-<!--        <item name="colorAccent">@color/text_primary</item>-->
+        <!--        <item name="colorAccent">@color/text_primary</item>-->
         <!-- Remove selection divider -->
         <item name="colorControlNormal">@android:color/transparent</item>
         <item name="android:textColorPrimary">@color/accent_primary</item>
@@ -55,5 +58,14 @@
         <item name="backgroundColor">@color/background_secondary</item>
         <item name="android:textFilterEnabled">true</item>
         <item name="android:textCursorDrawable">@drawable/custom_search_cursor_drawable</item>
+    </style>
+
+    <style name="Widget.Theme.CalendarApp.ActionBar.Fullscreen" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
+    <style name="Widget.Theme.CalendarApp.ButtonBar.Fullscreen" parent="">
+        <item name="android:background">@color/black_overlay</item>
+        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
 </resources>

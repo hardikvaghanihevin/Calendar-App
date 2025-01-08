@@ -107,15 +107,18 @@ dependencies {
 //    kapt ("androidx.room:room-compiler:2.6.1")
 
 
-    // Glide
+    // Glide for image loading
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
+    // UI and layout dependencies
     implementation ("com.intuit.sdp:sdp-android:1.1.0")
     implementation ("com.intuit.ssp:ssp-android:1.1.0")
 
+    // Date and Time handling
     implementation ("joda-time:joda-time:2.12.7")
 
+    // Google APIs and Calendar
     implementation("com.google.apis:google-api-services-calendar:v3-rev305-1.23.0")
     implementation("com.google.api-client:google-api-client-gson:1.31.5")
     implementation("com.google.http-client:google-http-client-jackson2:1.39.2")
@@ -124,13 +127,17 @@ dependencies {
         exclude(group = "org.apache.httpcomponents")
     }
 
+    // Activity extensions for ViewModel
     implementation ("androidx.activity:activity-ktx:1.7.2")
+    // Fragment extensions for ViewModel
     implementation ("androidx.fragment:fragment-ktx:1.6.1")
 
 //    implementation("com.kizitonwose.calendar:view:2.0.0")
 
+    // Material Design Components
     implementation ("com.google.android.material:material:1.9.0")
 
+    // Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics:19.2.1")

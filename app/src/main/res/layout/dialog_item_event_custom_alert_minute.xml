@@ -1,81 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/dialog_item_event_custom_alert_minute"
-    tools:ignore="HardcodedText"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@android:color/transparent">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_first"
+    <!--        android:background="@drawable/dialog_background"-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_4sdp"
-        app:cardCornerRadius="@dimen/cornerSize"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/item_background"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tInLay_event_custom_alert_minute"
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:padding="16dp"
+            android:text="@string/custom_alert"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/post_nord_sans_medium"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="bold" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_10sdp"
-            app:boxBackgroundColor="@color/white"
-            app:boxBackgroundMode="outline"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.TextInputLayout.Rounded">
+            android:gravity="start">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tInEdt_eventCustomAlertMinute"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:hint="@string/before_custom_time"
-                android:imeOptions="actionDone"
-                android:includeFontPadding="true"
+            <EditText
+                android:id="@+id/edt_eventCustomAlertMinute"
+                android:layout_width="@dimen/_36sdp"
+                android:layout_height="@dimen/_46sdp"
+                android:gravity="center"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/post_nord_sans_regular"
+                android:hint="00"
+                android:imeOptions="actionNext"
                 android:inputType="number"
-                android:textColor="@color/black"
-                android:textColorHint="@color/blue"
+                android:maxLength="2"
+                android:ems="2"
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
                 android:textSize="@dimen/_16ssp"
-                android:textStyle="normal" />
-        </com.google.android.material.textfield.TextInputLayout>
-    </androidx.cardview.widget.CardView>
+                android:textStyle="normal"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mBtn_oky"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:backgroundTint="@color/blue"
-        android:text="Oky"
-        android:textColor="@color/black"
-        android:textStyle="italic"
-        app:layout_constraintTop_toBottomOf="@id/cv_first"
-        app:layout_constraintEnd_toEndOf="@id/cv_first"
-        app:layout_constraintHorizontal_bias="0.9"
-        app:layout_constraintStart_toStartOf="@id/cv_first"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/post_nord_sans_regular"
+                android:text="@string/minutes_before"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintStart_toEndOf="@id/edt_eventCustomAlertMinute"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mBtn_cancel"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:backgroundTint="@color/red"
-        android:text="X"
-        android:textColor="@color/black"
-        android:textStyle="italic"
-        app:layout_constraintTop_toBottomOf="@id/cv_first"
-        app:layout_constraintEnd_toEndOf="@id/cv_first"
-        app:layout_constraintHorizontal_bias="0.1"
-        app:layout_constraintStart_toStartOf="@id/cv_first"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute"
+                />
+
+            <View
+                android:layout_width="@dimen/_36sdp"
+                android:layout_height="@dimen/_2sdp"
+                android:background="@drawable/line_selected_drawable"
+                app:layout_constraintStart_toStartOf="@id/edt_eventCustomAlertMinute"
+                app:layout_constraintEnd_toEndOf="@id/edt_eventCustomAlertMinute"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:paddingVertical="0dp">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:text="@string/cancel"
+                android:textAlignment="center"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btn_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:text="@string/done"
+                android:textAlignment="center"
+                android:textColor="@color/error"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

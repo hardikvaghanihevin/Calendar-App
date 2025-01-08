@@ -889,7 +889,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val centerY = (top + bottom) / 2
 
         // Calculate bounds to center the drawable
-        val halfSquare = squarePx / 2
+        val halfSquare = squarePx / context.resources.getDimension(com.intuit.sdp.R.dimen._1sdp)
         drawable.setBounds(
             (centerX - halfSquare).toInt(),
             (centerY - halfSquare).toInt(),

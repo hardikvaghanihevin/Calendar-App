@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_primary"
     android:padding="16dp"
-    tools:context=".presentation.alert_option.AlertOptionFragment">
+    tools:context=".presentation.ui.alert_option.AlertOptionFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alertOptionRecView"

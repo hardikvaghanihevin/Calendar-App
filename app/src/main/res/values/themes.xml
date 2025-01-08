@@ -4,7 +4,8 @@
         <item name="colorPrimary">@color/action_bar_color</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowLightStatusBar">true</item><!--Use light(false) | dark(true) text/icons-->
+        <item name="android:windowLightStatusBar">true
+        </item><!--Use light(false) | dark(true) text/icons-->
 
         <item name="iconDrawable">@drawable/hamburger_icon</item>
         <item name="iconBackArrow">@drawable/back_arrow_icon</item>
@@ -39,25 +40,12 @@
     </style>
 
     <!-- Toolbar Theme -->
-    <style name="Theme.CalendarApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light">//"ThemeOverlay.AppCompat.Dark.ActionBar"
-<!--        <item name="titleTextAppearance">@style/CustomToolbarTitleStyle</item>-->
+    <style name="Theme.CalendarApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light">
+        //"ThemeOverlay.AppCompat.Dark.ActionBar"
+        <!--        <item name="titleTextAppearance">@style/CustomToolbarTitleStyle</item>-->
     </style>
 
     <style name="Theme.CalendarApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <!--    its noting to use only ref default-->
@@ -84,7 +72,8 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowLightStatusBar">true</item><!-- Use light(false) | dark(true) text/icons -->
+        <item name="android:windowLightStatusBar">true
+        </item><!-- Use light(false) | dark(true) text/icons -->
         <!-- Text color. -->
         <item name="android:textColor">@color/text_primary</item>
         <!-- Customize your theme here. -->
@@ -97,5 +86,19 @@
         <item name="cornerFamilyBottomLeft">rounded</item>
         <item name="cornerFamilyBottomRight">rounded</item>
         <item name="cornerSize">@dimen/_20sdp</item>
+    </style>
+
+    <style name="Theme.CalendarApp.Fullscreen" parent="Theme.CalendarApp">
+        <item name="android:actionBarStyle">@style/Widget.Theme.CalendarApp.ActionBar.Fullscreen</item>
+        <item name="android:windowActionBarOverlay">true</item>
+<!--        <item name="android:windowBackground">@null</item>-->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="ThemeOverlay.CalendarApp.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/accent_primary</item>
+        <item name="fullscreenTextColor">@color/white</item>
     </style>
 </resources>

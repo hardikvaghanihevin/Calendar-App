@@ -60,7 +60,9 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
     private final val TAG = BASE_TAG + MainActivity::class.java.simpleName
 
-    val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
+    // Use activityViewModels() to share the ViewModel with SplashFullscreenActivity
+    val mainViewModel: MainViewModel by viewModels()//by viewModels()//by activityViewModels()
+
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
     lateinit var toolbar: Toolbar

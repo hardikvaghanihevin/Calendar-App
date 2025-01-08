@@ -1,4 +1,4 @@
-package com.hardik.calendarapp.presentation.alert_option
+package com.hardik.calendarapp.presentation.ui.alert_option
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -132,7 +132,7 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
         dialogItemEventCustomAlertMinuteBinding?.apply {
 
             var customAlertOffsetTimeStamp: Long? = null
-            tInEdtEventCustomAlertMinute.addTextChangedListener { text ->
+            edtEventCustomAlertMinute.addTextChangedListener { text ->
                 //customAlertOffsetTimeStamp = if(text == null) null
                 //else DateUtil.minutesToTimestamp(text.toString().toInt())
                 try {
@@ -149,11 +149,11 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
                     }
                 } catch (e: NumberFormatException) {
                     Log.e("NewEventFragment", "Error parsing input", e)
-                    tInEdtEventCustomAlertMinute.error = "Please enter a valid number"
+                    edtEventCustomAlertMinute.error = "Please enter a valid number"
                 }
             }
 
-            mBtnOky.setOnClickListener {
+            btnDone.setOnClickListener {
 
                 if(viewModel.customAlertOffset.value != customAlertOffsetTimeStamp){
                     viewModel.updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)
@@ -162,7 +162,7 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
 
                 dialog.dismiss()
             }
-            mBtnCancel.setOnClickListener {
+            btnCancel.setOnClickListener {
                 viewModel.updateAlertOffset(viewModel.alertOffset.value)
                 dialog.dismiss()
             }

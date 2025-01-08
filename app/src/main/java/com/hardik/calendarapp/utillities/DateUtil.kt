@@ -599,10 +599,20 @@ object DateUtil {
     }
 
     // Get day name from date string
-    fun getDayName(date: String): String {
+    fun getDayName(date: String, isShort: Boolean = false): String {
         val format = SimpleDateFormat(DATE_FORMAT_yyyy_MM_dd, Locale.getDefault())
         val parsedDate = format.parse(date)
-        return SimpleDateFormat("EEE", Locale.getDefault()).format(parsedDate ?: Date())
+
+        val dayFormat = if (isShort) "EEE" else "EEEE" // Choose the format based on the flag
+
+        return SimpleDateFormat(dayFormat, Locale.getDefault()).format(parsedDate ?: Date())
+    }
+    // Get current date
+    fun getCurrentDate(): Int { val calendar = Calendar.getInstance(); return calendar.get(Calendar.DATE) } // Gets the day of the month
+    fun getCurrentDate(pattern: String = DATE_FORMAT_yyyy_MM_dd): String {
+        val format = getDateFormat(pattern)
+        val calendar = Calendar.getInstance()
+        return format.format(calendar.time) // Formats the current date to yyyy-MM-dd
     }
 
     // Get week range (e.g., "5-11 Jan 2025 | 26 Jan - 1 Feb 2025 | 29 Dec 2024 - 4 Jan 2025")

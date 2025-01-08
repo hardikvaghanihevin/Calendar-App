@@ -78,7 +78,7 @@
 
     <fragment
         android:id="@+id/alertOptionFragment"
-        android:name="com.hardik.calendarapp.presentation.alert_option.AlertOptionFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.alert_option.AlertOptionFragment"
         android:label="@string/alert"
         tools:layout="@layout/fragment_alert_option" />
 

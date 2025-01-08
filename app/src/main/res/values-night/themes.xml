@@ -4,7 +4,8 @@
         <item name="colorPrimary">@color/action_bar_color</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowLightStatusBar">false</item><!--Use light(false) | dark(true) text/icons-->
+        <item name="android:windowLightStatusBar">false
+        </item><!--Use light(false) | dark(true) text/icons-->
 
         <item name="iconDrawable">@drawable/hamburger_icon_night</item>
         <item name="iconBackArrow">@drawable/back_arrow_icon_night</item>
@@ -34,10 +35,7 @@
     </style>
 
 
-
-
-
-<!--    its noting to use only ref default-->
+    <!--    its noting to use only ref default-->
     <style name="Theme.CalendarApp1" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_200</item>
@@ -50,5 +48,10 @@
         <!-- Status bar color. -->
         <!-- <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="ThemeOverlay.CalendarApp.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/accent_primary</item>
+        <item name="fullscreenTextColor">@color/white</item>
     </style>
 </resources>

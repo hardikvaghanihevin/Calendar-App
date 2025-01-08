@@ -798,7 +798,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         dialogItemEventCustomAlertMinuteBinding?.apply {
 
             var customAlertOffsetTimeStamp: Long? = null
-            tInEdtEventCustomAlertMinute.addTextChangedListener { text ->
+            edtEventCustomAlertMinute.addTextChangedListener { text ->
                 //customAlertOffsetTimeStamp = if(text == null) null
                 //else DateUtil.minutesToTimestamp(text.toString().toInt())
                 try {
@@ -807,11 +807,11 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     customAlertOffsetTimeStamp = DateUtil.minutesToTimestamp(number)
                 } catch (e: NumberFormatException) {
                     Log.e("NewEventFragment", "Error parsing input", e)
-                    tInEdtEventCustomAlertMinute.error = "Please enter a valid number"
+                    edtEventCustomAlertMinute.error = "Please enter a valid number"
                 }
             }
 
-            mBtnOky.setOnClickListener {
+            btnDone.setOnClickListener {
                 viewModel.updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)
 
                 if(viewModel.customAlertOffset.value != customAlertOffsetTimeStamp){
@@ -820,7 +820,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
                 dialog.dismiss()
             }
-            mBtnCancel.setOnClickListener {
+            btnCancel.setOnClickListener {
                 viewModel.updateAlertOffset(viewModel.alertOffset.value)
                 dialog.dismiss()
                 showAlertRemindDialog()

@@ -85,6 +85,7 @@ object AlarmScheduler {
         }
 
         val intent = Intent(context, NotificationReceiver::class.java).apply {
+            action = "com.hardik.calendarapp.NOTIFY_EVENT"
             putExtra("event", event)
         }
 
@@ -107,6 +108,7 @@ object AlarmScheduler {
     // Cancel the alarm for a specific event.
     private fun cancelAlarm(context: Context, event: Event) {
         val intent = Intent(context, NotificationReceiver::class.java)
+        intent.action = "com.hardik.calendarapp.NOTIFY_EVENT"
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             event.id.hashCode(),

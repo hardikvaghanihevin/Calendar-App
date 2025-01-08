@@ -124,6 +124,7 @@ class EventRepositoryImpl @Inject constructor(
     override suspend fun cancelAlarm(id: String) {
         Log.i(TAG, "cancelAlarm: id:$id")
         val intent = Intent(context, NotificationReceiver::class.java)
+        intent.action = "com.hardik.calendarapp.NOTIFY_EVENT"
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             id.hashCode(),

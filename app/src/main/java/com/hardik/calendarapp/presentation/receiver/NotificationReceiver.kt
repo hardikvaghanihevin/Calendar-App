@@ -1,15 +1,18 @@
 package com.hardik.calendarapp.presentation.receiver
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
@@ -54,7 +57,6 @@ class NotificationReceiver : BroadcastReceiver() {
 
 
 
-    @SuppressLint("MissingPermission")
     private fun showNotification(context: Context, title: String, description: String, id: String) {
         val notificationManager = NotificationManagerCompat.from(context)
 
@@ -73,14 +75,27 @@ class NotificationReceiver : BroadcastReceiver() {
         // If the channel is not null, create the channel (only on devices with API level 26 and above)
         channel?.let { notificationManager.createNotificationChannel(it) }
 
-        // Build notification
-        val notification = NotificationCompat.Builder(context, "event_channel_id")
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+        // Build notification with default
+        val notification = NotificationCompat.Builder(context, channelId)
+            //.setSmallIcon(android.R.drawable.ic_dialog_info) // Fallback for small icon
+            .setSmallIcon(R.drawable.notification_app_logo) // Fallback for small icon
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
+
+        // Show the notification
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
 
         notificationManager.notify(id.hashCode(), notification)
     }

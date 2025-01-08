@@ -107,7 +107,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 } else {
                     // Show day name and date
                     eventDayDate.visibility = View.VISIBLE
-                    eventDayDate.text = "${DateUtil.getDayName(event.startDate)}\n${event.date}" // e.g., Wed, 1
+                    eventDayDate.text = "${DateUtil.getDayName(event.startDate, isShort = true)}\n${event.date}" // e.g., Wed, 1
                     //eventFullWeekDate.visibility = View.VISIBLE
                     // Display the week range for the first event of each week
                     if (previousEventWeek != currentEventWeek) {
