@@ -71,9 +71,9 @@ class CalendarMonthOfYearAdapter(private var list: ArrayList<CalendarDayModel>, 
             binding.apply {
                 num.text = "$day"
                 if (calendarDayModel.isSelected)
-                    binding.constraintLay1.background = ContextCompat.getDrawable(itemView.context, R.drawable.month_navigator_shape_1)
+                    binding.constLay1ItemDateOfYearCalendarLay.background = ContextCompat.getDrawable(itemView.context, R.drawable.month_navigator_shape_1)
                 else
-                    binding.constraintLay1.background = null
+                    binding.constLay1ItemDateOfYearCalendarLay.background = null
 
                 when(calendarDayModel.state) {
                     -1->{

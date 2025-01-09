@@ -2,10 +2,15 @@
     <!-- Base application theme. -->
     <style name="Theme.CalendarApp" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/action_bar_color</item>
+
+        <!-- Disable Android 12+ splash screen -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@null</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@null</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@null</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowLightStatusBar">false
-        </item><!--Use light(false) | dark(true) text/icons-->
+        <item name="android:windowLightStatusBar">false</item><!--Use light(false) | dark(true) text/icons-->
 
         <item name="iconDrawable">@drawable/hamburger_icon_night</item>
         <item name="iconBackArrow">@drawable/back_arrow_icon_night</item>

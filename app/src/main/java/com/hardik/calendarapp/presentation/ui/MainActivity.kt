@@ -200,37 +200,52 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 // Destinations where FAB/Menu should be hidden
                 R.id.newEventFragment -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon2, duration = 0)
                     showViewWithAnimation(binding.saveEventIcon)
                 }
 
                 // Destinations where Save Event Icon should be shown
                 R.id.viewEventFragment -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon2, duration = 0)
                     showViewWithAnimation(binding.deleteEventIcon)
                     showViewWithAnimation(binding.saveEventIcon)//but it's for edit option not save use
                 }
 
                 // Destinations for Year and Month navigation
                 R.id.nav_year, R.id.nav_month -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon1, duration = 0)
                     showViewWithAnimation(binding.searchIcon)
                     showViewWithAnimation(binding.backToDateIcon)
                     showViewWithAnimation(binding.fab)
                 }
 
                 R.id.nav_select_country -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
                     showViewWithAnimation(binding.searchView)
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
 
                 R.id.nav_select_language -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
                 R.id.nav_settings -> { }
 
-                R.id.repeatOptionFragment -> { showViewWithAnimation(binding.saveSelectLanguageIcon) }
+                R.id.repeatOptionFragment -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                }
 
-                R.id.alertOptionFragment -> { showViewWithAnimation(binding.saveSelectLanguageIcon) }
+                R.id.alertOptionFragment -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                }
 
-                R.id.searchEventFragment -> { showViewWithAnimation(binding.searchView) }
+                R.id.searchEventFragment -> {
+                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.searchView)
+                }
+
                 // Default case: Hide everything except FAB
                 else -> {
                     hideAllViewsWithAnimation()
@@ -852,33 +867,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Function to show VIEW with animation
-    private fun showViewWithAnimation(fab: View) {
+    private fun showViewWithAnimation(fab: View, duration: Long = 300) {
         CoroutineScope(Dispatchers.Main).launch {
             fab.animate()
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(300) // animation duration in milliseconds
+                .setDuration(duration) // animation duration in milliseconds
                 .withStartAction { fab.visibility = View.VISIBLE }
                 .start()
         }
     }
 
     // Function to hide VIEW with animation
-    fun hideViewWithAnimation(fab: View) {
+    fun hideViewWithAnimation(fab: View, duration: Long = 300) {
         CoroutineScope(Dispatchers.Main).launch {
             fab.animate()
                 .alpha(0f)
                 .scaleX(0f)
                 .scaleY(0f)
-                .setDuration(300) // animation duration in milliseconds
+                .setDuration(duration) // animation duration in milliseconds
                 .withEndAction { fab.visibility = View.GONE }
                 .start()
         }
     }
 
     private fun hideAllViewsWithAnimation() {
-        val viewList = listOf( binding.fab, binding.searchIcon, binding.backToDateIcon, binding.saveEventIcon, binding.saveSelectLanguageIcon, binding.searchView, binding.deleteEventIcon)
+        val viewList = listOf( binding.llToolbarMenuIcon1, binding.fab, binding.searchIcon, binding.backToDateIcon, binding.llToolbarMenuIcon2, binding.deleteEventIcon, binding.saveEventIcon, binding.llToolbarMenuIcon3, binding.searchView, binding.saveSelectLanguageIcon, )
         viewList.forEach { hideViewWithAnimation(it) }
     }
 

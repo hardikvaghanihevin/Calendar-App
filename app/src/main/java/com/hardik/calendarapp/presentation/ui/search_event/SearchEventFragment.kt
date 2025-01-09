@@ -72,32 +72,30 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 //this.isIconified = false
                 //this.setIconifiedByDefault(false)
 
+                /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
+                // Adjust margins dynamically
+                val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                    setMargins(
+                        resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
+                        0,  // Top margin
+                        resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
+                        0   // Bottom margin
+                    )
+                }
+
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
-                        this.setPadding(
-                            resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )
-                        // Adjust margins dynamically
-                        val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(
-                                resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
-                                0,  // Top margin
-                                resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
-                                0   // Bottom margin
-                            )
-                        }
 
                     } else {
                         // Refocus the SearchView if it loses focus
                         //this.requestFocus()
 
                         // Set inactive background (null)
-                        this.setBackgroundResource(0) // 0 removes any background
-                        val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(0, 0, 0,0 )
-                        }
+                        //this.setBackgroundResource(0) // 0 removes any background
+                        //this.setBackgroundResource(R.drawable.item_background)
                     }
 
                 }
@@ -125,6 +123,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 // Handle the close action of SearchView
                 this.setOnCloseListener {
                     // Reset filter when the SearchView is closed
+                    this.setBackgroundResource(0)
                     currentQuery = null // Clear the query
                     eventAdapter.filter.filter("")
                     false // Return false if the event hasn't been consumed yet
@@ -163,6 +162,60 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
             // Add custom ItemDecoration for divider (34dp space)
             //binding.rvEvent.addItemDecoration(MonthDividerDecoration())
+
+            binding.rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    for (i in 0 until recyclerView.childCount) {
+                        val child = recyclerView.getChildAt(i)
+                        val viewHolder = recyclerView.getChildViewHolder(child) as EventAdapter.ViewHolder /*ParallaxAdapter.ParallaxViewHolder*/
+
+                        // Calculate the offset for parallax scrolling
+                        val offset = calculateParallaxOffset(recyclerView, child)
+                        viewHolder.updateParallaxOffset(offset)
+                    }
+                }
+
+                private fun calculateParallaxOffset(recyclerView: RecyclerView, view: View): Int {
+                    val recyclerViewHeight = recyclerView.height
+                    val itemCenter = (view.top + view.bottom) / 2
+                    val recyclerViewCenter = recyclerViewHeight / 2
+
+                    // Calculate the distance from the item center to the RecyclerView center
+                    val distanceFromCenter = recyclerViewCenter - itemCenter
+
+                    // Adjust the parallax intensity (higher values for stronger effect)
+                    val parallaxIntensity = 0.2//0.5f
+
+                    return (distanceFromCenter * parallaxIntensity).toInt()
+                }
+            })
+
+            /*binding.rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    for (i in 0 until recyclerView.childCount) {
+                        val child = recyclerView.getChildAt(i)
+                        val viewHolder = recyclerView.getChildViewHolder(child) as EventAdapter.ViewHolder*//*ParallaxAdapter.ParallaxViewHolder*//*
+
+                        // Get item details
+                        val imageView = child.findViewById<ImageView>(R.id.monthTransitionImage)
+                        val imageHeight = imageView.drawable?.intrinsicHeight ?: 0
+                        val viewTop = child.top
+                        val viewBottom = child.bottom
+
+                        // Update parallax offset
+                        viewHolder.updateParallaxOffset(
+                            imageHeight = imageHeight,
+                            viewTop = viewTop,
+                            viewBottom = viewBottom,
+                            recyclerViewHeight = recyclerView.height
+                        )
+                    }
+                }
+            })*/
 
             binding.rvEvent.adapter = eventAdapter
 

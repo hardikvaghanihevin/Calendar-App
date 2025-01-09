@@ -1,8 +1,11 @@
 package com.hardik.calendarapp.presentation.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -13,6 +16,7 @@ import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.databinding.ActivitySplashFullscreenBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DisplayUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -75,16 +79,16 @@ class SplashFullscreenActivity : AppCompatActivity() {
         }
 
         mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
-//        Handler(Looper.getMainLooper()).postDelayed(
-//            {
-//                DisplayUtil.disableFullScreen(binding.root, supportActionBar)
-//
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
-//
-//                finish()
-//            }, 3000
-//        )
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                DisplayUtil.disableFullScreen(binding.root, supportActionBar)
+
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+
+                finish()
+            }, 3000
+        )
 
     }
 

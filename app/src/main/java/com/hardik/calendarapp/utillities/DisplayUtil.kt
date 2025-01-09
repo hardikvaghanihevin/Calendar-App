@@ -1,10 +1,13 @@
 package com.hardik.calendarapp.utillities
 
+import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import androidx.appcompat.app.ActionBar
+import androidx.core.view.doOnDetach
 
 object DisplayUtil {
     //Utility for Converting dp to Pixels
@@ -56,4 +59,65 @@ object DisplayUtil {
                         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         }
     }
+
+    /**
+    isKeyboardVisible(this) { isVisible ->
+    if (isVisible) {}}
+    */
+    fun isKeyboardVisible(context: Context, onKeyboardVisibilityChanged: (isVisible: Boolean) -> Unit) {
+        val rootView = (context as? android.app.Activity)?.findViewById<View>(android.R.id.content)
+            ?: return // Return if rootView is not found
+
+        val listener = object : ViewTreeObserver.OnGlobalLayoutListener {
+            private var wasKeyboardVisible = false
+
+            override fun onGlobalLayout() {
+                val heightDiff = rootView.rootView.height - rootView.height
+                val isKeyboardVisible = heightDiff > rootView.height * 0.25 // Adjust threshold if needed
+
+                if (isKeyboardVisible != wasKeyboardVisible) {
+                    onKeyboardVisibilityChanged(isKeyboardVisible)
+                    wasKeyboardVisible = isKeyboardVisible
+                }
+            }
+        }
+
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+
+        // Ensure the listener is removed when the root view is detached
+        rootView.doOnDetach {
+            rootView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+    }
+
+
+    /**
+    val rootView = findViewById<View>(android.R.id.content)
+
+    isKeyboardVisible(rootView) { isVisible ->
+    if (isVisible) {}}
+    */
+    fun isKeyboardVisible(rootView: View, onKeyboardVisibilityChanged: (isVisible: Boolean) -> Unit) {
+        val listener = object : ViewTreeObserver.OnGlobalLayoutListener {
+            private var wasKeyboardVisible = false
+
+            override fun onGlobalLayout() {
+                val heightDiff = rootView.rootView.height - rootView.height
+                val isKeyboardVisible = heightDiff > rootView.height * 0.25 // Adjust threshold if needed
+
+                if (isKeyboardVisible != wasKeyboardVisible) {
+                    onKeyboardVisibilityChanged(isKeyboardVisible)
+                    wasKeyboardVisible = isKeyboardVisible
+                }
+            }
+        }
+
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+
+        // Remove the listener when necessary
+        rootView.doOnDetach {
+            rootView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+    }
+
 }

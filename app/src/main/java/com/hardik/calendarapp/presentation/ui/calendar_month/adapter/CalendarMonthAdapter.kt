@@ -74,9 +74,9 @@ class CalendarMonthAdapter(private var list: ArrayList<CalendarDayModel>, privat
                 binding.eventIndicator.visibility = if(calendarDayModel.eventIndicator) View.VISIBLE else View.INVISIBLE
 
                 if (calendarDayModel.isSelected)
-                    binding.constraintLay1.background = ContextCompat.getDrawable(itemView.context, R.drawable.month_navigator_shape_1)
+                    binding.constLay1ItemDateOfMonthCalendarLay.background = ContextCompat.getDrawable(itemView.context, R.drawable.month_navigator_shape_1)
                 else
-                    binding.constraintLay1.background = null
+                    binding.constLay1ItemDateOfMonthCalendarLay.background = null
 
                 when(calendarDayModel.state) {
                     -1->{

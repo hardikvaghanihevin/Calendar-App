@@ -9,7 +9,7 @@
     tools:ignore="HardcodedText">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLay1"
+        android:id="@+id/constLay1_itemDateOfYearCalendarLay"
         android:layout_width="wrap_content"
         android:layout_height="12dp"
         android:layout_marginBottom="0.5dp"

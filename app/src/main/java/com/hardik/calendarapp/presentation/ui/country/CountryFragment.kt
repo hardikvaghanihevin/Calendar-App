@@ -182,32 +182,29 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 //this.isIconified = false
                 //this.setIconifiedByDefault(false)
 
+                /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
+                // Adjust margins dynamically
+                val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                    setMargins(
+                        resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
+                        0,  // Top margin
+                        resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
+                        0   // Bottom margin
+                    )
+                }
+
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
-                        /*this.setPadding(
-                            resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
-                        // Adjust margins dynamically
-                        val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(
-                                resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
-                                0,  // Top margin
-                                resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
-                                0   // Bottom margin
-                            )
-                        }
 
                     } else {
                         // Refocus the SearchView if it loses focus
                         //this.requestFocus()
 
-                        // Set inactive background (null)
-                        this.setBackgroundResource(0) // 0 removes any background
-                        val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(0, 0, 0,0 )
-                        }
+                        //this.setBackgroundResource(R.drawable.item_background) // 0 removes any background
+
                     }
 
                 }
@@ -235,6 +232,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 // Handle the close action of SearchView
                 this.setOnCloseListener {
                     // Reset filter when the SearchView is closed
+                    this.setBackgroundResource(0) // 0 removes any background
                     currentQuery = null // Clear the query
                     countryAdapter.filter.filter("")
                     false // Return false if the event hasn't been consumed yet

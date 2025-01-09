@@ -70,9 +70,11 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
+                    android:id="@+id/ll_toolbarMenuIcon_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
+                    android:visibility="visible"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:orientation="horizontal">
@@ -83,14 +85,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="Search Icon"
+                        android:gravity="center"
                         android:padding="8dp"
                         android:src="?attr/iconSearch"
                         android:visibility="gone"
                         tools:visibility="visible"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/back_to_date_icon"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/text_primary" />
 
                     <!-- Back to date Icon -->
@@ -100,17 +99,24 @@
                         android:layout_height="@dimen/_21sdp"
                         android:background="?attr/iconBackToDate"
                         android:gravity="center"
+                        android:layout_gravity="center"
                         android:padding="0dp"
                         android:text="31"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_8ssp"
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:visibility="gone"
-                        tools:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/search_icon"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        tools:visibility="visible"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_toolbarMenuIcon_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:orientation="horizontal">
 
                     <!-- delete event button-->
                     <TextView
@@ -131,7 +137,6 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:visibility="visible" />
 
-
                     <!-- save event button-->
                     <!-- android:background="@drawable/save_event_icon"-->
                     <TextView
@@ -146,11 +151,18 @@
                         android:textSize="@dimen/_8ssp"
                         android:textStyle="bold"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
-                        app:layout_constraintTop_toTopOf="parent"
                         tools:visibility="visible" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_toolbarMenuIcon_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:orientation="horizontal">
 
                     <!-- Search view -->
                     <androidx.appcompat.widget.SearchView
@@ -165,18 +177,14 @@
                         android:visibility="visible"
                         android:iconifiedByDefault="false"
                         app:animateMenuItems="true"
-                        app:closeIcon="@android:drawable/btn_dialog"
                         app:dividerPadding="@dimen/_2sdp"
                         app:queryBackground="@null"
-                        app:searchHintIcon="@null"
                         app:showDividers="none"
                         app:searchIcon="?attr/iconSearch"
                         app:theme="@style/SearchViewStyle"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/toolbar_title"
-                        app:layout_constraintEnd_toEndOf="@id/toolbarMenuIcon"
                         />
+                        <!--app:searchHintIcon="@null"-->
+                        <!--app:closeIcon="@android:drawable/btn_dialog"-->
 
                     <!-- save select language button-->
                     <TextView
@@ -190,12 +198,9 @@
                         android:textSize="@dimen/_8ssp"
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:visibility="gone"
-                        tools:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        tools:visibility="visible" />
                 </LinearLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!--<androidx.appcompat.widget.SearchView

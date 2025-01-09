@@ -10,81 +10,147 @@
     tools:ignore="HardcodedText">
 
     <!-- Divider Image for month transition -->
-    <ImageView
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_itemEvent_img"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_105sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:cardElevation="@dimen/_1sdp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toTopOf="@id/constLay1_itemEvent"
+        app:layout_constraintEnd_toEndOf="@id/constLay1_itemEvent"
+        app:layout_constraintStart_toStartOf="@id/constLay1_itemEvent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--<com.hardik.calendarapp.presentation.ui.custom_view.scrollparallaximageview.ScrollParallaxImageView
+            android:id="@+id/monthTransitionImage"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_item_textview"
+            app:srcCompat="@drawable/bkg_01_jan" />-->
+        <ImageView
+            android:id="@+id/monthTransitionImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            app:srcCompat="@drawable/bkg_01_jan"
+            tools:visibility="visible" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimationView"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true" />
+        <!--            android:background="@drawable/line_white_drawable"-->
+
+    </androidx.cardview.widget.CardView>
+    <!-- Divider Image for month transition -->
+
+    <!--<ImageView
         android:id="@+id/monthTransitionImage"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_100sdp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_500sdp"
+        android:layout_marginHorizontal="@dimen/_13sdp"
         android:background="@drawable/month_transition_image"
-        android:src="@drawable/ic_launcher_background"
-        app:layout_constraintStart_toStartOf="@id/eventDayDate"
-        app:layout_constraintEnd_toEndOf="@id/constraintLay1"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/eventFullWeekDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:paddingBottom="@dimen/_10sdp"
-        android:text="5-11 Jan 2025"
-        android:textColor="@color/text_secondary"
-        app:layout_constraintBottom_toTopOf="@id/constraintLay1"
-        app:layout_constraintEnd_toEndOf="@id/constraintLay1"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/constraintLay1"
-        app:layout_constraintTop_toBottomOf="@id/monthTransitionImage" />
-
-    <TextView
-        android:id="@+id/eventDayDate"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:gravity="center"
-        android:text="Wed \n1 "
+        android:scaleType="fitXY"
         android:visibility="visible"
-        android:textColor="@color/accent_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintBottom_toBottomOf="@id/card_itemEvent_img"
+        app:layout_constraintEnd_toEndOf="@id/card_itemEvent_img"
+        app:layout_constraintStart_toStartOf="@id/card_itemEvent_img"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bkg_01_jan"
+        tools:visibility="visible" />-->
+<!--    <View-->
+<!--        android:id="@+id/view_itemEvent_outerRing"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="@dimen/_100sdp"-->
+<!--        android:background="@drawable/outer_ring_bg"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/constLay1_itemEvent"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/constLay1_itemEvent"-->
+<!--        app:layout_constraintStart_toStartOf="@id/constLay1_itemEvent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"/>-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLay1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/_10sdp"
-        android:background="?attr/eventBackground"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/eventDayDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/eventDayDate"
-        app:layout_constraintTop_toTopOf="@id/eventDayDate">
+        android:id="@+id/constLay1_itemEvent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_primary"
+        app:layout_constraintTop_toBottomOf="@id/card_itemEvent_img">
 
         <TextView
-            android:id="@+id/eventTitle"
+            android:id="@+id/eventFullWeekDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="new year"
-            android:textColor="@color/text_primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="0dp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:text="5-11 Jan 2025"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintBottom_toTopOf="@id/constLay2_itemEvent"
+            app:layout_constraintEnd_toEndOf="@id/constLay2_itemEvent"
             app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/constLay2_itemEvent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/eventDayDate"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:gravity="center"
+            android:text="Wed \n1 "
+            android:textColor="@color/accent_primary"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/eventTimePeriod"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constLay2_itemEvent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:text="All day"
-            android:textColor="@color/text_secondary"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:background="?attr/eventBackground"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/eventDayDate"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0" />
+            app:layout_constraintStart_toEndOf="@id/eventDayDate"
+            app:layout_constraintTop_toTopOf="@id/eventDayDate">
+
+            <TextView
+                android:id="@+id/eventTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="new year"
+                android:textColor="@color/text_primary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/eventTimePeriod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:text="All day"
+                android:textColor="@color/text_secondary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

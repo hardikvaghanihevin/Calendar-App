@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
@@ -113,7 +114,7 @@ class EventRepositoryImpl @Inject constructor(
     private fun scheduleAlarm(event: Event) {
         if (!hasExactAlarmPermission()) {
             Log.w(TAG, "Exact alarm permission missing.")
-            requestExactAlarmPermission()
+            requestExactAlarmPermission()//todo: here error occur on API 34 when event create( it has not permission to alarm manager)
         } else {
             AlarmScheduler.updateAlarm(context, event)
             Log.v(TAG, "Alarm scheduled for event: ${event}")
@@ -151,10 +152,12 @@ class EventRepositoryImpl @Inject constructor(
 
     // Request exact alarm permission
     private fun requestExactAlarmPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = android.net.Uri.parse("package:${context.packageName}") }
-            Toast.makeText(context, "Please allow exact alarm permission.", Toast.LENGTH_LONG).show()
-            context.startActivity(intent) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !hasExactAlarmPermission()) {
+            // Direct the user to the settings page for the app's exact alarm permission
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.parse("package:${context.packageName}") }
+            context.startActivity(intent)
+            //Toast.makeText(context, "Please allow exact alarm permission.", Toast.LENGTH_LONG).show()
+        }
         else {
             Toast.makeText(context, "Exact alarm permission not needed for this version.", Toast.LENGTH_SHORT).show() }
     }

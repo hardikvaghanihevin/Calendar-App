@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ItemEventLayout1Binding
@@ -90,10 +93,23 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
 
                 // Show divider image when the month changes
                 if (previousMonth != null && previousMonth != currentMonth) {
+                    cardItemEventImg.visibility = View.VISIBLE // Show the CardView
                     monthTransitionImage.visibility = View.VISIBLE // Show the image
                 } else {
+                    cardItemEventImg.visibility = View.GONE // Show the CardView
                     monthTransitionImage.visibility = View.GONE // Hide the image
                 }
+                val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
+                //val rawResourceUri = Uri.parse("android.resource://${binding.root.context.packageName}/${R.raw.data_test}")
+
+                Glide.with(monthTransitionImage.context)
+                    .load(imageUrl)
+                    .into(monthTransitionImage)
+
+                val lottieAnimationView = binding.lottieAnimationView // Ensure you have a LottieAnimationView in your layout
+                lottieAnimationView.setAnimation(R.raw.data_test) // Set the raw JSON file
+                lottieAnimationView.loop(true)
+                lottieAnimationView.playAnimation() // Start the animation
 
                 // Check if the current event's week is the same as the previous event
                 val currentEventWeek = DateUtil.getWeekOfYear(event.startDate, DATE_FORMAT_yyyy_MM_dd)
@@ -134,6 +150,22 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 // Handle item clicks
                 itemEventLayout.setOnClickListener { configureEventCallBack?.invoke(event) }
             }
+
+        }
+        fun updateParallaxOffset(offset: Int) {
+            // Apply translationY to create the parallax effect
+            binding.monthTransitionImage.translationY = offset.toFloat()
+        }
+        fun updateParallaxOffset(imageHeight: Int, viewTop: Int, viewBottom: Int, recyclerViewHeight: Int) {
+            // Calculate how much of the RecyclerView is visible in relation to this item
+            val visibleHeight = viewBottom.coerceAtMost(recyclerViewHeight) - viewTop.coerceAtLeast(0)
+
+            // Calculate offset based on the visible part of the RecyclerView
+            val totalScrollableDistance = imageHeight - visibleHeight
+            val scrollOffset = ((viewTop.toFloat() / recyclerViewHeight) * totalScrollableDistance).toInt()
+
+            // Set translationY for parallax effect
+            binding.monthTransitionImage.translationY = -scrollOffset.toFloat()
         }
     }
 
