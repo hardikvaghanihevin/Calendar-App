@@ -173,7 +173,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
                         // Calculate the offset for parallax scrolling
                         val offset = calculateParallaxOffset(recyclerView, child)
-                        viewHolder.updateParallaxOffset(offset)
+                        //viewHolder.updateParallaxOffset(offset)
                     }
                 }
 
@@ -201,7 +201,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         val viewHolder = recyclerView.getChildViewHolder(child) as EventAdapter.ViewHolder*//*ParallaxAdapter.ParallaxViewHolder*//*
 
                         // Get item details
-                        val imageView = child.findViewById<ImageView>(R.id.monthTransitionImage)
+                        val imageView = child.findViewById<ImageView>(R.id.img_itemEventLay_monthTransitionImage)
                         val imageHeight = imageView.drawable?.intrinsicHeight ?: 0
                         val viewTop = child.top
                         val viewBottom = child.bottom

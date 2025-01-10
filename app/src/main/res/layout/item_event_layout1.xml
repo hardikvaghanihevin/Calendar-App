@@ -13,77 +13,79 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/card_itemEvent_img"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_105sdp"
+        android:layout_height="@dimen/_125sdp"
         android:layout_marginHorizontal="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:visibility="gone"
         app:cardCornerRadius="@dimen/_10sdp"
         app:cardElevation="@dimen/_1sdp"
-        app:cardUseCompatPadding="true"
+        app:cardUseCompatPadding="false"
         app:layout_constraintBottom_toTopOf="@id/constLay1_itemEvent"
         app:layout_constraintEnd_toEndOf="@id/constLay1_itemEvent"
         app:layout_constraintStart_toStartOf="@id/constLay1_itemEvent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
 
-        <!--<com.hardik.calendarapp.presentation.ui.custom_view.scrollparallaximageview.ScrollParallaxImageView
-            android:id="@+id/monthTransitionImage"
-            android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_item_textview"
-            app:srcCompat="@drawable/bkg_01_jan" />-->
         <ImageView
-            android:id="@+id/monthTransitionImage"
+            android:id="@+id/img_itemEventLay_monthTransitionImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:scaleType="fitXY"
             android:visibility="gone"
             app:srcCompat="@drawable/bkg_01_jan"
             tools:visibility="visible" />
+
+        <!--<ImageView
+            android:id="@+id/img_itemEventLay_monthTransitionImage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_230sdp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            app:srcCompat="@drawable/bkg_01_jan"
+            tools:visibility="visible" />-->
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieAnimationView"
             android:layout_width="@dimen/_120sdp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:visibility="gone"
             app:lottie_autoPlay="true"
             app:lottie_loop="true" />
-        <!--            android:background="@drawable/line_white_drawable"-->
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_itemEvent_monthName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/post_nord_sans_medium"
+                android:text="January"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_18ssp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.15" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-    <!-- Divider Image for month transition -->
-
-    <!--<ImageView
-        android:id="@+id/monthTransitionImage"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_500sdp"
-        android:layout_marginHorizontal="@dimen/_13sdp"
-        android:background="@drawable/month_transition_image"
-        android:scaleType="fitXY"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/card_itemEvent_img"
-        app:layout_constraintEnd_toEndOf="@id/card_itemEvent_img"
-        app:layout_constraintStart_toStartOf="@id/card_itemEvent_img"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bkg_01_jan"
-        tools:visibility="visible" />-->
-<!--    <View-->
-<!--        android:id="@+id/view_itemEvent_outerRing"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="@dimen/_100sdp"-->
-<!--        android:background="@drawable/outer_ring_bg"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/constLay1_itemEvent"-->
-<!--        app:layout_constraintEnd_toEndOf="@id/constLay1_itemEvent"-->
-<!--        app:layout_constraintStart_toStartOf="@id/constLay1_itemEvent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"/>-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constLay1_itemEvent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/card_itemEvent_img">
 
         <TextView
@@ -91,9 +93,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
-            android:paddingBottom="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:fontFamily="@font/post_nord_sans_regular"
             android:text="5-11 Jan 2025"
             android:textColor="@color/text_secondary"
+            android:textSize="@dimen/_10ssp"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@id/constLay2_itemEvent"
             app:layout_constraintEnd_toEndOf="@id/constLay2_itemEvent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -105,9 +110,11 @@
             android:layout_width="@dimen/_30sdp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_10sdp"
+            android:fontFamily="@font/post_nord_sans_regular"
             android:gravity="center"
             android:text="Wed \n1 "
             android:textColor="@color/accent_primary"
+            android:textSize="@dimen/_14ssp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -129,10 +136,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
+                android:fontFamily="@font/post_nord_sans_regular"
                 android:text="new year"
                 android:textColor="@color/text_primary"
+                android:textSize="@dimen/_14ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/eventTimePeriod"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -140,9 +149,12 @@
                 android:id="@+id/eventTimePeriod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="@dimen/_6sdp"
+                android:background="@color/background_secondary"
+                android:paddingHorizontal="@dimen/_6sdp"
                 android:text="All day"
                 android:textColor="@color/text_secondary"
+                android:textSize="@dimen/_12ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.hardik.calendarapp.R
@@ -91,20 +91,23 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 val currentMonth = DateUtil.getMonthName(event.startDate, DATE_FORMAT_yyyy_MM_dd)
                 val previousMonth = previousEvent?.let { DateUtil.getMonthName(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
 
+
                 // Show divider image when the month changes
                 if (previousMonth != null && previousMonth != currentMonth) {
                     cardItemEventImg.visibility = View.VISIBLE // Show the CardView
-                    monthTransitionImage.visibility = View.VISIBLE // Show the image
+                    imgItemEventLayMonthTransitionImage.visibility = View.VISIBLE // Show the image
+                    binding.tvItemEventMonthName.text = currentMonth
                 } else {
                     cardItemEventImg.visibility = View.GONE // Show the CardView
-                    monthTransitionImage.visibility = View.GONE // Hide the image
+                    imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image
                 }
-                val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
+                val imageUrl = monthImgResource.get(event.month.toInt())
+                //val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
                 //val rawResourceUri = Uri.parse("android.resource://${binding.root.context.packageName}/${R.raw.data_test}")
 
-                Glide.with(monthTransitionImage.context)
+                Glide.with(imgItemEventLayMonthTransitionImage.context)
                     .load(imageUrl)
-                    .into(monthTransitionImage)
+                    .into(imgItemEventLayMonthTransitionImage)
 
                 val lottieAnimationView = binding.lottieAnimationView // Ensure you have a LottieAnimationView in your layout
                 lottieAnimationView.setAnimation(R.raw.data_test) // Set the raw JSON file
@@ -134,8 +137,25 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                         eventFullWeekDate.visibility = View.VISIBLE
                         eventFullWeekDate.text = DateUtil.getWeekRange(dateForWeek, weekStart)
 
+//                        eventFullWeekDate.apply {
+//                            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+//                                val currentStart = marginStart // Preserve the current start margin
+//                                val currentEnd = marginEnd     // Preserve the current end margin
+//                                val currentBottom = marginBottom  // Preserve the current bottom margin
+//
+//                                // Update only top and bottom margins
+//                                setMargins(
+//                                    currentStart,// Start margin
+//                                    resources.getDimension(com.intuit.sdp.R.dimen._19sdp).toInt(), // Top margin
+//                                    currentEnd,// End margin
+//                                    currentBottom  // Bottom margin
+//                                )
+//                            }
+//                        }
+
                     } else {
                         eventFullWeekDate.visibility = View.GONE
+                        if (imgItemEventLayMonthTransitionImage.isVisible && cardItemEventImg.isVisible){ }
                     }
                 }
 
@@ -154,7 +174,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
         }
         fun updateParallaxOffset(offset: Int) {
             // Apply translationY to create the parallax effect
-            binding.monthTransitionImage.translationY = offset.toFloat()
+            binding.imgItemEventLayMonthTransitionImage.translationY = offset.toFloat()
         }
         fun updateParallaxOffset(imageHeight: Int, viewTop: Int, viewBottom: Int, recyclerViewHeight: Int) {
             // Calculate how much of the RecyclerView is visible in relation to this item
@@ -165,7 +185,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
             val scrollOffset = ((viewTop.toFloat() / recyclerViewHeight) * totalScrollableDistance).toInt()
 
             // Set translationY for parallax effect
-            binding.monthTransitionImage.translationY = -scrollOffset.toFloat()
+            binding.imgItemEventLayMonthTransitionImage.translationY = -scrollOffset.toFloat()
         }
     }
 
@@ -207,3 +227,18 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
     }
 
 }
+
+private val monthImgResource = intArrayOf(
+    R.drawable.bkg_01_jan,
+    R.drawable.bkg_02_feb,
+    R.drawable.bkg_03_mar,
+    R.drawable.bkg_04_apr,
+    R.drawable.bkg_05_may,
+    R.drawable.bkg_06_jun,
+    R.drawable.bkg_07_jul,
+    R.drawable.bkg_08_aug,
+    R.drawable.bkg_09_sep,
+    R.drawable.bkg_10_oct,
+    R.drawable.bkg_11_nov,
+    R.drawable.bkg_12_dec
+)

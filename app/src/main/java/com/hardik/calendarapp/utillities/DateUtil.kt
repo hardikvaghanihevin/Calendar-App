@@ -658,6 +658,65 @@ object DateUtil {
         }
     }
 
+    fun getMonthWeekRanges(monthYear: String, startOfWeek: Int): List<String> {
+        val format = SimpleDateFormat("MM-yyyy", Locale.getDefault())
+        val parsedDate = format.parse(monthYear)
+        val calendar = Calendar.getInstance().apply {
+            time = parsedDate ?: Date()
+            set(Calendar.DAY_OF_MONTH, 1) // Set to the first day of the month
+        }
+
+        val result = mutableListOf<String>()
+        val dayFormat = SimpleDateFormat("dd", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
+
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        // Adjust calendar to the start of the week for the first day of the month
+        calendar.firstDayOfWeek = startOfWeek
+        while (calendar.get(Calendar.DAY_OF_WEEK) != startOfWeek) {
+            calendar.add(Calendar.DAY_OF_WEEK, -1)
+        }
+
+        // Generate week ranges for the given month
+        while (calendar.get(Calendar.MONTH) <= currentMonth || calendar.get(Calendar.YEAR) < currentYear) {
+            val startOfWeekDate = calendar.time
+
+            // Calculate the end of the week
+            calendar.add(Calendar.DAY_OF_WEEK, 6)
+            val endOfWeekDate = calendar.time
+
+            val startDay = dayFormat.format(startOfWeekDate)
+            val endDay = dayFormat.format(endOfWeekDate)
+            val startMonth = monthFormat.format(startOfWeekDate)
+            val endMonth = monthFormat.format(endOfWeekDate)
+            val startYear = yearFormat.format(startOfWeekDate)
+            val endYear = yearFormat.format(endOfWeekDate)
+
+            if (calendar.get(Calendar.MONTH) > currentMonth && calendar.get(Calendar.YEAR) == currentYear) break
+            if (calendar.get(Calendar.YEAR) > currentYear) break
+
+            // Format the week range
+            val weekRange = when {
+                startMonth == endMonth -> "$startDay-$endDay $startMonth $startYear"
+                else -> "$startDay $startMonth - $endDay $endMonth $startYear"
+            }
+
+            // Include only ranges that belong to the target month
+            if (calendar.get(Calendar.MONTH) == currentMonth || calendar.time <= calendar.time) {
+                result.add(weekRange)
+            }
+
+            // Move to the next week
+            calendar.add(Calendar.DAY_OF_WEEK, 1)
+        }
+
+        return result
+    }
+
+
     // Function to get the week number of the year based on the provided date format
     fun getWeekOfYear(startDate: String, dateFormat: String): Int {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
