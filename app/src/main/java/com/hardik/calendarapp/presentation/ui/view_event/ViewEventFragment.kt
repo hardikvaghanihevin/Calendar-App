@@ -107,7 +107,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
 
         /** Delete Event  */
-        (activity as MainActivity).binding.deleteEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.deleteEventIcon.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
                 if (argEvent.eventType != EventType.PERSONAL){
@@ -127,7 +127,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
 
         /** Edit Event  */
-        (activity as MainActivity).binding.saveEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.saveEventIcon.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
                 if (argEvent.eventType != EventType.PERSONAL){

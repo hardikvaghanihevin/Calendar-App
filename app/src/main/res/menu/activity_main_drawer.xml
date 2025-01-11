@@ -29,6 +29,19 @@
             android:icon="@drawable/jump_to_date_icon"
             android:title="@string/jump_to_date" />
         <item
+            android:id="@+id/nav_privacy_policy"
+            android:icon="@drawable/privacy_policy_icon"
+            android:title="Privacy policy" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/setting_icon"
+            android:title="@string/settings" />
+        <!--
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/setting_icon"
+            android:title="@string/settings" />
+        <item
             android:id="@+id/nav_app_theme"
             android:icon="@drawable/app_theme_icon"
             android:title="App theme" />
@@ -37,20 +50,8 @@
             android:icon="@drawable/rate_our_app_icon"
             android:title="Rate our app" />
         <item
-            android:id="@+id/nav_privacy_policy"
-            android:icon="@drawable/privacy_policy_icon"
-            android:title="Privacy policy" />
-        <item
             android:id="@+id/nav_device_info"
             android:icon="@drawable/device_information_icon"
-            android:title="Device information" />
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/setting_icon"
-            android:title="@string/settings" />
-        <item
-            android:id="@+id/nav_setting"
-            android:icon="@drawable/setting_icon"
-            android:title="@string/settings" />
+            android:title="Device information" />-->
     </group>
 </menu>

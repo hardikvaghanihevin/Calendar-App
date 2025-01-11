@@ -272,7 +272,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         binding.switchAllDay.setOnCheckedChangeListener { buttonView, isChecked -> viewModel.updateAllDayStatus(isChecked) }
 
         /** Save Event  */
-        (activity as MainActivity).binding.saveEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.saveEventIcon.apply {
             text = resources.getString(R.string.action_save)
             setOnClickListener {
                 lifecycleScope.launch {

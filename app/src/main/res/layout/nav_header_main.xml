@@ -1,35 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:background="@drawable/side_nav_bar"
+    android:background="@color/background_primary"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/nav_header_desc"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+    >
+<!--    android:theme="@style/ThemeOverlay.AppCompat.Dark"-->
+<!--    android:background="@drawable/side_nav_bar"-->
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="@string/nav_header_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:id="@+id/tv_navHeader_date"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:fontFamily="@font/post_nord_sans_medium"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="13"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_25ssp"
+        android:textStyle="normal"
+        android:layout_marginHorizontal="@dimen/_8sdp"
+        android:background="@drawable/bg_nav_header_date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_navHeader_day"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_navHeader_day"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/nav_header_subtitle" />
-</LinearLayout>
+        android:fontFamily="@font/post_nord_sans_medium"
+        android:gravity="start"
+        android:singleLine="true"
+        android:text="Friday"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/_18ssp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@id/tv_navHeader_monthNameYear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_navHeader_date"
+        app:layout_constraintTop_toTopOf="@id/tv_navHeader_date" />
+
+    <TextView
+        android:id="@+id/tv_navHeader_monthNameYear"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/post_nord_sans_medium"
+        android:gravity="start"
+        android:singleLine="true"
+        android:text="December 2024"
+        android:textColor="@color/text_secondary"
+        android:textSize="@dimen/_18ssp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="@id/tv_navHeader_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tv_navHeader_day"
+        app:layout_constraintTop_toBottomOf="@id/tv_navHeader_day"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

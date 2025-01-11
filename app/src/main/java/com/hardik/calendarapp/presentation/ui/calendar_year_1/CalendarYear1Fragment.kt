@@ -98,7 +98,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
 */
         /** Back to current year */
-        (activity as MainActivity).binding.backToDateIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.backToDateIcon.setOnClickListener {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
             // Get the position of the key in the yearList
             val yearKeyPos: Int? = getPositionFromYear(yearList, backToCurrentYear)

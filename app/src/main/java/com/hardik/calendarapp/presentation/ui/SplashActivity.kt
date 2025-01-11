@@ -23,7 +23,8 @@ class SplashActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()//by activityViewModels()
     private lateinit var binding: ActivitySplashBinding
     val date = DateUtil.getCurrentDate()
-    val day = DateUtil.getDayName(DateUtil.getCurrentDate(pattern = DateUtil.DATE_FORMAT_yyyy_MM_dd), isShort = false)
+    val day = DateUtil.getCurrentDay(isShort = false)
+    //val day = DateUtil.getDayName(DateUtil.getCurrentDate(pattern = DateUtil.DATE_FORMAT_yyyy_MM_dd), isShort = false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

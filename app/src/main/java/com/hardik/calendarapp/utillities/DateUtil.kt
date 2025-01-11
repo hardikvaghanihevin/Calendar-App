@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import org.joda.time.DateTime
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
@@ -26,6 +27,7 @@ object DateUtil {
     const val TIME_FORMAT_h_mm_a = "h:mm a"
     const val TIME_FORMAT_mm = "mm"
     const val TIME_FORMAT_hh_mm_a = "hh:mm a"
+    const val DATE_FORMAT_MMMM_yyyy = "MMMM yyyy"
     const val DATE_FORMAT_yyyy_MM_dd = "yyyy-MM-dd"
     const val DATE_FORMAT_dd_MM_yyyy = "dd MM yyyy"
     const val DATE_FORMAT_dd_MM_yyyy_1 = "dd-MM-yyyy"
@@ -607,13 +609,19 @@ object DateUtil {
 
         return SimpleDateFormat(dayFormat, Locale.getDefault()).format(parsedDate ?: Date())
     }
-    // Get current date
-    fun getCurrentDate(): Int { val calendar = Calendar.getInstance(); return calendar.get(Calendar.DATE) } // Gets the day of the month
     fun getCurrentDate(pattern: String = DATE_FORMAT_yyyy_MM_dd): String {
         val format = getDateFormat(pattern)
         val calendar = Calendar.getInstance()
         return format.format(calendar.time) // Formats the current date to yyyy-MM-dd
     }
+    // Get current date
+    fun getCurrentDate(): Int { val calendar = Calendar.getInstance(); return calendar.get(Calendar.DATE) } // Gets the date of the month
+    // Get current day string
+    fun getCurrentDay(isShort: Boolean = false): String { return getDayName(getCurrentDate(pattern = DATE_FORMAT_yyyy_MM_dd), isShort = isShort) } // Gets the day of the month
+    // Get current month int / String
+    fun getCurrentMonth(isString: Boolean = false): Any { val calendar = Calendar.getInstance(); val month = calendar.get(Calendar.MONTH);return if (isString) DateFormatSymbols().months[month] else month } // Gets the month (0 OR January) of the year
+    // Get current year
+    fun getCurrentYear(): Int { val calendar = Calendar.getInstance(); return calendar.get(Calendar.YEAR) } // Gets the year
 
     // Get week range (e.g., "5-11 Jan 2025 | 26 Jan - 1 Feb 2025 | 29 Dec 2024 - 4 Jan 2025")
     fun getWeekRange(startDate: String, startOfWeek: Int): String {
@@ -754,6 +762,31 @@ object DateUtil {
             calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) ?: ""
         } else {
             "" // Return an empty string if date parsing fails
+        }
+    }
+
+    /**
+     * Extracts the year and month (as 0-based index) from a formatted string.
+     *
+     * @param s A string in the format "MMMM yyyy" (e.g., "January 2025").
+     * @return A Pair containing the year (Int) and month (Int, 0-based index) if parsing is successful, or null if it fails.
+     *
+     * Example:
+     * Input: "January 2025"
+     * Output: Pair(2025, 0) // January is 0-based
+     */
+    fun reverseYearMonth(s: String, pattern: String = DATE_FORMAT_MMMM_yyyy): Pair<Int, Int>? {
+        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault()) // Pattern for "Month Year"
+        return try {
+            val date = dateFormat.parse(s)
+            val calendar = Calendar.getInstance()
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH) // Months are 0-based
+            Pair(year, month)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null // Return null if parsing fails
         }
     }
 }

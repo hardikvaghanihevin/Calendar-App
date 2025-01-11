@@ -151,7 +151,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
 
         /** Save Selected Country */
-        (activity as MainActivity).binding.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.saveSelectLanguageIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     viewModel.saveSelectedCountries(
@@ -174,7 +174,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         }
 
         /** Search view for Country */
-        (activity as MainActivity).binding.searchView.apply {
+        (activity as MainActivity).binding.appBarMain.searchView.apply {
             if (isAdded){
                 // Set inactive background (null)
                 this.setBackgroundResource(0) // 0 removes any background

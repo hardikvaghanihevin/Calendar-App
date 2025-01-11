@@ -5,32 +5,30 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_year">
 
+<!--
     <fragment
         android:id="@+id/nav_home"
         android:name="com.hardik.calendarapp.presentation.ui.home.HomeFragment"
+        android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
-<!--        android:label="@string/menu_home"-->
 
     <fragment
         android:id="@+id/calendarMonthFragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month.CalendarMonthFragment"
+        android:label="@string/calendar_month"
         tools:layout="@layout/fragment_calendar_month" />
-<!--        android:label="@string/calendar_month"-->
 
     <fragment
         android:id="@+id/calendarYearFragment"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year.CalendarYearFragment"
+        android:label="@string/calendar_year"
         tools:layout="@layout/fragment_calendar_year" />
-<!--        android:label="@string/calendar_year"-->
 
     <fragment
-        android:id="@+id/nav_month"
-        android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
-        android:label="@string/app_name"
-        tools:layout="@layout/fragment_calendar_month1">
-        <!--android:label="@string/calendar_month"-->
-
-    </fragment>
+        android:id="@+id/nav_settings"
+        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingsFragment"
+        android:label="@string/settings" />
+-->
 
     <fragment
         android:id="@+id/nav_year"
@@ -42,6 +40,37 @@
             android:id="@+id/action_calendarYear1Fragment_to_calendarMonth1Fragment"
             app:destination="@id/nav_month" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_month"
+        android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_calendar_month1"/>
+        <!--android:label="@string/calendar_month"-->
+
+    <fragment
+        android:id="@+id/nav_select_country"
+        android:name="com.hardik.calendarapp.presentation.ui.country.CountryFragment"
+        android:label="@string/country_header"
+        tools:layout="@layout/fragment_country" />
+
+    <fragment
+        android:id="@+id/nav_select_language"
+        android:name="com.hardik.calendarapp.presentation.ui.language.LanguageFragment"
+        android:label="@string/language_header"
+        tools:layout="@layout/fragment_language" />
+
+    <fragment
+        android:id="@+id/nav_setting"
+        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_setting" />
+
+    <fragment
+        android:id="@+id/searchEventFragment"
+        android:name="com.hardik.calendarapp.presentation.ui.search_event.SearchEventFragment"
+        android:label="@string/view_event"
+        tools:layout="@layout/fragment_search_event" />
 
     <fragment
         android:id="@+id/newEventFragment"
@@ -56,29 +85,6 @@
         tools:layout="@layout/fragment_view_event" />
 
     <fragment
-        android:id="@+id/nav_settings"
-        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingsFragment"
-        android:label="@string/settings" />
-
-    <fragment
-        android:id="@+id/nav_setting"
-        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingFragment"
-        android:label="@string/settings"
-        tools:layout="@layout/fragment_setting" />
-
-    <fragment
-        android:id="@+id/nav_select_language"
-        android:name="com.hardik.calendarapp.presentation.ui.language.LanguageFragment"
-        android:label="@string/language_header"
-        tools:layout="@layout/fragment_language" />
-
-    <fragment
-        android:id="@+id/nav_select_country"
-        android:name="com.hardik.calendarapp.presentation.ui.country.CountryFragment"
-        android:label="@string/country_header"
-        tools:layout="@layout/fragment_country" />
-
-    <fragment
         android:id="@+id/repeatOptionFragment"
         android:name="com.hardik.calendarapp.presentation.ui.repeat_option.RepeatOptionFragment"
         android:label="@string/repeat"
@@ -89,11 +95,5 @@
         android:name="com.hardik.calendarapp.presentation.ui.alert_option.AlertOptionFragment"
         android:label="@string/alert"
         tools:layout="@layout/fragment_alert_option" />
-
-    <fragment
-        android:id="@+id/searchEventFragment"
-        android:name="com.hardik.calendarapp.presentation.ui.search_event.SearchEventFragment"
-        android:label="@string/view_event"
-        tools:layout="@layout/fragment_search_event" />
 
 </navigation>

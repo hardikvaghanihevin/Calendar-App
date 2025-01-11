@@ -22,6 +22,8 @@
     <color name="accent_primary">#1F95AF</color>
     <color name="error">#FF2802</color>
 
+    <color name="scrim_color">#600E0E0E</color>
+
     <color name="action_bar_color">@color/background_primary</color>
     <color name="app_bar_color">@color/background_primary</color>
     <color name="action_button_color">@color/accent_primary</color>

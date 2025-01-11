@@ -20,6 +20,9 @@ import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -51,6 +54,7 @@ import com.hardik.calendarapp.presentation.adapter.DrawerMenuAdapter
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
 import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
 import com.hardik.calendarapp.utillities.AlarmScheduler
+import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,11 +85,12 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
-    private val toolbarTitle: TextView? by lazy { binding.toolbarTitle }
+    private val toolbarTitle: TextView? by lazy { binding.appBarMain.toolbarTitle }
     private fun updateToolbarTitle(title: String?) {
         //toolbarTitle?.text = title ?: resources.getString(R.string.app_name)
         mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name)) }//title
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate: ")
 
@@ -112,27 +117,33 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //binding.drawerLayout.setScrimColor(ContextCompat.getColor(this, R.color.blue))
+        //binding.appBarMain.mainContent.foreground = ColorDrawable(ContextCompat.getColor(this@MainActivity, R.color.scrim_color))
+
         checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
 
         setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
         setupToolbar() //setupNavigation Function: Centralized navigation setup, including AppBarConfiguration.
+        setupDrawerHeader()
         setupDrawerMenu() //setupDrawerMenu Function: Cleanly handles drawer menu initialization.
-
-       /*
-        toolbar = binding.appBarMain.toolbar
-        setSupportActionBar(toolbar)
-        // Change the navigation icon color
-        toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.drawerIconColor))
+        handelBackPressed()
 
 
-        drawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.jumpToDate, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)*/
+        /*
+         toolbar = binding.appBarMain.toolbar
+         setSupportActionBar(toolbar)
+         // Change the navigation icon color
+         toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.drawerIconColor))
+
+
+         drawerLayout = binding.drawerLayout
+         val navView: NavigationView = binding.navView
+         navController = findNavController(R.id.nav_host_fragment_content_main)
+         // Passing each menu ID as a set of Ids because each
+         // menu should be considered as top level destinations.
+         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.jumpToDate, R.id.calendarMonthFragment, R.id.calendarMonth1Fragment,R.id.calendarYearFragment, R.id.calendarYear1Fragment), drawerLayout)
+         setupActionBarWithNavController(navController, appBarConfiguration)
+         navView.setupWithNavController(navController)*/
 
 //        binding.appBarMain.toolbar.navigationIcon = null
         //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).setAnchorView(R.id.fab).show()
@@ -140,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         //val currentDestination = navController.currentDestination?.id
         //if (currentDestination != R.id.newEventFragment)
 
-        binding.fab.setOnClickListener { view ->
+        binding.appBarMain.fab.setOnClickListener { view ->
             Log.i(TAG, "onCreate: clicked fab:")
 
             bundle = (bundle ?: Bundle()).apply {
@@ -154,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         // Collecting the StateFlow
         lifecycleScope.launch {
 
-            mainViewModel.toolbarTitle.collectLatest { title-> binding.toolbarTitle.text = title }
+            mainViewModel.toolbarTitle.collectLatest { title-> binding.appBarMain.toolbarTitle.text = title }
 
             mainViewModel.holidayApiState.collect { dataState ->
                 if (dataState.isLoading) {
@@ -212,53 +223,53 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 // Destinations where FAB/Menu should be hidden
                 R.id.newEventFragment -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon2, duration = 0)
-                    showViewWithAnimation(binding.saveEventIcon)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon2, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.saveEventIcon)
                 }
 
                 // Destinations where Save Event Icon should be shown
                 R.id.viewEventFragment -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon2, duration = 0)
-                    showViewWithAnimation(binding.deleteEventIcon)
-                    showViewWithAnimation(binding.saveEventIcon)//but it's for edit option not save use
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon2, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.deleteEventIcon)
+                    showViewWithAnimation(binding.appBarMain.saveEventIcon)//but it's for edit option not save use
                 }
 
                 // Destinations for Year and Month navigation
                 R.id.nav_year, R.id.nav_month -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon1, duration = 0)
-                    showViewWithAnimation(binding.searchIcon)
-                    showViewWithAnimation(binding.backToDateIcon)
-                    showViewWithAnimation(binding.fab)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon1, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.searchIcon)
+                    showViewWithAnimation(binding.appBarMain.backToDateIcon)
+                    showViewWithAnimation(binding.appBarMain.fab)
                 }
 
                 R.id.nav_select_country -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
-                    showViewWithAnimation(binding.searchView)
-                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.searchView)
+                    showViewWithAnimation(binding.appBarMain.saveSelectLanguageIcon)
                 }
 
                 R.id.nav_select_language -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
-                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.saveSelectLanguageIcon)
                 }
 
-                R.id.nav_settings -> { }// todo: default settings fragment
+                //R.id.nav_settings -> { }// todo: default settings fragment
 
                 R.id.nav_setting -> { }// todo: own setting fragment
 
                 R.id.repeatOptionFragment -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
-                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.saveSelectLanguageIcon)
                 }
 
                 R.id.alertOptionFragment -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
-                    showViewWithAnimation(binding.saveSelectLanguageIcon)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.saveSelectLanguageIcon)
                 }
 
                 R.id.searchEventFragment -> {
-                    showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
-                    showViewWithAnimation(binding.searchView)
+                    showViewWithAnimation(binding.appBarMain.llToolbarMenuIcon3, duration = 0)
+                    showViewWithAnimation(binding.appBarMain.searchView)
                 }
 
                 // Default case: Hide everything except FAB
@@ -513,7 +524,7 @@ class MainActivity : AppCompatActivity() {
 
                 lifecycleScope.launch {
                     // Make sure the navigation happens on the main thread
-                    Log.e(TAG, "navigateToCalendarMonth:  ${Thread.currentThread().name}", )
+                    Log.e(TAG, "navigateToCalendarMonth:  ${Thread.currentThread().name}")
                     val bundle = Bundle().apply {
                         putInt(Constants.KEY_YEAR, selectedYear)
                         putInt(Constants.KEY_MONTH, selectedMonth -1)
@@ -762,7 +773,7 @@ class MainActivity : AppCompatActivity() {
         // Listen for destination changes to update the navigation icon
         navController.addOnDestinationChangedListener { _, destination, _ ->
             updateSelectedDrawerItem(destination.id)
-            val navIcon = binding.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
+            val navIcon = binding.appBarMain.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
             if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
                 //navIcon.setImageResource(R.drawable.hamburger_icon)
                 val iconDrawable = getDrawableFromAttribute(this, R.drawable.hamburger_icon)
@@ -790,37 +801,51 @@ class MainActivity : AppCompatActivity() {
      * Configures the custom toolbar and sets up click listeners for navigation and actions.
      */
     private fun setupToolbar() {
-        val navIcon = binding.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
+        val navIcon = binding.appBarMain.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
         navIcon.setOnClickListener { handleNavigationIconClick() }
 
-        binding.searchIcon.setOnClickListener {
+        binding.appBarMain.searchIcon.setOnClickListener {
             Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show()
 
             // todo: navigate to show all events
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
 
             if (navController.currentDestination?.id == R.id.nav_select_country) {
-                showViewWithAnimation(binding.searchView)
+                showViewWithAnimation(binding.appBarMain.searchView)
                 // Expand SearchView
-                binding.searchView.setIconified(false)
+                binding.appBarMain.searchView.setIconified(false)
 
                 // Request focus to display keyboard
-                binding.searchView.requestFocus()
+                binding.appBarMain.searchView.requestFocus()
             }
             else if (navController.currentDestination?.id == R.id.nav_select_country) {
-                showViewWithAnimation(binding.searchView)
+                showViewWithAnimation(binding.appBarMain.searchView)
             }
             else {
                 Log.e(TAG,"NavigationError ->: Destination on SearchView")
             }
         }
 
-        binding.backToDateIcon.apply {
+        binding.appBarMain.backToDateIcon.apply {
             text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
         }
 
-        binding.saveEventIcon.apply {}
+        binding.appBarMain.saveEventIcon.apply {}
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setupDrawerHeader(){
+        val currentDate: Int = DateUtil.getCurrentDate()
+        val currentDay: String = DateUtil.getCurrentDay()
+        val currentMonth: Any = DateUtil.getCurrentMonth(isString = true)
+        val currentYear: Int = DateUtil.getCurrentYear()
+
+        binding.includedActivityMainHeader.apply {
+            tvNavHeaderDate.text = currentDate.toString()
+            tvNavHeaderDay.text = currentDay
+            tvNavHeaderMonthNameYear.text = "$currentMonth $currentYear"
+        }
     }
 
     /**
@@ -834,10 +859,10 @@ class MainActivity : AppCompatActivity() {
             DrawerMenuItem(R.drawable.select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
             DrawerMenuItem(R.drawable.first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
             DrawerMenuItem(R.drawable.jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
-//            DrawerMenuItem(R.attr.iconTheme, getString(R.string.app_theme), R.id.nav_app_theme),
-//            DrawerMenuItem(R.attr.iconRateApp, getString(R.string.rate_our_app), R.id.nav_rate_app),
+            //DrawerMenuItem(R.attr.iconTheme, getString(R.string.app_theme), R.id.nav_app_theme),
+            //DrawerMenuItem(R.attr.iconRateApp, getString(R.string.rate_our_app), R.id.nav_rate_app),
             DrawerMenuItem(R.drawable.privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
-//            DrawerMenuItem(R.attr.iconDeviceInfo, getString(R.string.device_information), R.id.nav_device_info),
+            //DrawerMenuItem(R.attr.iconDeviceInfo, getString(R.string.device_information), R.id.nav_device_info),
             //DrawerMenuItem(R.attr.iconSetting, "Settings", R.id.nav_settings),
             DrawerMenuItem(R.drawable.setting_icon, getString(R.string.setting), R.id.nav_setting)
         )
@@ -864,12 +889,12 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_select_language -> navController.navigate(R.id.nav_select_language, null, navOptions = navOptions, null)
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
-            R.id.nav_app_theme -> showAppThemeDialog()
-            R.id.nav_rate_app -> { rateApp() }
             R.id.nav_privacy_policy -> { privacyPolicy() }
-            R.id.nav_device_info -> showDeviceInfoDialog()
-            R.id.nav_settings -> navController.navigate(R.id.nav_settings)
             R.id.nav_setting -> navController.navigate(R.id.nav_setting)
+            //R.id.nav_app_theme -> showAppThemeDialog()
+            //R.id.nav_rate_app -> { rateApp() }
+            //R.id.nav_device_info -> showDeviceInfoDialog()
+            //R.id.nav_settings -> navController.navigate(R.id.nav_settings)
 
         }
 
@@ -934,14 +959,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideAllViewsWithAnimation() {
-        val viewList = listOf( binding.llToolbarMenuIcon1, binding.fab, binding.searchIcon, binding.backToDateIcon, binding.llToolbarMenuIcon2, binding.deleteEventIcon, binding.saveEventIcon, binding.llToolbarMenuIcon3, binding.searchView, binding.saveSelectLanguageIcon, )
+        val viewList = listOf(
+            binding.appBarMain.llToolbarMenuIcon1,
+            binding.appBarMain.fab,
+            binding.appBarMain.searchIcon,
+            binding.appBarMain.backToDateIcon,
+            binding.appBarMain.llToolbarMenuIcon2,
+            binding.appBarMain.deleteEventIcon,
+            binding.appBarMain.saveEventIcon,
+            binding.appBarMain.llToolbarMenuIcon3,
+            binding.appBarMain.searchView,
+            binding.appBarMain.saveSelectLanguageIcon
+        )
         viewList.forEach { hideViewWithAnimation(it) }
     }
 
     // Function to close the SearchView and hide the keyboard
     private fun hideKeyboard() {
         // Hide SearchView
-        val searchView = binding.searchView
+        val searchView = binding.appBarMain.searchView
         searchView.clearFocus() // Clear focus from SearchView
         searchView.isIconified = true // Collapse the SearchView
 
@@ -1005,7 +1041,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (AlarmScheduler.handlePermissionResult(requestCode = requestCode, permissions = permissions, grantResults = grantResults)) {
             if (grantResults.isNotEmpty() && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "onRequestPermissionsResult: Permission granted, schedule the alarm", )
+                Log.i(TAG, "onRequestPermissionsResult: Permission granted, schedule the alarm")
             }else{
                 // Permission denied, show a message to the user
                 Toast.makeText(this, "Permission required to show notifications", Toast.LENGTH_SHORT).show()
@@ -1016,4 +1052,32 @@ class MainActivity : AppCompatActivity() {
 
     }
     //endregion
+
+    fun handelBackPressed(){
+        // Use OnBackPressedDispatcher for API 12+ (and fallback for older versions)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer first
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+
+        // Optional: Handle OnBackInvokedCallback for Android 14+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                OnBackInvokedCallback {
+                    if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    } else {
+                        finish()
+                    }
+                }
+            )
+        }
+    }
 }

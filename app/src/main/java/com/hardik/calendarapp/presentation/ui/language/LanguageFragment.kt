@@ -14,9 +14,9 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.databinding.FragmentLanguageBinding
 import com.hardik.calendarapp.presentation.MainViewModel
-import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.adapter.LanguageAdapter
 import com.hardik.calendarapp.presentation.adapter.LanguageItem
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.LocaleHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -75,7 +75,7 @@ class LanguageFragment : Fragment(R.layout.fragment_language) {
         binding.languageRecView.adapter = languageAdapter
 
         /** Save Selected Language */
-        (activity as MainActivity).binding.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.saveSelectLanguageIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     selectedLanguage?.let { saveLanguage(it) }

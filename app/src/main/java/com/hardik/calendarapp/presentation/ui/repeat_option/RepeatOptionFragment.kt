@@ -20,9 +20,9 @@ import com.hardik.calendarapp.common.Constants.KEY_EVENT_REPEAT
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.databinding.FragmentRepeatOptionBinding
-import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.adapter.LanguageAdapter
 import com.hardik.calendarapp.presentation.adapter.LanguageItem
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -82,7 +82,7 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
         }
 
         /** Save Selected Language */
-        (activity as MainActivity).binding.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.saveSelectLanguageIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     selectedRepeatOption?.let { it1 -> viewModel.updateRepeatOption(it1) }

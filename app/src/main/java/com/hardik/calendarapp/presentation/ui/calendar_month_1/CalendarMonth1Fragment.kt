@@ -37,6 +37,9 @@ import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
+import com.hardik.calendarapp.utillities.DateUtil.getCurrentMonth
+import com.hardik.calendarapp.utillities.DateUtil.getCurrentYear
+import com.hardik.calendarapp.utillities.DateUtil.reverseYearMonth
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.DisplayUtil.dpToPx
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
@@ -116,7 +119,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
 
         /** Back to current month */
-        (activity as MainActivity).binding.backToDateIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.backToDateIcon.setOnClickListener {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
             val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
             val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)
@@ -172,7 +175,17 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private fun setupUI(){
         Log.i(TAG, "setupUI: ")
         binding.apply {
-            tvMonthTitle.text = DateFormatSymbols().months[month]+" " + year
+            tvMonthTitle.apply {
+                text = "${getCurrentMonth(isString = true)} ${getCurrentYear()}"
+
+                setOnClickListener {
+                    val d: CharSequence = tvMonthTitle.text
+                    if (d.isNotEmpty()) {
+                        val (y, m) = reverseYearMonth(d.toString()) ?: Pair(-1, -1)
+                        viewModel.getEventsByMonthOfYear( year = y.toString() , month = m.toString() )
+                    }
+                }
+            }
 
             btnPrevMonth.setOnClickListener {
                 navigateToMonth(-1)
