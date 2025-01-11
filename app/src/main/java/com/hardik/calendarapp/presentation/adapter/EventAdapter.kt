@@ -172,10 +172,12 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
             }
 
         }
+        //for image scroll in sideImage view
         fun updateParallaxOffset(offset: Int) {
             // Apply translationY to create the parallax effect
             binding.imgItemEventLayMonthTransitionImage.translationY = offset.toFloat()
         }
+        //for image scroll in sideImage view
         fun updateParallaxOffset(imageHeight: Int, viewTop: Int, viewBottom: Int, recyclerViewHeight: Int) {
             // Calculate how much of the RecyclerView is visible in relation to this item
             val visibleHeight = viewBottom.coerceAtMost(recyclerViewHeight) - viewTop.coerceAtLeast(0)

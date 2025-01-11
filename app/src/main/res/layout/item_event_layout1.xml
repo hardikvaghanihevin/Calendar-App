@@ -124,7 +124,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10sdp"
-            android:background="?attr/eventBackground"
+            android:background="@drawable/rectangle_bg_event"
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="@id/eventDayDate"
             app:layout_constraintEnd_toEndOf="parent"

@@ -41,7 +41,7 @@
         app:background_color_month="@color/background_primary"
         app:background_color_day="@color/background_primary"
         app:background_color_date="@color/background_primary"
-        app:background_drawable_date_selection="?attr/iconSelectedDateBackground"
+        app:background_drawable_date_selection="@drawable/date_background"
         app:background_drawable_month="@null"
         app:background_drawable_day="@null"
         app:background_drawable_date="@null"

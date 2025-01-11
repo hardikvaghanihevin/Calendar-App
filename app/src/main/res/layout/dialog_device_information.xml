@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/jumpToDateBackground"
+        android:background="@drawable/square_bg_jump_to_date"
         android:orientation="vertical"
         android:padding="16dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"

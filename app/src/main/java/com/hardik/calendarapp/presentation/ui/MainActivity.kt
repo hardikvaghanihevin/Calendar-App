@@ -3,11 +3,14 @@ package com.hardik.calendarapp.presentation.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -77,6 +81,10 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
+    private val toolbarTitle: TextView? by lazy { binding.toolbarTitle }
+    private fun updateToolbarTitle(title: String?) {
+        //toolbarTitle?.text = title ?: resources.getString(R.string.app_name)
+        mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name)) }//title
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate: ")
@@ -145,6 +153,9 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
         // Collecting the StateFlow
         lifecycleScope.launch {
+
+            mainViewModel.toolbarTitle.collectLatest { title-> binding.toolbarTitle.text = title }
+
             mainViewModel.holidayApiState.collect { dataState ->
                 if (dataState.isLoading) {
                     // Show loading indicator
@@ -163,6 +174,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         navController.addOnDestinationChangedListener { navCont: NavController, destination: NavDestination, _ ->
+            updateToolbarTitle(destination.label.toString().takeIf { !it.isEmpty() } ?: getString(R.string.app_name))
             invalidateOptionsMenu()
             hideAllViewsWithAnimation()
             /*val isFabVisible = destination.id != R.id.newEventFragment || destination.id != R.id.settingsFragment
@@ -229,7 +241,10 @@ class MainActivity : AppCompatActivity() {
                     showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
                     showViewWithAnimation(binding.saveSelectLanguageIcon)
                 }
-                R.id.nav_settings -> { }
+
+                R.id.nav_settings -> { }// todo: default settings fragment
+
+                R.id.nav_setting -> { }// todo: own setting fragment
 
                 R.id.repeatOptionFragment -> {
                     showViewWithAnimation(binding.llToolbarMenuIcon3, duration = 0)
@@ -271,7 +286,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var dialogFirstDayOfTheWeekBinding: DialogFirstDayOfTheWeekBinding? = null
-    private fun showFirstDayOfTheWeek(){
+    fun showFirstDayOfTheWeek(){
         Log.i(TAG, "showFirstDayOfTheWeek: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_first_day_of_the_week, null)
         dialogFirstDayOfTheWeekBinding = DialogFirstDayOfTheWeekBinding.bind(dialogView)
@@ -398,7 +413,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var dialogJumpToDateBinding: DialogJumpToDateBinding? = null
-    private fun showJumpToDateDialog() {
+    fun showJumpToDateDialog() {
         Log.i(TAG, "showJumpToDateDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_jump_to_date, null)
         dialogJumpToDateBinding = DialogJumpToDateBinding.bind(dialogView)
@@ -517,7 +532,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var dialogAppThemeBinding: DialogAppThemeBinding? = null
-    private fun showAppThemeDialog(){
+    fun showAppThemeDialog(){
         Log.i(TAG, "showAppThemeDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_app_theme, null)
         dialogAppThemeBinding = DialogAppThemeBinding.bind(dialogView)
@@ -653,7 +668,7 @@ class MainActivity : AppCompatActivity() {
 
     private var dialogDeviceInformationBinding: DialogDeviceInformationBinding? = null
     @SuppressLint("SetTextI18n")
-    private fun showDeviceInfoDialog(){
+    fun showDeviceInfoDialog(){
         Log.i(TAG, "showDeviceInfoDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_device_information, null)
         dialogDeviceInformationBinding = DialogDeviceInformationBinding.bind(dialogView)
@@ -709,6 +724,29 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    fun rateApp(context: Context = this){
+        Toast.makeText(context,"Rate App", Toast.LENGTH_SHORT).show()
+        //val appPackageName = context.packageName // Get the current app's package name
+        val appPackageName = "com.dts.freefiremax" // Get the current app's package name
+        try {
+            // Try to open Play Store app
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            // If Play Store app is not available, open in the browser
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName"))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+    }
+    fun privacyPolicy(context: Context = this){
+        Toast.makeText(this,"Privacy Policy", Toast.LENGTH_SHORT).show()
+        val url = "https://gist.githubusercontent.com/hardikvaghanihevin/d45b7376a72f832d2e80573a46628a4c/raw/e79d8fd9bd36d38b31e619bdb41251a7417999a4/privacy_policy.html" // Replace with your URL
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
+    }
+
     /**
      * Sets up the navigation component and the app bar configuration.
      */
@@ -727,12 +765,12 @@ class MainActivity : AppCompatActivity() {
             val navIcon = binding.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
             if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
                 //navIcon.setImageResource(R.drawable.hamburger_icon)
-                val iconDrawable = getDrawableFromAttribute(this, R.attr.iconDrawable)
+                val iconDrawable = getDrawableFromAttribute(this, R.drawable.hamburger_icon)
                 navIcon.setImageDrawable(iconDrawable)
                 navIcon.contentDescription = getString(R.string.open_drawer)
             } else {
                 //navIcon.setImageResource(R.drawable.back_arrow)
-                val iconDrawableBackArrow = getDrawableFromAttribute(this, R.attr.iconBackArrow)
+                val iconDrawableBackArrow = getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
                 navIcon.setImageDrawable(iconDrawableBackArrow)
                 navIcon.contentDescription = getString(R.string.navigate_up)
             }
@@ -781,9 +819,8 @@ class MainActivity : AppCompatActivity() {
             text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
         }
 
-        binding.saveEventIcon.apply {
+        binding.saveEventIcon.apply {}
 
-        }
     }
 
     /**
@@ -791,17 +828,18 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupDrawerMenu() {
         val drawerMenuItems = listOf(
-            DrawerMenuItem(R.attr.iconYear, "Year", R.id.nav_year,true),
-            DrawerMenuItem(R.attr.iconMonth, "Month", R.id.nav_month),
-            DrawerMenuItem(R.attr.iconCountry, "Select Country", R.id.nav_select_country),
-            DrawerMenuItem(R.attr.iconLanguage, "Select Language", R.id.nav_select_language),
-            DrawerMenuItem(R.attr.iconCalendar, "First Day of the Week", R.id.nav_first_day_of_week),
-            DrawerMenuItem(R.attr.iconJumpToDate, "Jump to Date", R.id.nav_jump_to_date),
-            DrawerMenuItem(R.attr.iconTheme, "App Theme", R.id.nav_app_theme),
-            DrawerMenuItem(R.attr.iconRateApp, "Rate Our App", R.id.nav_rate_app),
-            DrawerMenuItem(R.attr.iconPrivacy, "Privacy Policy", R.id.nav_privacy_policy),
-            DrawerMenuItem(R.attr.iconDeviceInfo, "Device Information", R.id.nav_device_info),
-            DrawerMenuItem(R.attr.iconDeviceInfo, "Settings", R.id.nav_settings)
+            DrawerMenuItem(R.drawable.year_icon, getString(R.string.year), R.id.nav_year,true),
+            DrawerMenuItem(R.drawable.month_icon, getString(R.string.month), R.id.nav_month),
+            DrawerMenuItem(R.drawable.select_country_icon, getString(R.string.select_country), R.id.nav_select_country),
+            DrawerMenuItem(R.drawable.select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
+            DrawerMenuItem(R.drawable.first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
+            DrawerMenuItem(R.drawable.jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
+//            DrawerMenuItem(R.attr.iconTheme, getString(R.string.app_theme), R.id.nav_app_theme),
+//            DrawerMenuItem(R.attr.iconRateApp, getString(R.string.rate_our_app), R.id.nav_rate_app),
+            DrawerMenuItem(R.drawable.privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
+//            DrawerMenuItem(R.attr.iconDeviceInfo, getString(R.string.device_information), R.id.nav_device_info),
+            //DrawerMenuItem(R.attr.iconSetting, "Settings", R.id.nav_settings),
+            DrawerMenuItem(R.drawable.setting_icon, getString(R.string.setting), R.id.nav_setting)
         )
 
         // Initialize the adapter
@@ -827,8 +865,11 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
             R.id.nav_app_theme -> showAppThemeDialog()
+            R.id.nav_rate_app -> { rateApp() }
+            R.id.nav_privacy_policy -> { privacyPolicy() }
             R.id.nav_device_info -> showDeviceInfoDialog()
             R.id.nav_settings -> navController.navigate(R.id.nav_settings)
+            R.id.nav_setting -> navController.navigate(R.id.nav_setting)
 
         }
 

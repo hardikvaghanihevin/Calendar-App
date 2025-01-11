@@ -70,6 +70,12 @@ class MainViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
+    private val _toolbarTitle = MutableStateFlow<String>("")
+    val toolbarTitle: StateFlow<String> = _toolbarTitle // Public read-only StateFlow
+    fun updateToolbarTitle(title: String) { _toolbarTitle.value = title }
+
+    //----------------------------------------------------------------//
+
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
 
     private val _languageCode = MutableStateFlow<String>(sharedPreferences.getString("language", "en") ?: "en")

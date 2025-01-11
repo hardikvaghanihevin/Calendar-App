@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -487,11 +486,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         binding.viewPagerCalendarMonth.setCurrentItem(newPosition, true)
     }
 
-    private val toolbar: Toolbar? by lazy {
-        requireActivity().findViewById<Toolbar>(R.id.toolbar)
-    }
-    private fun updateToolbarTitle(title: String) {
-        toolbar?.title = resources.getString(R.string.app_name)//title
-    }
+    private fun updateToolbarTitle(title: String) {}
 
 }

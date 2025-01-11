@@ -40,28 +40,30 @@
             <enum name="showAdjacentMonthDates" value="3" />
         </attr>
 
-        <attr name="iconDrawable" format="reference" />
-        <attr name="iconBackArrow" format="reference" />
-        <attr name="iconSearch" format="reference" />
-        <attr name="iconBackToDate" format="reference" />
 
-        <attr name="iconYear" format="reference" />
-        <attr name="iconMonth" format="reference" />
-        <attr name="iconCountry" format="reference" />
-        <attr name="iconLanguage" format="reference" />
-        <attr name="iconCalendar" format="reference" />
-        <attr name="iconJumpToDate" format="reference" />
-        <attr name="iconTheme" format="reference" />
-        <attr name="iconRateApp" format="reference" />
-        <attr name="iconPrivacy" format="reference" />
-        <attr name="iconDeviceInfo" format="reference" />
+<!--        <attr name="iconDrawable" format="reference" />-->
+<!--        <attr name="iconBackArrow" format="reference" />-->
+<!--        <attr name="iconSearch" format="reference" />-->
+<!--        <attr name="iconBackToDate" format="reference" />-->
 
-        <attr name="iconLeft" format="reference" />
-        <attr name="iconRight" format="reference" />
+<!--        <attr name="iconYear" format="reference" />-->
+<!--        <attr name="iconMonth" format="reference" />-->
+<!--        <attr name="iconCountry" format="reference" />-->
+<!--        <attr name="iconLanguage" format="reference" />-->
+<!--        <attr name="iconCalendar" format="reference" />-->
+<!--        <attr name="iconJumpToDate" format="reference" />-->
+<!--        <attr name="iconTheme" format="reference" />-->
+<!--        <attr name="iconRateApp" format="reference" />-->
+<!--        <attr name="iconPrivacy" format="reference" />-->
+<!--        <attr name="iconDeviceInfo" format="reference" />-->
+<!--        <attr name="iconSetting" format="reference" />-->
 
-        <attr name="iconSelectedDateBackground" format="reference" />
-        <attr name="eventBackground" format="reference" />
-        <attr name="jumpToDateBackground" format="reference" />
+<!--        <attr name="iconLeft" format="reference" />-->
+<!--        <attr name="iconRight" format="reference" />-->
+
+<!--        <attr name="iconSelectedDateBackground" format="reference" />-->
+<!--        <attr name="eventBackground" format="reference" />-->
+<!--        <attr name="jumpToDateBackground" format="reference" />-->
 
 
     </declare-styleable>

@@ -3,6 +3,8 @@
     <style name="Theme.CalendarApp" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
         <item name="colorPrimary">@color/action_bar_color</item>
 
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+
         <!-- Disable Android 12+ splash screen -->
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@null</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@null</item>
@@ -12,28 +14,32 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">true</item><!--Use light(false) | dark(true) text/icons-->
 
-        <item name="iconDrawable">@drawable/hamburger_icon</item>
-        <item name="iconBackArrow">@drawable/back_arrow_icon</item>
-        <item name="iconSearch">@drawable/search_icon</item>
-        <item name="iconBackToDate">@drawable/back_to_date_icon</item>
+<!--        <item name="iconDrawable">@drawable/hamburger_icon</item>-->
+<!--        <item name="iconBackArrow">@drawable/back_arrow_icon</item>-->
+<!--        <item name="iconSearch">@drawable/search_icon</item>-->
+<!--        <item name="iconBackToDate">@drawable/back_to_date_icon</item>-->
 
-        <item name="iconYear">@drawable/year_icon</item>
-        <item name="iconMonth">@drawable/month_icon</item>
-        <item name="iconCountry">@drawable/select_country_icon</item>
-        <item name="iconLanguage">@drawable/select_language_icon</item>
-        <item name="iconCalendar">@drawable/first_day_of_the_week_icon</item>
-        <item name="iconJumpToDate">@drawable/jump_to_date_icon</item>
-        <item name="iconTheme">@drawable/app_theme_icon</item>
-        <item name="iconRateApp">@drawable/rate_our_app_icon</item>
-        <item name="iconPrivacy">@drawable/privacy_policy_icon</item>
-        <item name="iconDeviceInfo">@drawable/device_information_icon</item>
+<!--        <item name="iconYear">@drawable/year_icon</item>-->
+<!--        <item name="iconMonth">@drawable/month_icon</item>-->
+<!--        <item name="iconCountry">@drawable/select_country_icon</item>-->
+<!--        <item name="iconLanguage">@drawable/select_language_icon</item>-->
+<!--        <item name="iconCalendar">@drawable/first_day_of_the_week_icon</item>-->
+<!--        <item name="iconJumpToDate">@drawable/jump_to_date_icon</item>-->
 
-        <item name="iconLeft">@drawable/left_icon</item>
-        <item name="iconRight">@drawable/right_icon</item>
+        <!--remove-->
+<!--        <item name="iconTheme">@drawable/app_theme_icon</item>-->
+<!--        <item name="iconRateApp">@drawable/rate_our_app_icon</item>-->
+<!--        <item name="iconPrivacy">@drawable/privacy_policy_icon</item>-->
+<!--        <item name="iconDeviceInfo">@drawable/device_information_icon</item>-->
 
-        <item name="iconSelectedDateBackground">@drawable/date_background</item>
-        <item name="eventBackground">@drawable/rectangle_bg_event</item>
-        <item name="jumpToDateBackground">@drawable/square_bg_jump_to_date</item>
+<!--        <item name="iconSetting">@drawable/setting_icon</item>-->
+
+<!--        <item name="iconLeft">@drawable/left_icon</item>-->
+<!--        <item name="iconRight">@drawable/right_icon</item>-->
+
+<!--        <item name="iconSelectedDateBackground">@drawable/date_background</item>-->
+<!--        <item name="eventBackground">@drawable/rectangle_bg_event</item>-->
+<!--        <item name="jumpToDateBackground">@drawable/square_bg_jump_to_date</item>-->
 
         <item name="switchStyle">@style/CustomSwitchStyle</item>
 

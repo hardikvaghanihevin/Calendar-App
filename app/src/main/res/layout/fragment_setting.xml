@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:scrollbars="none"
+    tools:context=".presentation.ui.setting.SettingFragment">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_16sdp">
+
+        <!--Personalization-->
+        <TextView
+            android:id="@+id/tv_setting_personalization_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:fontFamily="@font/post_nord_sans_medium"
+            android:paddingHorizontal="@dimen/_16sdp"
+            android:paddingBottom="@dimen/_16sdp"
+            android:text="Personalization:"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/ll_setting_personalization_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/item_background"
+            android:orientation="vertical"
+            android:padding="@dimen/_8sdp"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_about_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_personalization_title">
+
+            <include
+                android:id="@+id/included_item_appTheme"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_appLanguage"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_firstDayOfTheWeek"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_jumpToDate"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_timeFormat"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+        </LinearLayout>
+
+        <!--About-->
+        <TextView
+            android:id="@+id/tv_setting_about_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:fontFamily="@font/post_nord_sans_medium"
+            android:paddingHorizontal="@dimen/_16sdp"
+            android:paddingVertical="@dimen/_16sdp"
+            android:text="About:"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_setting_personalization_menu" />
+
+        <LinearLayout
+            android:id="@+id/ll_setting_about_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/item_background"
+            android:orientation="vertical"
+            android:padding="@dimen/_8sdp"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_about_title">
+
+            <include
+                android:id="@+id/included_item_privacyPolicy"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_rateOnGooglePlay"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_shareApp"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_feedBack"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_deviceInfo"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@drawable/line_drawable"
+                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+
+            <include
+                android:id="@+id/included_item_version"
+                layout="@layout/item_setting_lay"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

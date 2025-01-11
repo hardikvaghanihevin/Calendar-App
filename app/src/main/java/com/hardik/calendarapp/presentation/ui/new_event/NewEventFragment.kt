@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -38,6 +37,7 @@ import com.hardik.calendarapp.databinding.DialogItemEventCustomAlertMinuteBindin
 import com.hardik.calendarapp.databinding.DialogItemEventRepeatBinding
 import com.hardik.calendarapp.databinding.DialogItemTimePickerBinding
 import com.hardik.calendarapp.databinding.FragmentNewEventBinding
+import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
@@ -52,6 +52,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private val TAG = BASE_TAG + NewEventFragment::class.java.simpleName
 
     private val viewModel: NewEventViewModel  by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private var _binding: FragmentNewEventBinding? = null
     private val binding get() = _binding!!
 
@@ -496,11 +497,10 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         dialog.show()
     }
 
-    private val toolbar: Toolbar? by lazy {
-        requireActivity().findViewById<Toolbar>(R.id.toolbar)
-    }
     private fun updateToolbarTitle(title: String) {
-        toolbar?.title = title
+        // Dynamically update NavDestination label
+        //findNavController().currentDestination?.label = title
+        mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name))
     }
 
     private var dialogItemRepeatBinding: DialogItemEventRepeatBinding? = null

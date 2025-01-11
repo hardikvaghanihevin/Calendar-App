@@ -30,7 +30,7 @@
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:contentDescription="Previous Month"
-        android:src="?attr/iconLeft"
+        android:src="@drawable/left_icon"
         app:layout_constraintBottom_toBottomOf="@id/tv_year_title"
         app:layout_constraintEnd_toStartOf="@id/btnNextYear"
         app:layout_constraintTop_toTopOf="@id/tv_year_title" />
@@ -43,7 +43,7 @@
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:contentDescription="Next Month"
-        android:src="?attr/iconRight"
+        android:src="@drawable/right_icon"
         app:layout_constraintBottom_toBottomOf="@id/btnPrevYear"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnPrevYear" />

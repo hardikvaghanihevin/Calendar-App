@@ -26,16 +26,18 @@
     <fragment
         android:id="@+id/nav_month"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_month_1.CalendarMonth1Fragment"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_calendar_month1">
-<!--        android:label="@string/calendar_month"-->
+        <!--android:label="@string/calendar_month"-->
 
     </fragment>
 
     <fragment
         android:id="@+id/nav_year"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year_1.CalendarYear1Fragment"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_calendar_year1">
-<!--        android:label="@string/calendar_year"-->
+        <!--android:label="@string/calendar_year"-->
         <action
             android:id="@+id/action_calendarYear1Fragment_to_calendarMonth1Fragment"
             app:destination="@id/nav_month" />
@@ -57,6 +59,12 @@
         android:id="@+id/nav_settings"
         android:name="com.hardik.calendarapp.presentation.ui.setting.SettingsFragment"
         android:label="@string/settings" />
+
+    <fragment
+        android:id="@+id/nav_setting"
+        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_setting" />
 
     <fragment
         android:id="@+id/nav_select_language"

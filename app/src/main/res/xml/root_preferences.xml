@@ -6,7 +6,7 @@
             app:defaultValue="en"
             app:entries="@array/language_entries"
             app:entryValues="@array/language_values"
-            app:icon="@drawable/ic_menu_camera"
+            app:icon="@drawable/select_language_icon"
             app:key="language"
             app:title="@string/language_header"
             app:useSimpleSummaryProvider="true" />
@@ -24,7 +24,7 @@
             app:defaultValue="@array/default_country_values"
             app:entries="@array/country_entries"
             app:entryValues="@array/country_values"
-            app:icon="@drawable/ic_menu_camera"
+            app:icon="@drawable/select_country_icon"
             app:key="countries"
             app:title="@string/country_header"
             app:useSimpleSummaryProvider="true" />

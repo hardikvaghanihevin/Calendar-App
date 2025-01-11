@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -242,10 +241,5 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }
 
-    private val toolbar: Toolbar? by lazy {
-        requireActivity().findViewById<Toolbar>(R.id.toolbar)
-    }
-    private fun updateToolbarTitle(title: String) {
-        toolbar?.title = title
-    }
+    private fun updateToolbarTitle(title: String) { }
 }

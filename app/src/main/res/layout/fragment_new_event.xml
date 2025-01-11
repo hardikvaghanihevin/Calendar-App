@@ -155,7 +155,7 @@
                     android:contentDescription="Start date to end date"
                     android:padding="8dp"
                     android:rotation="180"
-                    android:src="?attr/iconBackArrow"
+                    android:src="@drawable/back_arrow_icon"
                     app:layout_constraintBottom_toBottomOf="@id/tvEnd_date_picker"
                     app:layout_constraintEnd_toStartOf="@id/tvEnd"
                     app:layout_constraintStart_toEndOf="@id/tvStart"

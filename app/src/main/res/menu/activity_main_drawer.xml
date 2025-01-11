@@ -4,80 +4,53 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <!--<item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
-
-        <item
-            android:id="@+id/calendarMonth1Fragment"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/calendar_month" />
-
-        <item
-            android:id="@+id/calendarYear1Fragment"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/calendar_year" />
-
-        <item
-            android:id="@+id/calendarMonthFragment"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/calendar_month" />
-
-        <item
-            android:id="@+id/calendarYearFragment"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/calendar_year" />
-
-        <item
-            android:id="@+id/jumpToDate"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/jump_to_date" />-->
-
         <item
             android:id="@+id/nav_year"
-            android:icon="?attr/iconYear"
+            android:icon="@drawable/year_icon"
             android:title="@string/calendar_year" />
         <item
             android:id="@+id/nav_month"
-            android:icon="?attr/iconMonth"
+            android:icon="@drawable/month_icon"
             android:title="@string/calendar_month" />
         <item
             android:id="@+id/nav_select_country"
-            android:icon="?attr/iconCountry"
+            android:icon="@drawable/select_country_icon"
             android:title="Select country" />
         <item
             android:id="@+id/nav_select_language"
-            android:icon="?attr/iconLanguage"
+            android:icon="@drawable/select_language_icon"
             android:title="Select language" />
         <item
             android:id="@+id/nav_first_day_of_week"
-            android:icon="?attr/iconCalendar"
+            android:icon="@drawable/first_day_of_the_week_icon"
             android:title="First day of the week" />
         <item
             android:id="@+id/nav_jump_to_date"
-            android:icon="?attr/iconJumpToDate"
+            android:icon="@drawable/jump_to_date_icon"
             android:title="@string/jump_to_date" />
         <item
             android:id="@+id/nav_app_theme"
-            android:icon="?attr/iconTheme"
+            android:icon="@drawable/app_theme_icon"
             android:title="App theme" />
         <item
             android:id="@+id/nav_rate_app"
-            android:icon="?attr/iconRateApp"
+            android:icon="@drawable/rate_our_app_icon"
             android:title="Rate our app" />
         <item
             android:id="@+id/nav_privacy_policy"
-            android:icon="?attr/iconPrivacy"
+            android:icon="@drawable/privacy_policy_icon"
             android:title="Privacy policy" />
         <item
             android:id="@+id/nav_device_info"
-            android:icon="?attr/iconDeviceInfo"
+            android:icon="@drawable/device_information_icon"
             android:title="Device information" />
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/setting_icon"
             android:title="@string/settings" />
-
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/setting_icon"
+            android:title="@string/settings" />
     </group>
 </menu>

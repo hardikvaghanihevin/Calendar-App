@@ -1,7 +1,9 @@
 package com.hardik.calendarapp.presentation.adapter
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +14,15 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants.BASE_TAG
 
 data class DrawerMenuItem(
-    val iconAttr: Int,
+    val icon: Int = -1, // Now just an Int to hold either attribute or drawable ID
     val title: String,
     val id: Int,
     var isSelected: Boolean = false // Track selected state
 )
+val TAG = BASE_TAG + DrawerMenuAdapter::class.java.simpleName
 class DrawerMenuAdapter(
     private val items: List<DrawerMenuItem>,
     private val onClick: (DrawerMenuItem) -> Unit
@@ -43,7 +47,7 @@ class DrawerMenuAdapter(
 
         // Update view for the selected state
         // Set the icon and title for the drawer item
-        holder.icon.setImageDrawable(getDrawableFromAttribute(holder.itemView.context, item.iconAttr))
+        holder.icon.setImageDrawable(getDrawableFromAttribute(holder.itemView.context, item.icon))
         holder.title.text = item.title
 
         // Check if the item is selected and update UI accordingly
@@ -98,8 +102,30 @@ class DrawerMenuAdapter(
         notifyItemChanged(selectedPosition)
     }
 }
+//fun getDrawableFromAttribute(context: Context, attr: Int): Drawable? {
+//    val typedValue = TypedValue()
+//    context.theme.resolveAttribute(attr, typedValue, true)
+//    return ContextCompat.getDrawable(context, typedValue.resourceId)
+//}
 fun getDrawableFromAttribute(context: Context, attr: Int): Drawable? {
+    if (attr == -1) return null // Handle the default -1 case
+
     val typedValue = TypedValue()
     context.theme.resolveAttribute(attr, typedValue, true)
-    return ContextCompat.getDrawable(context, typedValue.resourceId)
+
+    return if (typedValue.resourceId != 0) {
+        // It's an attribute referencing a resource
+        ContextCompat.getDrawable(context, typedValue.resourceId)
+    } else if (attr != 0) {
+        // It's likely a direct drawable resource ID
+        try {
+            ContextCompat.getDrawable(context, attr)
+        } catch (e: Resources.NotFoundException) {
+            // Handle the case where the drawable is not found.
+            Log.e(TAG, "getDrawableFromAttribute: Drawable not found for ID: $attr", e)
+            null
+        }
+    } else {
+        null // Handle the case where attr is 0
+    }
 }

@@ -8,7 +8,7 @@
     tools:context=".presentation.ui.MainActivity">
 
     <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
+    <!--<androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -16,7 +16,7 @@
         android:theme="@style/Theme.CalendarApp.AppBarOverlay"
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextColor="@color/text_primary"
-        app:popupTheme="@style/Theme.CalendarApp.PopupOverlay" />
+        app:popupTheme="@style/Theme.CalendarApp.PopupOverlay" />-->
 
     <!-- Main content -->
     <FrameLayout
