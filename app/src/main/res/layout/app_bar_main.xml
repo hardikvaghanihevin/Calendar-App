@@ -195,9 +195,11 @@
                         app:dividerPadding="@dimen/_2sdp"
                         app:queryBackground="@null"
                         app:showDividers="none"
-                        app:searchIcon="@drawable/search_icon"
+                        app:queryHint="@string/search_event"
+                        app:searchHintIcon="@null"
                         app:theme="@style/SearchViewStyle"
                         />
+                        <!--app:searchIcon="@drawable/search_icon"-->
                     <!--app:searchHintIcon="@null"-->
                     <!--app:closeIcon="@android:drawable/btn_dialog"-->
 

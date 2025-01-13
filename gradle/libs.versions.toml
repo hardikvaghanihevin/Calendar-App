@@ -30,6 +30,7 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version = "1.7.5" }
 legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacy-support-v4" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version = "1.0.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

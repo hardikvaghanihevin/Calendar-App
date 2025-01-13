@@ -71,6 +71,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 // Ensure SearchView stays expanded and doesn't collapse
                 //this.isIconified = false
                 //this.setIconifiedByDefault(false)
+                this.queryHint = getString(R.string.search_event)
 
                 /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
                 // Adjust margins dynamically

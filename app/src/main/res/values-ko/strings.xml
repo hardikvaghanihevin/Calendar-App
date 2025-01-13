@@ -3,6 +3,11 @@
     <string name="app_name">캘린더 앱</string>
     <string name="navigation_drawer_open">내비게이션 서랍 열기</string>
     <string name="navigation_drawer_close">내비게이션 서랍 닫기</string>
+
+    <string name="open_drawer">열기</string>
+    <string name="close_drawer">닫기</string>
+    <string name="navigate_up">위로 이동</string>
+
     <string name="nav_header_title">안드로이드 스튜디오</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">내비게이션 헤더</string>
@@ -44,6 +49,17 @@
     <string name="hello_blank_fragment">빈 프래그먼트</string>
     <string name="calendar_month">캘린더 월</string>
     <string name="calendar_year">캘린더 연도</string>
+    <string name="year">년</string>
+    <string name="month">월</string>
+    <string name="select_country">국가 선택</string>
+    <string name="select_language">언어 선택</string>
+    <string name="first_day_of_the_week">주 시작 요일</string>
+    <string name="jump_to_date">날짜로 이동</string>
+    <string name="app_theme">앱 테마</string>
+    <string name="rate_our_app">앱 평가하기</string>
+    <string name="privacy_policy">개인정보처리방침</string>
+    <string name="device_information">기기 정보</string>
+    <string name="setting">설정</string>
     <string name="settings">설정</string>
     <string name="action_refresh">새로고침</string>
     <string name="new_event">새 이벤트</string>
@@ -78,5 +94,60 @@
     <string name="alert">알림</string>
     <string name="none">없음</string>
     <string name="note">메모</string>
-    <string name="country_header">Country</string>
+    <string name="country_header">국가</string>
+
+    <string name="at_once">즉시</string>
+    <string name="every_day">매일</string>
+    <string name="every_week">매주</string>
+    <string name="every_month">매달</string>
+    <string name="every_year">매년</string>
+    <string name="at_time">정시에</string>
+    <string name="before_5_minutes">5분 전</string>
+    <string name="before_10_minutes">10분 전</string>
+    <string name="before_15_minutes">15분 전</string>
+    <string name="before_30_minutes">30분 전</string>
+    <string name="before_1_hour">1시간 전</string>
+    <string name="before_12_hours">12시간 전</string>
+    <string name="before_1_day">1일 전</string>
+    <string name="before_3_days">3일 전</string>
+    <string name="before_5_days">5일 전</string>
+    <string name="before_1_week">1주일 전</string>
+    <string name="before_2_weeks">2주일 전</string>
+    <string name="before_1_month">1개월 전</string>
+    <string name="before_custom_time">사용자 지정 시간 전</string>
+    <string name="custom_alert">사용자 지정 알림</string>
+    <string name="minutes_before">분 전</string>
+
+    <string name="cancel">취소</string>
+    <string name="jump">이동</string>
+    <string name="first_date_of_the_week">주 시작 날짜</string>
+    <string name="done">완료</string>
+    <string name="sunday">일요일</string>
+    <string name="monday">월요일</string>
+    <string name="saturday">토요일</string>
+
+    <string name="dark_theme">어두운 테마</string>
+    <string name="light_theme">밝은 테마</string>
+    <string name="system_theme">시스템 테마</string>
+
+    <string name="brand">브랜드</string>
+    <string name="device">기기</string>
+    <string name="app_version">앱 버전</string>
+    <string name="os">OS</string>
+    <string name="version">버전</string>
+    <string name="okay">확인</string>
+    <string name="description">설명</string>
+    <string name="title">제목</string>
+
+    <string name="app_language">앱 언어</string>
+    <string name="time_format">시간 형식</string>
+    <string name="rate_on_google_play">Google Play에서 평가하기</string>
+    <string name="share_app">앱 공유</string>
+    <string name="feedback">피드백</string>
+    <string name="device_info">기기 정보</string>
+    <string name="format_12_hours">12시간 형식</string>
+    <string name="format_24_hours">24시간 형식</string>
+    <string name="search_event">이벤트 검색…</string>
+    <string name="search_country">국가 검색…</string>
+
 </resources>

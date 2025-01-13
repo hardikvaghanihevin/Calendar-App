@@ -181,6 +181,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 // Ensure SearchView stays expanded and doesn't collapse
                 //this.isIconified = false
                 //this.setIconifiedByDefault(false)
+                this.queryHint = getString(R.string.search_country)
 
                 /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
                 // Adjust margins dynamically
@@ -188,7 +189,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     setMargins(
                         resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
                         0,  // Top margin
-                        resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
+                        0,//resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
                         0   // Bottom margin
                     )
                 }

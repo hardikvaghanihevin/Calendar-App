@@ -3,6 +3,11 @@
     <string name="app_name">Kalender-App</string>
     <string name="navigation_drawer_open">Navigationsleiste öffnen</string>
     <string name="navigation_drawer_close">Navigationsleiste schließen</string>
+
+    <string name="open_drawer">Öffnen</string>
+    <string name="close_drawer">Schließen</string>
+    <string name="navigate_up">Nach oben navigieren</string>
+
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigationskopfzeile</string>
@@ -44,6 +49,17 @@
     <string name="hello_blank_fragment">Hallo leeres Fragment</string>
     <string name="calendar_month">Kalendermonat</string>
     <string name="calendar_year">Kalenderjahr</string>
+    <string name="year">Jahr</string>
+    <string name="month">Monat</string>
+    <string name="select_country">Land auswählen</string>
+    <string name="select_language">Sprache auswählen</string>
+    <string name="first_day_of_the_week">Erster Tag der Woche</string>
+    <string name="jump_to_date">Zu Datum springen</string>
+    <string name="app_theme">App-Design</string>
+    <string name="rate_our_app">App bewerten</string>
+    <string name="privacy_policy">Datenschutzbestimmungen</string>
+    <string name="device_information">Geräteinformationen</string>
+    <string name="setting">Einstellung</string>
     <string name="settings">Einstellungen</string>
     <string name="action_refresh">Aktualisieren</string>
     <string name="new_event">Neues Ereignis</string>
@@ -78,6 +94,60 @@
     <string name="alert">Erinnerung</string>
     <string name="none">Keine</string>
     <string name="note">Notiz</string>
-    <string name="country_header">Country</string>
+    <string name="country_header">Land</string>
+
+    <string name="at_once">Sofort</string>
+    <string name="every_day">Jeden Tag</string>
+    <string name="every_week">Jede Woche</string>
+    <string name="every_month">Jeden Monat</string>
+    <string name="every_year">Jedes Jahr</string>
+    <string name="at_time">Zur Zeit</string>
+    <string name="before_5_minutes">Vor 5 Minuten</string>
+    <string name="before_10_minutes">Vor 10 Minuten</string>
+    <string name="before_15_minutes">Vor 15 Minuten</string>
+    <string name="before_30_minutes">Vor 30 Minuten</string>
+    <string name="before_1_hour">Vor 1 Stunde</string>
+    <string name="before_12_hours">Vor 12 Stunden</string>
+    <string name="before_1_day">Vor 1 Tag</string>
+    <string name="before_3_days">Vor 3 Tagen</string>
+    <string name="before_5_days">Vor 5 Tagen</string>
+    <string name="before_1_week">Vor 1 Woche</string>
+    <string name="before_2_weeks">Vor 2 Wochen</string>
+    <string name="before_1_month">Vor 1 Monat</string>
+    <string name="before_custom_time">Vor benutzerdefinierter Zeit</string>
+    <string name="custom_alert">Benutzerdefinierte Benachrichtigung</string>
+    <string name="minutes_before">Minuten vorher</string>
+
+    <string name="cancel">Abbrechen</string>
+    <string name="jump">Springen</string>
+    <string name="first_date_of_the_week">Erster Tag der Woche</string>
+    <string name="done">Fertig</string>
+    <string name="sunday">Sonntag</string>
+    <string name="monday">Montag</string>
+    <string name="saturday">Samstag</string>
+
+    <string name="dark_theme">Dunkles Design</string>
+    <string name="light_theme">Helles Design</string>
+    <string name="system_theme">Systemdesign</string>
+
+    <string name="brand">Marke</string>
+    <string name="device">Gerät</string>
+    <string name="app_version">App-Version</string>
+    <string name="os">Betriebssystem</string>
+    <string name="version">Version</string>
+    <string name="okay">Okay</string>
+    <string name="description">Beschreibung</string>
+    <string name="title">Titel</string>
+
+    <string name="app_language">App-Sprache</string>
+    <string name="time_format">Zeitformat</string>
+    <string name="rate_on_google_play">Im Google Play bewerten</string>
+    <string name="share_app">App teilen</string>
+    <string name="feedback">Feedback</string>
+    <string name="device_info">Geräteinfo</string>
+    <string name="format_12_hours">12-Stunden-Format</string>
+    <string name="format_24_hours">24-Stunden-Format</string>
+    <string name="search_event">Ereignis suchen…</string>
+    <string name="search_country">Land suchen…</string>
 
 </resources>

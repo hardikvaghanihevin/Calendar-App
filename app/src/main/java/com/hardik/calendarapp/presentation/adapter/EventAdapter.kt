@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.view.isVisible
+import androidx.palette.graphics.Palette
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.hardik.calendarapp.R
@@ -17,8 +20,13 @@ import com.hardik.calendarapp.databinding.ItemEventLayout1Binding
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
 import com.hardik.calendarapp.utillities.DateUtil.isAllDay
-import com.hardik.calendarapp.utillities.GsonUtil
-import com.hardik.calendarapp.utillities.LogUtil
+import com.hardik.calendarapp.utillities.ImageColorUtil
+import com.hardik.calendarapp.utillities.ImageColorUtil.darkenColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -33,16 +41,33 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newData: List<Event>) {
-        list.clear()
-        list.addAll(newData)
-        originalList = newData.toList() // Update the original list
-        filteredList = originalList
-        notifyDataSetChanged()
-
-        val eventJson = GsonUtil.toJson(list)
-        LogUtil.logLongMessage(TAG, "onViewCreated: $eventJson")
+        /*val eventJson = GsonUtil.toJson(list)
+        LogUtil.logLongMessage(TAG, "onViewCreated: $eventJson")*/
 
         Log.e(TAG, "updateData: ${list.size}")
+
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize() = originalList.size
+            override fun getNewListSize() = newData.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                // Assuming `id` is a unique identifier for `Event`
+                return originalList[oldItemPosition].id == newData[newItemPosition].id
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                // Compare entire content or specific fields
+                return originalList[oldItemPosition] == newData[newItemPosition]
+            }
+        }
+
+        // Calculate the diff and update lists
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        originalList = newData // Update original list
+        filteredList = originalList // Reset filtered list
+        list.clear()
+        list.addAll(newData)
+        diffResult.dispatchUpdatesTo(this)
     }
 
 
@@ -83,8 +108,9 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
         RecyclerView.ViewHolder(binding.root) {
 
         private val layout = binding.root
+        private val scope = CoroutineScope(Dispatchers.Main) // Create a CoroutineScope for this ViewHolder
 
-        @SuppressLint("SetTextI18n")
+        @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
         fun bind(event: Event, previousEvent: Event?, position: Int) {
             binding.apply {
                 // Check if the current event's month is different from the previous event
@@ -97,17 +123,49 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                     cardItemEventImg.visibility = View.VISIBLE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.VISIBLE // Show the image
                     binding.tvItemEventMonthName.text = currentMonth
+
+                    val imageUrl = ImageColorUtil.monthImgResource.get(event.month.toInt())
+                    //val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
+                    //val rawResourceUri = Uri.parse("android.resource://${binding.root.context.packageName}/${R.raw.data_test}")
+
+                    Glide.with(imgItemEventLayMonthTransitionImage.context)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.bkg_01_jan)
+                        .error(R.drawable.bkg_01_jan)
+                        .into(imgItemEventLayMonthTransitionImage)
+
+
+                    // Cancel any previously running job for this ViewHolder
+                    scope.coroutineContext.cancelChildren()
+
+                    val paletteCache = mutableMapOf<Int, Int>() // Store colors by resource ID
+                    // Set the text color dynamically based on the image
+                    scope.launch(Dispatchers.Default) {
+                        val cachedColor = paletteCache[imageUrl]
+                        val baseColor = if (cachedColor != null) {
+                            cachedColor
+                        } else {
+                            val drawable = binding.root.context.getDrawable(imageUrl) as BitmapDrawable
+                            val bitmap = drawable.bitmap
+                            val palette = Palette.from(bitmap).generate()
+                            palette.vibrantSwatch?.rgb ?: palette.mutedSwatch?.rgb ?: 0xFF000000.toInt().also {
+                                paletteCache[imageUrl] = it // Cache the color
+                            }
+                        }
+
+                        // Darken the extracted color
+                        val textColor = darkenColor(baseColor, 0.8f)
+
+                        // Update UI on the main thread
+                        withContext(Dispatchers.Main) {
+                            tvItemEventMonthName.setTextColor(textColor)
+                        }
+                    }
                 } else {
                     cardItemEventImg.visibility = View.GONE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image
                 }
-                val imageUrl = monthImgResource.get(event.month.toInt())
-                //val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
-                //val rawResourceUri = Uri.parse("android.resource://${binding.root.context.packageName}/${R.raw.data_test}")
 
-                Glide.with(imgItemEventLayMonthTransitionImage.context)
-                    .load(imageUrl)
-                    .into(imgItemEventLayMonthTransitionImage)
 
                 val lottieAnimationView = binding.lottieAnimationView // Ensure you have a LottieAnimationView in your layout
                 lottieAnimationView.setAnimation(R.raw.data_test) // Set the raw JSON file
@@ -189,6 +247,16 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
             // Set translationY for parallax effect
             binding.imgItemEventLayMonthTransitionImage.translationY = -scrollOffset.toFloat()
         }
+
+        fun clear() {
+            // Cancel the CoroutineScope to clean up resources when ViewHolder is recycled
+            scope.coroutineContext.cancelChildren()
+        }
+    }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        holder.clear() // Cancel ongoing coroutines in the ViewHolder
     }
 
     private var configureEventCallBack: ((event: Event) -> Unit)? = null
@@ -229,18 +297,3 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
     }
 
 }
-
-private val monthImgResource = intArrayOf(
-    R.drawable.bkg_01_jan,
-    R.drawable.bkg_02_feb,
-    R.drawable.bkg_03_mar,
-    R.drawable.bkg_04_apr,
-    R.drawable.bkg_05_may,
-    R.drawable.bkg_06_jun,
-    R.drawable.bkg_07_jul,
-    R.drawable.bkg_08_aug,
-    R.drawable.bkg_09_sep,
-    R.drawable.bkg_10_oct,
-    R.drawable.bkg_11_nov,
-    R.drawable.bkg_12_dec
-)

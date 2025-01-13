@@ -111,6 +111,9 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
+    // Palette API works best with colorful images
+    implementation(libs.androidx.palette.ktx)
+
     // Lottie: Load the JSON animation in your LottieAnimationView
     implementation ("com.airbnb.android:lottie:6.1.0")
 

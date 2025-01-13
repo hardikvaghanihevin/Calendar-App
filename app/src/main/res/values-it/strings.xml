@@ -3,6 +3,11 @@
     <string name="app_name">Applicazione Calendario</string>
     <string name="navigation_drawer_open">Apri il menu di navigazione</string>
     <string name="navigation_drawer_close">Chiudi il menu di navigazione</string>
+
+    <string name="open_drawer">खोलें</string>
+    <string name="close_drawer">बंद करें</string>
+    <string name="navigate_up">ऊपर जाएँ</string>
+
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Intestazione di navigazione</string>
@@ -44,6 +49,17 @@
     <string name="hello_blank_fragment">Ciao frammento vuoto</string>
     <string name="calendar_month">Mese del Calendario</string>
     <string name="calendar_year">Anno del Calendario</string>
+    <string name="year">Anno</string>
+    <string name="month">Mese</string>
+    <string name="select_country">Seleziona Paese</string>
+    <string name="select_language">Seleziona Lingua</string>
+    <string name="first_day_of_the_week">Primo giorno della settimana</string>
+    <string name="jump_to_date">Vai alla data</string>
+    <string name="app_theme">Tema dell\'app</string>
+    <string name="rate_our_app">Valuta la nostra app</string>
+    <string name="privacy_policy">Informativa sulla privacy</string>
+    <string name="device_information">Informazioni sul dispositivo</string>
+    <string name="setting">Impostazione</string>
     <string name="settings">Impostazioni</string>
     <string name="action_refresh">Aggiorna</string>
     <string name="new_event">Nuovo Evento</string>
@@ -78,5 +94,59 @@
     <string name="alert">Avviso</string>
     <string name="none">Nessuno</string>
     <string name="note">Nota</string>
-    <string name="country_header">Country</string>
+    <string name="country_header">Paese</string>
+
+    <string name="at_once">Subito</string>
+    <string name="every_day">Ogni giorno</string>
+    <string name="every_week">Ogni settimana</string>
+    <string name="every_month">Ogni mese</string>
+    <string name="every_year">Ogni anno</string>
+    <string name="at_time">All\'ora</string>
+    <string name="before_5_minutes">5 minuti prima</string>
+    <string name="before_10_minutes">10 minuti prima</string>
+    <string name="before_15_minutes">15 minuti prima</string>
+    <string name="before_30_minutes">30 minuti prima</string>
+    <string name="before_1_hour">1 ora prima</string>
+    <string name="before_12_hours">12 ore prima</string>
+    <string name="before_1_day">1 giorno prima</string>
+    <string name="before_3_days">3 giorni prima</string>
+    <string name="before_5_days">5 giorni prima</string>
+    <string name="before_1_week">1 settimana prima</string>
+    <string name="before_2_weeks">2 settimane prima</string>
+    <string name="before_1_month">1 mese prima</string>
+    <string name="before_custom_time">Prima dell\'ora personalizzata</string>
+    <string name="custom_alert">Avviso personalizzato</string>
+    <string name="minutes_before">minuti prima</string>
+
+    <string name="cancel">Annulla</string>
+    <string name="jump">Salta</string>
+    <string name="first_date_of_the_week">Primo giorno della settimana</string>
+    <string name="done">Fatto</string>
+    <string name="sunday">Domenica</string>
+    <string name="monday">Lunedì</string>
+    <string name="saturday">Sabato</string>
+
+    <string name="dark_theme">Tema scuro</string>
+    <string name="light_theme">Tema chiaro</string>
+    <string name="system_theme">Tema di sistema</string>
+
+    <string name="brand">Marca</string>
+    <string name="device">Dispositivo</string>
+    <string name="app_version">Versione app</string>
+    <string name="os">Sistema operativo</string>
+    <string name="version">Versione</string>
+    <string name="okay">Okay</string>
+    <string name="description">Descrizione</string>
+    <string name="title">Titolo</string>
+
+    <string name="app_language">Lingua app</string>
+    <string name="time_format">Formato ora</string>
+    <string name="rate_on_google_play">Valuta su Google Play</string>
+    <string name="share_app">Condividi app</string>
+    <string name="feedback">Feedback</string>
+    <string name="device_info">Info dispositivo</string>
+    <string name="format_12_hours">Formato 12 ore</string>
+    <string name="format_24_hours">Formato 24 ore</string>
+    <string name="search_event">Cerca evento…</string>
+    <string name="search_country">Cerca paese…</string>
 </resources>
