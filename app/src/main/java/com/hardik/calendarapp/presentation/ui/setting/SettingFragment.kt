@@ -1,11 +1,13 @@
 package com.hardik.calendarapp.presentation.ui.setting
 
+import android.annotation.SuppressLint
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -65,6 +67,7 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         // Step 3: Update the locale after setting the theme and before inflating the UI
         LocaleHelper.setLocale(requireContext(), languageCode)
     }
+    @SuppressLint("SetTextI18n")
     private fun setupSettingsUI() {
         binding.apply {
             if (isAdded){
@@ -100,7 +103,8 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_time_format_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.time_format) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                        this.constLayItemSetting.setOnClickListener { Toast.makeText(requireContext(), "Time Format!",Toast.LENGTH_SHORT).show() }
+                    this.constLayItemSetting.setOnClickListener { /*Toast.makeText(requireContext(), "Time Format!",Toast.LENGTH_SHORT).show()*/
+                        (activity as MainActivity).showTimeFormatDialog()}
                 }
 
                 //todo: About:
@@ -120,13 +124,15 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_share_app_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.share_app) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                    this.constLayItemSetting.setOnClickListener { Toast.makeText(requireContext(), "Share App!",Toast.LENGTH_SHORT).show()}
+                    this.constLayItemSetting.setOnClickListener { //Toast.makeText(requireContext(), "Share App!",Toast.LENGTH_SHORT).show()
+                        (activity as MainActivity).shareApp() }
                 }
                 includedItemFeedBack.apply {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_feedback_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.feedback) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                    this.constLayItemSetting.setOnClickListener { Toast.makeText(requireContext(), "Feedback!",Toast.LENGTH_SHORT).show() }
+                    this.constLayItemSetting.setOnClickListener { //Toast.makeText(requireContext(), "Feedback!",Toast.LENGTH_SHORT).show()
+                        (activity as MainActivity).feedback() }
                 }
                 includedItemDeviceInfo.apply {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_device_info_icon) }
@@ -137,8 +143,18 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                 includedItemVersion.apply {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_version_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.version) }
-                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                    this.constLayItemSetting.setOnClickListener { Toast.makeText(requireContext(), "Version",Toast.LENGTH_SHORT).show() }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon); visibility = View.GONE }
+                    this.constLayItemSetting.setOnClickListener { /*Toast.makeText(requireContext(), "Version",Toast.LENGTH_SHORT).show()*/ }
+                    this.tvSettingItemDesc.apply {
+                        visibility = View.VISIBLE
+                        val appVersion = try {
+                            val packageInfo: PackageInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
+                            packageInfo.versionName // App version name
+                        } catch (e: PackageManager.NameNotFoundException) {
+                            "Unknown Version"
+                        }
+                        text = "V$appVersion"
+                    }
                 }
             }
         }

@@ -152,4 +152,6 @@
     <string name="share_app">Share app</string>
     <string name="feedback">Feedback</string>
     <string name="device_info">Device info</string>
+    <string name="format_12_hours">12 hours format</string>
+    <string name="format_24_hours">24 hours format</string>
 </resources>

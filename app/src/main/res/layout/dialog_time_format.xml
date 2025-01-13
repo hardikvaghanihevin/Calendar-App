@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-<!--        android:background="@drawable/dialog_background"-->
+    <!--        android:background="@drawable/dialog_background"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,92 +20,66 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
+            android:fontFamily="@font/post_nord_sans_medium"
             android:padding="16dp"
-            android:text="@string/app_theme"
+            android:text="@string/time_format"
             android:textAlignment="textStart"
             android:textColor="@color/text_primary"
-            android:fontFamily="@font/post_nord_sans_medium"
             android:textSize="@dimen/_18ssp"
             android:textStyle="bold" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_140sdp"
+            android:layout_height="@dimen/_120sdp"
             android:gravity="start"
             android:padding="@dimen/_16sdp"
             android:weightSum="2.8">
 
             <TextView
-                android:id="@+id/dialogAppTheme_DarkTheme"
+                android:id="@+id/dialogTimeFormat_12HR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/dark_theme"
-                android:textSize="@dimen/_16ssp"
-                android:paddingVertical="@dimen/_10sdp"
-                android:textColor="@color/text_primary"
                 android:fontFamily="@font/post_nord_sans_regular"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/format_12_hours"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintBottom_toTopOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/dialogAppTheme_LightTheme"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/dialogAppTheme_DarkTheme_icon"
+                android:id="@+id/dialogTimeFormat_12HR_icon"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:src="@drawable/unchecked_icon"
+                app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_12HR"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogAppTheme_DarkTheme"
-                app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_DarkTheme"
-                android:src="@drawable/unchecked_icon"/>
+                app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_12HR" />
 
             <TextView
-                android:id="@+id/dialogAppTheme_LightTheme"
+                android:id="@+id/dialogTimeFormat_24HR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
-                android:text="@string/light_theme"
-                android:textSize="@dimen/_16ssp"
-                android:textColor="@color/text_primary"
                 android:fontFamily="@font/post_nord_sans_regular"
-                app:layout_constraintStart_toStartOf="@id/dialogAppTheme_DarkTheme"
-                app:layout_constraintTop_toBottomOf="@id/dialogAppTheme_DarkTheme"
-                app:layout_constraintBottom_toTopOf="@id/dialogAppTheme_SystemTheme"
-                />
-
-            <ImageView
-                android:id="@+id/dialogAppTheme_LightTheme_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogAppTheme_LightTheme"
-                app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_LightTheme"
-                android:src="@drawable/unchecked_icon"/>
-
-            <TextView
-                android:id="@+id/dialogAppTheme_SystemTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/system_theme"
-                android:textSize="@dimen/_16ssp"
                 android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/format_24_hours"
                 android:textColor="@color/text_primary"
-                android:fontFamily="@font/post_nord_sans_regular"
-                app:layout_constraintStart_toStartOf="@id/dialogAppTheme_LightTheme"
-                app:layout_constraintTop_toBottomOf="@id/dialogAppTheme_LightTheme"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="@id/dialogTimeFormat_12HR"
+                app:layout_constraintTop_toBottomOf="@id/dialogTimeFormat_12HR" />
 
             <ImageView
-                android:id="@+id/dialogAppTheme_SystemTheme_icon"
+                android:id="@+id/dialogTimeFormat_24HR_icon"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:src="@drawable/unchecked_icon"
+                app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogAppTheme_SystemTheme"
-                app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_SystemTheme"
-                android:src="@drawable/unchecked_icon"/>
+                app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_24HR" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -121,12 +95,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
+                android:fontFamily="@font/post_nord_sans_medium"
                 android:text="@string/cancel"
                 android:textAlignment="center"
                 android:textColor="@color/text_secondary"
-                android:fontFamily="@font/post_nord_sans_medium"
                 android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_done"
@@ -134,12 +108,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
                 android:background="?attr/selectableItemBackground"
+                android:fontFamily="@font/post_nord_sans_medium"
                 android:text="@string/done"
                 android:textAlignment="center"
                 android:textColor="@color/error"
-                android:fontFamily="@font/post_nord_sans_medium"
                 android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

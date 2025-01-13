@@ -1,20 +1,14 @@
 package com.hardik.calendarapp.presentation.ui.view_event
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
@@ -29,6 +23,7 @@ import com.hardik.calendarapp.databinding.FragmentViewEventBinding
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
@@ -44,6 +39,8 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     private lateinit var argEvent: Event
 
+    var is24HourFormat = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -58,52 +55,15 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated: ")
         _binding = FragmentViewEventBinding.bind(view)
 
-        val menuHost: MenuHost = requireActivity()
-
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Inflate the menu resource for the fragment
-                menuInflater.inflate(R.menu.view_event_menu, menu)
-                // Check if argEvent is null
-                /*if (arguments?.containsKey(KEY_EVENT) != true) {
-                    // Hide the delete menu item if argEvent is null
-                    menu.findItem(R.id.action_delete)?.isVisible = false
-                }*/
-                if (arguments?.containsKey(KEY_EVENT) == true){
-                    if (argEvent.eventType != EventType.PERSONAL){
-                        menu.findItem(R.id.action_delete)?.isVisible = false
-                        menu.findItem(R.id.action_edit)?.isVisible = false
-                    }
-                }
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.action_edit -> {
-                        navigateToNewEventFragForEdit(argEvent)
-                        true
-                    }
-                    R.id.action_delete -> {
-                        lifecycleScope.launch {
-                            viewModel.deleteEvent(argEvent)
-                            Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
-                            viewModel.resetEventState()
-                            findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
-                        }
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
         if (arguments?.containsKey(KEY_EVENT) == true){
             Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
             populateEventData(event = argEvent)
-
         }
 
         /** Delete Event  */
@@ -171,11 +131,11 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
         binding.tvStartTimePicker.text = DateUtil.longToString(
             timestamp = event.startTime,
-            pattern = DateUtil.TIME_FORMAT_hh_mm_a
+            pattern = TIME_FORMAT_HH_mm.takeIf { is24HourFormat } ?: DateUtil.TIME_FORMAT_hh_mm_a
         )
         binding.tvEndTimePicker.text = DateUtil.longToString(
             timestamp = event.endTime,
-            pattern = DateUtil.TIME_FORMAT_hh_mm_a
+            pattern = TIME_FORMAT_HH_mm.takeIf { is24HourFormat } ?: DateUtil.TIME_FORMAT_hh_mm_a
         )
 
         binding.tvRepeatPicker.text = RepeatOptionConverter.toDisplayString(

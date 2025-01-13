@@ -26,7 +26,8 @@ object DateUtil {
     // Define common date formats
     const val TIME_FORMAT_h_mm_a = "h:mm a"
     const val TIME_FORMAT_mm = "mm"
-    const val TIME_FORMAT_hh_mm_a = "hh:mm a"
+    const val TIME_FORMAT_hh_mm_a = "hh:mm a"  // 12-hour format
+    const val TIME_FORMAT_HH_mm = "HH:mm"     // 24-hour format
     const val DATE_FORMAT_MMMM_yyyy = "MMMM yyyy"
     const val DATE_FORMAT_yyyy_MM_dd = "yyyy-MM-dd"
     const val DATE_FORMAT_dd_MM_yyyy = "dd MM yyyy"

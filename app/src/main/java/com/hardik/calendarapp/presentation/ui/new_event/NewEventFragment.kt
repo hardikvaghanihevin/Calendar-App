@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -40,6 +41,8 @@ import com.hardik.calendarapp.databinding.FragmentNewEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
+import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_hh_mm_a
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
 import com.hardik.calendarapp.utillities.MyNavigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +60,9 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private val binding get() = _binding!!
 
     private lateinit var argEvent:Event
+
+    var is24HourFormat = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "onCreate: ")
@@ -91,52 +97,9 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         Log.i(TAG, "onViewCreated: ")
         _binding = FragmentNewEventBinding.bind(view)
 
-        /*val menuHost: MenuHost = requireActivity()
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Inflate the menu resource for the fragment
-                menuInflater.inflate(R.menu.new_event_menu, menu)
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.action_save -> {
-                        lifecycleScope.launch {
-                            val msg: String = viewModel.run {
-                                val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
-                                Log.e(TAG, "onMenuItemSelected: id: $id", )
-                                insertCustomEvent(context = requireContext(),id = id)
-                            }
-
-                            // Display a message to the user
-                            //Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
-                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-
-                            // Reset the fields after successful insertion
-                            if (msg == EVENT_INSERT_SUCCESSFULLY || msg == EVENT_UPDATE_SUCCESSFULLY) {
-                                viewModel.resetEventState()
-                            }
-                            findNavController().popBackStack(R.id.newEventFragment.takeIf { EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
-                            //findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
-                        }
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle */
-
-        /*if (arguments?.containsKey(KEY_EVENT) == true){
-            Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
-            populateEventData(event = argEvent)
-            updateToolbarTitle(resources.getString(R.string.update_event))
-        }else{
-            Log.e(TAG, "onViewCreated: argEvent is null", )
-            viewModel.resetEventState()
-            updateToolbarTitle(resources.getString(R.string.new_event))
-        }*/
 
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -166,7 +129,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     viewModel.startTime.collectLatest { startTime ->
                         binding.tvStartTimePicker.text = DateUtil.longToString(
                             timestamp = startTime,
-                            pattern = DateUtil.TIME_FORMAT_hh_mm_a
+                            pattern = TIME_FORMAT_HH_mm.takeIf { is24HourFormat } ?:TIME_FORMAT_hh_mm_a
                         )
                     }
                 }
@@ -174,7 +137,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                     viewModel.endTime.collectLatest { endTime ->
                         binding.tvEndTimePicker.text = DateUtil.longToString(
                             timestamp = endTime,
-                            pattern = DateUtil.TIME_FORMAT_hh_mm_a
+                            pattern = TIME_FORMAT_HH_mm.takeIf { is24HourFormat } ?:TIME_FORMAT_hh_mm_a
                         )
                     }
                 }
@@ -418,7 +381,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
         // Configure TimePicker
         timePicker?.apply {
-            setIs24HourView(false) // Use 12-hour format
+            //setIs24HourView(false) // Use 12-hour format
+            setIs24HourView(is24HourFormat) // Use 12-hour format
             //hour = 0 // Set the hour (0 for 12 AM)
             //minute = 23 // Set the minute
             // Programmatically set a time (e.g., 0:12)

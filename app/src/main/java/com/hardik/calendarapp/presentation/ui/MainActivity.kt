@@ -49,6 +49,7 @@ import com.hardik.calendarapp.databinding.DialogAppThemeBinding
 import com.hardik.calendarapp.databinding.DialogDeviceInformationBinding
 import com.hardik.calendarapp.databinding.DialogFirstDayOfTheWeekBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
+import com.hardik.calendarapp.databinding.DialogTimeFormatBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuAdapter
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
@@ -100,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
         val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
+        val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
         // Step 2: Set the theme before locale
         when (appTheme) {
@@ -677,6 +679,102 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private var dialogTimeFormatBinding: DialogTimeFormatBinding? = null
+    fun showTimeFormatDialog(){
+        Log.i(TAG, "showTimeFormat: ")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_time_format, null)
+        dialogTimeFormatBinding = DialogTimeFormatBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+
+        dialog.setCancelable(true)
+
+        dialogTimeFormatBinding?.apply {
+            val timeFormat12hr = this.dialogTimeFormat12HR
+            val timeFormat12hrIcon = this.dialogTimeFormat12HRIcon
+            val timeFormat24hr = this.dialogTimeFormat24HR
+            val timeFormat24hrIcon = this.dialogTimeFormat24HRIcon
+
+            //rest all icon and text
+            fun resetSelections(){
+                timeFormat12hrIcon.setImageResource(R.drawable.unchecked_icon)
+                timeFormat24hrIcon.setImageResource(R.drawable.unchecked_icon)
+
+                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+
+                timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+            }
+
+            // Set the initial selection based on the saved preference
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+            var is24HourFormat = sharedPreferences.getBoolean("time_format", false)  // Default to false (12-hour format)
+
+            if(is24HourFormat){
+                timeFormat24hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+            }else {
+                timeFormat12hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+            }
+
+            // Handle timeFormat12hr click
+            timeFormat12hr.setOnClickListener {
+                resetSelections()
+
+                timeFormat12hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                // Save selection to SharedPreferences
+                is24HourFormat = false
+            }
+            // Handle timeFormat24hr click
+            timeFormat24hr.setOnClickListener {
+                resetSelections()
+
+                timeFormat24hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
+                timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+
+                // Save selection to SharedPreferences
+                is24HourFormat = true
+            }
+
+            btnDone.setOnClickListener {
+
+                // Apply the selected timeFormat
+                // Save the selected time format (true for 24-hour format, false for 12-hour format)
+                sharedPreferences.edit().putBoolean("time_format", is24HourFormat).apply()
+
+                dialog.dismiss()
+            }
+
+            btnCancel.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
+    }
+
     private var dialogDeviceInformationBinding: DialogDeviceInformationBinding? = null
     @SuppressLint("SetTextI18n")
     fun showDeviceInfoDialog(){
@@ -736,9 +834,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun rateApp(context: Context = this){
-        Toast.makeText(context,"Rate App", Toast.LENGTH_SHORT).show()
-        //val appPackageName = context.packageName // Get the current app's package name
-        val appPackageName = "com.dts.freefiremax" // Get the current app's package name
+        //Toast.makeText(context,"Rate App", Toast.LENGTH_SHORT).show()
+        val appPackageName = context.packageName // Get the current app's package name
+        //val appPackageName = "com.dts.freefiremax" // Todo: dummy Get the current app's package name
         try {
             // Try to open Play Store app
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
@@ -751,11 +849,77 @@ class MainActivity : AppCompatActivity() {
             context.startActivity(intent)
         }
     }
-    fun privacyPolicy(context: Context = this){
-        Toast.makeText(this,"Privacy Policy", Toast.LENGTH_SHORT).show()
+    fun privacyPolicy(context: Context = this) {
+        //Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show()
         val url = "https://gist.githubusercontent.com/hardikvaghanihevin/d45b7376a72f832d2e80573a46628a4c/raw/e79d8fd9bd36d38b31e619bdb41251a7417999a4/privacy_policy.html" // Replace with your URL
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
+    }
+
+    fun shareApp(){
+        val appPackageName = this.packageName // Get the current app's package name
+        val appLink = "https://play.google.com/store/apps/details?id=$appPackageName"
+
+        // Create an intent to share the link
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Check out this app!") // Optional subject
+            putExtra(Intent.EXTRA_TEXT, "Hey, check out this app: $appLink") // The link to share
+        }
+
+        // Start the sharing activity
+        startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
+    @SuppressLint("QueryPermissionsNeeded")
+    fun feedback(){
+        val emailAddress = "feedback@company.com"// Replace with your company's email address
+        val subject = "Feedback for Your App"
+        val body = "Please provide your feedback here."
+
+        // Encode the subject and body in the mailto URI
+        /*val uri = Uri.parse("mailto:$emailAddress")// Set email address
+            .buildUpon()
+            .appendQueryParameter("subject", subject)// Pre-fill subject
+            .appendQueryParameter("body", body)// Pre-fill body
+            .build()*/
+
+        // Intent for sending email
+        var emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:$emailAddress") // Set email address
+            putExtra(Intent.EXTRA_SUBJECT, subject) // Pre-fill subject
+            putExtra(Intent.EXTRA_TEXT, body) // Pre-fill body
+        }
+
+        // Try to explicitly target Gmail if installed
+        val gmailPackage = "com.google.android.gm"
+        val packageManager = this.packageManager
+        val isGmailInstalled = packageManager.getLaunchIntentForPackage(gmailPackage) != null
+
+        if (isGmailInstalled) {
+            // Gmail is installed; explicitly open Gmail
+            emailIntent.setPackage(gmailPackage)
+        }
+
+        // Verify that there is an app to handle the intent
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            // Start the intent (Gmail if installed, else show chooser)
+            startActivity(Intent.createChooser(emailIntent, "Choose an email client"))
+        } else {
+            // No email client found
+            Toast.makeText(this, "Please install an email client to send feedback.", Toast.LENGTH_SHORT).show()
+
+            // If no email client is found, we create an alternative fallback using ACTION_SEND
+            emailIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822" // Ensures email apps handle this
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(emailAddress)) // Email address
+                putExtra(Intent.EXTRA_SUBJECT, subject) // Pre-fill subject
+                putExtra(Intent.EXTRA_TEXT, body) // Pre-fill body
+            }
+
+            // Show chooser to select an email client
+            startActivity(Intent.createChooser(emailIntent, "Choose an email client"))
+        }
+
     }
 
     /**
