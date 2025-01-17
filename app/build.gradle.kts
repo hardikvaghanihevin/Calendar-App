@@ -14,21 +14,44 @@ android {
     namespace = "com.hardik.calendarapp"
     compileSdk = 35
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Users/dreamworld/Desktop/Projects/Hardik/CalendarApp/app/com_hardik_calendarapp.jks")
+            storePassword = "com_hardik_calendarapp"
+            keyAlias = "com_hardik_calendarapp"
+            keyPassword = "com_hardik_calendarapp"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.hardik.calendarapp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
     }
 
+
+
     buildTypes {
+        debug {
+            isDebuggable = true
+            isShrinkResources = true
+            isMinifyEnabled = true//false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
         release {
-            isMinifyEnabled = false
+            isDebuggable = false
+            isShrinkResources = true
+            isMinifyEnabled = true//false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -46,6 +69,13 @@ android {
         viewBinding = true
         dataBinding = true
     }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -147,4 +177,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics:19.2.1")
+
+    implementation ("androidx.core:core-splashscreen:1.0.0-beta02")
 }

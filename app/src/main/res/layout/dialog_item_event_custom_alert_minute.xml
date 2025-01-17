@@ -6,13 +6,12 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <!--        android:background="@drawable/dialog_background"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/item_background"
+        android:background="@drawable/dialog_background"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/dialog_padding"
         android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,11 +22,8 @@
             android:layout_gravity="start"
             android:padding="16dp"
             android:text="@string/custom_alert"
-            android:textAlignment="textStart"
-            android:textColor="@color/text_primary"
-            android:fontFamily="@font/post_nord_sans_medium"
-            android:textSize="@dimen/_18ssp"
-            android:textStyle="bold" />
+            style="@style/TextViewStyle.medium"
+            android:textSize="@dimen/_18ssp"/>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,18 +36,14 @@
                 android:layout_width="@dimen/_36sdp"
                 android:layout_height="@dimen/_46sdp"
                 android:gravity="center"
-                android:background="@android:color/transparent"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/EditTextStyle.regular"
                 android:hint="00"
-                android:imeOptions="actionNext"
                 android:inputType="number"
                 android:maxLength="2"
                 android:ems="2"
                 android:paddingHorizontal="@dimen/_8sdp"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="normal"
+                android:textColor="@color/error"
+                android:textColorHint="@color/error"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -61,10 +53,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:text="@string/minutes_before"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintStart_toEndOf="@id/edt_eventCustomAlertMinute"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -98,26 +88,19 @@
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                style="@style/ButtonStyle.medium"
                 android:text="@string/cancel"
-                android:textAlignment="center"
-                android:textColor="@color/text_secondary"
-                android:fontFamily="@font/post_nord_sans_medium"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:textColor="@color/text_secondary"/>
 
             <Button
                 android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
+                style="@style/ButtonStyle.medium"
                 android:background="?attr/selectableItemBackground"
                 android:text="@string/done"
-                android:textAlignment="center"
-                android:textColor="@color/error"
-                android:fontFamily="@font/post_nord_sans_medium"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:textColor="@color/error"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

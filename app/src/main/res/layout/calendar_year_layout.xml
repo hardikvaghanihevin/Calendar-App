@@ -28,9 +28,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView"
         />
     <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -57,9 +57,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView1"
         />
 
@@ -87,9 +87,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView2"
         />
 
@@ -118,9 +118,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView4"
         />
     <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -147,9 +147,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView5"
         />
 
@@ -177,9 +177,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView6"
         />
 
@@ -208,9 +208,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView7"
         />
     <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -237,9 +237,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView8"
         />
 
@@ -267,9 +267,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView9"
         />
 
@@ -298,9 +298,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView10"
         />
     <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -327,9 +327,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView11"
         />
 
@@ -357,9 +357,9 @@
         app:background_color_month="@color/black"
         app:background_color_day="@color/red"
         app:background_color_date="@color/black"
-        app:background_drawable_month="@drawable/day_background_1"
-        app:background_drawable_day="@drawable/day_background_1"
-        app:background_drawable_date="@drawable/day_background_1"
+        app:background_drawable_month="@null"
+        app:background_drawable_day="@null"
+        app:background_drawable_date="@null"
         android:id="@+id/customView12"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

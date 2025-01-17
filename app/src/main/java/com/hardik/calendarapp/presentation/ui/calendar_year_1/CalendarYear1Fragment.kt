@@ -18,6 +18,7 @@ import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
+import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.getCurrentYearPosition
 import com.hardik.calendarapp.utillities.getPositionFromYear
@@ -66,39 +67,9 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             }
 
         }
-/*
-        val menuHost: MenuHost = requireActivity()
 
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Inflate the menu resource for the fragment
-                menuInflater.inflate(R.menu.main, menu)
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.action_refresh -> {
-                        val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
-                        // Get the position of the key in the yearList
-                        val yearKeyPos: Int? = getPositionFromYear(yearList,backToCurrentYear)
-                        // Get the yearKey at the given position
-                        val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
-                        if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
-                        //Log.d(TAG, "refreshToYear: $yearKeyPos = $yearKeyAtPosition")
-                        if (::viewPager.isInitialized) {
-                            if (yearKeyPos != null) { viewPager.setCurrentItem(yearKeyPos, true) } // Navigate to the desired position
-                            adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
-                        }
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED) // Add it for this fragment's lifecycle
-*/
         /** Back to current year */
-        (activity as MainActivity).binding.appBarMain.backToDateIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
             // Get the position of the key in the yearList
             val yearKeyPos: Int? = getPositionFromYear(yearList, backToCurrentYear)
@@ -116,6 +87,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     override fun onResume() {
         super.onResume()
         Log.i(TAG, "onResume: ")
+        KeyboardUtils.hideKeyboard(requireActivity())
         requireActivity().invalidateOptionsMenu()
     }
 

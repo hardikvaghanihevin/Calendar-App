@@ -9,8 +9,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -90,9 +88,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         viewModel.updateYear(year)
     }
 
-    private lateinit var menuHost: MenuHost
-    private lateinit var menuProvider: MenuProvider
-
     @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,7 +114,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
 
         /** Back to current month */
-        (activity as MainActivity).binding.appBarMain.backToDateIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
             val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
             val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)

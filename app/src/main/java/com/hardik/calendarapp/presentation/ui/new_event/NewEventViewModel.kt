@@ -17,6 +17,9 @@ import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetEventByTitleAndType
 import com.hardik.calendarapp.utillities.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +27,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -324,9 +330,35 @@ class NewEventViewModel @Inject constructor(
             eventRepository.cancelAlarm(id = id)// cancel when update single event from newEventFrag
         }
     }
+    private val insertEventsMutex = Mutex()
     private fun insertEvent(event: Event) {
         viewModelScope.launch {
-            eventRepository.upsertEvent(event)
+            insertEventsMutex.withLock {
+                try {
+                    val updatedEvent = coroutineScope {
+                            async(Dispatchers.Default) {
+                                var nextTriggerTime = event.triggerTime
+
+                                // Calculate nextTriggerTime if needed
+                                if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
+                                    val calculatedTriggerTime = DateUtil.calculateNextOccurrence(nextTriggerTime, event.repeatOption)
+                                    if (calculatedTriggerTime != null) {
+                                        nextTriggerTime = calculatedTriggerTime
+                                    }
+                                }
+
+                                // Return the updated event
+                                event.copy(triggerTime = nextTriggerTime)
+                            }.await() // Collect all updated events
+                    }
+
+                    withContext(Dispatchers.IO) { eventRepository.upsertEvent(updatedEvent) }
+
+                } catch (e: Exception) {
+                    // Handle any errors
+                    Log.e(TAG,"InsertEvents - Error inserting events", e)
+                }
+            }
         }
     }
 

@@ -11,12 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginStart="@dimen/_8sdp"
-        android:fontFamily="@font/post_nord_sans_regular"
+        style="@style/TextViewStyle.regular"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:text="@string/language_header"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/_16ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

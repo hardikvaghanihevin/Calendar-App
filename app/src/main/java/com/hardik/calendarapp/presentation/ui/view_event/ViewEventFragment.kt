@@ -24,6 +24,7 @@ import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
+import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
@@ -67,11 +68,11 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
 
         /** Delete Event  */
-        (activity as MainActivity).binding.appBarMain.deleteEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
                 if (argEvent.eventType != EventType.PERSONAL){
-                    (activity as MainActivity).hideViewWithAnimation(this)
+                    hideViewWithAnimation(this)
                 }
             }
 
@@ -87,11 +88,11 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
 
         /** Edit Event  */
-        (activity as MainActivity).binding.appBarMain.saveEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
                 if (argEvent.eventType != EventType.PERSONAL){
-                    (activity as MainActivity).hideViewWithAnimation(this)
+                    hideViewWithAnimation(this)
                 }
             }
 

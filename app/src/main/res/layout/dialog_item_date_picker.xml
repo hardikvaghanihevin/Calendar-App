@@ -56,61 +56,19 @@
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
+            style="@style/ButtonStyle.medium"
             android:text="@string/cancel"
-            android:textAlignment="center"
-            android:textColor="@color/text_secondary"
-            android:fontFamily="@font/post_nord_sans_medium"
-            android:textSize="@dimen/_16ssp"
-            android:textStyle="bold"/>
+            android:textColor="@color/text_secondary"/>
 
         <Button
             android:id="@+id/btn_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
-            android:background="?attr/selectableItemBackground"
+            style="@style/ButtonStyle.medium"
             android:text="@string/done"
-            android:textAlignment="center"
-            android:textColor="@color/error"
-            android:fontFamily="@font/post_nord_sans_medium"
-            android:textSize="@dimen/_16ssp"
-            android:textStyle="bold"/>
+            android:textColor="@color/error"/>
     </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mBtn_oky"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:backgroundTint="@color/error"
-        android:text="@string/okay"
-        android:textColor="@color/black"
-        android:textStyle="italic"
-        app:layout_constraintEnd_toEndOf="@id/cv_first"
-        app:layout_constraintHorizontal_bias="0.9"
-        app:layout_constraintStart_toStartOf="@id/cv_first"
-        app:layout_constraintTop_toBottomOf="@id/cv_first"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mBtn_cancel"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:backgroundTint="@color/error"
-        android:text="@string/cancel"
-        android:textColor="@color/black"
-        android:textStyle="italic"
-        app:layout_constraintEnd_toEndOf="@id/cv_first"
-        app:layout_constraintHorizontal_bias="0.1"
-        app:layout_constraintStart_toStartOf="@id/cv_first"
-        app:layout_constraintTop_toBottomOf="@id/cv_first"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Rounded" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>

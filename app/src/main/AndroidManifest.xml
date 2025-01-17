@@ -10,6 +10,14 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+
+            <data android:scheme="mailto" />
+        </intent>
+    </queries>
+
     <application
         android:name=".MyCalendarApplication"
         android:allowBackup="true"
@@ -26,42 +34,29 @@
             android:name=".presentation.ui.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
             android:exported="true"
-            android:theme="@style/Theme.CalendarApp.Fullscreen">
+            android:theme="@style/Theme.CalendarApp.Fullscreen"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+            <!--android:theme="@style/SplashTheme"-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--Currently not use-->
-        <!--<activity
-            android:name=".presentation.ui.SplashFullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
-            android:exported="true"
-            android:label="@string/title_activity_splash_fullscreen"
-            android:theme="@style/Theme.CalendarApp.Fullscreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
+        <activity
+            android:name=".presentation.ui.language.LanguageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".presentation.ui.MainActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.CalendarApp.NoActionBar"
-            android:windowSoftInputMode="adjustResize">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
-
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing|stateHidden"
+            tools:ignore="LockedOrientationActivity"/><!--adjustResize \ adjustNothing-->
         <receiver
             android:name=".presentation.receiver.NotificationReceiver"
             android:enabled="true"
@@ -73,10 +68,5 @@
             </intent-filter>
         </receiver>
     </application>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.SENDTO" />
-            <data android:scheme="mailto" />
-        </intent>
-    </queries>
+
 </manifest>

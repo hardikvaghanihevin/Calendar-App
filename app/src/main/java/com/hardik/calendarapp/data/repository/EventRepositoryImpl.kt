@@ -17,11 +17,13 @@ import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
 import com.hardik.calendarapp.utillities.AlarmScheduler
+import com.hardik.calendarapp.utillities.DateUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Calendar
+import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
@@ -40,26 +42,27 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun upsertEvents(events: List<Event>) {
-        // Cancel all existing alarms and reschedule
-        //cancelAllAlarms()
-
-        /*// Step 1: Check if the eventId exists
-        events.forEach { event ->
-            // Collect the Flow to check if the eventId exists
-            val exists = eventDao.getEventById(event.eventId)?.firstOrNull() // Collect only the first result (suspendable function)
-
-            if (exists != null) {
-                Log.d(TAG,"UpsertEvents -> Event with ID: ${event.id} already exists, updating...")
-            } else {
-                Log.v(TAG,"UpsertEvents ->New event inserted with ID: ${event.id}.")
-            }
-        }*/
+        Log.v(TAG, "upsertEvents: ")
         eventDao.upsertEvents(events)
 
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
-        events.forEach { event:Event -> if (event.year == currentYear) { scheduleAlarm(event) }
-//            scheduleAlarm(event)
-        }//todo : schedule alarm if current year
+        // Get the current date and the date 365 days later
+
+        val timeSlap: Pair<Long, Long> = DateUtil.getCurrentAndFutureRange()
+//        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
+//                if (event.year == currentYear) { scheduleAlarm(event) }
+
+        // Use supervisorScope to handle independent coroutines
+        supervisorScope {
+
+            events.forEach { event:Event ->
+            // Launch a coroutine for each event
+                launch(Dispatchers.Default) {
+
+                if (event.triggerTime in timeSlap.first..timeSlap.second) { scheduleAlarm(event) }}
+                      //scheduleAlarm(event)
+
+            }//todo : schedule alarm if current year
+        }
     }
 
     override suspend fun updateEvent(event: Event) {
@@ -73,6 +76,7 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun deleteEventsHoliday(){
         //todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
+        cancelAllRemoteAlarms()
         eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
     }
 
@@ -135,7 +139,14 @@ class EventRepositoryImpl @Inject constructor(
         pendingIntent?.let { alarmManager.cancel(it) }
         Log.d(TAG, "Alarm canceled for eventId: ${id.hashCode()}")
     }
-
+    private suspend fun cancelAllRemoteAlarms() {
+        Log.i(TAG, "cancelAllRemoteAlarms: ")
+        CoroutineScope(Dispatchers.IO).launch {
+            eventDao.getHolidayEventsFlow().collectLatest {
+                it.forEach { event -> cancelAlarm(event.id) }// currently no use
+            }
+        }
+    }
     private fun cancelAllAlarms() {
         Log.i(TAG, "cancelAllAlarms: ")
         CoroutineScope(Dispatchers.IO).launch {

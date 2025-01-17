@@ -31,6 +31,7 @@ import com.hardik.calendarapp.domain.use_case.GetMonthlyEventsUseCase
 import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.utillities.CursorEvent
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.calculateNextOccurrence
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
 import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
@@ -82,6 +83,7 @@ class MainViewModel @Inject constructor(
     val languageCode: StateFlow<String> = _languageCode // Public read-only StateFlow
 
     fun updateLanguageCode(languageCode: String){
+        Log.i(TAG, "updateLanguageCode: $languageCode")
         viewModelScope.launch {
             _languageCode.value = languageCode
         }
@@ -189,16 +191,19 @@ class MainViewModel @Inject constructor(
     fun getHolidayCalendarData() {
         Log.i(TAG, "getHolidayCalendarData: ")
         viewModelScope.launch (Dispatchers.IO) {
-            //todo: delete all event which already in DB from 'REMOTE'
-            eventRepository.deleteEventsHoliday()
 
-            val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-            val countryCodes: Set<String> = sharedPreferences.getStringSet("countries",setOf("indian")) ?: setOf("indian")
+            //todo: delete all event which already in DB from 'REMOTE'
+            withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
+
+            val languageCode =
+                sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+            val countryCodes: Set<String> =
+                sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
 
             Log.d(TAG, "getHolidayCalendarData: countryCode:$countryCodes")
             // Create a list of deferred results for API calls
             val apiCalls = countryCodes.map { countryCode ->
-                async {
+                async(Dispatchers.IO) {
                     // Call the API for each country and collect results
                     getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
                         when (result) {
@@ -207,16 +212,11 @@ class MainViewModel @Inject constructor(
                                 collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
                             }
 
-                            is Resource.Error -> {
-                                _holidayApiState.value =
-                                    DataState(error = result.message ?: "An unexpected error occurred")
-                            }
+                            is Resource.Error -> { _holidayApiState.value = DataState(error = result.message ?: "An unexpected error occurred") }
 
                             is Resource.Loading -> {
                                 _holidayApiState.value = DataState(isLoading = true)
                             }
-
-                            else -> {}
                         }
                     }
                 }
@@ -364,6 +364,7 @@ class MainViewModel @Inject constructor(
         LogUtil.logLongMessage(TAG, "$events")
         insertEventsMutex.withLock {
             try {
+                // Step 1: Cancel all existing alarms concurrently
                 // Cancel all alarms concurrently (Cancel all existing alarms first)
                 //val cancelJobs = events.map { event -> async(Dispatchers.IO) { eventRepository.cancelAlarm(event.id) } } // before UpsertEvents
                 val cancelJobs = coroutineScope { events.map { event -> async { withContext(Dispatchers.IO) { eventRepository.cancelAlarm(event.id) } } } } // before UpsertEvents
@@ -372,11 +373,34 @@ class MainViewModel @Inject constructor(
 
                 //eventRepository.upsertEvents(events)
                 // Upsert events after all alarms are canceled
-                withContext(Dispatchers.IO) { eventRepository.upsertEvents(events) }
+
+                // Step 2: Update each event's nextTriggerTime
+                val updatedEvents = coroutineScope {
+                    events.map { event ->
+                        async(Dispatchers.Default) {
+                            var nextTriggerTime = event.triggerTime
+
+                            // Calculate nextTriggerTime if needed
+                            if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
+                                val calculatedTriggerTime = calculateNextOccurrence(nextTriggerTime, event.repeatOption)
+                                if (calculatedTriggerTime != null) {
+                                    nextTriggerTime = calculatedTriggerTime
+                                }
+                            }
+
+                            // Return the updated event
+                            event.copy(triggerTime = nextTriggerTime)
+                        }
+                    }.awaitAll() // Collect all updated events
+                }
+                //val eventJson = GsonUtil.toJson(updatedEvents)
+                //LogUtil.logLongMessage(TAG, "hardik_ $eventJson")
+
+                withContext(Dispatchers.IO) { eventRepository.upsertEvents(updatedEvents) }
 
             } catch (e: Exception) {
                 // Handle any errors
-                Log.e("InsertEvents", "Error inserting events", e)
+                Log.e(TAG,"InsertEvents - Error inserting events", e)
             }
         }
     }

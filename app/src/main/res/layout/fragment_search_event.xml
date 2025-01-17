@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/background_primary"
     tools:context=".presentation.ui.search_event.SearchEventFragment">
-    <!--        android:background="@drawable/day_background_1"-->
     <!--        android:background="@drawable/month_navigator_shape_1"-->
 
     <include
@@ -35,10 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_4sdp"
-        android:fontFamily="@font/post_nord_sans_medium"
+        style="@style/TextViewStyle.medium"
         android:text="No Events"
         android:textAlignment="center"
-        android:textSize="20sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -12,7 +12,7 @@ import com.hardik.calendarapp.data.database.dao.EventDao
 import com.hardik.calendarapp.data.database.entity.Event
 import java.util.Date
 
-@Database(entities = [Event::class], version = 1)
+@Database(entities = [Event::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun eventDao() : EventDao

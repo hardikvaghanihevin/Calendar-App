@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.setting
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -11,16 +12,15 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentSettingBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
+import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.LocaleHelper
-import com.hardik.calendarapp.utillities.MyNavigation
 
 
 class SettingFragment : Fragment(R.layout.fragment_setting) {
@@ -84,7 +84,9 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.tvSettingItemTitle.apply { text = getString(R.string.app_language) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
                     this.constLayItemSetting.setOnClickListener {
-                        findNavController().navigate(R.id.nav_select_language, null, navOptions = MyNavigation.navOptions, null)
+                        val intent = Intent(requireActivity(), LanguageActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
                     }
                 }
                 includedItemFirstDayOfTheWeek.apply {

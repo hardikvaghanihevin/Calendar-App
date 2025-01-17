@@ -5,31 +5,6 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_year">
 
-<!--
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="com.hardik.calendarapp.presentation.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
-
-    <fragment
-        android:id="@+id/calendarMonthFragment"
-        android:name="com.hardik.calendarapp.presentation.ui.calendar_month.CalendarMonthFragment"
-        android:label="@string/calendar_month"
-        tools:layout="@layout/fragment_calendar_month" />
-
-    <fragment
-        android:id="@+id/calendarYearFragment"
-        android:name="com.hardik.calendarapp.presentation.ui.calendar_year.CalendarYearFragment"
-        android:label="@string/calendar_year"
-        tools:layout="@layout/fragment_calendar_year" />
-
-    <fragment
-        android:id="@+id/nav_settings"
-        android:name="com.hardik.calendarapp.presentation.ui.setting.SettingsFragment"
-        android:label="@string/settings" />
--->
-
     <fragment
         android:id="@+id/nav_year"
         android:name="com.hardik.calendarapp.presentation.ui.calendar_year_1.CalendarYear1Fragment"
@@ -51,14 +26,8 @@
     <fragment
         android:id="@+id/nav_select_country"
         android:name="com.hardik.calendarapp.presentation.ui.country.CountryFragment"
-        android:label="@string/country_header"
+        android:label="@string/select_country"
         tools:layout="@layout/fragment_country" />
-
-    <fragment
-        android:id="@+id/nav_select_language"
-        android:name="com.hardik.calendarapp.presentation.ui.language.LanguageFragment"
-        android:label="@string/language_header"
-        tools:layout="@layout/fragment_language" />
 
     <fragment
         android:id="@+id/nav_setting"

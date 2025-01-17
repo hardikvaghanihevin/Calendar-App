@@ -790,6 +790,26 @@ object DateUtil {
             null // Return null if parsing fails
         }
     }
+
+    /**
+     * Calculates the current time and the time a specified number of days into the future.
+     *
+     * @param daysInFuture The number of days from the current date to calculate the future time. Defaults to 365 days.
+     * @return A Pair<Long, Long> where:
+     *         - first: The current time in milliseconds since epoch.
+     *         - second: The time in milliseconds corresponding to the specified number of days into the future.
+     */
+    fun getCurrentAndFutureRange(daysInFuture: Int = 365): Pair<Long, Long> {
+        val currentCalendar = Calendar.getInstance()
+        val endCalendar = Calendar.getInstance()
+        endCalendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
+
+        val currentTime = currentCalendar.timeInMillis
+        val endTime = endCalendar.timeInMillis
+
+        return Pair(currentTime, endTime)
+    }
+
 }
 
 //// Convert to epoch time

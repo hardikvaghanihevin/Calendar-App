@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary"
+    tools:context=".presentation.ui.language.LanguageActivity">
+
+    <include
+        android:id="@+id/included_languageActivity_customToolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:padding="8dp"
+        android:background="@color/background_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        layout="@layout/custom_toolbar"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/languageRecView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/included_languageActivity_customToolbar"
+        android:dividerHeight="1dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

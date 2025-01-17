@@ -12,12 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_4sdp"
-        android:fontFamily="@font/post_nord_sans_medium"
         android:paddingStart="@dimen/_10sdp"
-        android:textAlignment="textStart"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/_16ssp"
-        android:textStyle="bold"
+        style="@style/TextViewStyle.medium"
+        android:textSize="@dimen/_19ssp"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlSymmetry"
         tools:text="2000"
@@ -25,8 +22,8 @@
 
     <ImageButton
         android:id="@+id/btnPrevYear"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_35sdp"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_25sdp"
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:contentDescription="Previous Month"
@@ -38,8 +35,8 @@
     <!-- Right Arrow Button -->
     <ImageButton
         android:id="@+id/btnNextYear"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_35sdp"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_25sdp"
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:contentDescription="Next Month"
@@ -63,7 +60,7 @@
         android:id="@+id/viewPager_calendarYear"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_4sdp"
         app:layout_constraintTop_toBottomOf="@id/v_divider"
         app:layout_constraintVertical_bias="0" />
 

@@ -20,7 +20,7 @@
     <color name="text_secondary">#7E818C</color>
     <color name="border_surface">#E4E5E7</color>
     <color name="accent_primary">#1F95AF</color>
-    <color name="error">#FF2802</color>
+    <color name="error">#FF5334</color><!--#FF2808-->
 
     <color name="scrim_color">#600E0E0E</color>
 
@@ -36,4 +36,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="status_bar_color">@android:color/transparent</color>
 
+    <color name="ic_launcher_app_logo_background">#3491AA</color>
 </resources>

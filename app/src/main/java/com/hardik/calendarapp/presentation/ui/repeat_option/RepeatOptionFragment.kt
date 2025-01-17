@@ -82,7 +82,7 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
         }
 
         /** Save Selected Language */
-        (activity as MainActivity).binding.appBarMain.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     selectedRepeatOption?.let { it1 -> viewModel.updateRepeatOption(it1) }

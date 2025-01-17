@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.domain.use_case
 
 import com.hardik.calendarapp.common.Resource
+import com.hardik.calendarapp.data.remote.dto.HolidayApiDto
 import com.hardik.calendarapp.data.remote.dto.toCalendarDetail
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.HolidayApiRepository
@@ -16,8 +17,15 @@ class GetHolidayApiUseCase @Inject constructor(private val repository: HolidayAp
     operator fun invoke(countryCode: String, languageCode : String): Flow<Resource<HolidayApiDetail>> = flow {
         try {
             emit(Resource.Loading<HolidayApiDetail>())
-            val calendar = repository.getHolidayEvents(countryCode = countryCode, languageCode = languageCode).toCalendarDetail()// data CoinDetailDto to CoinDetail transfer here
-            emit(Resource.Success<HolidayApiDetail>(calendar))
+            val calendar: HolidayApiDto? = repository.getHolidayEvents(countryCode = countryCode, languageCode = languageCode) //.toCalendarDetail()// data CoinDetailDto to CoinDetail transfer here
+
+            // Check for null and emit success or error
+            if (calendar != null) {
+                emit(Resource.Success<HolidayApiDetail>(calendar.toCalendarDetail()))
+            } else {
+                emit(Resource.Error<HolidayApiDetail>("Failed to fetch calendar data."))
+            }
+
         } catch(e: HttpException) {
             emit(Resource.Error<HolidayApiDetail>(e.localizedMessage ?: "An unexpected error occurred"))
         } catch(e: IOException) {

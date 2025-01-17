@@ -5,13 +5,12 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <!--        android:background="@drawable/dialog_background"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/square_bg_jump_to_date"
+        android:background="@drawable/dialog_background"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/dialog_padding"
         android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,13 +19,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:fontFamily="@font/post_nord_sans_medium"
+            style="@style/TextViewStyle.medium"
             android:padding="16dp"
             android:text="@string/time_format"
-            android:textAlignment="textStart"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/_18ssp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/_18ssp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -39,11 +35,9 @@
                 android:id="@+id/dialogTimeFormat_12HR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:paddingVertical="@dimen/_10sdp"
                 android:text="@string/format_12_hours"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toTopOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -62,11 +56,9 @@
                 android:id="@+id/dialogTimeFormat_24HR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:paddingVertical="@dimen/_10sdp"
                 android:text="@string/format_24_hours"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/dialogTimeFormat_12HR"
                 app:layout_constraintTop_toBottomOf="@id/dialogTimeFormat_12HR" />
@@ -94,26 +86,18 @@
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:fontFamily="@font/post_nord_sans_medium"
+                style="@style/ButtonStyle.medium"
                 android:text="@string/cancel"
-                android:textAlignment="center"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold" />
+                android:textColor="@color/text_secondary" />
 
             <Button
                 android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
-                android:background="?attr/selectableItemBackground"
-                android:fontFamily="@font/post_nord_sans_medium"
+                style="@style/ButtonStyle.medium"
                 android:text="@string/done"
-                android:textAlignment="center"
-                android:textColor="@color/error"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold" />
+                android:textColor="@color/error" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

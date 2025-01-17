@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -18,7 +19,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 
 data class DrawerMenuItem(
     val icon: Int = -1, // Now just an Int to hold either attribute or drawable ID
-    val title: String,
+    var title: String,
     val id: Int,
     var isSelected: Boolean = false // Track selected state
 )
@@ -84,11 +85,42 @@ fun getDrawableFromAttribute(context: Context, attr: Int): Drawable? {
 
 val TAG = BASE_TAG + DrawerMenuAdapter::class.java.simpleName
 class DrawerMenuAdapter(
-    private val items: List<DrawerMenuItem>,
-    private val onClick: (DrawerMenuItem) -> Unit
+//    private val items: List<DrawerMenuItem>,
+//    private val onClick: (DrawerMenuItem) -> Unit
 ) : RecyclerView.Adapter<DrawerMenuAdapter.ViewHolder>() {
 
+    private var items: List<DrawerMenuItem> = emptyList()
+    private var onClick: ((DrawerMenuItem, Int) -> Unit)? = null
+
     private var selectedPosition: Int = 0 // Track the currently selected position (-1 not set, 0 for index 1)
+
+    // Method to set items
+    @SuppressLint("NotifyDataSetChanged")
+    fun setItems(newItems: List<DrawerMenuItem>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
+
+    // Method to set click listener
+    fun setOnClickListener(listener: (DrawerMenuItem, Int) -> Unit) {
+        onClick = listener
+    }
+//    @SuppressLint("NotifyDataSetChanged")
+//    fun updateTitles(context: Context) {
+//        items.forEach { item ->
+//            when (item.id) {
+//                R.id.nav_year -> item.title = context.getString(R.string.year)
+//                R.id.nav_month -> item.title = context.getString(R.string.month)
+//                R.id.nav_select_country -> item.title = context.getString(R.string.select_country)
+//                R.id.nav_select_language -> item.title = context.getString(R.string.select_language)
+//                R.id.nav_first_day_of_week -> item.title = context.getString(R.string.first_day_of_the_week)
+//                R.id.nav_jump_to_date -> item.title = context.getString(R.string.jump_to_date)
+//                R.id.nav_privacy_policy -> item.title = context.getString(R.string.privacy_policy)
+//                R.id.nav_setting -> item.title = context.getString(R.string.setting)
+//            }
+//        }
+//        notifyDataSetChanged() // Notify the adapter of data changes
+//    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val container: LinearLayout = view.findViewById(R.id.drawer_menu_item_container)
@@ -126,7 +158,8 @@ class DrawerMenuAdapter(
             // Store the current selected position before updating
             val previousSelectedPosition = selectedPosition
 
-            onClick(item) ;
+            onClick?.invoke(item, position)
+            //onClick(item) ;
             //setSelectedPosition(position)
 
             // Check if the item title is "Jump to Date", "App Theme", or "First Day of the Week"

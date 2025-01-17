@@ -9,24 +9,21 @@
 
     <TextView
         android:id="@+id/tv_month_title"
+        style="@style/TextViewStyle.medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_4sdp"
         android:paddingStart="@dimen/_10sdp"
-        tools:visibility="visible"
-        android:textAlignment="textStart"
-        android:textColor="@color/text_primary"
-        android:fontFamily="@font/post_nord_sans_medium"
-        android:textSize="@dimen/_16ssp"
-        android:textStyle="bold"
-        tools:text="Month 2000"
+        android:textSize="@dimen/_19ssp"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry" />
+        tools:ignore="RtlSymmetry"
+        tools:layout_editor_absoluteX="5dp"
+        tools:text="Month 2000"
+        tools:visibility="visible" />
 
     <ImageButton
         android:id="@+id/btnPrevMonth"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_35sdp"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_25sdp"
         android:layout_weight="1"
         android:src="@drawable/left_icon"
         android:background="@android:color/transparent"
@@ -39,8 +36,8 @@
     <!-- Right Arrow Button -->
     <ImageButton
         android:id="@+id/btnNextMonth"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_35sdp"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_25sdp"
         android:layout_weight="1"
         android:src="@drawable/right_icon"
         android:background="@android:color/transparent"
@@ -84,7 +81,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/viewPager_calendarMonth"
         app:layout_constraintVertical_bias="0">
-<!--        android:background="@drawable/day_background_1"-->
 <!--        android:background="@drawable/month_navigator_shape_1"-->
 
         <include
@@ -113,9 +109,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_4sdp"
             android:text="No Events"
-            android:fontFamily="@font/post_nord_sans_medium"
+            style="@style/TextViewStyle.medium"
             android:textAlignment="center"
-            android:textSize="20sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"

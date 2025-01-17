@@ -17,25 +17,4 @@
         <item name="switchStyle">@style/CustomSwitchStyle</item>
 
     </style>
-
-
-    <!--    its noting to use only ref default-->
-    <style name="Theme.CalendarApp1" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <!-- <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
-        <!-- Customize your theme here. -->
-    </style>
-
-    <style name="ThemeOverlay.CalendarApp.FullscreenContainer" parent="">
-        <item name="fullscreenBackgroundColor">@color/accent_primary</item>
-        <item name="fullscreenTextColor">@color/white</item>
-    </style>
 </resources>

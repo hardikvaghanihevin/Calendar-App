@@ -7,15 +7,15 @@
     tools:context=".presentation.ui.SplashActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_120sdp"
         android:layout_gravity="center"
-        android:background="@drawable/back_to_date_icon"
+        android:background="@drawable/app_logo_bg"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/_45sdp"
-        android:paddingTop="@dimen/_40sdp"
-        android:paddingBottom="@dimen/_25sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_1sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,11 +25,8 @@
             android:id="@+id/tv_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/post_nord_sans_medium"
-            android:textAlignment="textStart"
+            style="@style/TextViewStyle.medium"
             android:textColor="@color/white"
-            android:textSize="@dimen/_16ssp"
-            android:textStyle="bold"
             tools:text="@string/sunday" />
 
         <View
@@ -42,12 +39,11 @@
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/post_nord_sans_medium"
+            style="@style/TextViewStyle.medium"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/_56ssp"
-            android:textStyle="bold"
-            tools:text="8"
+            tools:text="88"
             tools:visibility="visible" />
     </LinearLayout>
 

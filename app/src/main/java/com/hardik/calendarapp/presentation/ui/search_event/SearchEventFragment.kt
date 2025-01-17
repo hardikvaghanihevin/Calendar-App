@@ -64,7 +64,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
         setupUI()
 
         /** Search view for Country */
-        (activity as MainActivity).binding.appBarMain.searchView.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
             if (isAdded){
                 // Set inactive background (null)
                 this.setBackgroundResource(0) // 0 removes any background

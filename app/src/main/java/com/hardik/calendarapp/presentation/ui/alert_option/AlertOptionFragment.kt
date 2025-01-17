@@ -94,7 +94,7 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
         }
 
         /** Save Selected Language */
-        (activity as MainActivity).binding.appBarMain.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon.setOnClickListener {
             if (isAdded) {
                 lifecycleScope.launch {
                     selectedAlertOffset?.let { it1 -> viewModel.updateAlertOffset(it1) }

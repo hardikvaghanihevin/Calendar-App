@@ -23,7 +23,7 @@ class MyCalendarApplication: Application() {
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
         val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
-        val is24HourFormat = sharedPreferences.getBoolean("time_format", false) ?: false
+        val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
         Log.e(TAG, "onCreate: timeFormat:$is24HourFormat, appTheme:$appTheme countryCode:$countryCode, languageCode:$languageCode", )
 

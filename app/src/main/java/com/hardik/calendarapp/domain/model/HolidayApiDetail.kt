@@ -1,9 +1,11 @@
 package com.hardik.calendarapp.domain.model
 
+import com.hardik.calendarapp.data.remote.dto.Reminder
+
 
 data class HolidayApiDetail(
     val accessRole: String,
-    val defaultReminders: List<Any>,
+    val defaultReminders: List<Reminder>?,//List<Any>,
     val description: String,
     val etag: String,
     val items: List<Item>,

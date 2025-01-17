@@ -5,13 +5,12 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-<!--        android:background="@drawable/dialog_background"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/square_bg_jump_to_date"
+        android:background="@drawable/dialog_background"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/dialog_padding"
         android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -22,11 +21,8 @@
             android:layout_gravity="start"
             android:padding="16dp"
             android:text="@string/jump_to_date"
-            android:textAlignment="textStart"
-            android:textColor="@color/text_primary"
-            android:fontFamily="@font/post_nord_sans_medium"
-            android:textSize="@dimen/_18ssp"
-            android:textStyle="bold" />
+            style="@style/TextViewStyle.medium"
+            android:textSize="@dimen/_18ssp" />
 
         <TextView
             android:id="@+id/tv_selected_date"
@@ -35,9 +31,9 @@
             android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"
             android:text="Monday 1 January 2025"
+            style="@style/TextViewStyle.regular"
             android:textAlignment="center"
             android:textColor="@color/text_secondary"
-            android:fontFamily="@font/post_nord_sans_regular"
             android:textSize="@dimen/_15ssp" />
 
         <LinearLayout
@@ -137,25 +133,17 @@
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                style="@style/ButtonStyle.medium"
                 android:text="@string/cancel"
-                android:textAlignment="center"
-                android:textColor="@color/text_secondary"
-                android:fontFamily="@font/post_nord_sans_medium"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:textColor="@color/text_secondary"/>
 
             <Button
                 android:id="@+id/btn_jump"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                style="@style/ButtonStyle.medium"
                 android:text="@string/jump"
-                android:textAlignment="center"
-                android:textColor="@color/error"
-                android:fontFamily="@font/post_nord_sans_medium"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"/>
+                android:textColor="@color/error"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

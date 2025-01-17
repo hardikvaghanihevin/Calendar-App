@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Custom Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/custom_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:padding="8dp"
+        android:background="@color/background_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Navigation Icon -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/siv_navigation_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Navigation Icon"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/hamburger_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ShapeAbleImageView"
+            tools:ignore="HardcodedText" />
+
+        <!-- Toolbar Title -->
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/TextViewStyle.medium"
+            android:gravity="start"
+            android:text="@string/app_name"
+            android:textSize="@dimen/_20ssp"
+            android:singleLine="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/toolbarMenuIcon"
+            app:layout_constraintStart_toEndOf="@id/siv_navigation_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbarMenuIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="@id/toolbar_title"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/ll_toolbarMenuIcon_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                android:orientation="horizontal">
+
+                <!-- Search Icon -->
+                <ImageView
+                    android:id="@+id/search_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Search Icon"
+                    android:gravity="center"
+                    android:padding="@dimen/_8sdp"
+                    android:src="@drawable/search_icon"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    app:tint="@color/text_primary" />
+
+                <!-- Back to date Icon -->
+                <TextView
+                    android:id="@+id/back_to_date_icon"
+                    android:layout_width="@dimen/_21sdp"
+                    android:layout_height="@dimen/_21sdp"
+                    android:background="@drawable/back_to_date_icon"
+                    style="@style/TextViewStyle.medium"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:padding="0dp"
+                    android:text="31"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_9ssp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_toolbarMenuIcon_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                android:orientation="horizontal">
+
+                <!-- delete event button-->
+                <TextView
+                    android:id="@+id/delete_event_icon"
+                    android:layout_width="@dimen/_56sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:background="@drawable/txt_btn_bg"
+                    style="@style/TextViewStyle.medium"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:text="@string/action_delete"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/back_to_date_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
+
+                <!-- save event button-->
+                <!-- android:background="@drawable/save_event_icon"-->
+                <TextView
+                    android:id="@+id/save_event_icon"
+                    android:layout_width="@dimen/_56sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:background="@drawable/txt_btn_bg"
+                    style="@style/TextViewStyle.medium"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:text="@string/action_save"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_toolbarMenuIcon_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                android:orientation="horizontal">
+
+                <!-- Search view -->
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/searchView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/item_background"
+                    android:paddingVertical="1dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:visibility="visible"
+                    android:iconifiedByDefault="false"
+                    app:animateMenuItems="true"
+                    app:dividerPadding="@dimen/_2sdp"
+                    app:queryBackground="@null"
+                    app:showDividers="none"
+                    app:queryHint="@string/search_event"
+                    app:searchHintIcon="@null"
+                    app:theme="@style/SearchViewStyle"
+                    app:searchIcon="@drawable/search_icon"
+                    />
+                <!--app:searchHintIcon="@null"-->
+                <!--app:closeIcon="@android:drawable/btn_dialog"-->
+
+                <!-- save select language button-->
+                <TextView
+                    android:id="@+id/save_select_language_icon"
+                    android:layout_width="@dimen/_37sdp"
+                    android:layout_height="@dimen/_26sdp"
+                    android:background="@drawable/done_icon"
+                    android:text=""
+                    android:textColor="@color/background_secondary"
+                    style="@style/TextViewStyle.medium"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_8ssp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

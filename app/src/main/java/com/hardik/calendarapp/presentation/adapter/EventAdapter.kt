@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.view.isVisible
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,12 +19,9 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
 import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.ImageColorUtil
-import com.hardik.calendarapp.utillities.ImageColorUtil.darkenColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -134,8 +129,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                         .error(R.drawable.bkg_01_jan)
                         .into(imgItemEventLayMonthTransitionImage)
 
-
-                    // Cancel any previously running job for this ViewHolder
+                   /* // Cancel any previously running job for this ViewHolder
                     scope.coroutineContext.cancelChildren()
 
                     val paletteCache = mutableMapOf<Int, Int>() // Store colors by resource ID
@@ -160,7 +154,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                         withContext(Dispatchers.Main) {
                             tvItemEventMonthName.setTextColor(textColor)
                         }
-                    }
+                    }*/
                 } else {
                     cardItemEventImg.visibility = View.GONE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image

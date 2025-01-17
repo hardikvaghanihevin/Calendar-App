@@ -6,13 +6,12 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <!--        android:background="@drawable/dialog_background"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/square_bg_jump_to_date"
+        android:background="@drawable/dialog_background"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/dialog_padding"
         android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -21,13 +20,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:fontFamily="@font/post_nord_sans_medium"
+            style="@style/TextViewStyle.medium"
             android:padding="16dp"
             android:text="@string/device_information"
-            android:textAlignment="textStart"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/_18ssp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/_18ssp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -41,12 +37,10 @@
                 android:id="@+id/dialogDeviceInformation_Brand"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/brand"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_Device"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -55,12 +49,10 @@
                 android:id="@+id/dialogDeviceInformation_Device"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/device"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_AppVersion"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_Brand" />
@@ -69,12 +61,10 @@
                 android:id="@+id/dialogDeviceInformation_AppVersion"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/app_version"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_Os"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_Device" />
@@ -83,12 +73,10 @@
                 android:id="@+id/dialogDeviceInformation_Os"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/os"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_ABI"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_AppVersion" />
@@ -97,12 +85,10 @@
                 android:id="@+id/dialogDeviceInformation_ABI"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/abi"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_Version"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_Os" />
@@ -111,12 +97,10 @@
                 android:id="@+id/dialogDeviceInformation_Version"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:fontFamily="@font/post_nord_sans_regular"
+                style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/version"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_ABI" />
@@ -135,13 +119,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
-                android:background="?attr/selectableItemBackground"
-                android:fontFamily="@font/post_nord_sans_medium"
+                style="@style/ButtonStyle.medium"
                 android:text="@string/okay"
-                android:textAlignment="center"
-                android:textColor="@color/error"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold" />
+                android:textColor="@color/error" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

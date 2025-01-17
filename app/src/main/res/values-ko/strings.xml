@@ -149,5 +149,7 @@
     <string name="format_24_hours">24시간 형식</string>
     <string name="search_event">이벤트 검색…</string>
     <string name="search_country">국가 검색…</string>
+    <string name="deny_permission_msg_calendar">"앱이 작동하려면 캘린더 권한이 필요합니다. "</string>
+    <string name="deny_permission_msg_notification">알림을 표시하려면 권한이 필요합니다.</string>
 
 </resources>

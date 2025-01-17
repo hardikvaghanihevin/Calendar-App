@@ -1,13 +1,16 @@
 package com.hardik.calendarapp.data.remote.dto
 
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
+import kotlinx.android.parcel.Parcelize
 
 @Keep
+@Parcelize
 data class HolidayApiDto(
     val accessRole: String,
-    val defaultReminders: List<Any>,
+    val defaultReminders: List<Reminder>?,  // Update to a specific type if possible
     val description: String,
     val etag: String,
     val items: List<Item>,
@@ -16,11 +19,13 @@ data class HolidayApiDto(
     val summary: String,
     val timeZone: String,
     val updated: String
-) {
+) : Parcelable {
+
     @Keep
+    @Parcelize
     data class Item(
         val created: String,
-        val creator: Creator,
+        val creator: ItemCreator,
         val description: String,
         val end: End,
         val etag: String,
@@ -37,33 +42,45 @@ data class HolidayApiDto(
         val transparency: String,
         val updated: String,
         val visibility: String
-    ) {
+    ) : Parcelable {
+
         @Keep
-        data class Creator(
+        @Parcelize
+        data class ItemCreator(
             val displayName: String,
             val email: String,
             val self: Boolean
-        )
+        ) : Parcelable
 
         @Keep
+        @Parcelize
         data class End(
             val date: String
-        )
+        ) : Parcelable
 
         @Keep
+        @Parcelize
         data class Organizer(
             val displayName: String,
             val email: String,
             val self: Boolean
-        )
+        ) : Parcelable
 
         @Keep
+        @Parcelize
         data class Start(
             val date: String
-        )
+        ) : Parcelable
     }
 }
 
+// You can define a specific type for defaultReminders if possible
+@Keep
+@Parcelize
+data class Reminder(
+    val type: String, // Example, add appropriate fields
+    val value: String
+) : Parcelable
 
 // Extension function to convert CalendarDto to CalendarDetail
 fun HolidayApiDto.toCalendarDetail(): HolidayApiDetail {
@@ -106,7 +123,7 @@ fun HolidayApiDto.Item.toItem(): HolidayApiDetail.Item {
 }
 
 // Extension function to convert CalendarDto.Creator to CalendarDetail.Creator
-fun HolidayApiDto.Item.Creator.toCreator(): HolidayApiDetail.Item.Creator {
+fun HolidayApiDto.Item.ItemCreator.toCreator(): HolidayApiDetail.Item.Creator {
     return HolidayApiDetail.Item.Creator(
         displayName = this.displayName,
         email = this.email,
