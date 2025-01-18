@@ -3,21 +3,36 @@
 
     <!--    unchecked thumb -->
     <item android:state_checked="false">
-        <layer-list >
-            <!-- Background Shape -->
+        <layer-list>
+            <!-- Spacer for Padding -->
             <item>
                 <shape android:shape="oval">
-                    <solid android:color="@color/white" />
-                    <size android:width="22dp" android:height="22dp" />
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+
+            <!-- Background Shape -->
+            <item
+                android:left="2dp"
+                android:top="2dp"
+                android:right="0dp"
+                android:bottom="2dp">
+                <shape android:shape="oval">
+                    <solid android:color="@color/text_secondary" />
+                    <size android:width="16dp" android:height="16dp" />
                 </shape>
             </item>
 
             <!-- Stroke Shape -->
-            <item>
+            <item
+                android:left="2dp"
+                android:top="2dp"
+                android:right="0dp"
+                android:bottom="2dp">
                 <shape android:shape="oval">
                     <solid android:color="@android:color/transparent" />
-                    <stroke android:width="2dp" android:color="@color/text_secondary" />
-                    <size android:width="22dp" android:height="22dp" />
+                    <stroke android:width="0.01dp" android:color="@color/border_surface" />
+                    <size android:width="16dp" android:height="16dp" />
                 </shape>
             </item>
         </layer-list>
@@ -25,21 +40,36 @@
 
     <!--    checked thumb -->
     <item android:state_checked="true">
-        <layer-list >
-            <!-- Background Shape -->
+        <layer-list>
+            <!-- Spacer for Padding -->
             <item>
                 <shape android:shape="oval">
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+
+            <!-- Background Shape -->
+            <item
+                android:left="0dp"
+                android:top="2dp"
+                android:right="2dp"
+                android:bottom="2dp">
+                <shape android:shape="oval">
                     <solid android:color="@color/white" />
-                    <size android:width="22dp" android:height="22dp" />
+                    <size android:width="16dp" android:height="16dp" />
                 </shape>
             </item>
 
             <!-- Stroke Shape -->
-            <item>
+            <item
+                android:left="0dp"
+                android:top="2dp"
+                android:right="2dp"
+                android:bottom="2dp">
                 <shape android:shape="oval">
                     <solid android:color="@android:color/transparent" />
-                    <stroke android:width="2dp" android:color="@color/error" />
-                    <size android:width="22dp" android:height="22dp" />
+                    <stroke android:width="0.01dp" android:color="@color/error" />
+                    <size android:width="16dp" android:height="16dp" />
                 </shape>
             </item>
         </layer-list>

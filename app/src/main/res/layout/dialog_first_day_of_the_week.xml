@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     android:background="@android:color/transparent">
 
     <LinearLayout
@@ -20,109 +20,98 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:padding="16dp"
             style="@style/TextViewStyle.medium"
             android:text="@string/first_date_of_the_week"
-            android:textSize="@dimen/_18ssp" />
+            android:textSize="@dimen/dialog_TextSize_1" />
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_120sdp"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenTitleContent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="start"
-            android:paddingHorizontal="@dimen/_16sdp"
-            android:layout_marginVertical="@dimen/_16sdp"
-            android:weightSum="2.8">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/dialogFirstDayOfTheWeek_Sunday"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/sunday"
+                android:textSize="@dimen/dialog_TextSize_3"
                 app:layout_constraintBottom_toTopOf="@id/dialogFirstDayOfTheWeek_Monday"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/dialogFirstDayOfTheWeek_Sunday_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:src="@drawable/unchecked_icon"
-                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Sunday"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Sunday" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogFirstDayOfTheWeek_Monday"
                 android:layout_width="match_parent"
-                android:layout_height="51dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/monday"
+                android:textSize="@dimen/dialog_TextSize_3"
                 app:layout_constraintBottom_toTopOf="@id/dialogFirstDayOfTheWeek_Saturday"
                 app:layout_constraintStart_toStartOf="@id/dialogFirstDayOfTheWeek_Sunday"
                 app:layout_constraintTop_toBottomOf="@id/dialogFirstDayOfTheWeek_Sunday" />
 
-            <ImageView
-                android:id="@+id/dialogFirstDayOfTheWeek_Monday_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:src="@drawable/unchecked_icon"
-                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Monday"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Monday" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogFirstDayOfTheWeek_Saturday"
                 android:layout_width="match_parent"
-                android:layout_height="51dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/saturday"
+                android:textSize="@dimen/dialog_TextSize_3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/dialogFirstDayOfTheWeek_Monday"
                 app:layout_constraintTop_toBottomOf="@id/dialogFirstDayOfTheWeek_Monday" />
 
-            <ImageView
-                android:id="@+id/dialogFirstDayOfTheWeek_saturday_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:src="@drawable/unchecked_icon"
-                app:layout_constraintBottom_toBottomOf="@id/dialogFirstDayOfTheWeek_Saturday"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogFirstDayOfTheWeek_Saturday" />
+        </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingVertical="0dp">
+            android:orientation="horizontal">
 
-            <Button
+            <TextView
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
+                android:textColor="@color/text_secondary"
                 android:text="@string/cancel"
-                android:textColor="@color/text_secondary"/>
+                android:textSize="@dimen/dialog_TextSize_2" />
 
-            <Button
+            <Space
+                android:layout_width="@dimen/dialogHorizontalBetweenBtnSpacing"
+                android:layout_height="match_parent"/>
+
+            <TextView
                 android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
+                android:textSize="@dimen/dialog_TextSize_2"
                 android:text="@string/done"
                 android:textColor="@color/error"/>
         </LinearLayout>

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     android:background="@android:color/transparent">
 
     <LinearLayout
@@ -20,54 +21,57 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             style="@style/TextViewStyle.medium"
-            android:padding="16dp"
             android:text="@string/time_format"
-            android:textSize="@dimen/_18ssp" />
+            android:textSize="@dimen/dialog_TextSize_1" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenTitleContent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_120sdp"
-            android:gravity="start"
-            android:padding="@dimen/_16sdp"
-            android:weightSum="2.8">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/dialogTimeFormat_12HR"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 style="@style/TextViewStyle.regular"
-                android:paddingVertical="@dimen/_10sdp"
                 android:text="@string/format_12_hours"
-                app:layout_constraintBottom_toTopOf="@id/dialogTimeFormat_24HR"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="@dimen/dialog_TextSize_3"
+                />
 
             <ImageView
                 android:id="@+id/dialogTimeFormat_12HR_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/unchecked_icon"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_12HR"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_12HR" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/dialogTimeFormat_24HR"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 style="@style/TextViewStyle.regular"
-                android:paddingVertical="@dimen/_10sdp"
                 android:text="@string/format_24_hours"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/dialogTimeFormat_12HR"
-                app:layout_constraintTop_toBottomOf="@id/dialogTimeFormat_12HR" />
+                android:textSize="@dimen/dialog_TextSize_3"
+                />
 
             <ImageView
                 android:id="@+id/dialogTimeFormat_24HR_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/unchecked_icon"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -75,29 +79,37 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingVertical="0dp">
+            android:orientation="horizontal">
 
-            <Button
+            <TextView
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/cancel"
-                android:textColor="@color/text_secondary" />
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/dialog_TextSize_2"/>
 
-            <Button
+            <Space
+                android:layout_width="@dimen/dialogHorizontalBetweenBtnSpacing"
+                android:layout_height="match_parent"/>
+
+            <TextView
                 android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/done"
-                android:textColor="@color/error" />
+                android:textColor="@color/error"
+                android:textSize="@dimen/dialog_TextSize_2"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
-    android:padding="16dp"
+    android:paddingHorizontal="@dimen/_16sdp"
     tools:context=".presentation.ui.repeat_option.RepeatOptionFragment">
 
     <androidx.recyclerview.widget.RecyclerView

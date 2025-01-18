@@ -29,12 +29,17 @@ object AlarmScheduler {
             )
 
             if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                // Request the permission from the user
-                ActivityCompat.requestPermissions(
-                    (context as Activity),
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    REQUEST_CODE_CALENDAR_PERMISSIONS
-                )
+                // Request the permission from the user & Ensure context is an instance of Activity
+                if (context is Activity) {
+                    ActivityCompat.requestPermissions(
+                        context,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        REQUEST_CODE_CALENDAR_PERMISSIONS
+                    )
+                } else {
+                    Log.e("PermissionError", "Context is not an Activity. Cannot request permissions.")
+                    // Handle this error gracefully, e.g., show a message or fallback logic.
+                }
             }
         }
     }

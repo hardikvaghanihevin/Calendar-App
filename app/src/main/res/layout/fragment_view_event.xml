@@ -7,7 +7,7 @@
     android:background="@color/background_primary"
     android:fillViewport="true"
     android:fitsSystemWindows="true"
-    android:padding="@dimen/_16sdp"
+    android:paddingHorizontal="@dimen/_16sdp"
     tools:context=".presentation.ui.view_event.ViewEventFragment">
 
 
@@ -18,29 +18,31 @@
 
         <!--    Event Name-->
         <LinearLayout
-            android:id="@+id/ll_first"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/item_background"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/_2sdp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+                android:id="@+id/ll_first"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/fragmentNewEvent_llFirstHeight"
+                android:background="@drawable/item_background"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
+                android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
             <EditText
                 android:id="@+id/edt_eventName"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_46sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
+                android:layout_height="match_parent"
                 style="@style/EditTextStyle.regular"
+                android:textSize="@dimen/fragmentNewEvent_eventTitleTextSize"
+                android:hint="@string/event_title"
+                android:layout_marginHorizontal="@dimen/itemLayoutHorizontalSpacing"
+                android:includeFontPadding="true"
+                android:textColorHint="@color/text_secondary"
                 android:clickable="false"
                 android:enabled="false"
                 android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:hint="@string/event_title"
-                android:includeFontPadding="true"
-                android:paddingHorizontal="@dimen/_8sdp" />
+                android:focusableInTouchMode="false" />
         </LinearLayout>
 
         <!--    Event Data-->
@@ -48,9 +50,10 @@
             android:id="@+id/ll_second"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
             android:background="@drawable/item_background"
             android:orientation="vertical"
+            android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ll_first">
@@ -58,10 +61,9 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_2sdp"
                 android:background="@android:color/transparent"
                 android:orientation="horizontal"
-                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
                 android:paddingBottom="@dimen/_26sdp">
 
                 <TextView
@@ -70,6 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/TextViewStyle.regular"
+                    android:textSize="@dimen/fragmentNewEvent_eventAllDayTextSize"
                     android:text="@string/all_day"
                     android:textColor="@color/text_secondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -79,6 +82,7 @@
                     android:id="@+id/switchAllDay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_2sdp"
                     android:thumb="@drawable/switch_thumb"
                     app:layout_constraintBottom_toBottomOf="@id/tvAllDay"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -108,6 +112,7 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/TextViewStyle.regular"
+                    android:textSize="@dimen/fragmentNewEvent_eventStartEndTextSize"
                     android:gravity="center_vertical"
                     android:text="@string/start"
                     android:textColor="@color/text_secondary"
@@ -121,9 +126,9 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/TextViewStyle.medium"
+                    android:textSize="@dimen/fragmentNewEvent_eventDatePickerTextSize"
                     android:gravity="center_vertical"
                     android:text="2 Dec 2024"
-                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintEnd_toEndOf="@id/tvStart"
                     app:layout_constraintStart_toStartOf="@id/tvStart"
                     app:layout_constraintTop_toBottomOf="@id/tvStart" />
@@ -134,9 +139,9 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/_8sdp"
                     style="@style/TextViewStyle.medium"
+                    android:textSize="@dimen/fragmentNewEvent_eventTimePickerTextSize"
                     android:gravity="center_vertical"
                     android:text="5:18 PM"
-                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintEnd_toEndOf="@id/tvStart"
                     app:layout_constraintStart_toStartOf="@id/tvStart"
                     app:layout_constraintTop_toBottomOf="@id/tvStart_date_picker" />
@@ -161,6 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     style="@style/TextViewStyle.regular"
+                    android:textSize="@dimen/fragmentNewEvent_eventStartEndTextSize"
                     android:gravity="center_vertical"
                     android:text="@string/end"
                     android:textColor="@color/text_secondary"
@@ -174,9 +180,9 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/TextViewStyle.medium"
+                    android:textSize="@dimen/fragmentNewEvent_eventDatePickerTextSize"
                     android:gravity="center_vertical"
                     android:text="2 Dec 2024"
-                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintEnd_toEndOf="@id/tvEnd"
                     app:layout_constraintStart_toStartOf="@id/tvEnd"
                     app:layout_constraintTop_toBottomOf="@id/tvEnd" />
@@ -187,9 +193,9 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/_8sdp"
                     style="@style/TextViewStyle.medium"
+                    android:textSize="@dimen/fragmentNewEvent_eventTimePickerTextSize"
                     android:gravity="center_vertical"
                     android:text="5:18 PM"
-                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintEnd_toEndOf="@id/tvEnd"
                     app:layout_constraintStart_toStartOf="@id/tvEnd"
                     app:layout_constraintTop_toBottomOf="@id/tvEnd_date_picker" />
@@ -198,44 +204,46 @@
 
         </LinearLayout>
 
+        <!--    Repeat-->
         <LinearLayout
             android:id="@+id/ll_third"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_height="@dimen/fragmentNewEvent_llThirdHeight"
+            android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
             android:background="@drawable/item_background"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/ll_second">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/_2sdp"
                 android:background="@android:color/transparent"
-                android:paddingHorizontal="@dimen/_10sdp">
+                android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2">
 
                 <TextView
                     android:id="@+id/tvRepeat"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     style="@style/TextViewStyle.regular"
+                    android:textSize="@dimen/fragmentNewEvent_eventRepeatTextSize"
                     android:gravity="center_vertical"
                     android:text="@string/repeat"
+                    android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
 
                 <TextView
                     android:id="@+id/tvRepeat_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     style="@style/TextViewStyle.regular"
+                    android:textSize="@dimen/fragmentNewEvent_eventNeverNoneTextSize"
                     android:gravity="center_vertical"
                     android:text="@string/never"
                     android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/_12ssp"
+                    android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -246,27 +254,28 @@
         <LinearLayout
             android:id="@+id/ll_forth"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_height="@dimen/fragmentNewEvent_llForthHeight"
+            android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
             android:background="@drawable/item_background"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/ll_third">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/_2sdp"
                 android:background="@android:color/transparent"
-                android:paddingHorizontal="@dimen/_10sdp">
+                android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2">
 
                 <TextView
                     android:id="@+id/tvAlert"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     style="@style/TextViewStyle.regular"
+                    android:textSize="@dimen/fragmentNewEvent_eventAlertTextSize"
                     android:gravity="center_vertical"
                     android:text="@string/alert"
+                    android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -279,45 +288,47 @@
                     android:gravity="center_vertical"
                     android:text="@string/none"
                     android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/_12ssp"
+                    android:textSize="@dimen/fragmentNewEvent_eventNeverNoneTextSize"
+                    android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
-
         <!--    Note-->
         <LinearLayout
             android:id="@+id/ll_fifth"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_height="@dimen/fragmentNewEvent_llFifthHeight"
+            android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
             android:background="@drawable/item_background"
             android:orientation="vertical"
-            android:paddingVertical="@dimen/_8sdp"
-            android:paddingHorizontal="@dimen/_2sdp"
+            android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2"
             app:layout_constraintTop_toBottomOf="@id/ll_forth">
 
             <EditText
                 android:id="@+id/edt_eventNote"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/_2sdp"
                 style="@style/EditTextStyle.regular"
+                android:textSize="@dimen/fragmentNewEvent_eventNoteTextSize"
                 android:background="@drawable/item_background"
-                android:clickable="false"
-                android:enabled="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:gravity="start|top"
                 android:hint="@string/note"
                 android:includeFontPadding="true"
                 android:inputType="textMultiLine"
                 android:lines="4"
                 android:maxLines="6"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:scrollbars="vertical" />
+                android:layout_marginHorizontal="@dimen/itemLayoutHorizontalSpacing"
+                android:layout_marginVertical="@dimen/itemLayoutHorizontalSpacing"
+                android:scrollbars="vertical"
+                android:clickable="false"
+                android:enabled="false"
+                />
         </LinearLayout>
 
         <!--    base view-->

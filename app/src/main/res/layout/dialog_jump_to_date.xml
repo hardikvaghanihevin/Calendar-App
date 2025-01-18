@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     android:background="@android:color/transparent">
 
     <LinearLayout
@@ -19,29 +20,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:padding="16dp"
             android:text="@string/jump_to_date"
             style="@style/TextViewStyle.medium"
-            android:textSize="@dimen/_18ssp" />
+            android:textSize="@dimen/dialog_TextSize_1" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenTitleContent"/>
 
         <TextView
             android:id="@+id/tv_selected_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp"
             android:text="Monday 1 January 2025"
             style="@style/TextViewStyle.regular"
             android:textAlignment="center"
             android:textColor="@color/text_secondary"
-            android:textSize="@dimen/_15ssp" />
+            android:textSize="@dimen/dialog_TextSize_4" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_120sdp"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:weightSum="2.8">
+            android:weightSum="2.36">
 
             <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
                 android:id="@+id/year_picker"
@@ -56,9 +63,9 @@
                 app:np_max="2100"
                 app:np_min="2000"
                 app:np_selectedTextColor="@color/accent_primary"
-                app:np_selectedTextSize="@dimen/_16ssp"
+                app:np_selectedTextSize="@dimen/dialog_TextSize_3"
                 app:np_textColor="@color/text_primary"
-                app:np_textSize="@dimen/_14ssp"
+                app:np_textSize="@dimen/dialog_TextSize_3"
                 app:np_fadingEdgeEnabled="false"
                 app:np_value="2025" />
 
@@ -75,9 +82,9 @@
                 app:np_max="12"
                 app:np_min="1"
                 app:np_selectedTextColor="@color/accent_primary"
-                app:np_selectedTextSize="@dimen/_16ssp"
+                app:np_selectedTextSize="@dimen/dialog_TextSize_3"
                 app:np_textColor="@color/text_primary"
-                app:np_textSize="@dimen/_14ssp"
+                app:np_textSize="@dimen/dialog_TextSize_3"
                 app:np_fadingEdgeEnabled="false"
                 app:np_value="1" />
 
@@ -87,6 +94,7 @@
                 android:layout_height="@dimen/_110sdp"
                 android:layout_weight="1"
                 android:scrollbars="none"
+                android:layout_gravity="start"
                 app:np_width="64dp"
                 app:np_height="180dp"
                 app:np_dividerColor="@android:color/transparent"
@@ -94,54 +102,43 @@
                 app:np_max="31"
                 app:np_min="1"
                 app:np_selectedTextColor="@color/accent_primary"
-                app:np_selectedTextSize="@dimen/_16ssp"
+                app:np_selectedTextSize="@dimen/dialog_TextSize_3"
                 app:np_textColor="@color/text_primary"
-                app:np_textSize="@dimen/_14ssp"
+                app:np_textSize="@dimen/dialog_TextSize_3"
                 app:np_fadingEdgeEnabled="false"
                 app:np_value="3" />
-<!--
-            <NumberPicker
-                android:id="@+id/year_picker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/CustomNumberPicker"/>
 
-            <NumberPicker
-                android:id="@+id/month_picker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/CustomNumberPicker"/>
-
-            <NumberPicker
-                android:id="@+id/day_picker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/CustomNumberPicker"/>-->
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingVertical="1dp">
+            android:orientation="horizontal">
 
-            <Button
+            <TextView
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
+                android:textSize="@dimen/dialog_TextSize_2"
                 android:text="@string/cancel"
                 android:textColor="@color/text_secondary"/>
 
-            <Button
+            <Space
+                android:layout_width="@dimen/dialogHorizontalBetweenBtnSpacing"
+                android:layout_height="match_parent"/>
+
+            <TextView
                 android:id="@+id/btn_jump"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
+                android:textSize="@dimen/dialog_TextSize_2"
                 android:text="@string/jump"
                 android:textColor="@color/error"/>
         </LinearLayout>

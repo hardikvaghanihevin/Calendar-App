@@ -36,22 +36,5 @@
             android:id="@+id/nav_setting"
             android:icon="@drawable/setting_icon"
             android:title="@string/settings" />
-        <!--
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/setting_icon"
-            android:title="@string/settings" />
-        <item
-            android:id="@+id/nav_app_theme"
-            android:icon="@drawable/app_theme_icon"
-            android:title="App theme" />
-        <item
-            android:id="@+id/nav_rate_app"
-            android:icon="@drawable/rate_our_app_icon"
-            android:title="Rate our app" />
-        <item
-            android:id="@+id/nav_device_info"
-            android:icon="@drawable/device_information_icon"
-            android:title="Device information" />-->
     </group>
 </menu>

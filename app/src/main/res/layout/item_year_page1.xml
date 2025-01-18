@@ -49,12 +49,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -84,12 +84,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -119,12 +119,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -154,12 +154,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -189,12 +189,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -224,12 +224,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -259,12 +259,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -294,12 +294,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -329,12 +329,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -364,12 +364,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -399,12 +399,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
             <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
@@ -434,12 +434,12 @@
                 app:text_color_date="@color/text_primary"
                 app:text_color_day="@color/text_secondary"
                 app:text_color_month="@color/text_primary"
-                app:text_size_date="@null"
-                app:text_size_day="@null"
-                app:text_size_month="@null"
+                app:text_size_date="@dimen/customYearView_dateTextSize"
+                app:text_size_day="@dimen/customYearView_dayTextSize"
+                app:text_size_month="@dimen/customYearView_monthTextSize"
                 app:text_font_month="@font/post_nord_sans_medium"
                 app:text_font_day="@font/post_nord_sans_medium"
-                app:text_font_date="@font/post_nord_sans_regular"
+                app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

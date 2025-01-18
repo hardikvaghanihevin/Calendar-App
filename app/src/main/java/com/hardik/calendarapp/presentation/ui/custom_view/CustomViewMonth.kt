@@ -467,7 +467,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
         // Draw the text
         canvas.drawText(
-            currentMonthName,
+            currentMonthName.uppercase(),
             textX.toFloat(), // Left-aligned
             textY, // Vertically centered
 //            monthNameHeight / 2 + paint.textSize / 2,
@@ -865,7 +865,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                 color?.let { drawable.setColor(it) } // Set the desired color
                 drawable.cornerRadius = 10f * context.resources.displayMetrics.density // Example: 10dp corner radius
                 drawable.setStroke(
-                    (1 * context.resources.displayMetrics.density).toInt(), // Stroke width in dp
+                    (1.3 * context.resources.displayMetrics.density).toInt(), // Stroke width in dp
                     Color.BLACK // Stroke color
                 )
             }

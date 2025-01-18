@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     android:background="@android:color/transparent">
 
     <LinearLayout
@@ -19,79 +20,84 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:padding="16dp"
             android:text="@string/app_theme"
             style="@style/TextViewStyle.medium"
-            android:textSize="@dimen/_18ssp" />
+            android:textSize="@dimen/dialog_TextSize_1" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenTitleContent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_140sdp"
-            android:gravity="start"
-            android:padding="@dimen/_16sdp"
-            android:weightSum="2.8">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/dialogAppTheme_DarkTheme"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/dark_theme"
                 style="@style/TextViewStyle.regular"
-                android:paddingVertical="@dimen/_10sdp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/dialogAppTheme_LightTheme"
-                />
+                android:textSize="@dimen/dialog_TextSize_3"/>
 
             <ImageView
                 android:id="@+id/dialogAppTheme_DarkTheme_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_DarkTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_DarkTheme"
                 android:src="@drawable/unchecked_icon"/>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/dialogAppTheme_LightTheme"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
+                android:layout_height="match_parent"
                 android:text="@string/light_theme"
                 style="@style/TextViewStyle.regular"
-                app:layout_constraintStart_toStartOf="@id/dialogAppTheme_DarkTheme"
-                app:layout_constraintTop_toBottomOf="@id/dialogAppTheme_DarkTheme"
-                app:layout_constraintBottom_toTopOf="@id/dialogAppTheme_SystemTheme"
-                />
+                android:textSize="@dimen/dialog_TextSize_3"/>
 
             <ImageView
                 android:id="@+id/dialogAppTheme_LightTheme_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_LightTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_LightTheme"
                 android:src="@drawable/unchecked_icon"/>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/dialogAppTheme_SystemTheme"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/system_theme"
-                android:paddingVertical="@dimen/_10sdp"
                 style="@style/TextViewStyle.regular"
-                app:layout_constraintStart_toStartOf="@id/dialogAppTheme_LightTheme"
-                app:layout_constraintTop_toBottomOf="@id/dialogAppTheme_LightTheme"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
+                android:textSize="@dimen/dialog_TextSize_3"/>
 
             <ImageView
                 android:id="@+id/dialogAppTheme_SystemTheme_icon"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_SystemTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_SystemTheme"
@@ -99,30 +105,37 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingVertical="0dp">
+            android:orientation="horizontal">
 
-            <Button
+            <TextView
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/cancel"
-                android:textAlignment="center"
-                android:textColor="@color/text_secondary"/>
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/dialog_TextSize_2"/>
 
-            <Button
+            <Space
+                android:layout_width="@dimen/dialogHorizontalBetweenBtnSpacing"
+                android:layout_height="match_parent"/>
+
+            <TextView
                 android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/done"
-                android:textColor="@color/error"/>
+                android:textColor="@color/error"
+                android:textSize="@dimen/dialog_TextSize_2"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

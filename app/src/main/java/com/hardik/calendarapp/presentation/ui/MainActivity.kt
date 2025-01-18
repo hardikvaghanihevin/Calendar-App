@@ -261,18 +261,12 @@ class MainActivity : AppCompatActivity() {
         dialog.setCancelable(true)
 
         dialogFirstDayOfTheWeekBinding?.apply {
-            val sundayIcon = this.dialogFirstDayOfTheWeekSundayIcon
             val sundayText = this.dialogFirstDayOfTheWeekSunday
-            val mondayIcon = this.dialogFirstDayOfTheWeekMondayIcon
             val mondayText = this.dialogFirstDayOfTheWeekMonday
-            val saturdayIcon = this.dialogFirstDayOfTheWeekSaturdayIcon
             val saturdayText = this.dialogFirstDayOfTheWeekSaturday
 
             //rest all icon and text
             fun resetSelections(){
-                sundayIcon.setImageResource(R.drawable.unchecked_icon)
-                mondayIcon.setImageResource(R.drawable.unchecked_icon)
-                saturdayIcon.setImageResource(R.drawable.unchecked_icon)
 
                 sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
                 mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
@@ -291,17 +285,14 @@ class MainActivity : AppCompatActivity() {
 
             when (firstDayOfTheWeek) {
                 "Sunday" -> {
-                    sundayIcon.setImageResource(R.drawable.checked_icon)
                     sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                     sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
                 "Monday" -> {
-                    mondayIcon.setImageResource(R.drawable.checked_icon)
                     mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                     mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
                 "Saturday" -> {
-                    saturdayIcon.setImageResource(R.drawable.checked_icon)
                     saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                     saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
@@ -311,7 +302,6 @@ class MainActivity : AppCompatActivity() {
             sundayText.setOnClickListener {
                 resetSelections()
 
-                sundayIcon.setImageResource(R.drawable.checked_icon)
                 sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -323,7 +313,6 @@ class MainActivity : AppCompatActivity() {
             mondayText.setOnClickListener {
                 resetSelections()
 
-                mondayIcon.setImageResource(R.drawable.checked_icon)
                 mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -335,7 +324,6 @@ class MainActivity : AppCompatActivity() {
             saturdayText.setOnClickListener {
                 resetSelections()
 
-                saturdayIcon.setImageResource(R.drawable.checked_icon)
                 saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 

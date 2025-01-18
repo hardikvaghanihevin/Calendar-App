@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     android:background="@android:color/transparent">
 
     <LinearLayout
@@ -21,107 +22,126 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             style="@style/TextViewStyle.medium"
-            android:padding="16dp"
             android:text="@string/device_information"
-            android:textSize="@dimen/_18ssp" />
+            android:textSize="@dimen/dialog_TextSize_1" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_210sdp"
-            android:layout_marginVertical="@dimen/_16sdp"
-            android:gravity="start"
-            android:paddingHorizontal="@dimen/_16sdp"
-            android:weightSum="2.8">
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenTitleContent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dialogVerticalSpacing_dev2"
+            android:orientation="vertical"
+            android:gravity="start">
 
             <TextView
                 android:id="@+id/dialogDeviceInformation_Brand"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
+                android:textSize="@dimen/dialog_TextSize_4"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="@string/brand"
-                app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_Device"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="@string/brand" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogDeviceInformation_Device"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
+                android:textSize="@dimen/dialog_TextSize_4"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/device"
-                app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_AppVersion"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_Brand" />
+                />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogDeviceInformation_AppVersion"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
+                android:textSize="@dimen/dialog_TextSize_4"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/app_version"
-                app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_Os"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_Device" />
+                />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogDeviceInformation_Os"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
+                android:textSize="@dimen/dialog_TextSize_4"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/os"
-                app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_ABI"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_AppVersion" />
+                />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogDeviceInformation_ABI"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
+                android:textSize="@dimen/dialog_TextSize_4"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/abi"
-                app:layout_constraintBottom_toTopOf="@id/dialogDeviceInformation_Version"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_Os" />
+                />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"/>
 
             <TextView
                 android:id="@+id/dialogDeviceInformation_Version"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 style="@style/TextViewStyle.regular"
+                android:textSize="@dimen/dialog_TextSize_4"
                 android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="@string/version"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dialogDeviceInformation_ABI" />
+                />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingVertical="0dp">
+            android:orientation="horizontal">
 
-            <Button
+            <TextView
                 android:id="@+id/btn_okay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/okay"
-                android:textColor="@color/error" />
+                android:textColor="@color/error"
+                android:textSize="@dimen/dialog_TextSize_2"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

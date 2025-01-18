@@ -87,6 +87,7 @@
         <attr name="np_selectedTextStrikeThru" format="boolean" />
         <attr name="np_selectedTextUnderline" format="boolean" />
         <attr name="np_selectedTypeface" format="string" />
+        <!--<attr name="np_selectedTypeface" format="reference" />-->
         <attr name="np_textAlign" format="enum">
             <enum name="textAlignRight" value="0" />
             <enum name="textAlignCenter" value="1" />
@@ -97,6 +98,7 @@
         <attr name="np_textStrikeThru" format="boolean" />
         <attr name="np_textUnderline" format="boolean" />
         <attr name="np_typeface" format="string" />
+        <!--<attr name="np_typeface" format="reference" />-->
         <attr name="np_value" format="integer" />
         <attr name="np_wheelItemCount" format="integer" />
         <attr name="np_wrapSelectorWheel" format="boolean" />

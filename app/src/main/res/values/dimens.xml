@@ -1,7 +1,58 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
 
-    <dimen name="dialog_padding">@dimen/_8sdp</dimen>
+    <dimen name="dialog_padding">@dimen/_20sdp</dimen>
+    <dimen name="dialogVerticalSpacing">@dimen/_9sdp</dimen>
+    <dimen name="dialogVerticalSpacing_dev2">@dimen/_4sdp</dimen>
+    <dimen name="dialogHorizontalSpacing">@dimen/_8sdp</dimen>
+    <dimen name="dialogVerticalSpacingBetweenTitleContent">@dimen/_18sdp</dimen>
+    <dimen name="dialogVerticalSpacingBetweenContent">@dimen/_12sdp</dimen>
+    <dimen name="dialogVerticalSpacingBetweenContentFooter">@dimen/_18sdp</dimen>
+    <dimen name="dialogHorizontalBetweenBtnSpacing">@dimen/_18sdp</dimen>
+
+    <dimen name="dialog_TextSize_1">@dimen/_18ssp</dimen>
+    <dimen name="dialog_TextSize_2">@dimen/_17ssp</dimen>
+    <dimen name="dialog_TextSize_3">@dimen/_15ssp</dimen>
+    <dimen name="dialog_TextSize_4">@dimen/_13ssp</dimen>
+
+
+    <dimen name="itemLayoutVerticalSpacing">@dimen/_9sdp</dimen>
+    <dimen name="itemLayoutVerticalSpacing_dev2">@dimen/_4sdp</dimen>
+    <dimen name="itemLayoutHorizontalSpacing">@dimen/_9sdp</dimen>
+    <dimen name="itemLayoutHorizontalSpacing_dev2">@dimen/_4sdp</dimen>
+
+    <dimen name="customYearView_monthTextSize">12sp</dimen>
+    <dimen name="customYearView_dayTextSize">9sp</dimen>
+    <dimen name="customYearView_dateTextSize">9sp</dimen>
+
+    <dimen name="customMonthView_monthTextSize">@null</dimen>
+    <dimen name="customMonthView_dayTextSize">13.5sp</dimen>
+    <dimen name="customMontView_dateTextSize">13.5sp</dimen>
+
+    <dimen name="itemEventLayout_eventDayDateTextSize">14sp</dimen>
+    <dimen name="itemEventLayout_eventFullWeekDateTextSiz">14sp</dimen>
+    <dimen name="itemEventLayout_constLay2ItemEventHeight">@dimen/_40sdp</dimen>
+    <dimen name="itemEventLayout_eventTitleTextSize">14sp</dimen>
+    <dimen name="itemEventLayout_eventTimePeriodTextSize">11sp</dimen>
+
+
+    <dimen name="fragmentNewEvent_llFirstHeight">@dimen/_46sdp</dimen>
+    <dimen name="fragmentNewEvent_llSecondHeight">@dimen/_210sdp</dimen>
+    <dimen name="fragmentNewEvent_llThirdHeight">@dimen/_46sdp</dimen>
+    <dimen name="fragmentNewEvent_llForthHeight">@dimen/_46sdp</dimen>
+    <dimen name="fragmentNewEvent_llFifthHeight">@dimen/_100sdp</dimen>
+
+    <dimen name="fragmentNewEvent_eventTextSize_1">@dimen/_14ssp</dimen>
+    <dimen name="fragmentNewEvent_eventTextSize_2">@dimen/_11ssp</dimen>
+    <dimen name="fragmentNewEvent_eventTitleTextSize">@dimen/fragmentNewEvent_eventTextSize_1</dimen>
+    <dimen name="fragmentNewEvent_eventAllDayTextSize">@dimen/fragmentNewEvent_eventTextSize_1</dimen>
+    <dimen name="fragmentNewEvent_eventStartEndTextSize">@dimen/fragmentNewEvent_eventTextSize_1</dimen>
+    <dimen name="fragmentNewEvent_eventRepeatTextSize">@dimen/fragmentNewEvent_eventTextSize_1</dimen>
+    <dimen name="fragmentNewEvent_eventAlertTextSize">@dimen/fragmentNewEvent_eventTextSize_1</dimen>
+    <dimen name="fragmentNewEvent_eventNoteTextSize">@dimen/fragmentNewEvent_eventTextSize_1</dimen>
+    <dimen name="fragmentNewEvent_eventDatePickerTextSize">@dimen/fragmentNewEvent_eventTextSize_2</dimen>
+    <dimen name="fragmentNewEvent_eventTimePickerTextSize">@dimen/fragmentNewEvent_eventTextSize_2</dimen>
+    <dimen name="fragmentNewEvent_eventNeverNoneTextSize">@dimen/fragmentNewEvent_eventTextSize_2</dimen>
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>

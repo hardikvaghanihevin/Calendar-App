@@ -4,8 +4,11 @@
     <!--    unchecked track-->
     <item android:state_checked="false">
         <shape android:shape="rectangle">
-            <solid android:color="@color/text_secondary"/>
+            <solid android:color="@color/border_surface"/>
             <corners android:radius="100dp"/>
+            <size
+                android:width="26dp"
+                android:height="20dp" />
         </shape>
     </item>
 
@@ -14,6 +17,9 @@
         <shape android:shape="rectangle">
             <solid android:color="@color/error"/>
             <corners android:radius="100dp"/>
+            <size
+                android:width="26dp"
+                android:height="20dp" />
         </shape>
     </item>
 
