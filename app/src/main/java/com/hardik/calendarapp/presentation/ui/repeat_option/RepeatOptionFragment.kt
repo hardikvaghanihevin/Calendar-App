@@ -20,8 +20,8 @@ import com.hardik.calendarapp.common.Constants.KEY_EVENT_REPEAT
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.databinding.FragmentRepeatOptionBinding
-import com.hardik.calendarapp.presentation.adapter.LanguageAdapter
-import com.hardik.calendarapp.presentation.adapter.LanguageItem
+import com.hardik.calendarapp.presentation.adapter.RepeatOptionAdapter
+import com.hardik.calendarapp.presentation.adapter.RepeatOptionItem
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -40,7 +40,7 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
     private var selectedRepeatOption: RepeatOption? = null
 
     // Adapter and items
-    private lateinit var repeatOptionAdapter: LanguageAdapter
+    private lateinit var repeatOptionAdapter: RepeatOptionAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -69,10 +69,10 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
         val repeatOpt: String? = selectedRepeatOption?.let { RepeatOptionConverter.toDisplayString(context = requireContext(), repeatOption = it) }
         // Prepare repeat option items
         val repeatOptionItems = repeatOptionValues.mapIndexed { index, repeatOption: String ->
-            LanguageItem(repeatOption, repeatOption.equals(repeatOpt, ignoreCase = true))
+            RepeatOptionItem(repeatOption, repeatOption.equals(repeatOpt, ignoreCase = true))
         }
         // Set up Recyclerview
-        repeatOptionAdapter = LanguageAdapter(requireContext(), repeatOptionItems) { position ->
+        repeatOptionAdapter = RepeatOptionAdapter(requireContext(), repeatOptionItems) { position ->
             selectedRepeatOption = RepeatOptionConverter.fromDisplayString(requireContext(), repeatOptionValues[position])
         }
 

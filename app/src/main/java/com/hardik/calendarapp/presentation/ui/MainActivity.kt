@@ -504,9 +504,9 @@ class MainActivity : AppCompatActivity() {
 
             //rest all icon and text
             fun resetSelections(){
-                darkThemeIcon.setImageResource(R.drawable.unchecked_icon)
-                lightThemeIcon.setImageResource(R.drawable.unchecked_icon)
-                systemThemeIcon.setImageResource(R.drawable.unchecked_icon)
+                darkThemeIcon.setImageResource(R.drawable.icon_unchecked)
+                lightThemeIcon.setImageResource(R.drawable.icon_unchecked)
+                systemThemeIcon.setImageResource(R.drawable.icon_unchecked)
 
                 darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
                 lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
@@ -524,17 +524,17 @@ class MainActivity : AppCompatActivity() {
 
             when(appTheme){
                 "dark" -> {
-                    darkThemeIcon.setImageResource(R.drawable.checked_icon)
+                    darkThemeIcon.setImageResource(R.drawable.icon_checked)
                     darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                     darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
                 "light" -> {
-                    lightThemeIcon.setImageResource(R.drawable.checked_icon)
+                    lightThemeIcon.setImageResource(R.drawable.icon_checked)
                     lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                     lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
                 "system" -> {
-                    systemThemeIcon.setImageResource(R.drawable.checked_icon)
+                    systemThemeIcon.setImageResource(R.drawable.icon_checked)
                     systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                     systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
@@ -544,7 +544,7 @@ class MainActivity : AppCompatActivity() {
             darkThemeText.setOnClickListener {
                 resetSelections()
 
-                darkThemeIcon.setImageResource(R.drawable.checked_icon)
+                darkThemeIcon.setImageResource(R.drawable.icon_checked)
                 darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -559,7 +559,7 @@ class MainActivity : AppCompatActivity() {
             lightThemeText.setOnClickListener {
                 resetSelections()
 
-                lightThemeIcon.setImageResource(R.drawable.checked_icon)
+                lightThemeIcon.setImageResource(R.drawable.icon_checked)
                 lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -574,7 +574,7 @@ class MainActivity : AppCompatActivity() {
             systemThemeText.setOnClickListener {
                 resetSelections()
 
-                systemThemeIcon.setImageResource(R.drawable.checked_icon)
+                systemThemeIcon.setImageResource(R.drawable.icon_checked)
                 systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -637,8 +637,8 @@ class MainActivity : AppCompatActivity() {
 
             //rest all icon and text
             fun resetSelections(){
-                timeFormat12hrIcon.setImageResource(R.drawable.unchecked_icon)
-                timeFormat24hrIcon.setImageResource(R.drawable.unchecked_icon)
+                timeFormat12hrIcon.setImageResource(R.drawable.icon_unchecked)
+                timeFormat24hrIcon.setImageResource(R.drawable.icon_unchecked)
 
                 timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
                 timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
@@ -652,11 +652,11 @@ class MainActivity : AppCompatActivity() {
             var is24HourFormat = sharedPreferences.getBoolean("time_format", false)  // Default to false (12-hour format)
 
             if(is24HourFormat){
-                timeFormat24hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat24hrIcon.setImageResource(R.drawable.icon_checked)
                 timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
             }else {
-                timeFormat12hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat12hrIcon.setImageResource(R.drawable.icon_checked)
                 timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
             }
@@ -665,7 +665,7 @@ class MainActivity : AppCompatActivity() {
             timeFormat12hr.setOnClickListener {
                 resetSelections()
 
-                timeFormat12hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat12hrIcon.setImageResource(R.drawable.icon_checked)
                 timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -676,7 +676,7 @@ class MainActivity : AppCompatActivity() {
             timeFormat24hr.setOnClickListener {
                 resetSelections()
 
-                timeFormat24hrIcon.setImageResource(R.drawable.checked_icon)
+                timeFormat24hrIcon.setImageResource(R.drawable.icon_checked)
                 timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 

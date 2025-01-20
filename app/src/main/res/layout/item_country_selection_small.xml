@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/itemCountryVerticalSpacing_dev2"
+    android:paddingHorizontal="@dimen/itemCountryHorizontalSpacing"
+    android:background="@drawable/item_background">
+
+    <LinearLayout
+        android:id="@+id/ll_first"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    <TextView
+        android:id="@+id/itemSelection_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextViewStyle.regular"
+        android:textSize="@dimen/itemCountry_nameTextSize_2"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="@string/language_header"
+        />
+
+        <Space
+            android:layout_width="@dimen/itemCountryHorizontalSpacingBetweenContent"
+            android:layout_height="match_parent"/>
+
+    <ImageView
+        android:id="@+id/itemSelection_text_icon"
+        android:layout_width="@dimen/itemCountry_itemSelectionIconSize_2"
+        android:layout_height="@dimen/itemCountry_itemSelectionIconSize_2"
+        android:src="@drawable/icon_cancel"
+        android:layout_gravity="center_vertical"
+        />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

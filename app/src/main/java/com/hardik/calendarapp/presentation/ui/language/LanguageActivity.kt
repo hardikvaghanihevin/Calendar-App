@@ -1,14 +1,17 @@
 package com.hardik.calendarapp.presentation.ui.language
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.databinding.ActivityLanguageBinding
@@ -33,8 +36,8 @@ class LanguageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLanguageBinding
     private val viewModel: MainViewModel by viewModels()
 
-    private lateinit var languageEntries: Array<String>
-    private lateinit var languageValues: Array<String>
+    //private lateinit var languageEntries: Array<String>
+    //private lateinit var languageValues: Array<String>
     private var selectedLanguage: String? = null
 
     private lateinit var languageAdapter: LanguageAdapter
@@ -45,7 +48,26 @@ class LanguageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLanguageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
+
+        // If it's the first launch, update the SharedPreferences
+        if (isFirstLaunch) {
+            sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
+            binding.includedLanguageActivityCustomToolbar.sivNavigationIcon.visibility = View.GONE
+            binding.includedLanguageActivityCustomToolbar.toolbarTitle.apply {
+                setPadding(
+                    resources.getDimensionPixelSize(R.dimen.itemLayoutHorizontalSpacing), // Left padding
+                    0, // Top padding
+                    0, // Right padding
+                    0  // Bottom padding
+                )
+            }
+        }
+
+        Log.e(TAG, "onCreate: $isFirstLaunch", )
+
         setupToolbar()
         loadLanguages()
         setupRecyclerView()
@@ -72,21 +94,59 @@ class LanguageActivity : AppCompatActivity() {
     }
 
     private fun loadLanguages() {
-        languageEntries = resources.getStringArray(R.array.language_entries)
-        languageValues = resources.getStringArray(R.array.language_values)
+        //languageEntries = resources.getStringArray(R.array.language_entries)
+        //languageValues = resources.getStringArray(R.array.language_values)
 
-        languageItems = languageEntries.mapIndexed { index, language ->
-            LanguageItem(language, languageValues[index] == getCurrentLanguage())
+        //languageItems = languageEntries.mapIndexed { index, language -> LanguageItem(language, languageValues[index] == getCurrentLanguage()) }
+        languageItems = getLanguageList().map { languageItem ->
+            languageItem.copy(isSelected = languageItem.code == getCurrentLanguage())
         }
     }
 
     private fun setupRecyclerView() {
         languageAdapter = LanguageAdapter(this, languageItems) { position ->
-            selectedLanguage = languageValues[position]
+            selectedLanguage = languageItems.get(position).code//languageValues[position]
         }
 
-        binding.languageRecView.layoutManager = LinearLayoutManager(this)
-        binding.languageRecView.adapter = languageAdapter
+        binding.languageRecView.apply {
+                layoutManager = LinearLayoutManager(context)
+                setHasFixedSize(true)
+
+                val margin = resources.getDimension(com.intuit.sdp.R.dimen._1sdp).toInt()
+
+                addItemDecoration(object: RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
+                        val position = parent.getChildAdapterPosition(view) // Get the position of the item
+                        val itemCount = parent.adapter?.itemCount ?: 0
+
+                        if (position == RecyclerView.NO_POSITION) return
+
+                        // Apply margin adjustments
+                        when (position) {
+                            0 -> { // First item
+                                outRect.top = 0
+                                outRect.bottom = margin
+                            }
+                            itemCount - 1 -> { // Last item
+                                outRect.top = margin
+                                outRect.bottom = 0
+                            }
+                            else -> { // Middle items
+                                outRect.top = margin
+                                outRect.bottom = margin
+                            }
+                        }
+                    }
+                })
+
+                adapter = languageAdapter
+            }
+
     }
 
     private fun setupSaveButton() {
@@ -119,11 +179,9 @@ class LanguageActivity : AppCompatActivity() {
 
         viewModel.updateLanguageCode(languageCode)
 
-        Toast.makeText(
-            this,
-            "Language updated to ${languageEntries[languageValues.indexOf(languageCode)]}",
-            Toast.LENGTH_SHORT
-        ).show()
+        val selectedLanguageName = languageItems.find { it.code == languageCode }?.name
+        //Toast.makeText(this, "Language updated to ${languageEntries[languageValues.indexOf(languageCode)]}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Language updated to $selectedLanguageName", Toast.LENGTH_SHORT).show()
     }
 
     private fun setAppLanguage(languageCode: String) {
@@ -132,7 +190,9 @@ class LanguageActivity : AppCompatActivity() {
         viewModel.updateLanguageCode(languageCode)
         viewModel.updateToolbarTitle(viewModel.toolbarTitle.value)
 
-        Log.e(TAG, "setAppLanguage: Language updated to ${languageEntries[languageValues.indexOf(languageCode)]}")
+        val selectedLanguageName = languageItems.find { it.code == languageCode }?.name
+        //Log.e(TAG, "setAppLanguage: Language updated to ${languageEntries[languageValues.indexOf(languageCode)]}")
+        Log.e(TAG, "setAppLanguage: Language updated to $selectedLanguageName")
 
         //recreate()
     }
@@ -157,5 +217,21 @@ class LanguageActivity : AppCompatActivity() {
         // Dynamically update NavDestination label
         //findNavController().currentDestination?.label = title
         viewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name))
+    }
+
+    private fun getLanguageList(): List<LanguageItem> {
+        return listOf(
+            LanguageItem(name = "English", code = "en", isSelected = false),
+            LanguageItem(name = "French", code = "fr", isSelected = false),
+            LanguageItem(name = "German", code = "de", isSelected = false),
+            LanguageItem(name = "Hindi", code = "hi", isSelected = false),
+            LanguageItem(name = "Italian", code = "it", isSelected = false),
+            LanguageItem(name = "Korean", code = "ko", isSelected = false),
+            LanguageItem(name = "Portuguese", code = "pt", isSelected = false),
+            LanguageItem(name = "Russian", code = "ru", isSelected = false),
+            LanguageItem(name = "Spanish", code = "es", isSelected = false),
+            LanguageItem(name = "Ukrainian", code = "uk", isSelected = false),
+
+        )
     }
 }

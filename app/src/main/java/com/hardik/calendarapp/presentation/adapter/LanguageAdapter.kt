@@ -14,6 +14,7 @@ import com.hardik.calendarapp.R
 
 data class LanguageItem(
     val name: String,
+    val code: String,
     var isSelected: Boolean = false // This flag tracks whether the item is selected or not
 )
 class LanguageAdapter(
@@ -34,28 +35,32 @@ class LanguageAdapter(
     }
 
     inner class LanguageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val languageFlagText: TextView = view.findViewById(R.id.itemSelectionFlag_text)
         val languageText: TextView = view.findViewById(R.id.itemSelection_text)
-        val icon: ImageView = view.findViewById(R.id.itemSelection_text_icon)
+        val selectIcon: ImageView = view.findViewById(R.id.itemSelection_text_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LanguageViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_country_language_selection, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.item_language_selection, parent, false)
         return LanguageViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: LanguageViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val item = items[position]
+        holder.languageFlagText.text = item.code
         holder.languageText.text = item.name
+        holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+        holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_regular)
 
         // Set the icon based on whether the item is selected
         if (item.isSelected) {
-            holder.icon.setImageResource(R.drawable.checked_icon)  // Selected icon
-            holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.accent_primary))
-            holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_medium)
+            holder.selectIcon.setImageResource(R.drawable.icon_checked)  // Selected icon
+            //holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.accent_primary))
+            //holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_medium)
         } else {
-            holder.icon.setImageResource(R.drawable.unchecked_icon)  // Unselected icon
-            holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
-            holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_regular)
+            holder.selectIcon.setImageResource(R.drawable.icon_unchecked)  // Unselected icon
+            //holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+            //holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_regular)
         }
 
         holder.itemView.setOnClickListener {

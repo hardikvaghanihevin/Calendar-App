@@ -53,10 +53,11 @@ class SplashActivity : AppCompatActivity() {
                     MainActivity::class.java
                 }
 
+                /*
                 // If it's the first launch, update the SharedPreferences
                 if (isFirstLaunch) {
                     sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
-                }
+                }*/
 
                 // Start the appropriate activity based on the first launch check
                 val intent = Intent(this, nextActivity)

@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
     android:padding="16dp"
+    android:orientation="vertical"
     tools:context=".presentation.ui.country.CountryFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryRecViewHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:dividerHeight="1dp"
-        app:layout_constraintBottom_toTopOf="@id/v_divider"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:listitem="@layout/item_country_selection_small"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        android:background="@android:color/transparent" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemCountryVerticalSpacing"/>
 
     <View
         android:id="@+id/v_divider"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:background="@color/border_surface"
-        app:layout_constraintBottom_toTopOf="@id/countryRecView"
-        app:layout_constraintTop_toBottomOf="@id/countryRecViewHorizontal" />
+        android:background="@color/border_surface"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemCountryVerticalSpacing_dev2"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/countryRecView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:background="@android:color/transparent"
-        android:dividerHeight="1dp"
-        app:layout_constraintTop_toBottomOf="@id/v_divider" />
+        android:layout_weight="1"
+        tools:listitem="@layout/item_country_selection"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        android:background="@android:color/transparent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

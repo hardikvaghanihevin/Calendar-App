@@ -96,7 +96,13 @@ class MainViewModel @Inject constructor(
     val countryItems: StateFlow<List<CountryItem>> get() = _countryItems
 
     // Initialize the list with saved and default data
-    fun initializeCountries(savedCodes: Set<String>, countryNames: Array<String>, countryCodes: Array<String>) {
+    fun initializeCountries(savedCodes: Set<String>, countryItems: List<CountryItem>) {
+        val updatedCountries = countryItems.map { countryItem ->
+            countryItem.copy(isSelected = savedCodes.contains(countryItem.code))
+        }
+        _countryItems.value = updatedCountries
+    }
+    /*fun initializeCountries(savedCodes: Set<String>, countryNames: Array<String>, countryCodes: Array<String>) {
         val countries = countryNames.mapIndexed { index, name ->
             CountryItem(
                 name = name,
@@ -105,7 +111,7 @@ class MainViewModel @Inject constructor(
             )
         }
         _countryItems.value = countries
-    }
+    }*/
 
     // Toggle selection for a country
     fun toggleCountrySelection(countryCode: String) {

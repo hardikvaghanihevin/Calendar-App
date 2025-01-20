@@ -45,7 +45,7 @@
                 android:id="@+id/dialogTimeFormat_12HR_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/unchecked_icon"
+                android:src="@drawable/icon_unchecked"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_12HR"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_12HR" />
@@ -72,7 +72,7 @@
                 android:id="@+id/dialogTimeFormat_24HR_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/unchecked_icon"
+                android:src="@drawable/icon_unchecked"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_24HR" />

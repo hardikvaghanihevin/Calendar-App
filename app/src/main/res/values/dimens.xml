@@ -54,6 +54,20 @@
     <dimen name="fragmentNewEvent_eventTimePickerTextSize">@dimen/fragmentNewEvent_eventTextSize_2</dimen>
     <dimen name="fragmentNewEvent_eventNeverNoneTextSize">@dimen/fragmentNewEvent_eventTextSize_2</dimen>
 
+
+    <dimen name="itemCountry_llFirstHeight">@dimen/_46sdp</dimen>
+    <dimen name="itemCountry_nameTextSize_1">@dimen/_14ssp</dimen>
+    <dimen name="itemCountry_nameTextSize_2">12sp</dimen>
+    <dimen name="itemCountry_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
+    <dimen name="itemCountry_itemSelectionIconSize_1">@dimen/_20sdp</dimen>
+    <dimen name="itemCountry_itemSelectionIconSize_2">@dimen/_14sdp</dimen>
+    <dimen name="itemCountryVerticalSpacing">@dimen/_12sdp</dimen>
+    <dimen name="itemCountryHorizontalSpacing">@dimen/_12sdp</dimen>
+    <dimen name="itemCountryVerticalSpacing_dev2">@dimen/_6sdp</dimen>
+    <dimen name="itemCountryHorizontalSpacing_dev2">@dimen/_6sdp</dimen>
+    <dimen name="itemCountryHorizontalSpacingBetweenContent">@dimen/_8sdp</dimen>
+
+
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>

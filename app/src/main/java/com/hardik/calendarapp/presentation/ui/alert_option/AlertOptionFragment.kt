@@ -27,8 +27,8 @@ import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.databinding.DialogItemEventCustomAlertMinuteBinding
 import com.hardik.calendarapp.databinding.FragmentAlertOptionBinding
-import com.hardik.calendarapp.presentation.adapter.LanguageAdapter
-import com.hardik.calendarapp.presentation.adapter.LanguageItem
+import com.hardik.calendarapp.presentation.adapter.AlertOptionAdapter
+import com.hardik.calendarapp.presentation.adapter.AlertOptionItem
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
@@ -48,7 +48,7 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
     private var selectedAlertOffset: AlertOffset? = null
 
     // Adapter and items
-    private lateinit var alertOffsetAdapter: LanguageAdapter
+    private lateinit var alertOffsetAdapter: AlertOptionAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
         arguments?.let {
@@ -77,10 +77,10 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
         val alertOffsetOpt: String? = selectedAlertOffset?.let { AlertOffsetConverter.toDisplayString(context = requireContext(), alertOffset =  it) }
         // Prepare alertOffset option items
         val alertOffsetItems = alertOffsetValues.mapIndexed { index, alertOffset: String ->
-            LanguageItem(alertOffset, alertOffset.equals(alertOffsetOpt, ignoreCase = true))
+            AlertOptionItem(alertOffset, alertOffset.equals(alertOffsetOpt, ignoreCase = true))
         }
         // Set up Recyclerview
-        alertOffsetAdapter = LanguageAdapter(requireContext(), alertOffsetItems) { postion ->
+        alertOffsetAdapter = AlertOptionAdapter(requireContext(), alertOffsetItems) { postion ->
             selectedAlertOffset = AlertOffsetConverter.fromDisplayString(requireContext(), alertOffsetValues[postion])
             if (selectedAlertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
                 Log.i(TAG, "onViewCreated: AlertOffset.BEFORE_CUSTOM_TIME`")

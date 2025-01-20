@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
+    android:paddingVertical="@dimen/itemCountryVerticalSpacing"
+    android:background="@drawable/item_background">
+
+    <LinearLayout
+        android:id="@+id/ll_first"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Space
+            android:layout_width="@dimen/itemCountryHorizontalSpacing"
+            android:layout_height="match_parent"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/itemSelectionFlag_sImg"
+            android:layout_width="@dimen/itemCountry_itemSelectionFlag_sImg"
+            android:layout_height="@dimen/itemCountry_itemSelectionFlag_sImg"
+            android:layout_gravity="center"
+            android:contentDescription="country flag"
+            android:src="@drawable/ic_country_flag_afghanistan"
+            tools:ignore="HardcodedText" />
+
+        <Space
+            android:layout_width="@dimen/itemCountryHorizontalSpacingBetweenContent"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/itemSelection_text"
+            style="@style/TextViewStyle.regular"
+            android:textSize="@dimen/itemCountry_nameTextSize_1"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="@string/language_header"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/itemSelection_text_icon"
+            android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+            android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/icon_unchecked"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="check box image" />
+
+        <Space
+            android:layout_width="@dimen/itemCountryHorizontalSpacing"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

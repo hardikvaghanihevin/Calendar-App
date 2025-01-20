@@ -38,7 +38,7 @@ android {
 
 
     buildTypes {
-        debug {
+        /*debug {
             isDebuggable = true
             isShrinkResources = true
             isMinifyEnabled = true//false
@@ -46,7 +46,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
+        }*/
         release {
             isDebuggable = false
             isShrinkResources = true

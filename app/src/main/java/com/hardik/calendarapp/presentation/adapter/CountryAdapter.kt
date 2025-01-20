@@ -14,10 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.databinding.ItemCountryLanguageSelectionBinding
-import com.hardik.calendarapp.databinding.ItemCountryLanguageSelectionSmallBinding
+import com.hardik.calendarapp.databinding.ItemCountrySelectionBinding
+import com.hardik.calendarapp.databinding.ItemCountrySelectionSmallBinding
 
 data class CountryItem(
+    val flag: Int,
     val name: String,
     val code: String,
     val isSelected: Boolean
@@ -40,9 +41,9 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
         //val view = LayoutInflater.from(parent.context).inflate(R.layout.item_country_language_selection, parent, false)
         val binding = when(viewType){
-            VERTICAL -> { ItemCountryLanguageSelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false) }
-            HORIZONTAL -> { ItemCountryLanguageSelectionSmallBinding.inflate(LayoutInflater.from(parent.context), parent, false)}
-            else -> { ItemCountryLanguageSelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false) }
+            VERTICAL -> { ItemCountrySelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false) }
+            HORIZONTAL -> { ItemCountrySelectionSmallBinding.inflate(LayoutInflater.from(parent.context), parent, false)}
+            else -> { ItemCountrySelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false) }
             //else -> throw IllegalArgumentException("Unknown binding type")
         }
 
@@ -54,28 +55,47 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
         val item = filteredList[position] // Use the filtered list
 
         holder.countryName.text = item.name
+        holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
+        holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
 
-        if (item.isSelected) {
-            holder.countryCheckbox.setImageResource(R.drawable.checked_icon)
-            holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.accent_primary))
-            holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
-        } else {
-            holder.countryCheckbox.setImageResource(R.drawable.unchecked_icon)
-            holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
-            holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
+        if(viewType == VERTICAL){
+            holder.countryFlag?.setImageResource(item.flag)
+            if (item.isSelected) {
+                holder.countryCheckbox.setImageResource(R.drawable.icon_checked)
+                //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.accent_primary))
+                //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
+            } else {
+                holder.countryCheckbox.setImageResource(R.drawable.icon_unchecked)
+                //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
+                //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
+            }
+        }else{
+            if (item.isSelected) {
+                holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
+            } else {
+                holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
+            }
         }
 
         holder.itemView.setOnClickListener {
             //val isNowSelected = !selectedCountries.contains(item.code)// todo: used adapter data list base selected or unselected
             val isNowSelected = item.isSelected//todo: to importance it's set from viewModel base selected or unselected
-            if (isNowSelected) {
-                holder.countryCheckbox.setImageResource(R.drawable.checked_icon)
-                holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.accent_primary))
-                holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
-            } else {
-                holder.countryCheckbox.setImageResource(R.drawable.unchecked_icon)
-                holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
-                holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
+            if(viewType == VERTICAL){
+                if (isNowSelected) {
+                    holder.countryCheckbox.setImageResource(R.drawable.icon_checked)
+                    //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.accent_primary))
+                    //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
+                } else {
+                    holder.countryCheckbox.setImageResource(R.drawable.icon_unchecked)
+                    //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
+                    //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
+                }
+            }else{
+                if (isNowSelected) {
+                    holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
+                } else {
+                    holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
+                }
             }
 
             // Callback to the parent activity/fragment with the selected state
@@ -93,16 +113,24 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
     }
 
     inner class CountryViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
-        val countryName: TextView = when(binding){
-            is ItemCountryLanguageSelectionBinding -> { binding.itemSelectionText}
-            is ItemCountryLanguageSelectionSmallBinding -> { binding.itemSelectionText }
-            else -> throw IllegalArgumentException("Unknown binding type")
-        }
+        val countryName: TextView
+        val countryCheckbox: ImageView
+        val countryFlag: ImageView? // Optional, only used in VERTICAL
 
-        val countryCheckbox: ImageView = when(binding){
-            is ItemCountryLanguageSelectionBinding -> { binding.itemSelectionTextIcon}
-            is ItemCountryLanguageSelectionSmallBinding -> { binding.itemSelectionTextIcon }
-            else -> throw IllegalArgumentException("Unknown binding type")
+        init {
+            when (binding) {
+                is ItemCountrySelectionBinding -> {
+                    countryName = binding.itemSelectionText
+                    countryCheckbox = binding.itemSelectionTextIcon
+                    countryFlag = binding.itemSelectionFlagSImg // Ensure this matches your layout file
+                }
+                is ItemCountrySelectionSmallBinding -> {
+                    countryName = binding.itemSelectionText
+                    countryCheckbox = binding.itemSelectionTextIcon
+                    countryFlag = null // Not used in HORIZONTAL
+                }
+                else -> throw IllegalArgumentException("Unknown binding type")
+            }
         }
     }
 

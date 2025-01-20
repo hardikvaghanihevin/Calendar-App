@@ -41,7 +41,7 @@
 
 
     <!-- Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,6 +59,23 @@
         app:maxImageSize="@dimen/_35sdp"
         app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"
         app:srcCompat="@drawable/plus_icon"
-        app:tint="@color/white" />
+        app:tint="@color/white" />-->
+
+    <ImageView
+        android:id="@+id/fab"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:contentDescription="@string/add_event"
+        android:background="@drawable/bg_fab"
+        android:visibility="visible"
+        android:padding="@dimen/_4sdp"
+        android:gravity="center"
+        android:src="@drawable/plus_icon"
+        tools:visibility="visible"
+        app:tint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
