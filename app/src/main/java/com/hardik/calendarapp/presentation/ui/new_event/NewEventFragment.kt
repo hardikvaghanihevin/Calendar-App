@@ -231,7 +231,9 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         binding.tvAlert.setOnClickListener { navigateToAlertOptionFrag(); //showAlertRemindDialog()
         }
         binding.edtEventNote.addTextChangedListener { viewModel.updateDescription(it.toString()) }
-        binding.switchAllDay.setOnCheckedChangeListener { buttonView, isChecked -> viewModel.updateAllDayStatus(isChecked) }
+        binding.switchAllDay.apply {
+           setOnCheckedChangeListener { buttonView, isChecked -> viewModel.updateAllDayStatus(isChecked) }
+        }
 
         /** Save Event  */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {

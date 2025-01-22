@@ -151,5 +151,7 @@
     <string name="search_country">Land suchen…</string>
     <string name="deny_permission_msg_calendar">Für die Funktion der App sind Kalenderberechtigungen erforderlich.</string>
     <string name="deny_permission_msg_notification">Berechtigung zum Anzeigen von Benachrichtigungen erforderlich.</string>
+    <string name="personalization">"Personalisierung : "</string>
+    <string name="about">"Über : "</string>
 
 </resources>

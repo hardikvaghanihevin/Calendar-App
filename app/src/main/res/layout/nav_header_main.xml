@@ -1,66 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
     android:background="@color/background_primary"
-    android:gravity="bottom"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    >
-<!--    android:theme="@style/ThemeOverlay.AppCompat.Dark"-->
-<!--    android:background="@drawable/side_nav_bar"-->
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="16dp">
+    <!--    android:theme="@style/ThemeOverlay.AppCompat.Dark"-->
+    <!--    android:background="@drawable/side_nav_bar"-->
 
     <TextView
         android:id="@+id/tv_navHeader_date"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_width="@dimen/fab_btn_size"
+        android:layout_height="@dimen/fab_btn_size"
         style="@style/TextViewStyle.medium"
         android:textAlignment="center"
         android:gravity="center"
         android:singleLine="true"
         android:text="13"
         android:textColor="@color/white"
-        android:textSize="@dimen/_25ssp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:background="@drawable/bg_nav_header_date"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_navHeader_day"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="@dimen/_24ssp"
+        android:background="@drawable/bg_nav_header_date" />
 
-    <TextView
-        android:id="@+id/tv_navHeader_day"
+    <Space
+        android:layout_width="@dimen/itemDividerVerticalSpacing"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/TextViewStyle.medium"
-        android:gravity="start"
-        android:singleLine="true"
-        android:text="Friday"
-        android:textSize="@dimen/_18ssp"
-        app:layout_constraintBottom_toTopOf="@id/tv_navHeader_monthNameYear"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tv_navHeader_date"
-        app:layout_constraintTop_toTopOf="@id/tv_navHeader_date" />
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_navHeader_monthNameYear"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        style="@style/TextViewStyle.medium"
-        android:gravity="start"
-        android:singleLine="true"
-        android:text="December 2024"
-        android:textColor="@color/text_secondary"
-        android:textSize="@dimen/_18ssp"
-        app:layout_constraintBottom_toBottomOf="@id/tv_navHeader_date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/tv_navHeader_day"
-        app:layout_constraintTop_toBottomOf="@id/tv_navHeader_day"
+        <TextView
+            android:id="@+id/tv_navHeader_day"
+            style="@style/TextViewStyle.medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:singleLine="true"
+            android:text="Friday"
+            android:textSize="@dimen/dialog_TextSize_2" />
 
-        />
+        <TextView
+            android:id="@+id/tv_navHeader_monthNameYear"
+            style="@style/TextViewStyle.medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:singleLine="true"
+            android:text="December 2024"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/dialog_TextSize_2" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</LinearLayout>

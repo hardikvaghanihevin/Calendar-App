@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/_18sdp" />
+            <solid android:color="@color/border_surface" />
+            <size android:height="@dimen/_17sdp" android:width="@dimen/_25sdp" />
 
-    <!--    unchecked track-->
+        </shape>
+    </item>
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/_18sdp" />
+            <solid android:color="@color/error" />
+            <size android:height="@dimen/_17sdp"  android:width="@dimen/_25sdp"/>
+            <padding android:right="@dimen/_5sdp" />
+        </shape>
+    </item>
+</selector>
+<!--<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    &lt;!&ndash;    unchecked track&ndash;&gt;
     <item android:state_checked="false">
         <shape android:shape="rectangle">
             <solid android:color="@color/border_surface"/>
@@ -12,7 +30,7 @@
         </shape>
     </item>
 
-    <!--    checked track-->
+    &lt;!&ndash;    checked track&ndash;&gt;
     <item android:state_checked="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/error"/>
@@ -23,4 +41,4 @@
         </shape>
     </item>
 
-</selector>
+</selector>-->

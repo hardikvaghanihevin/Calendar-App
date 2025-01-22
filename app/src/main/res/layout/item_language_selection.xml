@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/itemLayoutVerticalSpacing"
-    android:paddingVertical="@dimen/itemCountryVerticalSpacing"
+    android:layout_marginTop="@dimen/itemLanguageVerticalSpacing"
+    android:paddingVertical="@dimen/itemLanguageVerticalSpacing"
     android:background="@drawable/item_background">
 
     <LinearLayout
@@ -26,8 +26,9 @@
             android:layout_width="@dimen/itemCountry_itemSelectionFlag_sImg"
             android:layout_height="@dimen/itemCountry_itemSelectionFlag_sImg"
             android:contentDescription="country flag"
-            style="@style/TextViewStyle.regular"
-            android:textSize="@dimen/itemCountry_nameTextSize_1"
+            style="@style/TextViewStyle.medium"
+            android:textSize="@dimen/itemLanguage_nameTextSize_1"
+            android:textColor="@color/white"
             android:gravity="center"
             android:textAlignment="center"
             android:text="HI"
@@ -42,7 +43,7 @@
         <TextView
             android:id="@+id/itemSelection_text"
             style="@style/TextViewStyle.regular"
-            android:textSize="@dimen/itemCountry_nameTextSize_1"
+            android:textSize="@dimen/itemLanguage_nameTextSize_2"
             android:layout_gravity="center"
             android:layout_width="0dp"
             android:layout_weight="1"

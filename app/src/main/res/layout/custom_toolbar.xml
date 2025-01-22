@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="Navigation Icon"
-            android:padding="@dimen/_8sdp"
+            android:paddingHorizontal="@dimen/_6sdp"
             android:src="@drawable/hamburger_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
             style="@style/TextViewStyle.medium"
             android:gravity="start"
             android:text="@string/app_name"
-            android:textSize="@dimen/_20ssp"
+            android:textSize="@dimen/dialog_TextSize_1"
             android:singleLine="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/toolbarMenuIcon"
@@ -61,6 +61,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:visibility="visible"
+                tools:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"
@@ -91,6 +92,7 @@
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:padding="0dp"
+                    android:layout_marginStart="@dimen/itemDividerVerticalSpacingBetweenContent"
                     android:text="31"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_9ssp"
@@ -112,8 +114,8 @@
                 <!-- delete event button-->
                 <TextView
                     android:id="@+id/delete_event_icon"
-                    android:layout_width="@dimen/_56sdp"
-                    android:layout_height="@dimen/_25sdp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_24sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:background="@drawable/txt_btn_bg"
                     style="@style/TextViewStyle.medium"
@@ -122,7 +124,7 @@
                     android:gravity="center"
                     android:text="@string/action_delete"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp"
+                    android:textSize="@dimen/fragmentNewEvent_eventTextSize_2"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -134,8 +136,8 @@
                 <!-- android:background="@drawable/save_event_icon"-->
                 <TextView
                     android:id="@+id/save_event_icon"
-                    android:layout_width="@dimen/_56sdp"
-                    android:layout_height="@dimen/_25sdp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_24sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:background="@drawable/txt_btn_bg"
                     style="@style/TextViewStyle.medium"
@@ -144,7 +146,7 @@
                     android:gravity="center"
                     android:text="@string/action_save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp"
+                    android:textSize="@dimen/fragmentNewEvent_eventTextSize_2"
                     android:visibility="gone"
                     tools:visibility="visible" />
 
@@ -154,7 +156,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"
@@ -167,11 +169,10 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:background="@drawable/item_background"
-                    android:paddingVertical="1dp"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
-                    android:visibility="visible"
-                    android:iconifiedByDefault="false"
+                    android:visibility="gone"
+                    android:iconifiedByDefault="true"
                     app:animateMenuItems="true"
                     app:dividerPadding="@dimen/_2sdp"
                     app:queryBackground="@null"
@@ -184,11 +185,12 @@
                 <!--app:searchHintIcon="@null"-->
                 <!--app:closeIcon="@android:drawable/btn_dialog"-->
 
+
                 <!-- save select language button-->
                 <TextView
                     android:id="@+id/save_select_language_icon"
-                    android:layout_width="@dimen/_37sdp"
-                    android:layout_height="@dimen/_26sdp"
+                    android:layout_width="@dimen/_36sdp"
+                    android:layout_height="@dimen/_24sdp"
                     android:background="@drawable/done_icon"
                     android:text=""
                     android:textColor="@color/background_secondary"
@@ -196,9 +198,9 @@
                     android:gravity="center"
                     android:singleLine="true"
                     android:textSize="@dimen/_8ssp"
-                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginHorizontal="@dimen/_8sdp"
                     android:visibility="gone"
-                    tools:visibility="visible" />
+                    tools:visibility="gone" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

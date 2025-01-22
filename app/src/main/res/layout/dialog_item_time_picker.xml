@@ -5,67 +5,56 @@
     android:id="@+id/dialog_item_time_picker"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     tools:ignore="HardcodedText">
 
-    <!--<androidx.cardview.widget.CardView
-        android:id="@+id/cv_first"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_4sdp"
-        app:cardCornerRadius="@dimen/cornerSize"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        </androidx.cardview.widget.CardView>-->
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/cv_first"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_10sdp"
-        android:background="@drawable/item_background"
+        android:background="@drawable/dialog_background"
+        android:padding="@dimen/dialog_padding"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
-<!--        android:paddingHorizontal="@dimen/_20sdp"-->
-<!--        android:paddingVertical="@dimen/_20sdp"-->
         <TimePicker
             android:id="@+id/timePicker"
             style="@android:style/Widget.Material.TimePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:timePickerMode="spinner"
-            android:paddingTop="@dimen/_1sdp"
-            android:paddingBottom="@dimen/_1sdp"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:timePickerMode="spinner" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingVertical="0dp"
-            app:layout_constraintTop_toBottomOf="@id/timePicker">
+            android:orientation="horizontal">
 
-            <Button
+            <TextView
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/cancel"
-                android:textColor="@color/text_secondary"/>
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/dialog_TextSize_2"/>
 
-            <Button
+            <Space
+                android:layout_width="@dimen/dialogHorizontalBetweenBtnSpacing"
+                android:layout_height="match_parent"/>
+
+            <TextView
                 android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                style="@style/ButtonStyle.medium"
+                style="@style/TextViewStyle.medium"
                 android:text="@string/done"
-                android:textColor="@color/error"/>
+                android:textColor="@color/error"
+                android:textSize="@dimen/dialog_TextSize_2"/>
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

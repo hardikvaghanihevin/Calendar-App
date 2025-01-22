@@ -20,7 +20,7 @@
     <color name="text_secondary">#7E818C</color>
     <color name="border_surface">#373C45</color>
     <color name="accent_primary">#1F71BD</color>
-    <color name="error">#FF2802</color>
+    <color name="error">#FF5334</color><!--#FF2802-->
 
     <color name="scrim_color">#607E818C</color>
 

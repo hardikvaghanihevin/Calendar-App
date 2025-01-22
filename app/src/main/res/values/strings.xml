@@ -161,4 +161,7 @@
 
     <string name="deny_permission_msg_calendar">Calendar permissions are required for the app to function.</string>
     <string name="deny_permission_msg_notification">Permission required to show notifications.</string>
+
+    <string name="personalization">"Personalization : "</string>
+    <string name="about">"About : "</string>
 </resources>

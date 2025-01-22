@@ -26,6 +26,7 @@
 
     <color name="action_bar_color">@color/background_primary</color>
     <color name="app_bar_color">@color/background_primary</color>
+    <color name="app_navbar_color">@color/background_primary</color>
     <color name="action_button_color">@color/accent_primary</color>
     <color name="action_button_color_secondary">@color/text_secondary</color>
     <color name="drawerIconColor">@color/text_primary</color>

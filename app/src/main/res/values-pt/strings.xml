@@ -151,4 +151,6 @@
     <string name="search_country">Pesquisar país…</string>
     <string name="deny_permission_msg_calendar">As permissões de calendário são necessárias para o funcionamento do aplicativo.</string>
     <string name="deny_permission_msg_notification">É necessária permissão para exibir notificações.</string>
+    <string name="personalization">"Personalização : "</string>
+    <string name="about">"Sobre : "</string>
 </resources>

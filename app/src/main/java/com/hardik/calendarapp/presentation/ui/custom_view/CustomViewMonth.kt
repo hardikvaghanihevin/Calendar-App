@@ -486,18 +486,24 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         // Adjust the available width for day blocks after applying padding
         val adjustedBlockWidth = (viewWidth - 2 * horizontalPadding) / 7f
 
-        // If the block width is smaller set Char on day names
-        val dayNames = if ((blockWidth.takeIf { designMode.equals(1) } ?: adjustedBlockWidth) >= 70F) if(weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.week_2) else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.week_1) else if (weekStart == WeekStart.SATURDAY) context.resources.getStringArray(R.array.week_3)
-        else throw IllegalArgumentException("Invalid week start value")
-        else if(weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.short_week_2) else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.short_week_1) else if (weekStart == WeekStart.SATURDAY) context.resources.getStringArray(R.array.short_week_3)
-        else throw IllegalArgumentException("Invalid week start value")
+        // If the block width is smaller, set Char on day names
+        val dayNames = if ((blockWidth.takeIf { designMode.equals(1) } ?: adjustedBlockWidth) >= 70F) {
+            if (weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.week_2)
+            else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.week_1)
+            else if (weekStart == WeekStart.SATURDAY) context.resources.getStringArray(R.array.week_3)
+            else throw IllegalArgumentException("Invalid week start value")
+        } else {
+            if (weekStart == WeekStart.SUNDAY) context.resources.getStringArray(R.array.short_week_2)
+            else if (weekStart == WeekStart.MONDAY) context.resources.getStringArray(R.array.short_week_1)
+            else if (weekStart == WeekStart.SATURDAY) context.resources.getStringArray(R.array.short_week_3)
+            else throw IllegalArgumentException("Invalid week start value")
+        }
 
         // If a background drawable is set, draw it
         backgroundDrawableDay?.let { drawable ->
-            if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = 0.0f , top = monthNameHeight, right = (viewWidth.toFloat()), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))//todo: week(7 days) block background
+            if (designMode.equals(2)) modifyAndApplyDrawable(drawable, margin.toFloat(), left = 0.0f, top = monthNameHeight, right = viewWidth.toFloat(), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))
             //if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = horizontalPadding , top = monthNameHeight, right = (viewWidth.toFloat() - horizontalPadding), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))//todo: week(7 days) block background
         }
-
 
         for (i in dayNames.indices) {
             val left = (i * blockWidth).takeIf { designMode.equals(1) } ?: (horizontalPadding + i * adjustedBlockWidth)
@@ -507,34 +513,34 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
             // Draw the background using the drawable if available
             backgroundDrawableDay?.let { drawable ->
-                // Adjust the bounds to include a 1dp margin
-                if (designMode.equals(1)) modifyAndApplyDrawable(drawable,margin.toFloat(),left , top, right ,bottom, canvas, context.getColor(R.color.blue))//todo: day block background
+                if (designMode.equals(1)) modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, context.getColor(R.color.blue))
                 //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
                 //drawable.draw(canvas)
             } ?: run {
                 // If no drawable is set, use a solid color
                 paintDay.color = backgroundColorDay
-                canvas.drawRect(left + margin + 2, top + margin, right - margin - 2, bottom - margin, paintDay)//canvas.drawRect(left, top, right, bottom, paint)
+                canvas.drawRect(left + margin + 2, top + margin, right - margin - 2, bottom - margin, paintDay)
             }
-            //paint.color = backgroundColorDay//
-            //canvas.drawRect(left, top, right, bottom, paint)
 
-            paintDay.color = textColorDay
+            // Check if it's Sunday and change the color
+            val isSunday = when (weekStart) {
+                WeekStart.SUNDAY -> i == 0 // Sunday is the first day in this configuration
+                WeekStart.MONDAY -> i == 6 // Sunday is the last day in this configuration
+                WeekStart.SATURDAY -> i == 1 // Sunday is the second day in this configuration
+                else -> false // Default case, should not happen
+            }
+
+            // Check if it's Sunday and change the color
+            //val isSunday = dayNames[i].equals(resources.getString(R.string.sunday), ignoreCase = true) || dayNames[i].equals(resources.getString(R.string.sun), ignoreCase = true) || dayNames[i].equals(resources.getString(R.string.short_sun), ignoreCase = true)
+            paintDay.color = if (isSunday) resources.getColor(R.color.error, null) else textColorDay // Set Sunday color to red or any other color
+
             // Set text size dynamically
             textSizeDay = if (textSizeDay > 0) textSizeDay else dayNameHeight * 0.35f
             paintDay.textSize = textSizeDay
             paintDay.textAlign = Paint.Align.CENTER
-/**         //todo:Shorted instead of using draw directly
-            paint.color = textColorDay//Color.WHITE
-            paint.textSize = textSizeDay//dayNameHeight * 0.5f
-            canvas.drawText(
-                dayNames[i],
-                left + blockWidth / 2,
-                top + dayNameHeight / 2 + paint.textSize / 3,
-                paint
-            )*/
 
-            drawDateText(canvas,dayNames[i], paintDay, left, blockWidth, top, dayNameHeight)
+            // Draw the day name text
+            drawDateText(canvas, dayNames[i], paintDay, left, blockWidth, top, dayNameHeight)
         }
     }
 
@@ -731,7 +737,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                     }
 
                     //todo: here to show indicator for events
-                    if (eventDateList.containsKey(currentYear.toString())) {
+                     if (eventDateList.containsKey(currentYear.toString())) {
                         // The key exists in the map
                         val yearMap = eventDateList[currentYear.toString()] ?: return
                         if (yearMap.containsKey(currentMonth.toString())) {
@@ -745,21 +751,23 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                                 if (dayMap.getFormattedDate() == targetDate) {
 
                                     // then key exists in the map
-                                    drawEventDotsRight(
+                                    /*drawEventDotsRight(
                                         canvas = canvas,
                                         rightX = right - margin * 4, // Adjust right margin for positioning
                                         topY = top,                 // Adjust top margin
                                         blockHeight = dateBlockHeight + margin // Block height including padding
-                                    )
+                                    )*/
+                                    drawEventDotsBottom(canvas = canvas, leftX = left, bottomY = bottom, blockWidth = blockWidth)
+
                                 }
                             }
                         }
                     }
 
                     val color = when {
-                        isToday -> resources.getColor(R.color.background_secondary, null)
+                        isToday -> resources.getColor(R.color.white, null).takeIf { !isSelected } ?: resources.getColor(R.color.background_secondary, null)
+                        isSunday -> resources.getColor(R.color.error, null).takeIf { !isSelected } ?: resources.getColor(R.color.white, null)
                         isSelected -> resources.getColor(R.color.background_secondary, null)
-                        isSunday -> resources.getColor(R.color.error, null)
                         else -> textColorDate // Default fallback color
                     }
                     paintDate.color = color
@@ -865,7 +873,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                 color?.let { drawable.setColor(it) } // Set the desired color
                 drawable.cornerRadius = 10f * context.resources.displayMetrics.density // Example: 10dp corner radius
                 drawable.setStroke(
-                    (1.3 * context.resources.displayMetrics.density).toInt(), // Stroke width in dp
+                    (1 * context.resources.displayMetrics.density).toInt(), // Stroke width in dp
                     Color.BLACK // Stroke color
                 )
             }
@@ -889,7 +897,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         val centerY = (top + bottom) / 2
 
         // Calculate bounds to center the drawable
-        val halfSquare = squarePx / context.resources.getDimension(com.intuit.sdp.R.dimen._1sdp)
+        val halfSquare = squarePx / context.resources.getDimension(R.dimen.dateRoundSize)
         drawable.setBounds(
             (centerX - halfSquare).toInt(),
             (centerY - halfSquare).toInt(),
@@ -912,18 +920,26 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         )
     }
 
-    private fun drawEventDotsRight(
-        canvas: Canvas,
-        rightX: Float,
-        topY: Float,
-        blockHeight: Float
-    ) {
+    private fun drawEventDotsRight(canvas: Canvas, rightX: Float, topY: Float, blockHeight: Float) {
         val dotRadius = blockHeight * 0.05f // Relative size of the dot
         val cx = rightX - dotRadius // Position the dot on the right
         val cy = topY + blockHeight / 2 // Center the dot vertically within the block
 
         // Set paint color and draw the dot
-        paint.color = Color.RED // Use event color or default to red
+        paint.color = resources.getColor(R.color.error, null) // Use event color or default to red
+        canvas.drawCircle(cx, cy, dotRadius, paint)
+    }
+    private fun drawEventDotsBottom(canvas: Canvas, leftX: Float, bottomY: Float, blockWidth: Float) {
+        val dotRadius = blockWidth * 0.05f // Adjust dot size relative to block width
+
+        // Calculate the horizontal center position of the block
+        val cx = leftX + blockWidth / 2
+        // Position the dot just above the bottom edge of the block
+        //val cy = bottomY - dotRadius / 2
+        val cy = bottomY - dotRadius / context.resources.getDimension(R.dimen.dateRoundSize)
+
+        // Draw the dot
+        paint.color = resources.getColor(R.color.error, null) // Set the color of the dot (default: red)
         canvas.drawCircle(cx, cy, dotRadius, paint)
     }
 

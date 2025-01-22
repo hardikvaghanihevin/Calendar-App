@@ -151,5 +151,7 @@
     <string name="search_country">Поиск страны…</string>
     <string name="deny_permission_msg_calendar">Для работы приложения необходимы разрешения календаря.</string>
     <string name="deny_permission_msg_notification">Требуется разрешение для показа уведомлений.</string>
+    <string name="personalization">"Персонализация : "</string>
+    <string name="about">"О программе : "</string>
 
 </resources>

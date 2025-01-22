@@ -62,29 +62,34 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <Space
-                android:id="@+id/spacer"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dialogVerticalSpacingBetweenContent"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Space
+            android:id="@+id/spacer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacing" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start">
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
+                android:layout_height="@dimen/_1sdp"
                 android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/spacer"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:layout_width="@dimen/_36sdp"
-                android:layout_height="@dimen/_2sdp"
+                android:layout_height="@dimen/_1sdp"
                 android:background="@drawable/line_selected_drawable"
-                app:layout_constraintStart_toStartOf="@id/edt_eventCustomAlertMinute"
-                app:layout_constraintEnd_toEndOf="@id/edt_eventCustomAlertMinute"
-                app:layout_constraintTop_toBottomOf="@id/spacer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
         <Space
             android:layout_width="match_parent"
             android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>

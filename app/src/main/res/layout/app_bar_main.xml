@@ -21,7 +21,6 @@
             android:id="@+id/included_appBarMain_customToolbar"
             android:layout_width="0dp"
             android:layout_height="?attr/actionBarSize"
-            android:padding="8dp"
             android:background="@color/background_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
+
         <!-- Include main content -->
         <include layout="@layout/content_main" />
     </FrameLayout>
@@ -63,8 +63,8 @@
 
     <ImageView
         android:id="@+id/fab"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_width="@dimen/fab_btn_size"
+        android:layout_height="@dimen/fab_btn_size"
         android:layout_marginEnd="@dimen/_16sdp"
         android:layout_marginBottom="@dimen/_20sdp"
         android:contentDescription="@string/add_event"
@@ -77,5 +77,6 @@
         app:tint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

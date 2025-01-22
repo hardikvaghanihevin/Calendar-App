@@ -151,4 +151,6 @@
     <string name="search_country">Пошук країни…</string>
     <string name="deny_permission_msg_calendar">Для роботи програми потрібні дозволи календаря.</string>
     <string name="deny_permission_msg_notification">Потрібен дозвіл для відображення сповіщень.</string>
+    <string name="personalization">"Персоналізація : "</string>
+    <string name="about">"Про : "</string>
 </resources>

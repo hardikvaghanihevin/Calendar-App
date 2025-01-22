@@ -99,7 +99,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 layoutManager = LinearLayoutManager(context)
                 setHasFixedSize(true)
 
-                val margin = resources.getDimension(com.intuit.sdp.R.dimen._1sdp).toInt()
+                val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
                 addItemDecoration(object: RecyclerView.ItemDecoration() {
                     override fun getItemOffsets(
@@ -117,15 +117,15 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         when (position) {
                             0 -> { // First item
                                 outRect.top = 0
-                                outRect.bottom = margin
+                                outRect.bottom = 0//margin
                             }
                             itemCount - 1 -> { // Last item
-                                outRect.top = margin
-                                outRect.bottom = 0
+                                outRect.top = 0//margin
+                                outRect.bottom = margin * 2 //0
                             }
                             else -> { // Middle items
-                                outRect.top = margin
-                                outRect.bottom = margin
+                                outRect.top = 0//margin
+                                outRect.bottom = 0//margin
                             }
                         }
                     }

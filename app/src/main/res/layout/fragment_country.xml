@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
-    android:padding="16dp"
+    android:paddingHorizontal="16dp"
     android:orientation="vertical"
     tools:context=".presentation.ui.country.CountryFragment">
 

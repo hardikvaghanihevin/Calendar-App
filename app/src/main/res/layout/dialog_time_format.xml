@@ -43,8 +43,8 @@
 
             <ImageView
                 android:id="@+id/dialogTimeFormat_12HR_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
                 android:src="@drawable/icon_unchecked"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_12HR"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -70,8 +70,8 @@
 
             <ImageView
                 android:id="@+id/dialogTimeFormat_24HR_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
                 android:src="@drawable/icon_unchecked"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ItemEventLayout1Binding
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
+import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.ImageColorUtil
 import kotlinx.coroutines.CoroutineScope
@@ -117,7 +119,8 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 if (previousMonth != null && previousMonth != currentMonth) {
                     cardItemEventImg.visibility = View.VISIBLE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.VISIBLE // Show the image
-                    binding.tvItemEventMonthName.text = currentMonth
+                    binding.tvItemEventMonthName.text = "$currentMonth ${event.year}"
+
 
                     val imageUrl = ImageColorUtil.monthImgResource.get(event.month.toInt())
                     //val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
@@ -159,12 +162,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                     cardItemEventImg.visibility = View.GONE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image
                 }
-
-
-                val lottieAnimationView = binding.lottieAnimationView // Ensure you have a LottieAnimationView in your layout
-                lottieAnimationView.setAnimation(R.raw.data_test) // Set the raw JSON file
-                lottieAnimationView.loop(true)
-                lottieAnimationView.playAnimation() // Start the animation
 
                 // Check if the current event's week is the same as the previous event
                 val currentEventWeek = DateUtil.getWeekOfYear(event.startDate, DATE_FORMAT_yyyy_MM_dd)
@@ -215,8 +212,14 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 eventTitle.text = event.title
 
                 // Set "All day" or time period based on start and end time
-                eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) "All day"
-                else "${DateUtil.longToString(event.startTime, "HH:mm")} - ${DateUtil.longToString(event.endTime, "HH:mm")}"
+                eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) ContextCompat.getString(binding.root.context, R.string.all_day)//"All day"
+                else {
+                    val startTime = DateUtil.longToString(event.startTime, TIME_FORMAT_HH_mm)
+                    val endTime = DateUtil.longToString(event.endTime, TIME_FORMAT_HH_mm)
+                    if (startTime == "00:00" && endTime == "00:00") "-"
+                    else "$startTime - $endTime"
+
+                }
                 //eventTimePeriod.text = DateUtil.longToString(event.endTime, DateUtil.DATE_FORMAT_yyyy_MM_dd)
 
                 // Handle item clicks

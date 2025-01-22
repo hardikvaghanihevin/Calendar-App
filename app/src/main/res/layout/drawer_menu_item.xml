@@ -5,24 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="14dp">
+    android:paddingVertical="@dimen/itemDrawerVerticalSpacing">
 
     <!-- Icon -->
     <ImageView
         android:id="@+id/item_icon"
-        android:layout_width="26.5dp"
-        android:layout_height="26.5dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_gravity="center_vertical"
         android:src="@drawable/setting_icon"
         app:tint="@color/text_primary" />
+
+    <Space
+        android:layout_width="@dimen/itemDividerHorizontalSpacingBetweenContent"
+        android:layout_height="match_parent"/>
 
     <!-- Text -->
     <TextView
         android:id="@+id/item_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
         android:layout_weight="1"
         style="@style/TextViewStyle.regular"
+        android:textSize="@dimen/dialog_TextSize_3"
         android:text="Menu Item" />
 </LinearLayout>

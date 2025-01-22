@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
@@ -49,7 +48,7 @@ class LanguageAdapter(
         val item = items[position]
         holder.languageFlagText.text = item.code
         holder.languageText.text = item.name
-        holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+        //holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
         holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_regular)
 
         // Set the icon based on whether the item is selected

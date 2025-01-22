@@ -151,5 +151,7 @@
     <string name="search_country">국가 검색…</string>
     <string name="deny_permission_msg_calendar">"앱이 작동하려면 캘린더 권한이 필요합니다. "</string>
     <string name="deny_permission_msg_notification">알림을 표시하려면 권한이 필요합니다.</string>
+    <string name="personalization">"개인 설정 : "</string>
+    <string name="about">"정보 : "</string>
 
 </resources>

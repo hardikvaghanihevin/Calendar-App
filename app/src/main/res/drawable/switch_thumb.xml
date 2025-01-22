@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="false">
+        <shape android:shape="oval">
+            <solid android:color="@color/text_secondary"/>
+            <size android:width="@dimen/_18sdp"
+                android:height="@dimen/_18sdp"/>
 
-    <!--    unchecked thumb -->
+            <stroke android:width="@dimen/_3sdp"
+                android:color="@android:color/transparent"/>
+            <padding android:right="@dimen/_5sdp"/>
+        </shape>
+    </item>
+    <item android:state_checked="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/white"/>
+            <size android:width="@dimen/_18sdp"
+                android:height="@dimen/_18sdp"/>
+            <stroke android:width="@dimen/_3sdp"
+                android:color="@android:color/transparent"/>
+            <padding android:right="@dimen/_5sdp"/>
+        </shape>
+    </item>
+</selector>
+<!--<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    &lt;!&ndash;    unchecked thumb &ndash;&gt;
     <item android:state_checked="false">
         <layer-list>
-            <!-- Spacer for Padding -->
+            &lt;!&ndash; Spacer for Padding &ndash;&gt;
             <item>
                 <shape android:shape="oval">
                     <solid android:color="@android:color/transparent" />
                 </shape>
             </item>
 
-            <!-- Background Shape -->
+            &lt;!&ndash; Background Shape &ndash;&gt;
             <item
                 android:left="2dp"
                 android:top="2dp"
@@ -23,7 +47,7 @@
                 </shape>
             </item>
 
-            <!-- Stroke Shape -->
+            &lt;!&ndash; Stroke Shape &ndash;&gt;
             <item
                 android:left="2dp"
                 android:top="2dp"
@@ -38,17 +62,17 @@
         </layer-list>
     </item>
 
-    <!--    checked thumb -->
+    &lt;!&ndash;    checked thumb &ndash;&gt;
     <item android:state_checked="true">
         <layer-list>
-            <!-- Spacer for Padding -->
+            &lt;!&ndash; Spacer for Padding &ndash;&gt;
             <item>
                 <shape android:shape="oval">
                     <solid android:color="@android:color/transparent" />
                 </shape>
             </item>
 
-            <!-- Background Shape -->
+            &lt;!&ndash; Background Shape &ndash;&gt;
             <item
                 android:left="0dp"
                 android:top="2dp"
@@ -60,7 +84,7 @@
                 </shape>
             </item>
 
-            <!-- Stroke Shape -->
+            &lt;!&ndash; Stroke Shape &ndash;&gt;
             <item
                 android:left="0dp"
                 android:top="2dp"
@@ -75,4 +99,4 @@
         </layer-list>
     </item>
 
-</selector>
+</selector>-->

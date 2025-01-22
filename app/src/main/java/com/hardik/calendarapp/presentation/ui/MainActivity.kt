@@ -742,12 +742,12 @@ class MainActivity : AppCompatActivity() {
                 "Unknown Version"
             }
 
-            this.dialogDeviceInformationBrand.apply { text = "$text: $brand" }
-            this.dialogDeviceInformationDevice.apply { text = "$text: $device" }
-            this.dialogDeviceInformationAppVersion.apply { text = "$text: $appVersion" }
-            this.dialogDeviceInformationOs.apply { text = "$text: $os" }
-            this.dialogDeviceInformationABI.apply { text = "$text: $abi" }
-            this.dialogDeviceInformationVersion.apply { text = "$text: $version" }
+            this.dialogDeviceInformationBrand.apply { text = "$text : $brand" }
+            this.dialogDeviceInformationDevice.apply { text = "$text : $device" }
+            this.dialogDeviceInformationAppVersion.apply { text = "$text : $appVersion" }
+            this.dialogDeviceInformationOs.apply { text = "$text : $os" }
+            this.dialogDeviceInformationABI.apply { text = "$text : $abi" }
+            this.dialogDeviceInformationVersion.apply { text = "$text : $version" }
 
             this.btnOkay.setOnClickListener {
                 dialog.dismiss()

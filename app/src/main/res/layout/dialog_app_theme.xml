@@ -12,7 +12,6 @@
         android:background="@drawable/dialog_background"
         android:orientation="vertical"
         android:padding="@dimen/dialog_padding"
-        android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -42,8 +41,8 @@
 
             <ImageView
                 android:id="@+id/dialogAppTheme_DarkTheme_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_DarkTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_DarkTheme"
@@ -69,8 +68,8 @@
 
             <ImageView
                 android:id="@+id/dialogAppTheme_LightTheme_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_LightTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_LightTheme"
@@ -96,8 +95,8 @@
 
             <ImageView
                 android:id="@+id/dialogAppTheme_SystemTheme_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_SystemTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_SystemTheme"

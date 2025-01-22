@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/background_primary"
     android:orientation="vertical"
-    android:paddingBottom="16dp"
     tools:context=".presentation.ui.language.LanguageActivity">
 
     <include
@@ -14,9 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/background_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         layout="@layout/custom_toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -28,7 +24,6 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toBottomOf="@id/included_languageActivity_customToolbar"
         android:dividerHeight="1dp"/>
 
 </LinearLayout>

@@ -150,5 +150,7 @@
     <string name="search_country">देश खोजें…</string>
     <string name="deny_permission_msg_calendar">ऐप को चलाने के लिए कैलेंडर अनुमतियाँ आवश्यक हैं।</string>
     <string name="deny_permission_msg_notification">सूचनाएँ दिखाने के लिए अनुमति आवश्यक है।</string>
+    <string name="personalization">"निजीकरण : "</string>
+    <string name="about">"के बारे में : "</string>
 
 </resources>

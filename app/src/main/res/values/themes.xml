@@ -11,45 +11,19 @@
         <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@null</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/app_bar_color</item>
         <item name="android:windowLightStatusBar">true</item><!--Use light(false) | dark(true) text/icons-->
 
         <item name="switchStyle">@style/CustomSwitchStyle</item>
+
+        <!-- Navigation bar color. -->
+        <item name="android:navigationBarColor">@color/app_navbar_color</item>
 
     </style>
 
     <style name="Theme.CalendarApp.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-    </style>
-
-    <!-- Toolbar Theme -->
-    <style name="Theme.CalendarApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light">
-        //"ThemeOverlay.AppCompat.Dark.ActionBar"
-        <!--        <item name="titleTextAppearance">@style/CustomToolbarTitleStyle</item>-->
-    </style>
-
-    <style name="Theme.CalendarApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <!--    its noting to use only ref default understanding-->
-    <style name="Theme.CalendarApp2" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorControlNormal">@color/drawerIconColor</item>
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/action_bar_color</item>
-        <item name="colorPrimaryVariant">@color/app_bar_color</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/action_button_color</item>
-        <item name="colorSecondaryVariant">@color/action_button_color_secondary</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowLightStatusBar">true
-        </item><!-- Use light(false) | dark(true) text/icons -->
-        <!-- Text color. -->
-        <item name="android:textColor">@color/text_primary</item>
-        <!-- Customize your theme here. -->
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
@@ -67,9 +41,13 @@
         <item name="android:windowBackground">@color/background_secondary</item>
         <item name="android:windowIsTranslucent">true</item>
 <!--        <item name="android:windowFullscreen">true</item>-->
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/app_bar_color</item>
+        <item name="android:windowLightStatusBar">true</item><!--Use light(false) | dark(true) text/icons-->
+
+        <!-- Navigation bar color. -->
+        <item name="android:navigationBarColor">@color/app_navbar_color</item>
     </style>
 
-<!--    <style name="SplashTheme" parent="Theme.CalendarApp">-->
-<!--        <item name="android:windowBackground">@drawable/splash_background</item>-->
-<!--    </style>-->
 </resources>

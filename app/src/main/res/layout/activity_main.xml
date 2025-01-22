@@ -23,7 +23,7 @@
         android:background="@color/background_primary"
         android:layout_gravity="start"
         android:orientation="vertical"
-        android:paddingTop="20dp">
+        android:paddingTop="25dp">
 
         <!--Header View-->
         <include
@@ -32,19 +32,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <View
+        <!--<View
             android:layout_width="match_parent"
             android:layout_height="@dimen/_1sdp"
             android:layout_marginTop="@dimen/_12sdp"
             android:layout_marginHorizontal="@dimen/_16sdp"
-            android:background="@color/border_surface" />
+            android:background="@color/border_surface" />-->
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/item_divider_lay"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemDividerVerticalSpacing"/>
 
         <!-- RecyclerView for Drawer Menu -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/drawer_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp" />
+            android:paddingHorizontal="16dp" />
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

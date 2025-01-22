@@ -38,7 +38,7 @@ import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.LogUtil
 import com.hardik.calendarapp.utillities.createYearData
 import com.hardik.calendarapp.utillities.createYearMonthPairs
-import com.hardik.calendarapp.utillities.getAllCursorEvents
+import com.hardik.calendarapp.utillities.getUserCustomEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -318,7 +318,7 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun collectCursorEventsState(context: Context){
-        val cursorEvent: List<CursorEvent> = getAllCursorEvents(context = context)
+        val cursorEvent: List<CursorEvent> = getUserCustomEvents(context = context)//getAllCursorEvents(context = context)
 
         val events: List<Event> = cursorEvent
             .mapNotNull { item ->
@@ -339,7 +339,7 @@ class MainViewModel @Inject constructor(
                     date = date.third,
                     startTime = startTime,
                     endTime = endTime,
-                    isHoliday = true,
+                    isHoliday = false,
                     sourceType = SourceType.CURSOR,
                     repeatOption = RepeatOption.NEVER,
                     alertOffset = AlertOffset.AT_TIME,

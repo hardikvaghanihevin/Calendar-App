@@ -59,7 +59,6 @@ class EventRepositoryImpl @Inject constructor(
                 launch(Dispatchers.Default) {
 
                 if (event.triggerTime in timeSlap.first..timeSlap.second) { scheduleAlarm(event) }}
-                      //scheduleAlarm(event)
 
             }//todo : schedule alarm if current year
         }

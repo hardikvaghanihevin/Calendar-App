@@ -1,51 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
+    android:orientation="vertical"
     tools:context=".presentation.ui.calendar_year_1.CalendarYear1Fragment">
 
-    <TextView
-        android:id="@+id/tv_year_title"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_4sdp"
-        android:paddingStart="@dimen/_10sdp"
-        style="@style/TextViewStyle.medium"
-        android:textSize="@dimen/_19ssp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry"
-        tools:text="2000"
-        tools:visibility="visible" />
+        android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/btnPrevYear"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_25sdp"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:contentDescription="Previous Month"
-        android:src="@drawable/left_icon"
-        app:layout_constraintBottom_toBottomOf="@id/tv_year_title"
-        app:layout_constraintEnd_toStartOf="@id/btnNextYear"
-        app:layout_constraintTop_toTopOf="@id/tv_year_title" />
+        <TextView
+            android:id="@+id/tv_year_title"
+            style="@style/TextViewStyle.medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:paddingStart="@dimen/_10sdp"
+            android:textSize="@dimen/dialog_TextSize_1"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlSymmetry"
+            tools:text="2000"
+            tools:visibility="visible" />
 
-    <!-- Right Arrow Button -->
-    <ImageButton
-        android:id="@+id/btnNextYear"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_25sdp"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:contentDescription="Next Month"
-        android:src="@drawable/right_icon"
-        app:layout_constraintBottom_toBottomOf="@id/btnPrevYear"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnPrevYear" />
+        <!-- Left Arrow Button -->
+        <ImageButton
+            android:id="@+id/btnPrevYear"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Previous Month"
+            android:src="@drawable/left_icon"
+            app:layout_constraintBottom_toBottomOf="@id/tv_year_title"
+            app:layout_constraintEnd_toStartOf="@id/btnNextYear"
+            app:layout_constraintTop_toTopOf="@id/tv_year_title" />
 
-    <View
+        <!-- Right Arrow Button -->
+        <ImageButton
+            android:id="@+id/btnNextYear"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Next Month"
+            android:src="@drawable/right_icon"
+            app:layout_constraintBottom_toBottomOf="@id/btnPrevYear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnPrevYear" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--<View
         android:id="@+id/v_divider"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
@@ -54,14 +62,18 @@
         android:layout_marginEnd="@dimen/_16sdp"
         android:background="@color/border_surface"
         app:layout_constraintBottom_toTopOf="@id/viewPager_calendarYear"
-        app:layout_constraintTop_toBottomOf="@id/tv_year_title" />
+        app:layout_constraintTop_toBottomOf="@id/tv_year_title" />-->
+
+    <include
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        layout="@layout/item_divider_lay"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager_calendarYear"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_4sdp"
-        app:layout_constraintTop_toBottomOf="@id/v_divider"
-        app:layout_constraintVertical_bias="0" />
+        android:layout_weight="1"
+        />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

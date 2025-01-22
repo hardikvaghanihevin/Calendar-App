@@ -8,13 +8,15 @@
     android:fillViewport="true"
     android:fitsSystemWindows="true"
     android:scrollbars="none"
+    android:paddingHorizontal="16dp"
     tools:context=".presentation.ui.setting.SettingFragment">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/_16sdp">
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:layout_height="wrap_content">
 
         <!--Personalization-->
         <TextView
@@ -22,85 +24,79 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            style="@style/TextViewStyle.medium"
-            android:paddingHorizontal="@dimen/_16sdp"
-            android:paddingBottom="@dimen/_16sdp"
-            android:text="Personalization:"
+            style="@style/TextViewStyle.regular"
+            android:text="@string/personalization"
             android:textAlignment="textStart"
-            android:textSize="@dimen/_18ssp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="@dimen/dialog_TextSize_3"
+            />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemLayoutVerticalSpacing"/>
 
         <LinearLayout
             android:id="@+id/ll_setting_personalization_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
             android:background="@drawable/item_background"
-            android:orientation="vertical"
-            android:padding="@dimen/_8sdp"
-            app:layout_constraintBottom_toTopOf="@id/tv_setting_about_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_setting_personalization_title">
+            android:paddingVertical="@dimen/itemCountryVerticalSpacing_dev2"
+            android:orientation="vertical">
 
             <include
                 android:id="@+id/included_item_appTheme"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_appLanguage"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_firstDayOfTheWeek"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_jumpToDate"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_timeFormat"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemLayoutVerticalSpacing"/>
 
         <!--About-->
         <TextView
@@ -108,97 +104,85 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            style="@style/TextViewStyle.medium"
-            android:paddingHorizontal="@dimen/_16sdp"
-            android:paddingVertical="@dimen/_16sdp"
-            android:text="About:"
+            style="@style/TextViewStyle.regular"
+            android:text="@string/about"
             android:textAlignment="textStart"
-            android:textSize="@dimen/_18ssp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ll_setting_personalization_menu" />
+            android:textSize="@dimen/dialog_TextSize_3" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemLayoutVerticalSpacing"/>
 
         <LinearLayout
             android:id="@+id/ll_setting_about_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
             android:background="@drawable/item_background"
             android:orientation="vertical"
-            android:padding="@dimen/_8sdp"
-            app:layout_constraintTop_toBottomOf="@id/tv_setting_about_title">
+            android:paddingVertical="@dimen/itemCountryVerticalSpacing_dev2">
 
             <include
                 android:id="@+id/included_item_privacyPolicy"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_rateOnGooglePlay"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_shareApp"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_feedBack"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_deviceInfo"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
-            <View
+            <include
+                layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@drawable/line_drawable"
-                app:layout_constraintTop_toBottomOf="@id/edt_eventCustomAlertMinute" />
+                android:layout_height="wrap_content"/>
 
             <include
                 android:id="@+id/included_item_version"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp" />
+                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </ScrollView>

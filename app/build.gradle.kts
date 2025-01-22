@@ -144,9 +144,6 @@ dependencies {
     // Palette API works best with colorful images
     implementation(libs.androidx.palette.ktx)
 
-    // Lottie: Load the JSON animation in your LottieAnimationView
-    implementation ("com.airbnb.android:lottie:6.1.0")
-
     // UI and layout dependencies
     implementation ("com.intuit.sdp:sdp-android:1.1.0")
     implementation ("com.intuit.ssp:ssp-android:1.1.0")

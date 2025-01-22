@@ -75,20 +75,28 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
                 /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
                 // Adjust margins dynamically
-                val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                /*val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
                     setMargins(
                         resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
                         0,  // Top margin
-                        resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
+                        0,//resources.getDimension(com.intuit.sdp.R.dimen._4sdp).toInt(), // End margin
                         0   // Bottom margin
                     )
-                }
+                }*/
 
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
+                        (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                            setMargins(
+                                0, //resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
+                                0,  // Top margin
+                                resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(), // End margin
+                                0   // Bottom margin
+                            )
+                        }
 
                     } else {
                         // Refocus the SearchView if it loses focus
@@ -97,6 +105,15 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         // Set inactive background (null)
                         //this.setBackgroundResource(0) // 0 removes any background
                         //this.setBackgroundResource(R.drawable.item_background)
+
+                        (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                            setMargins(
+                                0, // Start margin
+                                0,  // Top margin
+                                0,//resources.getDimension(com.intuit.sdp.R.dimen._4sdp).toInt(), // End margin
+                                0   // Bottom margin
+                            )
+                        }
                     }
 
                 }
