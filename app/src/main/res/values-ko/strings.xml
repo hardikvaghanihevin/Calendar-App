@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">캘린더 앱</string>
+    <string name="app_name">달력</string>
     <string name="navigation_drawer_open">내비게이션 서랍 열기</string>
     <string name="navigation_drawer_close">내비게이션 서랍 닫기</string>
 
@@ -101,20 +101,14 @@
     <string name="every_week">매주</string>
     <string name="every_month">매달</string>
     <string name="every_year">매년</string>
-    <string name="at_time">정시에</string>
+    <string name="at_time">행사시</string>
     <string name="before_5_minutes">5분 전</string>
     <string name="before_10_minutes">10분 전</string>
     <string name="before_15_minutes">15분 전</string>
     <string name="before_30_minutes">30분 전</string>
     <string name="before_1_hour">1시간 전</string>
-    <string name="before_12_hours">12시간 전</string>
     <string name="before_1_day">1일 전</string>
-    <string name="before_3_days">3일 전</string>
-    <string name="before_5_days">5일 전</string>
-    <string name="before_1_week">1주일 전</string>
-    <string name="before_2_weeks">2주일 전</string>
-    <string name="before_1_month">1개월 전</string>
-    <string name="before_custom_time">사용자 지정 시간 전</string>
+    <string name="before_custom_time">맞춤 시간</string>
     <string name="custom_alert">사용자 지정 알림</string>
     <string name="minutes_before">분 전</string>
 
@@ -153,5 +147,6 @@
     <string name="deny_permission_msg_notification">알림을 표시하려면 권한이 필요합니다.</string>
     <string name="personalization">"개인 설정 : "</string>
     <string name="about">"정보 : "</string>
+    <string name="schedule_event">일정</string>
 
 </resources>

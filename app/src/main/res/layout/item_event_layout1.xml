@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_event_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="@color/background_primary"
-    android:paddingBottom="@dimen/_8sdp"
     tools:ignore="HardcodedText">
 
     <!-- Divider Image for month transition -->
@@ -15,8 +15,8 @@
         android:id="@+id/card_itemEvent_img"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_125sdp"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_14sdp"
         android:layout_marginStart="@dimen/_2sdp"
         android:layout_marginEnd="@dimen/_1sdp"
         android:visibility="gone"
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/TextViewStyle.medium"
-                android:textSize="@dimen/dialog_TextSize_1"
+                android:textSize="@dimen/dialog_TextSize_2"
                 android:text="January"
                 android:textAlignment="center"
                 android:textColor="@color/black"
@@ -65,10 +65,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.082" />
+                app:layout_constraintVertical_bias="0.092" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_itemEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/_40sdp"
+        android:paddingEnd="0dp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:background="@color/background_primary">
+
+        <TextView
+            android:id="@+id/eventFullWeekDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextViewStyle.medium"
+            android:text="5-11 Jan 2025"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/itemEventLayout_eventFullWeekDateTextSiz"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constLay1_itemEvent"
@@ -77,22 +99,6 @@
         android:background="@color/background_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/card_itemEvent_img">
-
-        <TextView
-            android:id="@+id/eventFullWeekDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_10sdp"
-            style="@style/TextViewStyle.medium"
-            android:text="5-11 Jan 2025"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/itemEventLayout_eventFullWeekDateTextSiz"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/constLay2_itemEvent"
-            app:layout_constraintEnd_toEndOf="@id/constLay2_itemEvent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/constLay2_itemEvent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/eventDayDate"
@@ -123,10 +129,13 @@
 
             <TextView
                 android:id="@+id/eventTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                app:layout_constraintHorizontal_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_7sdp"
                 style="@style/TextViewStyle.regular"
+                android:singleLine="true"
+                android:maxLines="1"
                 android:text="new year"
                 android:textSize="@dimen/itemEventLayout_eventTitleTextSize"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -141,7 +150,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_7sdp"
                 android:background="@color/background_secondary"
-                android:paddingHorizontal="@dimen/_6sdp"
                 style="@style/TextViewStyle.regular"
                 android:text="All day"
                 android:textColor="@color/text_secondary"
@@ -155,4 +163,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

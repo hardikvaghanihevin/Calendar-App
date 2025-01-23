@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_4sdp"
             android:paddingStart="@dimen/_10sdp"
-            android:textSize="@dimen/dialog_TextSize_1"
+            android:textSize="@dimen/dialog_TextSize_2"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="RtlSymmetry"
             tools:text="2000"

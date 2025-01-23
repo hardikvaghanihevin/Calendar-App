@@ -10,11 +10,12 @@ import javax.inject.Inject
 
 class HolidayApiRepositoryImpl@Inject constructor(private val apiInterface: ApiInterface) : HolidayApiRepository {
 
-    override fun getHolidayEvents(countryCode: String, languageCode:String): HolidayApiDto? {
+    override suspend fun getHolidayEvents(countryCode: String, languageCode:String): HolidayApiDto {
         val pair: Pair<String, String> = getTimeRange()
 
         //return apiInterface.getCalendar(apiKey = apiKey, timeMin = timeMin, timeMax = timeMax)
-        return apiInterface.getCalendar(apiKey = apiKey,countryCode = countryCode, languageCode = languageCode, timeMin = pair.first, timeMax = pair.second).execute().body()
+//        return apiInterface.getCalendar(apiKey = apiKey,countryCode = countryCode, languageCode = languageCode, timeMin = pair.first, timeMax = pair.second).execute().body()
+        return apiInterface.getCalendar(apiKey = apiKey,countryCode = countryCode, languageCode = languageCode, timeMin = pair.first, timeMax = pair.second)
     }
 
     private fun getTimeRange(): Pair<String, String> {

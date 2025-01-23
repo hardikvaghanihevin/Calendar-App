@@ -30,7 +30,7 @@ data class Event(
     val sourceType: SourceType = SourceType.REMOTE,
     val description: String = "",
     val repeatOption: RepeatOption = RepeatOption.NEVER,//ONCE
-    val alertOffset: AlertOffset = AlertOffset.AT_TIME,
+    val alertOffset: AlertOffset = AlertOffset.AT_TIME_OF_EVENT,
     val customAlertOffset: Long? = null,
     val triggerTime: Long = 0L,
 ) : Parcelable
@@ -119,19 +119,13 @@ object RepeatOptionConverter {
 
 enum class AlertOffset{
     NONE,
-    AT_TIME,
+    AT_TIME_OF_EVENT,
     BEFORE_5_MINUTES,
     BEFORE_10_MINUTES,
     BEFORE_15_MINUTES,
     BEFORE_30_MINUTES,
     BEFORE_1_HOUR,
-    BEFORE_12_HOURS,
     BEFORE_1_DAY,
-    BEFORE_3_DAYS,
-    BEFORE_5_DAYS,
-    BEFORE_1_WEEK,
-    BEFORE_2_WEEKS,
-    BEFORE_1_MONTH,
     BEFORE_CUSTOM_TIME,
 }
 object AlertOffsetConverter {
@@ -140,19 +134,13 @@ object AlertOffsetConverter {
     fun toDisplayString(context: Context, alertOffset: AlertOffset): String {
         return when (alertOffset) {
             AlertOffset.NONE -> context.getString(R.string.none)
-            AlertOffset.AT_TIME -> context.getString(R.string.at_time)
+            AlertOffset.AT_TIME_OF_EVENT -> context.getString(R.string.at_time)
             AlertOffset.BEFORE_5_MINUTES -> context.getString(R.string.before_5_minutes)
             AlertOffset.BEFORE_10_MINUTES -> context.getString(R.string.before_10_minutes)
             AlertOffset.BEFORE_15_MINUTES -> context.getString(R.string.before_15_minutes)
             AlertOffset.BEFORE_30_MINUTES -> context.getString(R.string.before_30_minutes)
             AlertOffset.BEFORE_1_HOUR -> context.getString(R.string.before_1_hour)
-            AlertOffset.BEFORE_12_HOURS -> context.getString(R.string.before_12_hours)
             AlertOffset.BEFORE_1_DAY -> context.getString(R.string.before_1_day)
-            AlertOffset.BEFORE_3_DAYS -> context.getString(R.string.before_3_days)
-            AlertOffset.BEFORE_5_DAYS -> context.getString(R.string.before_5_days)
-            AlertOffset.BEFORE_1_WEEK -> context.getString(R.string.before_1_week)
-            AlertOffset.BEFORE_2_WEEKS -> context.getString(R.string.before_2_weeks)
-            AlertOffset.BEFORE_1_MONTH -> context.getString(R.string.before_1_month)
             AlertOffset.BEFORE_CUSTOM_TIME -> context.getString(R.string.before_custom_time)
         }
     }
@@ -161,19 +149,13 @@ object AlertOffsetConverter {
     fun fromDisplayString(context: Context, displayString: String): AlertOffset? {
         return when (displayString) {
             context.getString(R.string.none) -> AlertOffset.NONE
-            context.getString(R.string.at_time) -> AlertOffset.AT_TIME
+            context.getString(R.string.at_time) -> AlertOffset.AT_TIME_OF_EVENT
             context.getString(R.string.before_5_minutes) -> AlertOffset.BEFORE_5_MINUTES
             context.getString(R.string.before_10_minutes) -> AlertOffset.BEFORE_10_MINUTES
             context.getString(R.string.before_15_minutes) -> AlertOffset.BEFORE_15_MINUTES
             context.getString(R.string.before_30_minutes) -> AlertOffset.BEFORE_30_MINUTES
             context.getString(R.string.before_1_hour) -> AlertOffset.BEFORE_1_HOUR
-            context.getString(R.string.before_12_hours) -> AlertOffset.BEFORE_12_HOURS
             context.getString(R.string.before_1_day) -> AlertOffset.BEFORE_1_DAY
-            context.getString(R.string.before_3_days) -> AlertOffset.BEFORE_3_DAYS
-            context.getString(R.string.before_5_days) -> AlertOffset.BEFORE_5_DAYS
-            context.getString(R.string.before_1_week) -> AlertOffset.BEFORE_1_WEEK
-            context.getString(R.string.before_2_weeks) -> AlertOffset.BEFORE_2_WEEKS
-            context.getString(R.string.before_1_month) -> AlertOffset.BEFORE_1_MONTH
             context.getString(R.string.before_custom_time) -> AlertOffset.BEFORE_CUSTOM_TIME
             else -> null // Handle invalid strings gracefully
         }
@@ -183,19 +165,13 @@ object AlertOffsetConverter {
     fun toMilliseconds(alertOffset: AlertOffset): Long? {
         return when (alertOffset) {
             AlertOffset.NONE -> null
-            AlertOffset.AT_TIME -> AT_TIME
+            AlertOffset.AT_TIME_OF_EVENT -> AT_TIME
             AlertOffset.BEFORE_5_MINUTES -> MINUTES_5
             AlertOffset.BEFORE_10_MINUTES -> MINUTES_10
             AlertOffset.BEFORE_15_MINUTES -> MINUTES_15
             AlertOffset.BEFORE_30_MINUTES -> MINUTES_30
             AlertOffset.BEFORE_1_HOUR -> HOUR_1
-            AlertOffset.BEFORE_12_HOURS -> HOURS_12
             AlertOffset.BEFORE_1_DAY -> DAY_1
-            AlertOffset.BEFORE_3_DAYS -> DAYS_3
-            AlertOffset.BEFORE_5_DAYS -> DAYS_5
-            AlertOffset.BEFORE_1_WEEK -> WEEK_1
-            AlertOffset.BEFORE_2_WEEKS -> WEEKS_2
-            AlertOffset.BEFORE_1_MONTH -> MONTH_1
             AlertOffset.BEFORE_CUSTOM_TIME -> CUSTOM_TIME
         }
     }
@@ -208,13 +184,7 @@ object AlertOffsetConverter {
     private const val MINUTES_15 = 15 * 60 * 1000L
     private const val MINUTES_30 = 30 * 60 * 1000L
     private const val HOUR_1 = 60 * 60 * 1000L
-    private const val HOURS_12 = 12 * 60 * 60 * 1000L
     private const val DAY_1 = 24 * 60 * 60 * 1000L
-    private const val DAYS_3 = 3 * 24 * 60 * 60 * 1000L
-    private const val DAYS_5 = 5 * 24 * 60 * 60 * 1000L
-    private const val WEEK_1 = 7 * 24 * 60 * 60 * 1000L
-    private const val WEEKS_2 = 2 * 7 * 24 * 60 * 60 * 1000L
-    private const val MONTH_1 = 30L * 24 * 60 * 60 * 1000L // Approximation
     private var CUSTOM_TIME = -1L // Here store custom time (long) get from user
 
     // Get the current custom time
@@ -285,6 +255,6 @@ val dummyEvent = Event(
     sourceType = SourceType.LOCAL, // Example source type
     description = "Dummy event",
     repeatOption = RepeatOption.NEVER, // Occurs once
-    alertOffset = AlertOffset.AT_TIME, // Alert 10 minutes before
+    alertOffset = AlertOffset.AT_TIME_OF_EVENT, // Alert 10 minutes before
     customAlertOffset = null // No custom alert offset
 )

@@ -169,7 +169,7 @@ class NewEventViewModel @Inject constructor(
     }
 
     //todo: Event Alert (Before 5 min,10 min, 15 min, 1 hour, 1 day...)
-    private val _alertOffset = MutableStateFlow(AlertOffset.AT_TIME)
+    private val _alertOffset = MutableStateFlow(AlertOffset.AT_TIME_OF_EVENT)
     val alertOffset: StateFlow<AlertOffset> = _alertOffset
 
     fun updateAlertOffset(alertOffset: AlertOffset){
@@ -318,7 +318,7 @@ class NewEventViewModel @Inject constructor(
             _description.value = ""
             _isAllDay.value = false
             _repeatOption.value = RepeatOption.NEVER//ONCE
-            _alertOffset.value = AlertOffset.AT_TIME
+            _alertOffset.value = AlertOffset.AT_TIME_OF_EVENT
             _customAlertOffset.value = null
         }
     }

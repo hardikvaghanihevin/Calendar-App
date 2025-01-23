@@ -5,17 +5,16 @@
     android:id="@+id/dialog_item_time_picker"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
     tools:ignore="HardcodedText">
 
 
     <LinearLayout
         android:id="@+id/cv_first"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/dialog_background"
-        android:padding="@dimen/dialog_padding"
         android:orientation="vertical"
+        android:padding="@dimen/dialog_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -26,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:timePickerMode="spinner" />
-
 
         <LinearLayout
             android:layout_width="match_parent"

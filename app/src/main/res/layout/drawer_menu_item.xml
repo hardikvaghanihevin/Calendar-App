@@ -26,7 +26,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
         style="@style/TextViewStyle.regular"
-        android:textSize="@dimen/dialog_TextSize_3"
+        android:textSize="@dimen/dialog_TextSize_4"
         android:text="Menu Item" />
 </LinearLayout>

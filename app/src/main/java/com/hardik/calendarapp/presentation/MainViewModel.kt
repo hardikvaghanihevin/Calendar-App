@@ -300,7 +300,7 @@ class MainViewModel @Inject constructor(
                                     isHoliday = true,
                                     sourceType = SourceType.REMOTE,
                                     repeatOption = RepeatOption.NEVER,//*
-                                    alertOffset = AlertOffset.AT_TIME,//*
+                                    alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
                                     customAlertOffset = null,//*
                                     eventId = item.id.hashCode().toLong(),//DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
                                     triggerTime = startTime, // todo: set triggerTime as start time
@@ -342,7 +342,7 @@ class MainViewModel @Inject constructor(
                     isHoliday = false,
                     sourceType = SourceType.CURSOR,
                     repeatOption = RepeatOption.NEVER,
-                    alertOffset = AlertOffset.AT_TIME,
+                    alertOffset = AlertOffset.AT_TIME_OF_EVENT,
                     customAlertOffset = null,
                     eventId = id.hashCode().toLong(),//todo: here to set unique things set for loop by 1 to n list size
                     triggerTime = startTime, // todo: set triggerTime as start time

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Приложение Календарь</string>
+    <string name="app_name">Календарь</string>
     <string name="navigation_drawer_open">Открыть панель навигации</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
 
@@ -101,20 +101,14 @@
     <string name="every_week">Каждую неделю</string>
     <string name="every_month">Каждый месяц</string>
     <string name="every_year">Каждый год</string>
-    <string name="at_time">В указанное время</string>
-    <string name="before_5_minutes">За 5 минут</string>
-    <string name="before_10_minutes">За 10 минут</string>
-    <string name="before_15_minutes">За 15 минут</string>
-    <string name="before_30_minutes">За 30 минут</string>
-    <string name="before_1_hour">За 1 час</string>
-    <string name="before_12_hours">За 12 часов</string>
-    <string name="before_1_day">За 1 день</string>
-    <string name="before_3_days">За 3 дня</string>
-    <string name="before_5_days">За 5 дней</string>
-    <string name="before_1_week">За 1 неделю</string>
-    <string name="before_2_weeks">За 2 недели</string>
-    <string name="before_1_month">За 1 месяц</string>
-    <string name="before_custom_time">За пользовательское время</string>
+    <string name="at_time">На момент події</string>
+    <string name="before_5_minutes">5 хвилин до</string>
+    <string name="before_10_minutes">за 10 хвилин до</string>
+    <string name="before_15_minutes">за 15 хвилин до</string>
+    <string name="before_30_minutes">за 30 хвилин до</string>
+    <string name="before_1_hour">за 1 годину до</string>
+    <string name="before_1_day">за 1 день до</string>
+    <string name="before_custom_time">Індивідуальний час</string>
     <string name="custom_alert">Пользовательское оповещение</string>
     <string name="minutes_before">минут до</string>
 
@@ -153,5 +147,6 @@
     <string name="deny_permission_msg_notification">Требуется разрешение для показа уведомлений.</string>
     <string name="personalization">"Персонализация : "</string>
     <string name="about">"О программе : "</string>
+    <string name="schedule_event">Расписание</string>
 
 </resources>

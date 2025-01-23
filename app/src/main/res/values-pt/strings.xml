@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Aplicativo de Calendário</string>
+    <string name="app_name">Calendário</string>
     <string name="navigation_drawer_open">Abrir gaveta de navegação</string>
     <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
 
@@ -97,24 +97,18 @@
     <string name="country_header">País</string>
 
     <string name="at_once">De uma vez</string>
-    <string name="every_day">Todos os dias</string>
-    <string name="every_week">Todas as semanas</string>
+    <string name="every_day">Diariamente</string>
+    <string name="every_week">Toda semana</string>
     <string name="every_month">Todos os meses</string>
     <string name="every_year">Todos os anos</string>
-    <string name="at_time">Na hora</string>
+    <string name="at_time">Na hora do evento</string>
     <string name="before_5_minutes">5 minutos antes</string>
     <string name="before_10_minutes">10 minutos antes</string>
     <string name="before_15_minutes">15 minutos antes</string>
     <string name="before_30_minutes">30 minutos antes</string>
     <string name="before_1_hour">1 hora antes</string>
-    <string name="before_12_hours">12 horas antes</string>
     <string name="before_1_day">1 dia antes</string>
-    <string name="before_3_days">3 dias antes</string>
-    <string name="before_5_days">5 dias antes</string>
-    <string name="before_1_week">1 semana antes</string>
-    <string name="before_2_weeks">2 semanas antes</string>
-    <string name="before_1_month">1 mês antes</string>
-    <string name="before_custom_time">Antes do horário personalizado</string>
+    <string name="before_custom_time">Horário personalizado</string>
     <string name="custom_alert">Alerta personalizado</string>
     <string name="minutes_before">minutos antes</string>
 
@@ -153,4 +147,5 @@
     <string name="deny_permission_msg_notification">É necessária permissão para exibir notificações.</string>
     <string name="personalization">"Personalização : "</string>
     <string name="about">"Sobre : "</string>
+    <string name="schedule_event">Horário</string>
 </resources>

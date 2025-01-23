@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">कैलेंडर ऐप</string>
+    <string name="app_name">कैलेंडर</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -96,24 +96,18 @@
     <string name="country_header">देश</string>
 
     <string name="at_once">तुरंत</string>
-    <string name="every_day">हर दिन</string>
-    <string name="every_week">हर हफ़्ते</string>
-    <string name="every_month">हर महीने</string>
-    <string name="every_year">हर साल</string>
-    <string name="at_time">समय पर</string>
+    <string name="every_day">रोज रोज</string>
+    <string name="every_week">हर हफ्ते</string>
+    <string name="every_month">प्रत्येक माह</string>
+    <string name="every_year">प्रत्येक वर्ष</string>
+    <string name="at_time">घटना के समय</string>
     <string name="before_5_minutes">5 मिनट पहले</string>
     <string name="before_10_minutes">10 मिनट पहले</string>
     <string name="before_15_minutes">15 मिनट पहले</string>
     <string name="before_30_minutes">30 मिनट पहले</string>
-    <string name="before_1_hour">1 घंटे पहले</string>
-    <string name="before_12_hours">12 घंटे पहले</string>
+    <string name="before_1_hour">1 घंटा पहले</string>
     <string name="before_1_day">1 दिन पहले</string>
-    <string name="before_3_days">3 दिन पहले</string>
-    <string name="before_5_days">5 दिन पहले</string>
-    <string name="before_1_week">1 हफ़्ते पहले</string>
-    <string name="before_2_weeks">2 हफ़्ते पहले</string>
-    <string name="before_1_month">1 महीने पहले</string>
-    <string name="before_custom_time">कस्टम समय से पहले</string>
+    <string name="before_custom_time">कस्टम समय</string>
     <string name="custom_alert">कस्टम अलर्ट</string>
     <string name="minutes_before">मिनट पहले</string>
 
@@ -152,5 +146,6 @@
     <string name="deny_permission_msg_notification">सूचनाएँ दिखाने के लिए अनुमति आवश्यक है।</string>
     <string name="personalization">"निजीकरण : "</string>
     <string name="about">"के बारे में : "</string>
+    <string name="schedule_event">कार्यक्रम</string>
 
 </resources>

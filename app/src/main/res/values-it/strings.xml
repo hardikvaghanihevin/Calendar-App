@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Applicazione Calendario</string>
+    <string name="app_name">Calendario</string>
     <string name="navigation_drawer_open">Apri il menu di navigazione</string>
     <string name="navigation_drawer_close">Chiudi il menu di navigazione</string>
 
@@ -101,20 +101,14 @@
     <string name="every_week">Ogni settimana</string>
     <string name="every_month">Ogni mese</string>
     <string name="every_year">Ogni anno</string>
-    <string name="at_time">All\'ora</string>
+    <string name="at_time">Al momento dell\'evento</string>
     <string name="before_5_minutes">5 minuti prima</string>
     <string name="before_10_minutes">10 minuti prima</string>
     <string name="before_15_minutes">15 minuti prima</string>
     <string name="before_30_minutes">30 minuti prima</string>
     <string name="before_1_hour">1 ora prima</string>
-    <string name="before_12_hours">12 ore prima</string>
     <string name="before_1_day">1 giorno prima</string>
-    <string name="before_3_days">3 giorni prima</string>
-    <string name="before_5_days">5 giorni prima</string>
-    <string name="before_1_week">1 settimana prima</string>
-    <string name="before_2_weeks">2 settimane prima</string>
-    <string name="before_1_month">1 mese prima</string>
-    <string name="before_custom_time">Prima dell\'ora personalizzata</string>
+    <string name="before_custom_time">Orario personalizzato</string>
     <string name="custom_alert">Avviso personalizzato</string>
     <string name="minutes_before">minuti prima</string>
 
@@ -153,5 +147,6 @@
     <string name="deny_permission_msg_notification">È necessaria l\'autorizzazione per mostrare le notifiche.</string>
     <string name="personalization">"Personalizzazione : "</string>
     <string name="about">"Informazioni su : "</string>
+    <string name="schedule_event">Orario</string>
 
 </resources>

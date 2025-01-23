@@ -19,7 +19,7 @@ data class CursorEvent(
     val isAllDay: Boolean = false,
     val timeZone: String = TimeZone.getDefault().id,
     val repeatOption:RepeatOption = RepeatOption.NEVER,
-    val alertOffset:AlertOffset = AlertOffset.AT_TIME
+    val alertOffset:AlertOffset = AlertOffset.AT_TIME_OF_EVENT
 )
 
 /*fun CursorEvent.toEvent(): Event {
@@ -207,14 +207,8 @@ fun parseAlertOffset(description: String?): AlertOffset {
         description.contains("15 minutes", ignoreCase = true) -> AlertOffset.BEFORE_15_MINUTES
         description.contains("30 minutes", ignoreCase = true) -> AlertOffset.BEFORE_30_MINUTES
         description.contains("1 hour", ignoreCase = true) -> AlertOffset.BEFORE_1_HOUR
-        description.contains("12 hours", ignoreCase = true) -> AlertOffset.BEFORE_12_HOURS
         description.contains("1 day", ignoreCase = true) -> AlertOffset.BEFORE_1_DAY
-        description.contains("3 days", ignoreCase = true) -> AlertOffset.BEFORE_3_DAYS
-        description.contains("5 days", ignoreCase = true) -> AlertOffset.BEFORE_5_DAYS
-        description.contains("1 week", ignoreCase = true) -> AlertOffset.BEFORE_1_WEEK
-        description.contains("2 weeks", ignoreCase = true) -> AlertOffset.BEFORE_2_WEEKS
-        description.contains("1 month", ignoreCase = true) -> AlertOffset.BEFORE_1_MONTH
         description.contains("custom time", ignoreCase = true) -> AlertOffset.BEFORE_CUSTOM_TIME
-        else -> AlertOffset.AT_TIME // Default to AT_TIME if no matches found
+        else -> AlertOffset.AT_TIME_OF_EVENT // Default to AT_TIME_OF_EVENT if no matches found
     }
 }

@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/itemLanguageVerticalSpacing"
+    android:layout_height="@dimen/itemLanguage_Height"
     android:paddingVertical="@dimen/itemLanguageVerticalSpacing"
     android:background="@drawable/item_background">
 
@@ -18,13 +17,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Space
-            android:layout_width="@dimen/itemCountryHorizontalSpacing"
+            android:layout_width="@dimen/itemLanguageHorizontalSpacing"
             android:layout_height="match_parent"/>
 
         <TextView
             android:id="@+id/itemSelectionFlag_text"
-            android:layout_width="@dimen/itemCountry_itemSelectionFlag_sImg"
-            android:layout_height="@dimen/itemCountry_itemSelectionFlag_sImg"
+            android:layout_width="@dimen/itemLanguage_itemSelectionFlag_sImg"
+            android:layout_height="@dimen/itemLanguage_itemSelectionFlag_sImg"
             android:contentDescription="country flag"
             style="@style/TextViewStyle.medium"
             android:textSize="@dimen/itemLanguage_nameTextSize_1"
@@ -37,7 +36,7 @@
             tools:ignore="HardcodedText" />
 
         <Space
-            android:layout_width="@dimen/itemCountryHorizontalSpacingBetweenContent"
+            android:layout_width="@dimen/itemLanguageHorizontalSpacingBetweenContent"
             android:layout_height="match_parent"/>
 
         <TextView
@@ -57,8 +56,8 @@
 
         <ImageView
             android:id="@+id/itemSelection_text_icon"
-            android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
-            android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
+            android:layout_width="@dimen/itemLanguage_itemSelectionIconSize_1"
+            android:layout_height="@dimen/itemLanguage_itemSelectionIconSize_1"
             android:layout_gravity="end|center_vertical"
             android:src="@drawable/icon_unchecked"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -67,7 +66,7 @@
             android:contentDescription="check box image" />
 
         <Space
-            android:layout_width="@dimen/itemCountryHorizontalSpacing"
+            android:layout_width="@dimen/itemLanguageHorizontalSpacing"
             android:layout_height="match_parent"/>
 
     </LinearLayout>

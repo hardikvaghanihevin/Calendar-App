@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Application Calendrier</string>
+    <string name="app_name">Calendrier</string>
     <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
     <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
     <string name="nav_header_title">Android Studio</string>
@@ -96,23 +96,17 @@
 
     <string name="at_once">Tout de suite</string>
     <string name="every_day">Tous les jours</string>
-    <string name="every_week">Toutes les semaines</string>
-    <string name="every_month">Tous les mois</string>
-    <string name="every_year">Tous les ans</string>
-    <string name="at_time">Au moment</string>
-    <string name="before_5_minutes">Avant 5 minutes</string>
-    <string name="before_10_minutes">Avant 10 minutes</string>
-    <string name="before_15_minutes">Avant 15 minutes</string>
-    <string name="before_30_minutes">Avant 30 minutes</string>
-    <string name="before_1_hour">Avant 1 heure</string>
-    <string name="before_12_hours">Avant 12 heures</string>
-    <string name="before_1_day">Avant 1 jour</string>
-    <string name="before_3_days">Avant 3 jours</string>
-    <string name="before_5_days">"Avant 5 jours "</string>
-    <string name="before_1_week">"Avant 1 semaine "</string>
-    <string name="before_2_weeks">"Avant 2 semaine "</string>
-    <string name="before_1_month">Avant 1 mois</string>
-    <string name="before_custom_time">Avant l\'heure personnalisée</string>
+    <string name="every_week">Chaque semaine</string>
+    <string name="every_month">Chaque mois</string>
+    <string name="every_year">Chaque année</string>
+    <string name="at_time">Au moment de l\'événement</string>
+    <string name="before_5_minutes">5 minutes avant</string>
+    <string name="before_10_minutes">10 minutes avant</string>
+    <string name="before_15_minutes">15 minutes avant</string>
+    <string name="before_30_minutes">30 minutes avant</string>
+    <string name="before_1_hour">1 heure avant</string>
+    <string name="before_1_day">1 jour avant</string>
+    <string name="before_custom_time">Heure personnalisée</string>
     <string name="custom_alert">"Alerte personnalisée "</string>
     <string name="minutes_before">"minutes avant "</string>
     <string name="cancel">Annuler</string>
@@ -147,5 +141,6 @@
     <string name="deny_permission_msg_notification">Une autorisation est requise pour afficher les notifications.</string>
     <string name="personalization">"Personnalisation : "</string>
     <string name="about">"À propos : "</string>
+    <string name="schedule_event">Horaire</string>
 
 </resources>

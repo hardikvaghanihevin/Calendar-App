@@ -6,7 +6,6 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -55,8 +54,8 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
         val item = filteredList[position] // Use the filtered list
 
         holder.countryName.text = item.name
-        holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
-        holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
+//        holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
+        holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
 
         if(viewType == VERTICAL){
             holder.countryFlag?.setImageResource(item.flag)

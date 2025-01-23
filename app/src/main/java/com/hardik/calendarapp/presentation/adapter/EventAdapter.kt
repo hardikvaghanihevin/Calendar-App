@@ -171,6 +171,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 if (previousEvent != null && previousEvent.startDate == event.startDate) {
                     // Hide day name and date for duplicate dates
                     eventDayDate.visibility = View.INVISIBLE
+                    llItemEvent.visibility = View.GONE
                     eventFullWeekDate.visibility = View.GONE
                 } else {
                     // Show day name and date
@@ -183,6 +184,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                         // Set week range if applicable
                         // Display the full week range header for the first event of the week
                         val dateForWeek = "${event.date}-${event.month.toInt().plus(1)}-${event.year}"
+                        llItemEvent.visibility = View.VISIBLE
                         eventFullWeekDate.visibility = View.VISIBLE
                         eventFullWeekDate.text = DateUtil.getWeekRange(dateForWeek, weekStart)
 
@@ -203,6 +205,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
 //                        }
 
                     } else {
+                        llItemEvent.visibility = View.GONE
                         eventFullWeekDate.visibility = View.GONE
                         if (imgItemEventLayMonthTransitionImage.isVisible && cardItemEventImg.isVisible){ }
                     }

@@ -195,6 +195,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             rvEvent.layoutManager = LinearLayoutManager(requireContext())
             rvEvent.setHasFixedSize(true)
 
+            val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
+
             // Add a custom ItemDecoration to handle padding/margin
             rvEvent.addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
@@ -203,18 +205,24 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    //outRect.top = 0
-                    //outRect.bottom = 0
-
                     val position = parent.getChildAdapterPosition(view)
-                    val totalItemCount = state.itemCount
+                    val itemCount = state.itemCount
 
-                    if (position == totalItemCount - 1) {
-                        // Apply bottom padding/margin for the last item
-                        outRect.bottom = 80.dpToPx()
-                    } else {
-                        // No additional padding/margin for other items
-                        outRect.bottom = 0
+                    if(position == RecyclerView.NO_POSITION) return
+
+                    when(position){
+                        0 -> { // First item
+                            outRect.top = margin
+                            outRect.bottom = margin
+                        }
+                        itemCount - 1 -> { // Last item
+                            outRect.top = margin
+                            outRect.bottom = 80.dpToPx() //0
+                        }
+                        else -> { // Middle items
+                            outRect.top = margin
+                            outRect.bottom = margin
+                        }
                     }
                 }
             })

@@ -112,7 +112,7 @@ class LanguageActivity : AppCompatActivity() {
                 layoutManager = LinearLayoutManager(context)
                 setHasFixedSize(true)
 
-                val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
+                val margin = resources.getDimension(R.dimen.itemLanguageVerticalSpacing_dev2).toInt()
 
                 addItemDecoration(object: RecyclerView.ItemDecoration() {
                     override fun getItemOffsets(
@@ -129,16 +129,16 @@ class LanguageActivity : AppCompatActivity() {
                         // Apply margin adjustments
                         when (position) {
                             0 -> { // First item
-                                outRect.top = 0
-                                outRect.bottom = 0//margin
+                                outRect.top = margin
+                                outRect.bottom = margin
                             }
                             itemCount - 1 -> { // Last item
-                                outRect.top = 0//margin
+                                outRect.top = margin
                                 outRect.bottom = margin * 2  //0
                             }
                             else -> { // Middle items
-                                outRect.top = 0//margin
-                                outRect.bottom = 0//margin
+                                outRect.top = margin
+                                outRect.bottom = margin
                             }
                         }
                     }
@@ -221,16 +221,16 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun getLanguageList(): List<LanguageItem> {
         return listOf(
-            LanguageItem(name = "English", code = "en", isSelected = false),
-            LanguageItem(name = "French", code = "fr", isSelected = false),
-            LanguageItem(name = "German", code = "de", isSelected = false),
-            LanguageItem(name = "Hindi", code = "hi", isSelected = false),
-            LanguageItem(name = "Italian", code = "it", isSelected = false),
-            LanguageItem(name = "Korean", code = "ko", isSelected = false),
-            LanguageItem(name = "Portuguese", code = "pt", isSelected = false),
-            LanguageItem(name = "Russian", code = "ru", isSelected = false),
-            LanguageItem(name = "Spanish", code = "es", isSelected = false),
-            LanguageItem(name = "Ukrainian", code = "uk", isSelected = false),
+            LanguageItem(name = "English", code = "en", isSelected = false), //English
+            LanguageItem(name = "Français", code = "fr", isSelected = false), //French
+            LanguageItem(name = "Deutsch", code = "de", isSelected = false), //German
+            LanguageItem(name = "हिन्दी", code = "hi", isSelected = false), //Hindi
+            LanguageItem(name = "Italiano", code = "it", isSelected = false), //Italian
+            LanguageItem(name = "한국어", code = "ko", isSelected = false), //Korean
+            LanguageItem(name = "Português", code = "pt", isSelected = false), //Portuguese
+            LanguageItem(name = "Русский", code = "ru", isSelected = false), //Russian
+            LanguageItem(name = "Español", code = "es", isSelected = false), //Spanish
+            LanguageItem(name = "Українська", code = "uk", isSelected = false), //Ukrainian
 
         )
     }

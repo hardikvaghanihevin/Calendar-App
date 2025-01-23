@@ -32,13 +32,13 @@
     <fragment
         android:id="@+id/nav_setting"
         android:name="com.hardik.calendarapp.presentation.ui.setting.SettingFragment"
-        android:label="@string/settings"
+        android:label="@string/setting"
         tools:layout="@layout/fragment_setting" />
 
     <fragment
         android:id="@+id/searchEventFragment"
         android:name="com.hardik.calendarapp.presentation.ui.search_event.SearchEventFragment"
-        android:label="@string/view_event"
+        android:label="@string/schedule_event"
         tools:layout="@layout/fragment_search_event" />
 
     <fragment

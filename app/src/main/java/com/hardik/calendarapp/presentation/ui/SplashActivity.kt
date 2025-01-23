@@ -75,7 +75,7 @@ class SplashActivity : AppCompatActivity() {
             tvDate.apply { text = date.toString() }
         }
 
-        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
+        //mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
 
 
     }

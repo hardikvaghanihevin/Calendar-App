@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Kalender-App</string>
+    <string name="app_name">Kalender</string>
     <string name="navigation_drawer_open">Navigationsleiste öffnen</string>
     <string name="navigation_drawer_close">Navigationsleiste schließen</string>
 
@@ -97,24 +97,18 @@
     <string name="country_header">Land</string>
 
     <string name="at_once">Sofort</string>
-    <string name="every_day">Jeden Tag</string>
+    <string name="every_day">Täglich</string>
     <string name="every_week">Jede Woche</string>
     <string name="every_month">Jeden Monat</string>
-    <string name="every_year">Jedes Jahr</string>
-    <string name="at_time">Zur Zeit</string>
-    <string name="before_5_minutes">Vor 5 Minuten</string>
-    <string name="before_10_minutes">Vor 10 Minuten</string>
-    <string name="before_15_minutes">Vor 15 Minuten</string>
-    <string name="before_30_minutes">Vor 30 Minuten</string>
-    <string name="before_1_hour">Vor 1 Stunde</string>
-    <string name="before_12_hours">Vor 12 Stunden</string>
-    <string name="before_1_day">Vor 1 Tag</string>
-    <string name="before_3_days">Vor 3 Tagen</string>
-    <string name="before_5_days">Vor 5 Tagen</string>
-    <string name="before_1_week">Vor 1 Woche</string>
-    <string name="before_2_weeks">Vor 2 Wochen</string>
-    <string name="before_1_month">Vor 1 Monat</string>
-    <string name="before_custom_time">Vor benutzerdefinierter Zeit</string>
+    <string name="every_year">Jährlich</string>
+    <string name="at_time">Zum Zeitpunkt des Ereignisses</string>
+    <string name="before_5_minutes">5 Minuten vorher</string>
+    <string name="before_10_minutes">10 Minuten vorher</string>
+    <string name="before_15_minutes">15 Minuten vorher</string>
+    <string name="before_30_minutes">30 Minuten vorher</string>
+    <string name="before_1_hour">1 Stunde vorher</string>
+    <string name="before_1_day">1 Tag vorher</string>
+    <string name="before_custom_time">Benutzerdefinierte Zeit</string>
     <string name="custom_alert">Benutzerdefinierte Benachrichtigung</string>
     <string name="minutes_before">Minuten vorher</string>
 
@@ -153,5 +147,6 @@
     <string name="deny_permission_msg_notification">Berechtigung zum Anzeigen von Benachrichtigungen erforderlich.</string>
     <string name="personalization">"Personalisierung : "</string>
     <string name="about">"Über : "</string>
+    <string name="schedule_event">Terminplan</string>
 
 </resources>

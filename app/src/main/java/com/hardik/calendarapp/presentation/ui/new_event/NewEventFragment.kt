@@ -385,6 +385,107 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         dialog.show()
     }
 
+    /*fun showDatePickerDialog(isStartDate: Boolean) {
+        Log.i(TAG, "showJumpToDateDialog: ")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_item_date_picker, null)
+        bindingDatePicker = DialogItemDatePickerBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
+
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+
+        dialog.setCancelable(true)
+
+        bindingDatePicker?.apply {
+            yearPicker.apply {
+                minValue = 2000
+                maxValue = 2100
+                //value = Calendar.getInstance().get(Calendar.YEAR)//2025
+
+                lifecycleScope.launch {
+                    mainViewModel.yearJTD.collectLatest {
+                        value = it
+                    }
+                }
+
+                this.setOnValueChangedListener { picker, oldVal, newVal ->
+                    mainViewModel.updateYearJTD( year = newVal )
+                }
+            }
+            monthPicker.apply {
+                minValue = 1
+                maxValue = 12
+                //value = Calendar.getInstance().get(Calendar.MONTH) + 1 //12
+
+                lifecycleScope.launch {
+                    mainViewModel.monthJTD.collectLatest {
+                        value = it
+                    }
+                }
+
+                this.setOnValueChangedListener { picker, oldVal, newVal ->
+                    mainViewModel.updateMonthJTD( month = newVal )
+                }
+            }
+            datePicker.apply {
+                minValue = 1
+                //maxValue = 28
+                //value = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+                lifecycleScope.launch {
+                    mainViewModel.dateMaxJTD.collectLatest {
+                        maxValue = it
+                    }
+                }
+
+                lifecycleScope.launch {
+                    mainViewModel.dateJTD.collectLatest {
+                        value = it
+                    }
+                }
+
+                this.setOnValueChangedListener { picker, oldVal, newVal ->
+                    mainViewModel.updateDateJTD( date = newVal )
+                }
+
+                *//* // Listen for changes in the month picker value
+                 monthPicker.setOnValueChangedListener { _, _, newMonth ->
+
+                     val maxDays = getMinMaxDays(yearPicker.value, newMonth -1 )
+
+                     datePicker.maxValue = maxDays.second ?: 1
+                 }*//*
+            }
+
+            btnDone.setOnClickListener {
+                val selectedYear = yearPicker.value
+                val selectedMonth = monthPicker.value
+                val selectedDay = datePicker.value
+                // Perform your "Jump to Date" logic here
+                Log.d(TAG, "showDatePickerDialog: $selectedYear - $selectedMonth - $selectedDay")
+
+                dialog.dismiss()
+            }
+            btnCancel.setOnClickListener { dialog.dismiss() }
+        }
+
+        dialog.show()
+    }*/
+
     private var bindingTimePicker: DialogItemTimePickerBinding? = null
     @SuppressLint("InflateParams")
     fun showTimePickerDialog(isStartTime: Boolean) {

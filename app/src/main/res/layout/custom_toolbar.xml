@@ -19,8 +19,8 @@
         <!-- Navigation Icon -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/siv_navigation_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="@dimen/_32sdp"
             android:contentDescription="Navigation Icon"
             android:paddingHorizontal="@dimen/_6sdp"
             android:src="@drawable/hamburger_icon"
@@ -115,7 +115,7 @@
                 <TextView
                     android:id="@+id/delete_event_icon"
                     android:layout_width="@dimen/_55sdp"
-                    android:layout_height="@dimen/_24sdp"
+                    android:layout_height="@dimen/_23sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:background="@drawable/txt_btn_bg"
                     style="@style/TextViewStyle.medium"
@@ -137,7 +137,7 @@
                 <TextView
                     android:id="@+id/save_event_icon"
                     android:layout_width="@dimen/_55sdp"
-                    android:layout_height="@dimen/_24sdp"
+                    android:layout_height="@dimen/_23sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:background="@drawable/txt_btn_bg"
                     style="@style/TextViewStyle.medium"
@@ -190,7 +190,7 @@
                 <TextView
                     android:id="@+id/save_select_language_icon"
                     android:layout_width="@dimen/_36sdp"
-                    android:layout_height="@dimen/_24sdp"
+                    android:layout_height="@dimen/_22sdp"
                     android:background="@drawable/done_icon"
                     android:text=""
                     android:textColor="@color/background_secondary"

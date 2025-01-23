@@ -585,13 +585,7 @@
         <item>@string/before_15_minutes</item>
         <item>@string/before_30_minutes</item>
         <item>@string/before_1_hour</item>
-        <item>@string/before_12_hours</item>
         <item>@string/before_1_day</item>
-        <item>@string/before_3_days</item>
-        <item>@string/before_5_days</item>
-        <item>@string/before_1_week</item>
-        <item>@string/before_2_weeks</item>
-        <item>@string/before_1_month</item>
         <item>@string/before_custom_time</item>
     </string-array>
 

@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Calendar App</string>
+    <!--use this for Language translation: https://docs.google.com/spreadsheets/d/1oCZN46tUj1A3eqJFaCMpK2dbCl9ZQ1U2yDzYkemjNhQ/edit?gid=0#gid=0-->
+    <string name="app_name">Calendar</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -105,25 +106,19 @@
     <string name="none">None</string>
     <string name="note">Note</string>
     <string name="country_header">Country</string>
-    <string name="at_once">At Once</string>
-    <string name="every_day">Every Day</string>
-    <string name="every_week">Every Week</string>
-    <string name="every_month">Every Month</string>
-    <string name="every_year">Every Year</string>
-    <string name="at_time">At Time</string>
-    <string name="before_5_minutes">Before 5 minutes</string>
-    <string name="before_10_minutes">Before 10 minutes</string>
-    <string name="before_15_minutes">Before 15 minutes</string>
-    <string name="before_30_minutes">Before 30 minutes</string>
-    <string name="before_1_hour">Before 1 hour</string>
-    <string name="before_12_hours">Before 12 hours</string>
-    <string name="before_1_day">Before 1 day</string>
-    <string name="before_3_days">Before 3 days</string>
-    <string name="before_5_days">Before 5 days</string>
-    <string name="before_1_week">Before 1 week</string>
-    <string name="before_2_weeks">Before 2 weeks</string>
-    <string name="before_1_month">Before 1 month</string>
-    <string name="before_custom_time">Before Custom time</string>
+    <string name="at_once">At once</string>
+    <string name="every_day">Every day</string>
+    <string name="every_week">Every week</string>
+    <string name="every_month">Every month</string>
+    <string name="every_year">Every year</string>
+    <string name="at_time">At time of event</string>
+    <string name="before_5_minutes">5 minutes before</string>
+    <string name="before_10_minutes">10 minutes before</string>
+    <string name="before_15_minutes">15 minutes before</string>
+    <string name="before_30_minutes">30 minutes before</string>
+    <string name="before_1_hour">1 hour before</string>
+    <string name="before_1_day">1 day before</string>
+    <string name="before_custom_time">Custom time</string>
     <string name="custom_alert">Custom alert</string>
     <string name="minutes_before">minutes before</string>
 
@@ -164,4 +159,5 @@
 
     <string name="personalization">"Personalization : "</string>
     <string name="about">"About : "</string>
+    <string name="schedule_event">Schedule</string>
 </resources>

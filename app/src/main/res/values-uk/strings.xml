@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Додаток Календар</string>
+    <string name="app_name">Календар</string>
     <string name="navigation_drawer_open">Відкрити панель навігації</string>
     <string name="navigation_drawer_close">Закрити панель навігації</string>
 
@@ -99,7 +99,7 @@
     <string name="at_once">Відразу</string>
     <string name="every_day">Кожен день</string>
     <string name="every_week">Щотижня</string>
-    <string name="every_month">Щомісяця</string>
+    <string name="every_month">Кожен місяць</string>
     <string name="every_year">Щороку</string>
     <string name="at_time">У вказаний час</string>
     <string name="before_5_minutes">За 5 хвилин</string>
@@ -107,13 +107,7 @@
     <string name="before_15_minutes">За 15 хвилин</string>
     <string name="before_30_minutes">За 30 хвилин</string>
     <string name="before_1_hour">За 1 годину</string>
-    <string name="before_12_hours">За 12 годин</string>
     <string name="before_1_day">За 1 день</string>
-    <string name="before_3_days">За 3 дні</string>
-    <string name="before_5_days">За 5 днів</string>
-    <string name="before_1_week">За 1 тиждень</string>
-    <string name="before_2_weeks">За 2 тижні</string>
-    <string name="before_1_month">За 1 місяць</string>
     <string name="before_custom_time">За власний час</string>
     <string name="custom_alert">Власне сповіщення</string>
     <string name="minutes_before">хвилин до</string>
@@ -153,4 +147,5 @@
     <string name="deny_permission_msg_notification">Потрібен дозвіл для відображення сповіщень.</string>
     <string name="personalization">"Персоналізація : "</string>
     <string name="about">"Про : "</string>
+    <string name="schedule_event">Розклад</string>
 </resources>

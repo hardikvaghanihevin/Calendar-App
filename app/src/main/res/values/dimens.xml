@@ -13,7 +13,7 @@
     <dimen name="dialogHorizontalBetweenBtnSpacing">@dimen/_18sdp</dimen>
 
     <dimen name="dialog_TextSize_1">@dimen/_18ssp</dimen>
-    <dimen name="dialog_TextSize_2">@dimen/_17ssp</dimen>
+    <dimen name="dialog_TextSize_2">@dimen/_16ssp</dimen>
     <dimen name="dialog_TextSize_3">@dimen/_15ssp</dimen>
     <dimen name="dialog_TextSize_4">@dimen/_13ssp</dimen>
 
@@ -33,7 +33,7 @@
 
     <dimen name="itemEventLayout_eventDayDateTextSize">14sp</dimen>
     <dimen name="itemEventLayout_eventFullWeekDateTextSiz">14sp</dimen>
-    <dimen name="itemEventLayout_constLay2ItemEventHeight">@dimen/_40sdp</dimen>
+    <dimen name="itemEventLayout_constLay2ItemEventHeight">@dimen/_44sdp</dimen>
     <dimen name="itemEventLayout_eventTitleTextSize">14sp</dimen>
     <dimen name="itemEventLayout_eventTimePeriodTextSize">11sp</dimen>
 
@@ -65,11 +65,18 @@
     <dimen name="itemRepeatAlertVerticalSpacing">@dimen/_12sdp</dimen>
     <dimen name="itemRepeatAlertVerticalSpacing_1">@dimen/_10sdp</dimen>
 
+    <dimen name="itemLanguage_Height">@dimen/_48sdp</dimen>
+    <dimen name="itemLanguageVerticalSpacing_dev2">@dimen/_6sdp</dimen>
+    <dimen name="itemLanguageHorizontalSpacing">@dimen/_12sdp</dimen>
+    <dimen name="itemLanguageHorizontalSpacingBetweenContent">@dimen/_8sdp</dimen>
+    <dimen name="itemLanguage_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
+    <dimen name="itemLanguage_itemSelectionIconSize_1">@dimen/_21sdp</dimen>
+
     <dimen name="itemLanguage_nameTextSize_1">16.5sp</dimen>
     <dimen name="itemLanguage_nameTextSize_2">16.5sp</dimen>
     <dimen name="itemLanguageVerticalSpacing">@dimen/_10sdp</dimen>
 
-    <dimen name="itemCountry_llFirstHeight">@dimen/_46sdp</dimen>
+    <dimen name="itemCountry_Height">@dimen/_48sdp</dimen>
     <dimen name="itemCountry_nameTextSize_1">@dimen/_14ssp</dimen>
     <dimen name="itemCountry_nameTextSize_2">12sp</dimen>
     <dimen name="itemCountry_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
@@ -88,6 +95,9 @@
     <dimen name="itemDividerHorizontalSpacing">@dimen/_12sdp</dimen>
     <dimen name="itemDividerVerticalSpacingBetweenContent">@dimen/_6sdp</dimen>
     <dimen name="itemDividerHorizontalSpacingBetweenContent">@dimen/_8sdp</dimen>
+
+
+    <dimen name="fragmentSetting_includedItemHeight">@dimen/_40sdp</dimen>
 
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">156dp</dimen>

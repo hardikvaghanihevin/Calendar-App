@@ -116,16 +116,16 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         // Apply margin adjustments
                         when (position) {
                             0 -> { // First item
-                                outRect.top = 0
-                                outRect.bottom = 0//margin
+                                outRect.top = margin
+                                outRect.bottom = margin
                             }
                             itemCount - 1 -> { // Last item
-                                outRect.top = 0//margin
+                                outRect.top = margin
                                 outRect.bottom = margin * 2 //0
                             }
                             else -> { // Middle items
-                                outRect.top = 0//margin
-                                outRect.bottom = 0//margin
+                                outRect.top = margin
+                                outRect.bottom = margin
                             }
                         }
                     }

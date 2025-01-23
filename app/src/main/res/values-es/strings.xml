@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Aplicación de Calendario</string>
+    <string name="app_name">Calendario</string>
     <string name="navigation_drawer_open">Abrir el cajón de navegación</string>
     <string name="navigation_drawer_close">Cerrar el cajón de navegación</string>
 
@@ -97,24 +97,18 @@
     <string name="country_header">País</string>
 
     <string name="at_once">De inmediato</string>
-    <string name="every_day">Todos los días</string>
-    <string name="every_week">Todas las semanas</string>
-    <string name="every_month">Todos los meses</string>
-    <string name="every_year">Todos los años</string>
-    <string name="at_time">A tiempo</string>
+    <string name="every_day">Cada día</string>
+    <string name="every_week">Cada semana</string>
+    <string name="every_month">Cada mes</string>
+    <string name="every_year">Cada año</string>
+    <string name="at_time">En el momento del evento</string>
     <string name="before_5_minutes">5 minutos antes</string>
     <string name="before_10_minutes">10 minutos antes</string>
     <string name="before_15_minutes">15 minutos antes</string>
     <string name="before_30_minutes">30 minutos antes</string>
     <string name="before_1_hour">1 hora antes</string>
-    <string name="before_12_hours">12 horas antes</string>
     <string name="before_1_day">1 día antes</string>
-    <string name="before_3_days">3 días antes</string>
-    <string name="before_5_days">5 días antes</string>
-    <string name="before_1_week">1 semana antes</string>
-    <string name="before_2_weeks">2 semanas antes</string>
-    <string name="before_1_month">1 mes antes</string>
-    <string name="before_custom_time">Antes de la hora personalizada</string>
+    <string name="before_custom_time">hora personalizada</string>
     <string name="custom_alert">Alerta personalizada</string>
     <string name="minutes_before">minutos antes</string>
 
@@ -153,5 +147,6 @@
     <string name="deny_permission_msg_notification">Se requiere permiso para mostrar notificaciones.</string>
     <string name="personalization">"Personalización : "</string>
     <string name="about">"Acerca de : "</string>
+    <string name="schedule_event">Horario</string>
 
 </resources>

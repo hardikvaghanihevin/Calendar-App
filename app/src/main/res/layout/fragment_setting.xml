@@ -46,7 +46,7 @@
                 android:id="@+id/included_item_appTheme"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -57,7 +57,7 @@
                 android:id="@+id/included_item_appLanguage"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -68,7 +68,7 @@
                 android:id="@+id/included_item_firstDayOfTheWeek"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -79,7 +79,7 @@
                 android:id="@+id/included_item_jumpToDate"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -90,7 +90,7 @@
                 android:id="@+id/included_item_timeFormat"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
         </LinearLayout>
 
@@ -125,7 +125,7 @@
                 android:id="@+id/included_item_privacyPolicy"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -136,7 +136,7 @@
                 android:id="@+id/included_item_rateOnGooglePlay"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -147,7 +147,7 @@
                 android:id="@+id/included_item_shareApp"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -158,7 +158,7 @@
                 android:id="@+id/included_item_feedBack"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -169,7 +169,7 @@
                 android:id="@+id/included_item_deviceInfo"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
                 layout="@layout/item_divider_lay"
@@ -180,7 +180,7 @@
                 android:id="@+id/included_item_version"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/itemEventLayout_constLay2ItemEventHeight" />
+                android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
         </LinearLayout>
 
