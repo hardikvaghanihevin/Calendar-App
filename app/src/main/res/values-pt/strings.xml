@@ -47,13 +47,13 @@
     <string name="add_event">Adicionar Evento</string>
 
     <string name="hello_blank_fragment">Olá fragmento em branco</string>
-    <string name="calendar_month">Mês do Calendário</string>
-    <string name="calendar_year">Ano do Calendário</string>
+    <string name="calendar_month">Mês do calendário</string>
+    <string name="calendar_year">Ano civil</string>
     <string name="year">Ano</string>
     <string name="month">Mês</string>
-    <string name="select_country">Selecionar País</string>
-    <string name="select_language">Selecionar Idioma</string>
-    <string name="first_day_of_the_week">Primeiro Dia da Semana</string>
+    <string name="select_country">Selecione o país</string>
+    <string name="select_language">Selecione o idioma</string>
+    <string name="first_day_of_the_week">Primeiro dia da semana</string>
     <string name="jump_to_date">Ir para a data</string>
     <string name="app_theme">Tema do aplicativo</string>
     <string name="rate_our_app">Avalie nosso aplicativo</string>
@@ -148,4 +148,12 @@
     <string name="personalization">"Personalização : "</string>
     <string name="about">"Sobre : "</string>
     <string name="schedule_event">Horário</string>
+    <string name="min">min</string>
+    <string name="invalid_time_range">O intervalo entre 0 e 59!</string>
+    <string name="no_data">Dados não encontrados!</string>
+    <string name="event_title_cannot_empty">O título do evento não pode ficar vazio.</string>
+    <string name="start_date_cannot_be_after_end_date">A data de início não pode ser posterior à data de término.</string>
+    <string name="start_time_cannot_be_after_end_time">O horário de início não pode ser posterior ao horário de término.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">Já existe um evento com este título e tipo.</string>
+
 </resources>

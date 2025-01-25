@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
@@ -169,7 +170,7 @@ class NewEventViewModel @Inject constructor(
     }
 
     //todo: Event Alert (Before 5 min,10 min, 15 min, 1 hour, 1 day...)
-    private val _alertOffset = MutableStateFlow(AlertOffset.AT_TIME_OF_EVENT)
+    private val _alertOffset = MutableStateFlow(AlertOffset.NONE)
     val alertOffset: StateFlow<AlertOffset> = _alertOffset
 
     fun updateAlertOffset(alertOffset: AlertOffset){
@@ -211,22 +212,22 @@ class NewEventViewModel @Inject constructor(
         AlertOffsetConverter.toMilliseconds(alertOffset.value)//null // Default value, if no trigger time has been set
     )
 
-    private suspend fun validateEvent(eventId: String? = null): String? {
+    private suspend fun validateEvent(context: Context, eventId: String? = null): String? {
         // Validate event title
         if (title.value.isBlank()) {
-            return "Event title cannot be empty."
+            return context.resources.getString(R.string.event_title_cannot_empty)
         }
 
         // Validate start and end dates
         if (startDate.value > endDate.value) {
             Log.e(TAG, "validateEvent: (startData > endDate) : ${startDate.value} ~ ${endDate.value}")
-            return "Start date cannot be after end date."
+            return context.resources.getString(R.string.start_date_cannot_be_after_end_date)
         }
 
         // Validate start and end times (if not an all-day event)
         if (!isAllDay.value && startTime.value >= endTime.value) {
             Log.e(TAG, "validateEvent: (startTime > endTime) : ${startTime.value} ~ ${endTime.value}")
-            return "Start time cannot be after end time."
+            return context.resources.getString(R.string.start_time_cannot_be_after_end_time)
         }
 
         // Check if the event is new or being updated
@@ -247,7 +248,7 @@ class NewEventViewModel @Inject constructor(
         //Log.d(TAG, "validateEvent: $existingEvent")
 
         if (existingEvent != null) {
-            return "An event with this title and type already exists."
+            return context.resources.getString(R.string.an_event_with_this_title_and_type_already_exists)
         }
 
         return null // No validation errors
@@ -256,7 +257,7 @@ class NewEventViewModel @Inject constructor(
 
     suspend fun insertCustomEvent(context: Context, id: String?): String{
         Log.d(TAG, "insertCustomEvent: ")
-        val errorMessage = validateEvent(eventId = id)
+        val errorMessage = validateEvent(context = context, eventId = id)
         Log.e(TAG, "insertCustomEvent(): validateEvent message:- $errorMessage", )
         if (errorMessage != null) {
             return errorMessage
@@ -317,8 +318,8 @@ class NewEventViewModel @Inject constructor(
             _title.value = ""
             _description.value = ""
             _isAllDay.value = false
-            _repeatOption.value = RepeatOption.NEVER//ONCE
-            _alertOffset.value = AlertOffset.AT_TIME_OF_EVENT
+            _repeatOption.value = RepeatOption.NEVER
+            _alertOffset.value = AlertOffset.NONE
             _customAlertOffset.value = null
         }
     }

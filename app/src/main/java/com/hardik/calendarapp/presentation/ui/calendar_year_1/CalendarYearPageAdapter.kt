@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.hardik.calendarapp.R
 import com.hardik.calendarapp.databinding.ItemYearPage1Binding
 import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
@@ -52,7 +50,6 @@ class CalendarYearPageAdapter(private var yearList: Map<Int, Map<Int, List<Int>>
             else -> { CustomViewMonth.WeekStart.SATURDAY }
         }
         holder.binding.apply {
-            val bgDayColor = ContextCompat.getColor(context, R.color.blue)
             customViewMonth1.apply { currentYear = yearKey ; currentMonth = 0 ; weekStart(weekStart) ; setOnClickListener { getYearMonth?.invoke(currentYear, currentMonth) } }
             customViewMonth2.apply { currentYear = yearKey ; currentMonth = 1 ; weekStart(weekStart) ; setOnClickListener { getYearMonth?.invoke(currentYear, currentMonth) } }
             customViewMonth3.apply { currentYear = yearKey ; currentMonth = 2 ; weekStart(weekStart) ; setOnClickListener { getYearMonth?.invoke(currentYear, currentMonth) } }

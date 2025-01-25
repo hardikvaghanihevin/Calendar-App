@@ -47,13 +47,13 @@
     <string name="add_event">Добавить событие</string>
 
     <string name="hello_blank_fragment">Привет, пустой фрагмент</string>
-    <string name="calendar_month">Месяц календаря</string>
-    <string name="calendar_year">Год календаря</string>
+    <string name="calendar_month">Календарный месяц</string>
+    <string name="calendar_year">Календарный год</string>
     <string name="year">Год</string>
     <string name="month">Месяц</string>
     <string name="select_country">Выберите страну</string>
     <string name="select_language">Выберите язык</string>
-    <string name="first_day_of_the_week">Первый день недели</string>
+    <string name="first_day_of_the_week">Воскресенье</string>
     <string name="jump_to_date">Перейти к дате</string>
     <string name="app_theme">Тема приложения</string>
     <string name="rate_our_app">Оцените наше приложение</string>
@@ -148,5 +148,12 @@
     <string name="personalization">"Персонализация : "</string>
     <string name="about">"О программе : "</string>
     <string name="schedule_event">Расписание</string>
+    <string name="min">мин.</string>
+    <string name="invalid_time_range">Диапазон от 0 до 59!</string>
+    <string name="no_data">Данные не найдены!</string>
+    <string name="event_title_cannot_empty">Название мероприятия не может быть пустым.</string>
+    <string name="start_date_cannot_be_after_end_date">Дата начала не может быть позже даты окончания.</string>
+    <string name="start_time_cannot_be_after_end_time">Время начала не может быть позже времени окончания.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">Событие с таким названием и типом уже существует.</string>
 
 </resources>

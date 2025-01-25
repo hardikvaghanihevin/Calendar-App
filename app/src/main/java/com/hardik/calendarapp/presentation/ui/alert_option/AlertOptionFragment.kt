@@ -3,6 +3,7 @@ package com.hardik.calendarapp.presentation.ui.alert_option
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_ALERT
@@ -70,7 +71,21 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
 
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.alertOffset.collectLatest { aOffset: AlertOffset -> selectedAlertOffset = aOffset }
+                viewModel.alertOffset.collectLatest { aOffset: AlertOffset ->
+                    selectedAlertOffset = aOffset
+
+                    if (aOffset == AlertOffset.BEFORE_CUSTOM_TIME){
+                        launch {
+                            viewModel.customAlertOffset.collectLatest { value: Long? ->
+                                val minutesTime = if (value == null) -1
+                                else {
+                                    DateUtil.timestampToMinutes(milliseconds = value)
+                                }
+                                alertOffsetAdapter.updateCustomTime(minutesTime)
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -80,21 +95,58 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
             AlertOptionItem(alertOffset, alertOffset.equals(alertOffsetOpt, ignoreCase = true))
         }
         // Set up Recyclerview
-        alertOffsetAdapter = AlertOptionAdapter(requireContext(), alertOffsetItems) { postion ->
-            selectedAlertOffset = AlertOffsetConverter.fromDisplayString(requireContext(), alertOffsetValues[postion])
-            if (selectedAlertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
-                Log.i(TAG, "onViewCreated: AlertOffset.BEFORE_CUSTOM_TIME`")
+        alertOffsetAdapter = AlertOptionAdapter(
+            requireContext(),
+            alertOffsetItems,
+            onItemSelected = { position ->
+                selectedAlertOffset = AlertOffsetConverter.fromDisplayString( requireContext(), alertOffsetValues[position] ) },
+            onCustomTimeSelected = { ->
+                // Open custom time dialog
                 showCustomTimePickerDialog()
             }
-        }
+        )
 
         binding.alertOptionRecView.apply {
             layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+
+            val margin = resources.getDimension(R.dimen.itemRepeatAlertVerticalSpacing_dev2).toInt()
+
+            addItemDecoration(object: RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    val position = parent.getChildAdapterPosition(view) // Get the position of the item
+                    val itemCount = parent.adapter?.itemCount ?: 0
+
+                    if (position == RecyclerView.NO_POSITION) return
+
+                    // Apply margin adjustments
+                    when (position) {
+                        0 -> { // First item
+                            outRect.top = 0//margin
+                            outRect.bottom = margin
+                        }
+                        itemCount - 1 -> { // Last item
+                            outRect.top = margin
+                            outRect.bottom = margin * 2 //0
+                        }
+                        else -> { // Middle items
+                            outRect.top = margin
+                            outRect.bottom = margin
+                        }
+                    }
+                }
+            })
+
             adapter = alertOffsetAdapter
         }
 
-        /** Save Selected Language */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon.setOnClickListener {
+        /** Save Selected Icon */
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
             if (isAdded) {
                 lifecycleScope.launch {
                     selectedAlertOffset?.let { it1 -> viewModel.updateAlertOffset(it1) }
@@ -105,15 +157,14 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
     }
 
     private var dialogItemEventCustomAlertMinuteBinding: DialogItemEventCustomAlertMinuteBinding? = null
+    @SuppressLint("NotifyDataSetChanged")
     private fun showCustomTimePickerDialog(){
         Log.d(TAG, "showCustomTimePickerDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_item_event_custom_alert_minute, null)
         dialogItemEventCustomAlertMinuteBinding = DialogItemEventCustomAlertMinuteBinding.bind(dialogView)
 
         // Create and display the dialog
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
+        val dialog = AlertDialog.Builder(requireContext()).setView(dialogView).create()
 
         // Set background to transparent if needed
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -127,45 +178,39 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
             )
         }
 
-        dialog.setCancelable(true)
+        dialog.setCancelable(false)
 
         dialogItemEventCustomAlertMinuteBinding?.apply {
 
-            var customAlertOffsetTimeStamp: Long? = null
-            edtEventCustomAlertMinute.addTextChangedListener { text ->
-                //customAlertOffsetTimeStamp = if(text == null) null
-                //else DateUtil.minutesToTimestamp(text.toString().toInt())
-                try {
-                    val number = text.toString().toInt()
-                    if (number in 0..59) { // The number is between 0 and 59
-                        Log.i(TAG, "showCustomTimePickerDialog: The number is in the range of 0 to 59.")
-                        // Use the number
-                        customAlertOffsetTimeStamp = DateUtil.minutesToTimestamp(number)
-
-                    } else { // The number is outside the range
-                        Log.i(TAG, "showCustomTimePickerDialog: The number is not in the range of 0 to 59.")
-                        Toast.makeText(requireContext(),"The range between 0 to 59", Toast.LENGTH_SHORT).show()
-                        viewModel.updateAlertOffset(viewModel.alertOffset.value)
-                    }
-                } catch (e: NumberFormatException) {
-                    Log.e("NewEventFragment", "Error parsing input", e)
-                    edtEventCustomAlertMinute.error = "Please enter a valid number"
-                }
+            val existTime = DateUtil.timestampToMinutes(viewModel.customAlertOffset.value ?: 0)
+            edtEventCustomAlertMinute.apply {
+                if (existTime == 0 || existTime == -1)
+                    hint = "00"
+                else
+                    setText("$existTime")
             }
 
             btnDone.setOnClickListener {
+                val customTime = edtEventCustomAlertMinute.text.toString().toIntOrNull() ?: 0
 
-                if(viewModel.customAlertOffset.value != customAlertOffsetTimeStamp){
+                if (customTime in 0..59) { // Check if the value is in the valid range
+                    Log.i(TAG, "showCustomTimePickerDialog: The number is in the range of 0 to 59.")
+
+                    // Update the adapter and ViewModel
+                    alertOffsetAdapter.updateCustomTime(customTime)
                     viewModel.updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)
-                    viewModel.updateCustomAlertOffset(customAlertOffset = customAlertOffsetTimeStamp)// Update ViewModel state
-                }
+                    val customAlertOffsetTimeStamp = DateUtil.minutesToTimestamp(customTime)
+                    viewModel.updateCustomAlertOffset(customAlertOffset = customAlertOffsetTimeStamp)
 
-                dialog.dismiss()
+                    dialog.dismiss()
+
+                } else {
+                    // Show a toast if the input is invalid
+                    Toast.makeText(requireContext(), getString(R.string.invalid_time_range), Toast.LENGTH_SHORT).show()
+                }
             }
-            btnCancel.setOnClickListener {
-                viewModel.updateAlertOffset(viewModel.alertOffset.value)
-                dialog.dismiss()
-            }
+
+            btnCancel.setOnClickListener { dialog.dismiss() }
         }
 
         dialog.show()

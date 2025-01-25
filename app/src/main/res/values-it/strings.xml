@@ -47,17 +47,17 @@
     <string name="add_event">Aggiungi Evento</string>
 
     <string name="hello_blank_fragment">Ciao frammento vuoto</string>
-    <string name="calendar_month">Mese del Calendario</string>
-    <string name="calendar_year">Anno del Calendario</string>
+    <string name="calendar_month">Mese di calendario</string>
+    <string name="calendar_year">Anno solare</string>
     <string name="year">Anno</string>
     <string name="month">Mese</string>
-    <string name="select_country">Seleziona Paese</string>
-    <string name="select_language">Seleziona Lingua</string>
+    <string name="select_country">Seleziona il paese</string>
+    <string name="select_language">Seleziona la lingua</string>
     <string name="first_day_of_the_week">Primo giorno della settimana</string>
-    <string name="jump_to_date">Vai alla data</string>
+    <string name="jump_to_date">Vai ad oggi</string>
     <string name="app_theme">Tema dell\'app</string>
     <string name="rate_our_app">Valuta la nostra app</string>
-    <string name="privacy_policy">Informativa sulla privacy</string>
+    <string name="privacy_policy">Politica sulla riservatezza</string>
     <string name="device_information">Informazioni sul dispositivo</string>
     <string name="setting">Impostazione</string>
     <string name="settings">Impostazioni</string>
@@ -148,5 +148,12 @@
     <string name="personalization">"Personalizzazione : "</string>
     <string name="about">"Informazioni su : "</string>
     <string name="schedule_event">Orario</string>
+    <string name="min">min</string>
+    <string name="invalid_time_range">L\'intervallo tra 0 e 59!</string>
+    <string name="no_data">Dati non trovati!</string>
+    <string name="event_title_cannot_empty">Il titolo dell\'evento non può essere vuoto.</string>
+    <string name="start_date_cannot_be_after_end_date">La data di inizio non può essere successiva alla data di fine.</string>
+    <string name="start_time_cannot_be_after_end_time">L\'ora di inizio non può essere successiva all\'ora di fine.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">Esiste già un evento con questo titolo e tipo.</string>
 
 </resources>

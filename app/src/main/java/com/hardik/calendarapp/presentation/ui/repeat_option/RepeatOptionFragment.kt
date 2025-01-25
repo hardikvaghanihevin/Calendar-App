@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.repeat_option
 
 import android.annotation.SuppressLint
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_REPEAT
@@ -78,11 +80,45 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
 
         binding.repeatOptionRecView.apply {
             layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+
+            val margin = resources.getDimension(R.dimen.itemRepeatAlertVerticalSpacing_dev2).toInt()
+
+            addItemDecoration(object: RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    val position = parent.getChildAdapterPosition(view) // Get the position of the item
+                    val itemCount = parent.adapter?.itemCount ?: 0
+
+                    if (position == RecyclerView.NO_POSITION) return
+
+                    // Apply margin adjustments
+                    when (position) {
+                        0 -> { // First item
+                            outRect.top = 0//margin
+                            outRect.bottom = margin
+                        }
+                        itemCount - 1 -> { // Last item
+                            outRect.top = margin
+                            outRect.bottom = margin * 2 //0
+                        }
+                        else -> { // Middle items
+                            outRect.top = margin
+                            outRect.bottom = margin
+                        }
+                    }
+                }
+            })
+
             adapter = repeatOptionAdapter
         }
 
         /** Save Selected Language */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     selectedRepeatOption?.let { it1 -> viewModel.updateRepeatOption(it1) }

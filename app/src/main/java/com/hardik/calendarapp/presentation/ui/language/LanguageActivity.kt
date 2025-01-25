@@ -78,7 +78,7 @@ class LanguageActivity : AppCompatActivity() {
         updateToolbarTitle(resources.getString(R.string.select_language))
         hideAllViewsWithAnimation()
         showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon3, duration = 0)
-        showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.saveSelectLanguageIcon)
+        showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.saveSelectionIcon)
 
         val iconDrawableBackArrow = getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
         binding.includedLanguageActivityCustomToolbar.sivNavigationIcon.apply {
@@ -150,7 +150,7 @@ class LanguageActivity : AppCompatActivity() {
     }
 
     private fun setupSaveButton() {
-        binding.includedLanguageActivityCustomToolbar.saveSelectLanguageIcon.setOnClickListener {
+        binding.includedLanguageActivityCustomToolbar.saveSelectionIcon.setOnClickListener {
             selectedLanguage?.let {
                 lifecycleScope.launch {
                     saveLanguage(it)
@@ -208,7 +208,7 @@ class LanguageActivity : AppCompatActivity() {
             binding.includedLanguageActivityCustomToolbar.saveEventIcon,
             binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon3,
             binding.includedLanguageActivityCustomToolbar.searchView,
-            binding.includedLanguageActivityCustomToolbar.saveSelectLanguageIcon
+            binding.includedLanguageActivityCustomToolbar.saveSelectionIcon
         )
         viewList.forEach { DisplayUtil.hideViewWithAnimation(it) }
     }

@@ -106,6 +106,8 @@
             android:layout_height="@dimen/_45sdp"
             android:layout_marginStart="@dimen/_minus1sdp"
             style="@style/TextViewStyle.medium"
+            android:singleLine="false"
+            android:maxLines="2"
             android:textAlignment="center"
             android:gravity="center"
             android:text="Wed \n1 "

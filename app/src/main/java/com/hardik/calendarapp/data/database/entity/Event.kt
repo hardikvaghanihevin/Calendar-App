@@ -117,16 +117,16 @@ object RepeatOptionConverter {
 }
 
 
-enum class AlertOffset{
-    NONE,
-    AT_TIME_OF_EVENT,
-    BEFORE_5_MINUTES,
-    BEFORE_10_MINUTES,
-    BEFORE_15_MINUTES,
-    BEFORE_30_MINUTES,
-    BEFORE_1_HOUR,
-    BEFORE_1_DAY,
-    BEFORE_CUSTOM_TIME,
+enum class AlertOffset(var value:Long?){
+    NONE(-1),
+    AT_TIME_OF_EVENT(-1),
+    BEFORE_5_MINUTES(-1),
+    BEFORE_10_MINUTES(-1),
+    BEFORE_15_MINUTES(-1),
+    BEFORE_30_MINUTES(-1),
+    BEFORE_1_HOUR(-1),
+    BEFORE_1_DAY(-1),
+    BEFORE_CUSTOM_TIME(-1),
 }
 object AlertOffsetConverter {
 

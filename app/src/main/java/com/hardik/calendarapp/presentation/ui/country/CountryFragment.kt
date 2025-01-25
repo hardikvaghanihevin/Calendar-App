@@ -187,7 +187,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
 
         /** Save Selected Country */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     viewModel.saveSelectedCountries(

@@ -193,7 +193,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                                         val minutesTime = if (value == null) "Custom time is not set"//"null"
                                         else {
                                             //DateUtil.longToString(timestamp = it, pattern = DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm)
-                                            "Before ${DateUtil.timestampToMinutes(milliseconds = value)} minute"
+                                            "${DateUtil.timestampToMinutes(milliseconds = value)} " + resources.getString(R.string.minutes_before)
                                         }
                                         binding.tvAlertPicker.text = minutesTime
                                     }
@@ -603,6 +603,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             Log.e(TAG, "navigateToAlertOptionFrag():  ${Thread.currentThread().name}", )
             val alertOpt: String = AlertOffsetConverter.toDisplayString(requireContext(), viewModel.alertOffset.value)
             val bundle = Bundle().apply { putString(KEY_EVENT_ALERT, alertOpt) }
+                //putParcelable(KEY_EVENT, argEvent) // Pass the event object
+
             findNavController().navigate(R.id.alertOptionFragment, bundle, MyNavigation.navOptions)
         }
     }

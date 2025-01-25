@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/item_background"
-            android:paddingVertical="@dimen/itemCountryVerticalSpacing_dev2"
+            android:paddingVertical="@dimen/fragmentSettingVerticalSpacing_dev2"
             android:orientation="vertical">
 
             <include

@@ -149,7 +149,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
                 if (value == null) "Custom time is not set"//"null"
                 else {
                     //DateUtil.longToString(timestamp = it, pattern = DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm)
-                    "Before ${DateUtil.timestampToMinutes(milliseconds = value)} minute"
+                    "${DateUtil.timestampToMinutes(milliseconds = value)} " + resources.getString(R.string.minutes_before)
                 }
             }
         else AlertOffsetConverter.toDisplayString(

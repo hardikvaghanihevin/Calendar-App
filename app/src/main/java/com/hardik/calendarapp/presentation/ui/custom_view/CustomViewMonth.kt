@@ -501,7 +501,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
         // If a background drawable is set, draw it
         backgroundDrawableDay?.let { drawable ->
-            if (designMode.equals(2)) modifyAndApplyDrawable(drawable, margin.toFloat(), left = 0.0f, top = monthNameHeight, right = viewWidth.toFloat(), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))
+            if (designMode.equals(2)) modifyAndApplyDrawable(drawable, margin.toFloat(), left = 0.0f, top = monthNameHeight, right = viewWidth.toFloat(), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.white))
             //if (designMode.equals(2)) modifyAndApplyDrawable(drawable,margin.toFloat(), left = horizontalPadding , top = monthNameHeight, right = (viewWidth.toFloat() - horizontalPadding), bottom = (monthNameHeight + dayNameHeight), canvas, context.getColor(R.color.blue))//todo: week(7 days) block background
         }
 
@@ -513,7 +513,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
             // Draw the background using the drawable if available
             backgroundDrawableDay?.let { drawable ->
-                if (designMode.equals(1)) modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, context.getColor(R.color.blue))
+                if (designMode.equals(1)) modifyAndApplyDrawable(drawable, margin.toFloat(), left, top, right, bottom, canvas, context.getColor(R.color.white))
                 //drawable.setBounds((left + margin).toInt(), (top + margin).toInt(), (right - margin).toInt(), (bottom - margin).toInt())
                 //drawable.draw(canvas)
             } ?: run {
@@ -930,13 +930,13 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         canvas.drawCircle(cx, cy, dotRadius, paint)
     }
     private fun drawEventDotsBottom(canvas: Canvas, leftX: Float, bottomY: Float, blockWidth: Float) {
-        val dotRadius = blockWidth * 0.05f // Adjust dot size relative to block width
+        val dotRadius = blockWidth * 0.045f // Adjust dot size relative to block width
 
         // Calculate the horizontal center position of the block
         val cx = leftX + blockWidth / 2
         // Position the dot just above the bottom edge of the block
         //val cy = bottomY - dotRadius / 2
-        val cy = bottomY - dotRadius / context.resources.getDimension(R.dimen.dateRoundSize)
+        val cy = bottomY - dotRadius / context.resources.getDimension(R.dimen.dateRoundSize) + 0.5F //-10
 
         // Draw the dot
         paint.color = resources.getColor(R.color.error, null) // Set the color of the dot (default: red)

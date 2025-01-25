@@ -47,12 +47,12 @@
     <string name="add_event">Додати подію</string>
 
     <string name="hello_blank_fragment">Привіт, порожній фрагмент</string>
-    <string name="calendar_month">Місяць календаря</string>
-    <string name="calendar_year">Рік календаря</string>
-    <string name="year">Рік</string>
-    <string name="month">Місяць</string>
-    <string name="select_country">Вибрати країну</string>
-    <string name="select_language">Вибрати мову</string>
+    <string name="calendar_month">Календарний місяць</string>
+    <string name="calendar_year">Календарний рік</string>
+    <string name="year">рік</string>
+    <string name="month">місяць</string>
+    <string name="select_country">Виберіть країну</string>
+    <string name="select_language">Виберіть мову</string>
     <string name="first_day_of_the_week">Перший день тижня</string>
     <string name="jump_to_date">Перейти до дати</string>
     <string name="app_theme">Тема програми</string>
@@ -148,4 +148,12 @@
     <string name="personalization">"Персоналізація : "</string>
     <string name="about">"Про : "</string>
     <string name="schedule_event">Розклад</string>
+    <string name="min">хв.</string>
+    <string name="invalid_time_range">Діапазон від 0 до 59!</string>
+    <string name="no_data">Дані не знайдено!</string>
+    <string name="event_title_cannot_empty">Назва події не може бути пустою.</string>
+    <string name="start_date_cannot_be_after_end_date">Дата початку не може бути після дати завершення.</string>
+    <string name="start_time_cannot_be_after_end_time">Час початку не може бути після часу завершення.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">Подія з такою назвою та типом уже існує.</string>
+
 </resources>

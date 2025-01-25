@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/itemRepeatAlertVerticalSpacing_1"
     android:paddingVertical="@dimen/itemRepeatAlertVerticalSpacing"
     android:background="@drawable/item_background">
+    <!--android:layout_marginTop="@dimen/itemRepeatAlertVerticalSpacing_1"-->
 
     <LinearLayout
         android:id="@+id/ll_first"
@@ -36,16 +36,41 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/itemSelection_text_icon"
-            android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
-            android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/icon_unchecked"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="check box image" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/itemSelection_text_customTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextViewStyle.regular"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="35 minutes"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/itemCountry_nameTextSize_2"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <Space
+                android:layout_width="@dimen/itemCountryHorizontalSpacing_dev2"
+                android:layout_height="match_parent"/>
+
+            <ImageView
+                android:id="@+id/itemSelection_text_icon"
+                android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
+                android:layout_gravity="end|center_vertical"
+                android:src="@drawable/icon_unchecked"
+                android:contentDescription="check box image" />
+
+        </LinearLayout>
 
         <Space
             android:layout_width="@dimen/itemCountryHorizontalSpacing"

@@ -360,14 +360,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     if (dataState.isLoading) {
                         // Show loading indicator
                         safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-                        //Log.d(TAG, "observeViewModelState: Progressing")
                         safeBinding.tvNotify.visibility = View.GONE
 
                     } else if (dataState.error.isNotEmpty()) {
                         // Show error message
                         Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
                         safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                        //Log.d(TAG, "observeViewModelState: hide Progressing1")
                         safeBinding.tvNotify.text = dataState.error
                         safeBinding.tvNotify.visibility = View.VISIBLE
 
@@ -376,7 +374,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         val data = dataState.data
                         safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                         safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-                        //Log.d(TAG, "observeViewModelState: hide Progressing2")
 
                         eventAdapter.updateData(data)
                         //binding.recyclerview.setPadding(0, 0, 0, 0)  // To remove the extra space on top and bottom of the RecyclerVie

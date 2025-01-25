@@ -290,10 +290,19 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
             @SuppressLint("NotifyDataSetChanged")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 filteredList = results?.values as? List<Event> ?: originalList
+
+                noDataCallback?.invoke(true.takeUnless { filteredList.isEmpty() } ?: false) // Notify when no data is found
+
                 notifyDataSetChanged()
                 Log.d(TAG, "Filtered list size: ${filteredList.size}")
             }
         }
+    }
+
+    private var noDataCallback: ((hasData: Boolean) -> Unit)? = null
+
+    fun setNoDataCallback(callback: (Boolean) -> Unit) {
+        noDataCallback = callback
     }
 
 }

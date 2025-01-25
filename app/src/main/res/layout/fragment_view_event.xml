@@ -18,17 +18,17 @@
         android:fitsSystemWindows="true">
 
         <!--    Event Name-->
+                <!--android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacing"-->
         <LinearLayout
-                android:id="@+id/ll_first"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/fragmentNewEvent_llFirstHeight"
-                android:background="@drawable/item_background"
-                android:orientation="vertical"
-                android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacing"
-                android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/ll_first"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fragmentNewEvent_llFirstHeight"
+            android:background="@drawable/item_background"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing_dev2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <EditText
                 android:id="@+id/edt_eventName"
@@ -65,7 +65,7 @@
                 android:background="@android:color/transparent"
                 android:orientation="horizontal"
                 android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
-                android:paddingBottom="@dimen/_26sdp">
+                android:paddingBottom="@dimen/fragmentNewEventVerticalSpacingBetweenContentFooter">
 
                 <TextView
                     android:id="@+id/tvAllDay"
@@ -114,6 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacingBetweenTitleContent"
+                    android:paddingVertical="@dimen/fragmentNewEventVerticalSpacingBetweenContent_1"
                     style="@style/TextViewStyle.regular"
                     android:textSize="@dimen/fragmentNewEvent_eventStartEndTextSize"
                     android:gravity="center_vertical"
@@ -127,7 +128,7 @@
                     android:id="@+id/tvStart_date_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacingBetweenContent_1"
+                    android:paddingVertical="@dimen/fragmentNewEventVerticalSpacingBetweenContent_1"
                     style="@style/TextViewStyle.medium"
                     android:textSize="@dimen/fragmentNewEvent_eventDatePickerTextSize"
                     android:gravity="center_vertical"
@@ -140,11 +141,12 @@
                     android:id="@+id/tvStart_time_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacingBetweenContent_2"
+                    android:paddingVertical="@dimen/fragmentNewEventVerticalSpacingBetweenContent_2"
                     style="@style/TextViewStyle.medium"
                     android:textSize="@dimen/fragmentNewEvent_eventTimePickerTextSize"
                     android:gravity="center_vertical"
                     android:text="5:18 PM"
+                    android:textColor="@color/text_secondary"
                     app:layout_constraintEnd_toEndOf="@id/tvStart"
                     app:layout_constraintStart_toStartOf="@id/tvStart"
                     app:layout_constraintTop_toBottomOf="@id/tvStart_date_picker" />
@@ -169,6 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     style="@style/TextViewStyle.regular"
+                    android:paddingVertical="@dimen/fragmentNewEventVerticalSpacingBetweenContent_1"
                     android:textSize="@dimen/fragmentNewEvent_eventStartEndTextSize"
                     android:gravity="center_vertical"
                     android:text="@string/end"
@@ -181,7 +184,7 @@
                     android:id="@+id/tvEnd_date_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacingBetweenContent_1"
+                    android:paddingVertical="@dimen/fragmentNewEventVerticalSpacingBetweenContent_1"
                     style="@style/TextViewStyle.medium"
                     android:textSize="@dimen/fragmentNewEvent_eventDatePickerTextSize"
                     android:gravity="center_vertical"
@@ -192,13 +195,14 @@
 
                 <TextView
                     android:id="@+id/tvEnd_time_picker"
+                    style="@style/TextViewStyle.medium"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginTop="@dimen/fragmentNewEventVerticalSpacingBetweenContent_2"
-                    style="@style/TextViewStyle.medium"
-                    android:textSize="@dimen/fragmentNewEvent_eventTimePickerTextSize"
+                    android:paddingVertical="@dimen/fragmentNewEventVerticalSpacingBetweenContent_2"
                     android:gravity="center_vertical"
                     android:text="5:18 PM"
+                    android:textSize="@dimen/fragmentNewEvent_eventTimePickerTextSize"
+                    android:textColor="@color/text_secondary"
                     app:layout_constraintEnd_toEndOf="@id/tvEnd"
                     app:layout_constraintStart_toStartOf="@id/tvEnd"
                     app:layout_constraintTop_toBottomOf="@id/tvEnd_date_picker" />

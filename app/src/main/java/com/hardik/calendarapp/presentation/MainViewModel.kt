@@ -102,16 +102,6 @@ class MainViewModel @Inject constructor(
         }
         _countryItems.value = updatedCountries
     }
-    /*fun initializeCountries(savedCodes: Set<String>, countryNames: Array<String>, countryCodes: Array<String>) {
-        val countries = countryNames.mapIndexed { index, name ->
-            CountryItem(
-                name = name,
-                code = countryCodes[index],
-                isSelected = savedCodes.contains(countryCodes[index])
-            )
-        }
-        _countryItems.value = countries
-    }*/
 
     // Toggle selection for a country
     fun toggleCountrySelection(countryCode: String) {
@@ -410,16 +400,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-    // Global counter
-    private val _counterEventId = MutableStateFlow(1L)
-    val counterEventId: StateFlow<Long> = _counterEventId
-
-    fun updateCounterEventId(count:Int = 1 ){
-        viewModelScope.launch(Dispatchers.IO) {
-            // Update the counter atomically
-            _counterEventId.value += count
-        }
-    }
 
     //----------------------------------------------------------------//
     // todo:for event showing below inside month view
@@ -647,126 +627,6 @@ class MainViewModel @Inject constructor(
         return dateFormat.format(calendar.time)
     }
     //----------------------------------------------------------------//
-
-    //Todo: Event start date
-    /*private val _startDate= MutableStateFlow<Long>(Calendar.getInstance().timeInMillis)
-    val startDate: StateFlow<Long> = _startDate
-    fun updateStartDate(startDate: Long) {
-        Log.i(TAG, "updateStartDate: $startDate")
-        viewModelScope.launch {
-            _startDate.value = startDate
-        }
-    }
-
-    //todo: Event end date
-    private val _endDate= MutableStateFlow<Long>(Calendar.getInstance().timeInMillis)
-    val endDate: StateFlow<Long> = _endDate
-    fun updateEndDate(endDate: Long) {
-        Log.i(TAG, "updateEndDate: $endDate")
-        viewModelScope.launch {
-            _endDate.value = endDate
-        }
-    }
-
-    //----------------------------------------------------------------//
-
-    //todo: Event All-Day
-    private val _isAllDay = MutableStateFlow(false) // Default to false (not all day)
-    val isAllDay: StateFlow<Boolean> = _isAllDay
-
-    fun updateAllDayStatus(isAllDay: Boolean) {
-        Log.i(TAG, "updateAllDayStatus: $isAllDay")
-        viewModelScope.launch {
-            _isAllDay.value = isAllDay
-        }
-        val mergeDataTime = mergeDateAndTime(startDate.value,startTime.value)
-        Log.e(TAG, "updateAllDayStatus: $mergeDataTime", )
-        Log.e(TAG, "updateAllDayStatus: ${separateDateTime(mergeDataTime)}")
-    }
-
-    //----------------------------------------------------------------//
-
-    private val calendar = Calendar.getInstance()
-
-    // Set default start time to current time (hour and minute)
-    private val defaultStartTime = calendar.apply {
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
-
-    // Set default end time to one hour ahead
-    private val defaultEndTime = calendar.apply {
-        add(Calendar.HOUR_OF_DAY, 1)
-    }.timeInMillis
-
-    //todo: Event start time
-    private val _startTime= MutableStateFlow<Long>(defaultStartTime)
-    val startTime: StateFlow<Long> = _startTime
-
-    //todo: Event end time
-    private val _endTime= MutableStateFlow<Long>(defaultEndTime)
-    val endTime: StateFlow<Long> = _endTime
-
-    fun updateStartTime(startTime: Long) {
-        Log.i(TAG, "updateStartTime: $startTime")
-        viewModelScope.launch {
-            _startTime.value = startTime
-        }
-    }
-
-    fun updateEndTime(endTime: Long) {
-        Log.i(TAG, "updateEndTime: $endTime")
-        viewModelScope.launch {
-            _endTime.value = endTime
-        }
-    }
-
-    //todo: Event title
-    private val _title= MutableStateFlow("")
-    val title: StateFlow<String> = _title
-
-    fun updateTitle(title: String) {
-        Log.i(TAG, "updateTitle: $title")
-        viewModelScope.launch {
-            _title.value = title
-        }
-    }
-
-    //todo: Event description
-    private val _description= MutableStateFlow("")
-    val description: StateFlow<String> = _description
-
-    fun updateDescription(description: String) {
-        Log.i(TAG, "updateDescription: $description")
-        viewModelScope.launch {
-            _description.value = description
-        }
-    }
-
-    fun insertCustomEvent(){
-        val currentEpochTime = System.currentTimeMillis()
-
-        val date: Triple<String, String, String> = epochToDateTriple(
-            startDate.value)
-
-        val event = Event(
-            id = "$currentEpochTime | ${title.value}",
-            title = title.value,
-            description = description.value,
-            startDate = DateUtil.longToString(startDate.value, DateUtil.DATE_FORMAT),
-            endDate = DateUtil.longToString(endDate.value, DateUtil.DATE_FORMAT),
-            startTime = startTime.value,
-            endTime = endTime.value,
-            year = date.first,
-            month = date.second,
-            date = date.third,
-            eventType = EventType.PERSONAL,
-            isHoliday = false
-        )
-
-        insertEvent(event)
-    }
-*/
 
     // Unregister listener to avoid memory leaks when ViewModel is cleared
     override fun onCleared() {

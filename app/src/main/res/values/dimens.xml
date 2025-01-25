@@ -11,6 +11,8 @@
     <dimen name="dialogVerticalSpacingBetweenContent">@dimen/_18sdp</dimen>
     <dimen name="dialogVerticalSpacingBetweenContentFooter">@dimen/_21sdp</dimen>
     <dimen name="dialogHorizontalBetweenBtnSpacing">@dimen/_18sdp</dimen>
+    <dimen name="dialog_itemSelectionIconSize_1">@dimen/_22sdp</dimen>
+
 
     <dimen name="dialog_TextSize_1">@dimen/_18ssp</dimen>
     <dimen name="dialog_TextSize_2">@dimen/_16ssp</dimen>
@@ -46,8 +48,8 @@
 
     <dimen name="fragmentNewEventVerticalSpacing">@dimen/_10sdp</dimen>
     <dimen name="fragmentNewEventVerticalSpacingBetweenTitleContent">@dimen/_20sdp</dimen>
-    <dimen name="fragmentNewEventVerticalSpacingBetweenContent_1">@dimen/_16sdp</dimen>
-    <dimen name="fragmentNewEventVerticalSpacingBetweenContent_2">@dimen/_13sdp</dimen>
+    <dimen name="fragmentNewEventVerticalSpacingBetweenContent_1">@dimen/_8sdp</dimen>
+    <dimen name="fragmentNewEventVerticalSpacingBetweenContent_2">@dimen/_6sdp</dimen>
     <dimen name="fragmentNewEventVerticalSpacingBetweenContentFooter">@dimen/_30sdp</dimen>
 
     <dimen name="fragmentNewEvent_eventTextSize_1">@dimen/_14ssp</dimen>
@@ -63,14 +65,16 @@
     <dimen name="fragmentNewEvent_eventNeverNoneTextSize">@dimen/fragmentNewEvent_eventTextSize_2</dimen>
 
     <dimen name="itemRepeatAlertVerticalSpacing">@dimen/_12sdp</dimen>
+    <dimen name="itemRepeatAlertVerticalSpacing_dev2">@dimen/_6sdp</dimen>
     <dimen name="itemRepeatAlertVerticalSpacing_1">@dimen/_10sdp</dimen>
+
 
     <dimen name="itemLanguage_Height">@dimen/_48sdp</dimen>
     <dimen name="itemLanguageVerticalSpacing_dev2">@dimen/_6sdp</dimen>
     <dimen name="itemLanguageHorizontalSpacing">@dimen/_12sdp</dimen>
     <dimen name="itemLanguageHorizontalSpacingBetweenContent">@dimen/_8sdp</dimen>
     <dimen name="itemLanguage_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
-    <dimen name="itemLanguage_itemSelectionIconSize_1">@dimen/_21sdp</dimen>
+    <dimen name="itemLanguage_itemSelectionIconSize_1">@dimen/_22sdp</dimen>
 
     <dimen name="itemLanguage_nameTextSize_1">16.5sp</dimen>
     <dimen name="itemLanguage_nameTextSize_2">16.5sp</dimen>
@@ -78,9 +82,9 @@
 
     <dimen name="itemCountry_Height">@dimen/_48sdp</dimen>
     <dimen name="itemCountry_nameTextSize_1">@dimen/_14ssp</dimen>
-    <dimen name="itemCountry_nameTextSize_2">12sp</dimen>
+    <dimen name="itemCountry_nameTextSize_2">12.5sp</dimen>
     <dimen name="itemCountry_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
-    <dimen name="itemCountry_itemSelectionIconSize_1">@dimen/_21sdp</dimen>
+    <dimen name="itemCountry_itemSelectionIconSize_1">@dimen/_22sdp</dimen>
     <dimen name="itemCountry_itemSelectionIconSize_2">@dimen/_14sdp</dimen>
 
     <dimen name="itemCountryVerticalSpacing">@dimen/_10sdp</dimen>
@@ -98,6 +102,9 @@
 
 
     <dimen name="fragmentSetting_includedItemHeight">@dimen/_40sdp</dimen>
+    <dimen name="fragmentSettingVerticalSpacing_dev2">@dimen/_6sdp</dimen>
+    <dimen name="itemSetting_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
+    <dimen name="itemSetting_itemSelectionIconSize_1">@dimen/_22sdp</dimen>
 
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">156dp</dimen>

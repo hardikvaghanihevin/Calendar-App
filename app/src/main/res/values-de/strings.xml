@@ -54,10 +54,10 @@
     <string name="select_country">Land auswählen</string>
     <string name="select_language">Sprache auswählen</string>
     <string name="first_day_of_the_week">Erster Tag der Woche</string>
-    <string name="jump_to_date">Zu Datum springen</string>
-    <string name="app_theme">App-Design</string>
-    <string name="rate_our_app">App bewerten</string>
-    <string name="privacy_policy">Datenschutzbestimmungen</string>
+    <string name="jump_to_date">Zum Datum springen</string>
+    <string name="app_theme">App-Thema</string>
+    <string name="rate_our_app">Bewerten Sie unsere App</string>
+    <string name="privacy_policy">Datenschutzrichtlinie</string>
     <string name="device_information">Geräteinformationen</string>
     <string name="setting">Einstellung</string>
     <string name="settings">Einstellungen</string>
@@ -148,5 +148,12 @@
     <string name="personalization">"Personalisierung : "</string>
     <string name="about">"Über : "</string>
     <string name="schedule_event">Terminplan</string>
+    <string name="min">min.</string>
+    <string name="invalid_time_range">Der Bereich zwischen 0 und 59!</string>
+    <string name="no_data">Daten nicht gefunden!</string>
+    <string name="event_title_cannot_empty">Der Veranstaltungstitel darf nicht leer sein.</string>
+    <string name="start_date_cannot_be_after_end_date">Das Startdatum darf nicht nach dem Enddatum liegen.</string>
+    <string name="start_time_cannot_be_after_end_time">Die Startzeit darf nicht nach der Endzeit liegen.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">Eine Veranstaltung mit diesem Titel und Typ existiert bereits.</string>
 
 </resources>

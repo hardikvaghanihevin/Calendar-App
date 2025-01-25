@@ -506,16 +506,6 @@ object DateUtil {
         return result
     }
 
-    // Example usage:
-    fun main() {
-        val startTime = 1733337000000L // Example start time
-        val endTime = 1733423399999L   // Example end time
-
-        val result = isAllDay(startTime, endTime)
-        Log.i(TAG, "main: ${(if (result) "This is an all-day event." else "This is not an all-day event.")}")
-    }
-
-
     /**
     val firstApproachTime = measureExecutionTime {inside your block of code}
     Log.d(TAG, "First approach execution time: ${firstApproachTime / 1_000_000} ms")
@@ -811,10 +801,4 @@ object DateUtil {
     }
 
 }
-
-//// Convert to epoch time
-//            val selectedEpochTime = Calendar.getInstance().apply {
-//                set(selectedYear, selectedMonth, selectedDay, 0, 0, 0)
-//                set(Calendar.MILLISECOND, 0) // Reset milliseconds
-//            }.timeInMillis
 

@@ -46,18 +46,18 @@
     <string name="add_event">इवेंट जोड़ें</string>
 
     <string name="hello_blank_fragment">हैलो खाली खंड</string>
-    <string name="calendar_month">कैलेंडर महीना</string>
+    <string name="calendar_month">कैलेंडर माह</string>
     <string name="calendar_year">कैलेंडर वर्ष</string>
     <string name="year">वर्ष</string>
     <string name="month">महीना</string>
     <string name="select_country">देश चुनें</string>
-    <string name="select_language">भाषा चुनें</string>
+    <string name="select_language">भाषा चुने</string>
     <string name="first_day_of_the_week">सप्ताह का पहला दिन</string>
-    <string name="jump_to_date">तिथि पर जाएँ</string>
-    <string name="app_theme">ऐप का रंगरूप</string>
-    <string name="rate_our_app">हमारे ऐप को रेटिंग दें</string>
+    <string name="jump_to_date">डेट पर जाएं</string>
+    <string name="app_theme">ऐप थीम</string>
+    <string name="rate_our_app">हमारे ऐप को रेट करें</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
-    <string name="device_information">डिवाइस जानकारी</string>
+    <string name="device_information">डिवाइस की जानकारी</string>
     <string name="setting">सेटिंग</string>
     <string name="settings">सेटिंग्स</string>
     <string name="action_refresh">रिफ्रेश</string>
@@ -147,5 +147,12 @@
     <string name="personalization">"निजीकरण : "</string>
     <string name="about">"के बारे में : "</string>
     <string name="schedule_event">कार्यक्रम</string>
+    <string name="min">मिनट</string>
+    <string name="invalid_time_range">0 से 59 के बीच की सीमा!</string>
+    <string name="no_data">डेटा नहीं मिला!</string>
+    <string name="event_title_cannot_empty">ईवेंट शीर्षक खाली नहीं हो सकता.</string>
+    <string name="start_date_cannot_be_after_end_date">आरंभ तिथि समाप्ति तिथि के बाद की नहीं हो सकती.</string>
+    <string name="start_time_cannot_be_after_end_time">प्रारंभ समय समाप्ति समय के बाद का नहीं हो सकता.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">इस शीर्षक और प्रकार वाला एक ईवेंट पहले से मौजूद है।</string>
 
 </resources>

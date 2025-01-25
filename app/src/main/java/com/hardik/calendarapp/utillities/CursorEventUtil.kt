@@ -22,32 +22,6 @@ data class CursorEvent(
     val alertOffset:AlertOffset = AlertOffset.AT_TIME_OF_EVENT
 )
 
-/*fun CursorEvent.toEvent(): Event {
-    val startDate = DateFormat.getDateInstance().format(Date(this.startTime))
-    val endDate = DateFormat.getDateInstance().format(Date(this.endTime))
-    val calendar = Calendar.getInstance().apply { timeInMillis = this@toEvent.startTime }
-    val year = calendar.get(Calendar.YEAR).toString()
-    val month = calendar.get(Calendar.MONTH).toString() // 0-based for January
-    val date = calendar.get(Calendar.DAY_OF_MONTH).toString()
-
-    return Event(
-        id = this.id?.toString() ?: "",
-        title = this.title,
-        startTime = this.startTime,
-        endTime = this.endTime,
-        startDate = startDate,
-        endDate = endDate,
-        year = year,
-        month = month,
-        date = date,
-        isHoliday = false, // Default or derive from logic
-        eventType = EventType.NATIONAL_HOLIDAY, // Default or derive from logic
-        sourceType = SourceType.CURSOR,
-        description = this.description ?: ""
-    )
-}*/
-
-
 fun getAllCursorEvents(context: Context): List<CursorEvent> {
     val events = mutableListOf<CursorEvent>()
 

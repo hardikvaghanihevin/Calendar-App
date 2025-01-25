@@ -25,7 +25,6 @@ import com.hardik.calendarapp.databinding.FragmentSearchEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
-import com.hardik.calendarapp.utillities.DisplayUtil.dpToPx
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,15 +73,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 this.queryHint = getString(R.string.search_event)
 
                 /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
-                // Adjust margins dynamically
-                /*val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                    setMargins(
-                        resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
-                        0,  // Top margin
-                        0,//resources.getDimension(com.intuit.sdp.R.dimen._4sdp).toInt(), // End margin
-                        0   // Bottom margin
-                    )
-                }*/
 
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
@@ -190,8 +180,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 }
             })
 
-            // Add custom ItemDecoration for divider (34dp space)
-            //binding.rvEvent.addItemDecoration(MonthDividerDecoration())
 
             binding.rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -249,7 +237,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 }
             })*/
 
-            binding.rvEvent.adapter = eventAdapter
+            rvEvent.adapter = eventAdapter
 
             collectDataForAdapter()
 
@@ -257,6 +245,12 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
             eventAdapter.setConfigureEventCallback {event: Event ->
                 // got event update
                 navigateToViewEventFrag(event = event)
+            }
+
+            eventAdapter.setNoDataCallback {hasData ->
+                rvEvent.visibility = View.GONE.takeUnless { hasData } ?: View.VISIBLE
+                tvNotify.visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
+                includedProgressLayout.progressBar.visibility = View.GONE
             }
         }
     }
@@ -270,14 +264,12 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         if (dataState.isLoading) {
                             // Show loading indicator
                             safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-                            //Log.d(TAG, "observeViewModelState: Progressing")
                             safeBinding.tvNotify.visibility = View.GONE
 
                         } else if (dataState.error.isNotEmpty()) {
                             // Show error message
                             Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
                             safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                            //Log.d(TAG, "observeViewModelState: hide Progressing1")
                             safeBinding.tvNotify.text = dataState.error
                             safeBinding.tvNotify.visibility = View.VISIBLE
 
@@ -287,8 +279,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
                             safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                             safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-
-                            //Log.d(TAG, "observeViewModelState: hide Progressing2")
 
                             //eventAdapter.updateData(data)
                             eventAdapter.apply { updateData(data) }
@@ -320,14 +310,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
             }
             findNavController().navigate(R.id.viewEventFragment, bundle, MyNavigation.navOptions)
             //findNavController().navigate(R.id.newEventFragment, bundle)
-        }
-    }
-
-    // Custom ItemDecoration to add a divider with 34dp height between items
-    class MonthDividerDecoration : RecyclerView.ItemDecoration() {
-        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-            // Apply 34dp space (converted to pixels) as the bottom margin for each item
-            outRect.bottom = 34.dpToPx()  // 34dp space between items
         }
     }
 

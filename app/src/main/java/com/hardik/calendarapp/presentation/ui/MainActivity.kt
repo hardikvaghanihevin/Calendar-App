@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_select_country -> {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
             }
 
             R.id.nav_select_language -> {}
@@ -214,12 +214,12 @@ class MainActivity : AppCompatActivity() {
 
             R.id.repeatOptionFragment -> {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
             }
 
             R.id.alertOptionFragment -> {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
             }
 
             R.id.searchEventFragment -> {
@@ -1035,7 +1035,7 @@ class MainActivity : AppCompatActivity() {
             binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon,
             binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
             binding.appBarMain.includedAppBarMainCustomToolbar.searchView,
-            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectLanguageIcon
+            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon
         )
         viewList.forEach { hideViewWithAnimation(it) }
     }

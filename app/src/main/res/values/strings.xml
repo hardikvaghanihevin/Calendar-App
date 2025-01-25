@@ -53,13 +53,13 @@
     <string name="calendar_year">Calendar Year</string>
     <string name="year">Year</string>
     <string name="month">Month</string>
-    <string name="select_country">Select Country</string>
-    <string name="select_language">Select Language</string>
-    <string name="first_day_of_the_week">First Day of the Week</string>
+    <string name="select_country">Select country</string>
+    <string name="select_language">Select language</string>
+    <string name="first_day_of_the_week">First day of the week</string>
     <string name="jump_to_date">Jump to date</string>
     <string name="app_theme">App theme</string>
-    <string name="rate_our_app">Rate Our App</string>
-    <string name="privacy_policy">Privacy Policy</string>
+    <string name="rate_our_app">Rate our App</string>
+    <string name="privacy_policy">Privacy policy</string>
     <string name="device_information">Device information</string>
     <string name="setting">Setting</string>
     <string name="settings">Settings</string>
@@ -121,6 +121,7 @@
     <string name="before_custom_time">Custom time</string>
     <string name="custom_alert">Custom alert</string>
     <string name="minutes_before">minutes before</string>
+    <string name="min">min</string>
 
     <string name="cancel">Cancel</string>
     <string name="jump">Jump</string>
@@ -160,4 +161,10 @@
     <string name="personalization">"Personalization : "</string>
     <string name="about">"About : "</string>
     <string name="schedule_event">Schedule</string>
+    <string name="invalid_time_range">The range between 0 to 59!</string>
+    <string name="no_data">Data not found!</string>
+    <string name="event_title_cannot_empty">Event title cannot be empty.</string>
+    <string name="start_date_cannot_be_after_end_date">Start date cannot be after end date.</string>
+    <string name="start_time_cannot_be_after_end_time">Start time cannot be after end time.</string>
+    <string name="an_event_with_this_title_and_type_already_exists">An event with this title and type already exists.</string>
 </resources>

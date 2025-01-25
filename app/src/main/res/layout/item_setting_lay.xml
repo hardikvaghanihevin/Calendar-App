@@ -14,8 +14,8 @@
 
     <ImageView
         android:id="@+id/img_setting_icon"
-        android:layout_width="@dimen/itemCountry_itemSelectionFlag_sImg"
-        android:layout_height="@dimen/itemCountry_itemSelectionFlag_sImg"
+        android:layout_width="@dimen/itemSetting_itemSelectionFlag_sImg"
+        android:layout_height="@dimen/itemSetting_itemSelectionFlag_sImg"
         android:contentDescription="@string/app_icon"
         app:srcCompat="@drawable/setting_app_theme_icon" />
 
@@ -43,8 +43,8 @@
 
         <ImageView
             android:id="@+id/img_setting_moveArrow_icon"
-            android:layout_width="@dimen/itemCountry_itemSelectionIconSize_1"
-            android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
+            android:layout_width="@dimen/itemSetting_itemSelectionIconSize_1"
+            android:layout_height="@dimen/itemSetting_itemSelectionIconSize_1"
             android:contentDescription="@string/app_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:srcCompat="@drawable/setting_move_arrow_icon" />

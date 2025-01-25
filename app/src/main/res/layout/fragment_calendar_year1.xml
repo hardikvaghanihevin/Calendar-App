@@ -64,10 +64,16 @@
         app:layout_constraintBottom_toTopOf="@id/viewPager_calendarYear"
         app:layout_constraintTop_toBottomOf="@id/tv_year_title" />-->
 
-    <include
+    <!--<include
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        layout="@layout/item_divider_lay"/>
+        layout="@layout/item_divider_lay"/>-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginTop="@dimen/itemDividerVerticalSpacing"
+        android:layout_marginHorizontal="@dimen/itemDividerHorizontalSpacing"
+        android:background="@drawable/line_drawable" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager_calendarYear"
