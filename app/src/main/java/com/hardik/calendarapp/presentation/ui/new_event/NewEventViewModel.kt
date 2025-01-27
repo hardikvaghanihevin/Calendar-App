@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.R
@@ -46,7 +45,6 @@ class NewEventViewModel @Inject constructor(
     val yearState: StateFlow<Int> = _yearState
 
     fun updateYear(year: Int) {
-        Log.i(TAG, "updateYear: $year")
         viewModelScope.launch {
             _yearState.value = year
         }
@@ -59,7 +57,6 @@ class NewEventViewModel @Inject constructor(
     val startDate: StateFlow<Long> = _startDate
     fun updateStartDate(startDate: Long) {
         val date = DateUtil.getStartAndEndOfDay(startDate)////date.first is the statDate
-        Log.i(TAG, "updateStartDate: ${date.first}")
         viewModelScope.launch {
             _startDate.value = date.first
 
@@ -73,7 +70,6 @@ class NewEventViewModel @Inject constructor(
     val endDate: StateFlow<Long> = _endDate
     fun updateEndDate(endDate: Long) {
         val date = DateUtil.getStartAndEndOfDay(endDate)//date.second is the endDate
-        Log.i(TAG, "updateEndDate: ${date.second}")
         viewModelScope.launch {
             _endDate.value = date.second
 
@@ -90,13 +86,9 @@ class NewEventViewModel @Inject constructor(
     val isAllDay: StateFlow<Boolean> = _isAllDay
 
     fun updateAllDayStatus(isAllDay: Boolean) {
-        Log.i(TAG, "updateAllDayStatus: $isAllDay")
         viewModelScope.launch {
             _isAllDay.value = isAllDay
         }
-        val mergeDataTime = DateUtil.mergeDateAndTime(startDate.value, startTime.value)
-        Log.e(TAG, "updateAllDayStatus: $mergeDataTime", )
-        Log.e(TAG, "updateAllDayStatus: ${DateUtil.separateDateTime(mergeDataTime)}")
     }
 
     //----------------------------------------------------------------//
@@ -123,14 +115,12 @@ class NewEventViewModel @Inject constructor(
     val endTime: StateFlow<Long> = _endTime
 
     fun updateStartTime(startTime: Long) {
-        Log.i(TAG, "updateStartTime: $startTime")
         viewModelScope.launch {
             _startTime.value = startTime
         }
     }
 
     fun updateEndTime(endTime: Long) {
-        Log.i(TAG, "updateEndTime: $endTime")
         viewModelScope.launch {
             _endTime.value = endTime
         }
@@ -141,7 +131,6 @@ class NewEventViewModel @Inject constructor(
     val title: StateFlow<String> = _title
 
     fun updateTitle(title: String) {
-        Log.i(TAG, "updateTitle: $title")
         viewModelScope.launch {
             _title.value = title
         }
@@ -152,7 +141,6 @@ class NewEventViewModel @Inject constructor(
     val description: StateFlow<String> = _description
 
     fun updateDescription(description: String) {
-        Log.i(TAG, "updateDescription: $description")
         viewModelScope.launch {
             _description.value = description
         }
@@ -163,7 +151,6 @@ class NewEventViewModel @Inject constructor(
     val repeatOption:StateFlow<RepeatOption> = _repeatOption
 
     fun updateRepeatOption(repeatOption: RepeatOption){
-        Log.d(TAG, "updateRepeatOption: $repeatOption")
         viewModelScope.launch {
             _repeatOption.value = repeatOption
         }
@@ -174,7 +161,6 @@ class NewEventViewModel @Inject constructor(
     val alertOffset: StateFlow<AlertOffset> = _alertOffset
 
     fun updateAlertOffset(alertOffset: AlertOffset){
-        Log.d(TAG, "updateAlertOffset: $alertOffset")
         viewModelScope.launch {
             if(alertOffset != AlertOffset.BEFORE_CUSTOM_TIME) updateCustomAlertOffset()
             _alertOffset.value = alertOffset
@@ -185,7 +171,6 @@ class NewEventViewModel @Inject constructor(
     val customAlertOffset: StateFlow<Long?> = _customAlertOffset
 
     fun updateCustomAlertOffset(customAlertOffset: Long? = null) {
-        Log.d(TAG, "updateCustomAlertOffset: $customAlertOffset")
         viewModelScope.launch {
             if (customAlertOffset != null) {
                 updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)
@@ -195,12 +180,10 @@ class NewEventViewModel @Inject constructor(
     }
 
     private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime) { alertOffset, startTime ->
-        Log.e(TAG, "trigger: alert:$alertOffset | startTime:$startTime", )
 
         val alertOffsetValue = if (alertOffset == AlertOffset.BEFORE_CUSTOM_TIME) { _customAlertOffset.value }
         else { AlertOffsetConverter.toMilliseconds(alertOffset) }
 
-        Log.i(TAG, "trigger Time alertOffsetValue: $alertOffsetValue")
         if (alertOffsetValue != null) {
             startTime - alertOffsetValue
         } else {
@@ -220,13 +203,11 @@ class NewEventViewModel @Inject constructor(
 
         // Validate start and end dates
         if (startDate.value > endDate.value) {
-            Log.e(TAG, "validateEvent: (startData > endDate) : ${startDate.value} ~ ${endDate.value}")
             return context.resources.getString(R.string.start_date_cannot_be_after_end_date)
         }
 
         // Validate start and end times (if not an all-day event)
         if (!isAllDay.value && startTime.value >= endTime.value) {
-            Log.e(TAG, "validateEvent: (startTime > endTime) : ${startTime.value} ~ ${endTime.value}")
             return context.resources.getString(R.string.start_time_cannot_be_after_end_time)
         }
 
@@ -245,7 +226,6 @@ class NewEventViewModel @Inject constructor(
                 result
             }
         }
-        //Log.d(TAG, "validateEvent: $existingEvent")
 
         if (existingEvent != null) {
             return context.resources.getString(R.string.an_event_with_this_title_and_type_already_exists)
@@ -256,9 +236,7 @@ class NewEventViewModel @Inject constructor(
 
 
     suspend fun insertCustomEvent(context: Context, id: String?): String{
-        Log.d(TAG, "insertCustomEvent: ")
         val errorMessage = validateEvent(context = context, eventId = id)
-        Log.e(TAG, "insertCustomEvent(): validateEvent message:- $errorMessage", )
         if (errorMessage != null) {
             return errorMessage
         }
@@ -298,7 +276,6 @@ class NewEventViewModel @Inject constructor(
     }
 
     fun resetEventState() {
-        Log.d(TAG, "resetEventState: ")
         val date = DateUtil.getStartAndEndOfDay(Calendar.getInstance().timeInMillis)
 
         viewModelScope.launch {
@@ -356,8 +333,7 @@ class NewEventViewModel @Inject constructor(
                     withContext(Dispatchers.IO) { eventRepository.upsertEvent(updatedEvent) }
 
                 } catch (e: Exception) {
-                    // Handle any errors
-                    Log.e(TAG,"InsertEvents - Error inserting events", e)
+                    // InsertEvents - Error inserting events
                 }
             }
         }

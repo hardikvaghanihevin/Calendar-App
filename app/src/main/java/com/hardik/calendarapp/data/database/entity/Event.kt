@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.hardik.calendarapp.R
-import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "events",
@@ -35,36 +34,6 @@ data class Event(
     val triggerTime: Long = 0L,
 ) : Parcelable
 
-fun Event.toCalendarDetailItem(): HolidayApiDetail.Item {
-    return HolidayApiDetail.Item(
-        created = "", // Provide value if needed
-        creator = HolidayApiDetail.Item.Creator(
-            displayName = "",
-            email = "",
-            self = false
-        ),
-        description = this.description,
-        end = HolidayApiDetail.Item.End(date = endDate),
-        etag = "",
-        eventType = if (this.isHoliday) "holiday" else "regular",
-        htmlLink = "",
-        iCalUID = "",
-        id = this.id.toString(),
-        kind = "calendar#event",
-        organizer = HolidayApiDetail.Item.Organizer(
-            displayName = "",
-            email = "",
-            self = false
-        ),
-        sequence = 0,
-        start = HolidayApiDetail.Item.Start(date = startDate),
-        status = "confirmed",
-        summary = this.title,
-        transparency = "opaque",
-        updated = "",
-        visibility = "default"
-    )
-}
 enum class EventType {
     PERSONAL, GLOBAL_HOLIDAY, NATIONAL_HOLIDAY, CULTURAL_HOLIDAY, WORK_MEETING
 }
@@ -221,40 +190,3 @@ fun organizeEvents(events: List<Event>): MutableMap<YearKey, MutableMap<MonthKey
 
     return mapOfEvents
 }
-fun getAllKeysAsList(
-    map: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>
-): List<String> {
-    val keyList = mutableListOf<String>()
-
-    for ((yearKey, monthMap) in map) {
-        for ((monthKey, dayMap) in monthMap) {
-            for ((dayKey, _) in dayMap) {
-                // Combine keys into "yearKey-monthKey-dayKey" format
-                keyList.add("$yearKey-$monthKey-$dayKey")
-            }
-        }
-    }
-
-    return keyList
-}
-
-
-val dummyEvent = Event(
-    id = "", // Unique ID
-    eventId = 1L, // Example auto-incremented ID
-    title = "Dummy Event",
-    startTime = 0L, // Current timestamp
-    endTime = 0L, // Two hours later
-    startDate = "", // Example start date
-    endDate = "", // Example end date
-    year = "", // Year of the event
-    month = "", // April (0-based index)
-    date = "", // 13th day of the month
-    isHoliday = false, // Not a holiday
-    eventType = EventType.PERSONAL, // Example event type
-    sourceType = SourceType.LOCAL, // Example source type
-    description = "Dummy event",
-    repeatOption = RepeatOption.NEVER, // Occurs once
-    alertOffset = AlertOffset.AT_TIME_OF_EVENT, // Alert 10 minutes before
-    customAlertOffset = null // No custom alert offset
-)

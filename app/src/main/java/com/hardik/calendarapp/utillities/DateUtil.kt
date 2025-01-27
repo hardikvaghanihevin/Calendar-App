@@ -2,18 +2,11 @@ package com.hardik.calendarapp.utillities
 
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.RepeatOption
-import org.joda.time.DateTime
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.IsoFields
 import java.util.Calendar
@@ -45,9 +38,6 @@ object DateUtil {
         val format = getDateFormat(pattern)
         return format.format(date)
     }
-
-    /** Convert Date -> Long (Timestamp) */
-    fun dateToLong(date: Date): Long = date.time
 
     /** Parse String -> Date */
     fun stringToDate(dateString: String, pattern: String = DATE_FORMAT_yyyy_MM_dd): Date? {
@@ -82,108 +72,6 @@ object DateUtil {
     fun longToString(timestamp: Long, pattern: String = DATE_FORMAT_yyyy_MM_dd): String {
         val date = longToDate(timestamp)
         return dateToString(date, pattern)
-    }
-
-    fun formatDate(epochTime: Long): String {
-        val dateFormat = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy, Locale.getDefault())
-        val date = Date(epochTime)
-        return dateFormat.format(date)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun calculateTimePeriod(startTimeEpoch: Long, endTimeEpoch: Long): Map<String, String> {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-
-        val startInstant = Instant.ofEpochMilli(startTimeEpoch)
-        val endInstant = Instant.ofEpochMilli(endTimeEpoch)
-
-        // Convert Instant to LocalDateTime
-        val startDateTime = LocalDateTime.ofInstant(startInstant, ZoneId.systemDefault())
-        val endDateTime = LocalDateTime.ofInstant(endInstant, ZoneId.systemDefault())
-
-        // Calculate the difference using Period for years, months, and days
-        val period = Period.between(startDateTime.toLocalDate(), endDateTime.toLocalDate())
-
-        // Calculate the difference in seconds
-        val duration = Duration.between(startDateTime, endDateTime)
-
-        // Extract hours, minutes, and seconds from the duration
-        val totalSeconds = duration.seconds
-        val hours = totalSeconds / 3600 % 24
-        val minutes = totalSeconds / 60 % 60
-        val seconds = totalSeconds % 60
-
-        // Format the start and end time to the required format
-        val startFormatted = startDateTime.format(formatter)
-        val endFormatted = endDateTime.format(formatter)
-
-        // region Times gaps
-        // Create the "total_time_gaps" formatted string
-        //Todo:val totalTimeGaps = String.format("%02d Year, %02d Month, %02d Days, %02d:%02d:%02d hours", period.years, period.months, period.days, hours, minutes, seconds)
-            // or
-        // Build the "total_time_gaps" string dynamically
-        val timeGaps = mutableListOf<String>()
-        if (period.years > 0) timeGaps.add(String.format("%02d Year", period.years))
-        if (period.months > 0) timeGaps.add(String.format("%02d Month", period.months))
-        if (period.days > 0) timeGaps.add(String.format("%02d Days", period.days))
-        if (hours > 0 || minutes > 0 || seconds > 0) {
-            timeGaps.add(String.format("%02d:%02d:%02d hours", hours, minutes, seconds))
-        }
-        // If all components are zero, return "NA time duration"
-        val totalTimeGaps = if (timeGaps.isEmpty()) "NA time duration" else timeGaps.joinToString(", ")
-        //endregion
-
-        // Return the results as a map
-        return mapOf(
-            "start_time" to startFormatted,
-            "end_time" to endFormatted,
-            "duration_hours" to (duration.toHours()).toString(),
-            "duration_minutes" to (duration.toMinutes()).toString(),
-            "years" to period.years.toString(),
-            "months" to period.months.toString(),
-            "days" to period.days.toString(),
-            "hours" to hours.toString(),
-            "minutes" to minutes.toString(),
-            "seconds" to seconds.toString(),
-            "total_time_gaps" to totalTimeGaps
-        )
-    }
-
-
-    // Function to get the first and last date of the month in milliseconds (Long)
-    fun getFirstAndLastDateOfMonth(date: DateTime): Pair<Long, Long> {
-        // First day of the current month at 00:00:00
-        val firstDayOfMonth = date.withDayOfMonth(1).withTimeAtStartOfDay()
-
-        // Last day of the current month at 23:59:59.999
-        val lastDayOfMonth = date.withDayOfMonth(date.dayOfMonth().maximumValue).withTime(23, 59, 59, 999)
-
-        // Return the first and last dates as Pair<Long> (timestamps)
-        return Pair(firstDayOfMonth.millis, lastDayOfMonth.millis)
-    }
-
-    /**
-     * Get the first and last dates of a specific month and year.
-     *
-     * @param year The year of the target month.
-     * @param month The month (1 for January, 12 for December).
-     * @return Pair<Long, Long> where the first is the start timestamp of the month
-     *         and the second is the end timestamp of the month.
-     */
-    fun getFirstAndLastDateOfMonth(year: Int, month: Int): Pair<Long, Long> {
-        // Ensure the month is valid (1-12)
-        require(month in 1..12) { "Invalid month: $month. Must be between 1 and 12." }
-
-        // Create a DateTime object for the first day of the given month and year
-        val firstDayOfMonth = DateTime(year, month, 1, 0, 0, 0)
-
-        // Get the last day of the month
-        val lastDayOfMonth = firstDayOfMonth
-            .withDayOfMonth(firstDayOfMonth.dayOfMonth().maximumValue)
-            .withTime(23, 59, 59, 999)
-
-        // Return the first and last dates as Pair<Long> (timestamps)
-        return Pair(firstDayOfMonth.millis, lastDayOfMonth.millis)
     }
 
     /**
@@ -382,7 +270,6 @@ object DateUtil {
      */
     fun epochToDateTriple(epochTime: Long): Triple<String, String, String> {
         val stringDate = longToString(epochTime)
-        Log.i(TAG, "epochToDateTriple: $stringDate")
         return stringToDateTriple(stringDate)
     }
 
@@ -416,7 +303,6 @@ object DateUtil {
             val year = parts[0]
             val month = (parts[1].toInt() - 1).toString()  // Adjust month (1-based to 0-based)
             val day = parts[2].toInt().toString()  // Get the day as a string
-            //Log.e(TAG, "collectState: ${item.start.date} -> $year,$month,$day")
 
             // Return a Triple with year, month, and day
             Triple(year, month, day)
@@ -502,35 +388,8 @@ object DateUtil {
     fun isAllDay(startTime: Long, endTime: Long): Boolean {
         val durationInMillis = endTime - startTime
         val result = durationInMillis in (24 * 60 * 60 * 1000L - 1000)..(24 * 60 * 60 * 1000L + 1000)
-        Log.i(TAG, (if (result) "This is an all-day event." else "This is not an all-day event."))
         return result
     }
-
-    /**
-    val firstApproachTime = measureExecutionTime {inside your block of code}
-    Log.d(TAG, "First approach execution time: ${firstApproachTime / 1_000_000} ms")
-
-    1 second (s) is equal to:
-        1,000 milliseconds (ms)
-        1,000,000 microseconds (µs)
-        1,000,000,000 nanoseconds (ns)
-
-    Log.d(TAG, "${(endTime - startTime)} ns")
-    Log.d(TAG, "${(endTime - startTime) / 1_000} µs")
-    Log.d(TAG, "${(endTime - startTime) / 1_000_000} ms")
-    //Or
-    val startTime = System.nanoTime()
-    val endTime = System.nanoTime()
-    Log.d(TAG, "execution time: ${(endTime - startTime)} ns, ${(endTime - startTime) / 1_000} µs, ${(endTime - startTime) / 1_000_000} ms")
-
-     */
-    fun measureExecutionTime(block: () -> Unit): Long {
-        val startTime = System.nanoTime()
-        block()
-        val endTime = System.nanoTime()
-        return endTime - startTime // Returns time in nanoseconds
-    }
-
 
     /** Function to Calculate Next Occurrence:
     Write a utility function to calculate the next occurrence based on the current time and the selected repeat option. */
@@ -548,28 +407,6 @@ object DateUtil {
         }
         return calendar.timeInMillis
     }
-
-
-    /** Optional: Save Recurring Events:
-    If you want to generate and save multiple instances of the recurring events, you can use a function to generate all occurrences within a specified time range.
-
-    val occurrences = generateOccurrences(startTime = System.currentTimeMillis(), repeatOption = RepeatOption.EVERY_MONTH, endTime = System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000 // One year later)
-    */
-    fun generateOccurrences(
-        startTime: Long,
-        repeatOption: RepeatOption,
-        endTime: Long
-    ): List<Long> {
-        val occurrences = mutableListOf<Long>()
-        var currentOccurrence = startTime
-
-        while (currentOccurrence <= endTime) {
-            occurrences.add(currentOccurrence)
-            currentOccurrence = calculateNextOccurrence(currentOccurrence, repeatOption) ?: break
-        }
-        return occurrences
-    }
-
 
     /**
      * Converts the given number of minutes to milliseconds.
@@ -656,65 +493,6 @@ object DateUtil {
             }
         }
     }
-
-    fun getMonthWeekRanges(monthYear: String, startOfWeek: Int): List<String> {
-        val format = SimpleDateFormat("MM-yyyy", Locale.getDefault())
-        val parsedDate = format.parse(monthYear)
-        val calendar = Calendar.getInstance().apply {
-            time = parsedDate ?: Date()
-            set(Calendar.DAY_OF_MONTH, 1) // Set to the first day of the month
-        }
-
-        val result = mutableListOf<String>()
-        val dayFormat = SimpleDateFormat("dd", Locale.getDefault())
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
-
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentYear = calendar.get(Calendar.YEAR)
-
-        // Adjust calendar to the start of the week for the first day of the month
-        calendar.firstDayOfWeek = startOfWeek
-        while (calendar.get(Calendar.DAY_OF_WEEK) != startOfWeek) {
-            calendar.add(Calendar.DAY_OF_WEEK, -1)
-        }
-
-        // Generate week ranges for the given month
-        while (calendar.get(Calendar.MONTH) <= currentMonth || calendar.get(Calendar.YEAR) < currentYear) {
-            val startOfWeekDate = calendar.time
-
-            // Calculate the end of the week
-            calendar.add(Calendar.DAY_OF_WEEK, 6)
-            val endOfWeekDate = calendar.time
-
-            val startDay = dayFormat.format(startOfWeekDate)
-            val endDay = dayFormat.format(endOfWeekDate)
-            val startMonth = monthFormat.format(startOfWeekDate)
-            val endMonth = monthFormat.format(endOfWeekDate)
-            val startYear = yearFormat.format(startOfWeekDate)
-            val endYear = yearFormat.format(endOfWeekDate)
-
-            if (calendar.get(Calendar.MONTH) > currentMonth && calendar.get(Calendar.YEAR) == currentYear) break
-            if (calendar.get(Calendar.YEAR) > currentYear) break
-
-            // Format the week range
-            val weekRange = when {
-                startMonth == endMonth -> "$startDay-$endDay $startMonth $startYear"
-                else -> "$startDay $startMonth - $endDay $endMonth $startYear"
-            }
-
-            // Include only ranges that belong to the target month
-            if (calendar.get(Calendar.MONTH) == currentMonth || calendar.time <= calendar.time) {
-                result.add(weekRange)
-            }
-
-            // Move to the next week
-            calendar.add(Calendar.DAY_OF_WEEK, 1)
-        }
-
-        return result
-    }
-
 
     // Function to get the week number of the year based on the provided date format
     fun getWeekOfYear(startDate: String, dateFormat: String): Int {

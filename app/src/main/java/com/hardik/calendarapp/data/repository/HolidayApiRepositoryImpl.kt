@@ -13,8 +13,6 @@ class HolidayApiRepositoryImpl@Inject constructor(private val apiInterface: ApiI
     override suspend fun getHolidayEvents(countryCode: String, languageCode:String): HolidayApiDto {
         val pair: Pair<String, String> = getTimeRange()
 
-        //return apiInterface.getCalendar(apiKey = apiKey, timeMin = timeMin, timeMax = timeMax)
-//        return apiInterface.getCalendar(apiKey = apiKey,countryCode = countryCode, languageCode = languageCode, timeMin = pair.first, timeMax = pair.second).execute().body()
         return apiInterface.getCalendar(apiKey = apiKey,countryCode = countryCode, languageCode = languageCode, timeMin = pair.first, timeMax = pair.second)
     }
 

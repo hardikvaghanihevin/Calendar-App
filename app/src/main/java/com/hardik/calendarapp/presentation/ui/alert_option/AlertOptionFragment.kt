@@ -7,7 +7,6 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -159,7 +158,6 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
     private var dialogItemEventCustomAlertMinuteBinding: DialogItemEventCustomAlertMinuteBinding? = null
     @SuppressLint("NotifyDataSetChanged")
     private fun showCustomTimePickerDialog(){
-        Log.d(TAG, "showCustomTimePickerDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_item_event_custom_alert_minute, null)
         dialogItemEventCustomAlertMinuteBinding = DialogItemEventCustomAlertMinuteBinding.bind(dialogView)
 
@@ -168,7 +166,6 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
 
         // Set background to transparent if needed
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -194,8 +191,6 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
                 val customTime = edtEventCustomAlertMinute.text.toString().toIntOrNull() ?: 0
 
                 if (customTime in 0..59) { // Check if the value is in the valid range
-                    Log.i(TAG, "showCustomTimePickerDialog: The number is in the range of 0 to 59.")
-
                     // Update the adapter and ViewModel
                     alertOffsetAdapter.updateCustomTime(customTime)
                     viewModel.updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)

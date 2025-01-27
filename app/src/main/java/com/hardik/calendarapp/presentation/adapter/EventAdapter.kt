@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +24,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
-//class EventAdapter(private var list: ArrayList<CalendarDetail.Item>, private val dateItemClickListener: DateItemClickListener):
 class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterable {
     private val TAG = BASE_TAG + EventAdapter::class.java.simpleName
 
@@ -38,10 +35,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newData: List<Event>) {
-        /*val eventJson = GsonUtil.toJson(list)
-        LogUtil.logLongMessage(TAG, "onViewCreated: $eventJson")*/
-
-        Log.e(TAG, "updateData: ${list.size}")
 
         val diffCallback = object : DiffUtil.Callback() {
             override fun getOldListSize() = originalList.size
@@ -67,14 +60,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
         diffResult.dispatchUpdatesTo(this)
     }
 
-
-    //region Optional: If you only need to change a small set of data, you can use more specific methods
-    //endregion
-    fun updateItem(position: Int, newItem: Event) {
-        list[position] = newItem
-        notifyItemChanged(position)
-    }
-
     var weekStart = Calendar.SUNDAY
     @SuppressLint("NotifyDataSetChanged")
     fun updateFirstDayOfWeek(weekStart: Int = Calendar.SUNDAY) {
@@ -83,11 +68,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemEventLayout1Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-//        val lp = RecyclerView.LayoutParams(
-//            ViewGroup.LayoutParams.MATCH_PARENT,
-//            ViewGroup.LayoutParams.WRAP_CONTENT,
-//        )
-//        binding.root.apply { layoutParams = lp }
         return ViewHolder(binding)
     }
 
@@ -123,8 +103,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
 
 
                     val imageUrl = ImageColorUtil.monthImgResource.get(event.month.toInt())
-                    //val imageUrl = ContextCompat.getDrawable(binding.root.context,R.drawable.bkg_01_jan)
-                    //val rawResourceUri = Uri.parse("android.resource://${binding.root.context.packageName}/${R.raw.data_test}")
 
                     Glide.with(imgItemEventLayMonthTransitionImage.context)
                         .load(imageUrl)
@@ -132,32 +110,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                         .error(R.drawable.bkg_01_jan)
                         .into(imgItemEventLayMonthTransitionImage)
 
-                   /* // Cancel any previously running job for this ViewHolder
-                    scope.coroutineContext.cancelChildren()
-
-                    val paletteCache = mutableMapOf<Int, Int>() // Store colors by resource ID
-                    // Set the text color dynamically based on the image
-                    scope.launch(Dispatchers.Default) {
-                        val cachedColor = paletteCache[imageUrl]
-                        val baseColor = if (cachedColor != null) {
-                            cachedColor
-                        } else {
-                            val drawable = binding.root.context.getDrawable(imageUrl) as BitmapDrawable
-                            val bitmap = drawable.bitmap
-                            val palette = Palette.from(bitmap).generate()
-                            palette.vibrantSwatch?.rgb ?: palette.mutedSwatch?.rgb ?: 0xFF000000.toInt().also {
-                                paletteCache[imageUrl] = it // Cache the color
-                            }
-                        }
-
-                        // Darken the extracted color
-                        val textColor = darkenColor(baseColor, 0.8f)
-
-                        // Update UI on the main thread
-                        withContext(Dispatchers.Main) {
-                            tvItemEventMonthName.setTextColor(textColor)
-                        }
-                    }*/
                 } else {
                     cardItemEventImg.visibility = View.GONE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image
@@ -215,7 +167,7 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 eventTitle.text = event.title
 
                 // Set "All day" or time period based on start and end time
-                eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) ContextCompat.getString(binding.root.context, R.string.all_day)//"All day"
+                eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) ContextCompat.getString(binding.root.context, R.string.all_day)
                 else {
                     val startTime = DateUtil.longToString(event.startTime, TIME_FORMAT_HH_mm)
                     val endTime = DateUtil.longToString(event.endTime, TIME_FORMAT_HH_mm)
@@ -223,29 +175,10 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                     else "$startTime - $endTime"
 
                 }
-                //eventTimePeriod.text = DateUtil.longToString(event.endTime, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-
                 // Handle item clicks
                 itemEventLayout.setOnClickListener { configureEventCallBack?.invoke(event) }
             }
 
-        }
-        //for image scroll in sideImage view
-        fun updateParallaxOffset(offset: Int) {
-            // Apply translationY to create the parallax effect
-            binding.imgItemEventLayMonthTransitionImage.translationY = offset.toFloat()
-        }
-        //for image scroll in sideImage view
-        fun updateParallaxOffset(imageHeight: Int, viewTop: Int, viewBottom: Int, recyclerViewHeight: Int) {
-            // Calculate how much of the RecyclerView is visible in relation to this item
-            val visibleHeight = viewBottom.coerceAtMost(recyclerViewHeight) - viewTop.coerceAtLeast(0)
-
-            // Calculate offset based on the visible part of the RecyclerView
-            val totalScrollableDistance = imageHeight - visibleHeight
-            val scrollOffset = ((viewTop.toFloat() / recyclerViewHeight) * totalScrollableDistance).toInt()
-
-            // Set translationY for parallax effect
-            binding.imgItemEventLayMonthTransitionImage.translationY = -scrollOffset.toFloat()
         }
 
         fun clear() {
@@ -262,14 +195,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
     private var configureEventCallBack: ((event: Event) -> Unit)? = null
     fun setConfigureEventCallback(callback: (event: Event) -> Unit) {
         configureEventCallBack = callback
-    }
-
-    private fun formatTime(dateTime: String?): String {
-        if (dateTime == null) return ""
-        val date: Date =
-            DateUtil.stringToDate(dateTime, DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_T_HH_MM_ss_Z)
-                ?: Date()
-        return DateUtil.dateToString(date, DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm)
     }
 
     override fun getFilter(): Filter {
@@ -294,7 +219,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                 noDataCallback?.invoke(true.takeUnless { filteredList.isEmpty() } ?: false) // Notify when no data is found
 
                 notifyDataSetChanged()
-                Log.d(TAG, "Filtered list size: ${filteredList.size}")
             }
         }
     }

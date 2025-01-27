@@ -14,10 +14,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.ViewGroup
 import android.view.Window
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import android.window.OnBackInvokedCallback
@@ -98,7 +96,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate: ")
 
         // Step 1: Retrieve saved language preference
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -124,9 +121,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //binding.drawerLayout.setScrimColor(ContextCompat.getColor(this, R.color.blue))
-        //binding.appBarMain.mainContent.foreground = ColorDrawable(ContextCompat.getColor(this@MainActivity, R.color.scrim_color))
-
         checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
 
         setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
@@ -136,12 +130,6 @@ class MainActivity : AppCompatActivity() {
         handelBackPressed()
 
         binding.appBarMain.fab.setOnClickListener { view ->
-            Log.i(TAG, "onCreate: clicked fab:")
-
-            bundle = (bundle ?: Bundle()).apply {
-                //putParcelable(Constants.KEY_EVENT, dummyEvent.copy( year = "2025", month = "2", date = "0") )
-            }
-
             navController.navigate(R.id.newEventFragment, null, navOptions)
         }
 
@@ -152,30 +140,12 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.toolbarTitle.collectLatest { title->
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.text = title
             }
+        }
 
-            mainViewModel.holidayApiState.collect { dataState ->
-                if (dataState.isLoading) {
-                    // Show loading indicator
-                    Log.d(TAG, "onCreate: Progressing")
-                } else if (dataState.error.isNotEmpty()) {
-                    // Show error message
-                    Toast.makeText(this@MainActivity, dataState.error, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, "onCreate: hide Progressing")
-                } else {
-                    // Update UI with the user list
-                    val users = dataState.data
-                    Log.d(TAG, "onCreate: hide Progressing")
-//                 userAdapter.differ.submitList(users.toList())
-//                 binding.recyclerview.setPadding(0, 0, 0, 0)
-                }
-            }
-        }
-        navController.addOnDestinationChangedListener { navCont: NavController, destination: NavDestination, _ ->
-            updateToolbarAndViews(navController, destination)
-        }
+        navController.addOnDestinationChangedListener { _: NavController, destination: NavDestination, _: Bundle? -> updateToolbarAndViews(destination) }
     }
 
-    fun updateToolbarAndViews(navController: NavController, destination: NavDestination) {
+    private fun updateToolbarAndViews(destination: NavDestination) {
         updateToolbarTitle(destination.label.toString().takeIf { !it.isEmpty() } ?: getString(R.string.app_name))
         invalidateOptionsMenu()
         hideAllViewsWithAnimation()
@@ -236,7 +206,6 @@ class MainActivity : AppCompatActivity() {
 
     private var dialogFirstDayOfTheWeekBinding: DialogFirstDayOfTheWeekBinding? = null
     fun showFirstDayOfTheWeek(){
-        Log.i(TAG, "showFirstDayOfTheWeek: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_first_day_of_the_week, null)
         dialogFirstDayOfTheWeekBinding = DialogFirstDayOfTheWeekBinding.bind(dialogView)
 
@@ -248,7 +217,6 @@ class MainActivity : AppCompatActivity() {
         // Set background to transparent if needed
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -351,7 +319,6 @@ class MainActivity : AppCompatActivity() {
 
     private var dialogJumpToDateBinding: DialogJumpToDateBinding? = null
     fun showJumpToDateDialog() {
-        Log.i(TAG, "showJumpToDateDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_jump_to_date, null)
         dialogJumpToDateBinding = DialogJumpToDateBinding.bind(dialogView)
 
@@ -363,7 +330,6 @@ class MainActivity : AppCompatActivity() {
         // Set background to transparent if needed
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -446,11 +412,9 @@ class MainActivity : AppCompatActivity() {
                 val selectedMonth = monthPicker.value
                 val selectedDay = datePicker.value
                 // Perform your "Jump to Date" logic here
-                Log.d(TAG, "showJumpToDateDialog: $selectedYear - $selectedMonth - $selectedDay")
 
                 lifecycleScope.launch {
                     // Make sure the navigation happens on the main thread
-                    Log.e(TAG, "navigateToCalendarMonth:  ${Thread.currentThread().name}")
                     val bundle = Bundle().apply {
                         putInt(Constants.KEY_YEAR, selectedYear)
                         putInt(Constants.KEY_MONTH, selectedMonth -1)
@@ -470,7 +434,6 @@ class MainActivity : AppCompatActivity() {
 
     private var dialogAppThemeBinding: DialogAppThemeBinding? = null
     fun showAppThemeDialog(){
-        Log.i(TAG, "showAppThemeDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_app_theme, null)
         dialogAppThemeBinding = DialogAppThemeBinding.bind(dialogView)
 
@@ -482,7 +445,6 @@ class MainActivity : AppCompatActivity() {
         // Set background to transparent if needed
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -605,7 +567,6 @@ class MainActivity : AppCompatActivity() {
 
     private var dialogTimeFormatBinding: DialogTimeFormatBinding? = null
     fun showTimeFormatDialog(){
-        Log.i(TAG, "showTimeFormat: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_time_format, null)
         dialogTimeFormatBinding = DialogTimeFormatBinding.bind(dialogView)
 
@@ -617,7 +578,6 @@ class MainActivity : AppCompatActivity() {
         // Set background to transparent if needed
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -702,7 +662,6 @@ class MainActivity : AppCompatActivity() {
     private var dialogDeviceInformationBinding: DialogDeviceInformationBinding? = null
     @SuppressLint("SetTextI18n")
     fun showDeviceInfoDialog(){
-        Log.i(TAG, "showDeviceInfoDialog: ")
         val dialogView = layoutInflater.inflate(R.layout.dialog_device_information, null)
         dialogDeviceInformationBinding = DialogDeviceInformationBinding.bind(dialogView)
 
@@ -714,7 +673,6 @@ class MainActivity : AppCompatActivity() {
         // Set background to transparent if needed
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -758,9 +716,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun rateApp(context: Context = this){
-        //Toast.makeText(context,"Rate App", Toast.LENGTH_SHORT).show()
         val appPackageName = context.packageName // Get the current app's package name
-        //val appPackageName = "com.dts.freefiremax" // Todo: dummy Get the current app's package name
         try {
             // Try to open Play Store app
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
@@ -774,7 +730,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun privacyPolicy(context: Context = this) {
-        //Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show()
         val url = "https://gist.githubusercontent.com/hardikvaghanihevin/d45b7376a72f832d2e80573a46628a4c/raw/e79d8fd9bd36d38b31e619bdb41251a7417999a4/privacy_policy.html" // Replace with your URL
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
@@ -799,13 +754,6 @@ class MainActivity : AppCompatActivity() {
         val emailAddress = "feedback@company.com"// Replace with your company's email address
         val subject = "Feedback for Your App"
         val body = "Please provide your feedback here."
-
-        // Encode the subject and body in the mailto URI
-        /*val uri = Uri.parse("mailto:$emailAddress")// Set email address
-            .buildUpon()
-            .appendQueryParameter("subject", subject)// Pre-fill subject
-            .appendQueryParameter("body", body)// Pre-fill body
-            .build()*/
 
         // Intent for sending email
         var emailIntent = Intent(Intent.ACTION_SENDTO).apply {
@@ -863,12 +811,10 @@ class MainActivity : AppCompatActivity() {
             updateSelectedDrawerItem(destination.id)
             val navIcon = binding.appBarMain.includedAppBarMainCustomToolbar.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
             if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
-                //navIcon.setImageResource(R.drawable.hamburger_icon)
                 val iconDrawable = getDrawableFromAttribute(this, R.drawable.hamburger_icon)
                 navIcon.setImageDrawable(iconDrawable)
                 navIcon.contentDescription = getString(R.string.open_drawer)
             } else {
-                //navIcon.setImageResource(R.drawable.back_arrow)
                 val iconDrawableBackArrow = getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
                 navIcon.setImageDrawable(iconDrawableBackArrow)
                 navIcon.contentDescription = getString(R.string.navigate_up)
@@ -881,7 +827,7 @@ class MainActivity : AppCompatActivity() {
         if (adapter is DrawerMenuAdapter) {
             adapter.updateSelectedItem(selectedId)
         } else {
-            Log.e("MainActivity", "Adapter is not of type DrawerMenuAdapter")
+            // Adapter is not of type DrawerMenuAdapter.
         }
     }
 
@@ -895,7 +841,6 @@ class MainActivity : AppCompatActivity() {
             handleNavigationIconClick()  }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon.setOnClickListener {
-            //Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show()
 
             // todo: navigate to show all events
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
@@ -912,7 +857,7 @@ class MainActivity : AppCompatActivity() {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
             }
             else {
-                Log.e(TAG,"NavigationError ->: Destination on SearchView")
+                //"NavigationError ->: Destination on SearchView
             }
         }
 
@@ -941,7 +886,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Configures the drawer menu items and their click listeners.
      */
-    fun setupDrawerMenu() {
+    private fun setupDrawerMenu() {
         val drawerMenuItems = listOf(
             DrawerMenuItem(R.drawable.year_icon, getString(R.string.year), R.id.nav_year,true),
             DrawerMenuItem(R.drawable.month_icon, getString(R.string.month), R.id.nav_month),
@@ -949,11 +894,7 @@ class MainActivity : AppCompatActivity() {
             DrawerMenuItem(R.drawable.select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
             DrawerMenuItem(R.drawable.first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
             DrawerMenuItem(R.drawable.jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
-            //DrawerMenuItem(R.attr.iconTheme, getString(R.string.app_theme), R.id.nav_app_theme),
-            //DrawerMenuItem(R.attr.iconRateApp, getString(R.string.rate_our_app), R.id.nav_rate_app),
             DrawerMenuItem(R.drawable.privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
-            //DrawerMenuItem(R.attr.iconDeviceInfo, getString(R.string.device_information), R.id.nav_device_info),
-            //DrawerMenuItem(R.attr.iconSetting, "Settings", R.id.nav_settings),
             DrawerMenuItem(R.drawable.setting_icon, getString(R.string.setting), R.id.nav_setting)
         )
 
@@ -963,7 +904,7 @@ class MainActivity : AppCompatActivity() {
 //            handleMenuClick(menuItem)
 //        }
         drawerMenuAdapter.setItems(drawerMenuItems)
-        drawerMenuAdapter.setOnClickListener{ menuItem, pos -> handleMenuClick(menuItem) }
+        drawerMenuAdapter.setOnClickListener{ menuItem, _: Int -> handleMenuClick(menuItem) }
 
 
         // Set the adapter to the RecyclerView
@@ -1040,23 +981,6 @@ class MainActivity : AppCompatActivity() {
         viewList.forEach { hideViewWithAnimation(it) }
     }
 
-    // Function to close the SearchView and hide the keyboard
-    private fun hideKeyboard() {
-        // Hide SearchView
-        val searchView = binding.appBarMain.includedAppBarMainCustomToolbar.searchView
-        searchView.clearFocus() // Clear focus from SearchView
-        searchView.isIconified = true // Collapse the SearchView
-
-        // Hide keyboard
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        val currentFocusView = currentFocus
-
-        if (currentFocusView != null) {
-            imm.hideSoftInputFromWindow(currentFocusView.windowToken, 0)
-            imm.hideSoftInputFromWindow(searchView.windowToken, 0)//specific view to hide
-        }
-    }
-
     // region Call this function to request permissions as needed
     private fun checkAndRequestCalendarPermissions() {
         val permissions = mutableListOf<String>()
@@ -1098,18 +1022,11 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
-            //val allPermissionsGranted = permissions.indices.all { grantResults[it] == PackageManager.PERMISSION_GRANTED }
-            //if (allPermissionsGranted) {
             if (areCalendarPermissionsGranted()){
                 initializeViewModelIfNeeded()
             } else {
-                //Toast.makeText(this, "Calendar permissions are required for the app to function.", Toast.LENGTH_SHORT).show()
-                // Show a Snackbar with a Settings action
-                Snackbar.make(
-                    findViewById(android.R.id.content),
-                    getString(R.string.deny_permission_msg_calendar),
-                    Snackbar.LENGTH_LONG
-                ).setAction(getString(R.string.setting)) {
+                // Permission denied, show a message to the user
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_calendar), Snackbar.LENGTH_LONG).setAction(getString(R.string.setting)) {
                     // Open app settings
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.fromParts("package", packageName, null)
@@ -1119,32 +1036,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if (AlarmScheduler.handlePermissionResult(requestCode = requestCode, permissions = permissions, grantResults = grantResults)) {
-            if (grantResults.isNotEmpty() && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "onRequestPermissionsResult: Permission granted, schedule the alarm")
-            }else{
-                // Permission denied, show a message to the user
-                //Toast.makeText(this, "Permission required to show notifications", Toast.LENGTH_SHORT).show()
-                // Show Snackbar for notification permission
-                Snackbar.make(
-                    findViewById(android.R.id.content),
-                    getString(R.string.deny_permission_msg_notification),
-                    Snackbar.LENGTH_LONG
-                ).setAction(getString(R.string.setting)) {
-                    // Open app settings
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", packageName, null)
-                    }
-                    startActivity(intent)
-                }.show()
+            for (i in permissions.indices) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    //onRequestPermissionsResult: Permission granted, schedule the alarm"
+                } else {
+                    // Permission denied, show a message to the user
+                    Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.deny_permission_msg_notification),
+                        Snackbar.LENGTH_LONG
+                    ).setAction(getString(R.string.setting)) {
+                        // Open app settings
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", packageName, null)
+                        }
+                        startActivity(intent)
+                    }.show()
+                }
             }
         }
         else { super.onRequestPermissionsResult(requestCode, permissions, grantResults) }
-        //if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) { when (requestCode) {}}
-
     }
     //endregion
 
-    fun handelBackPressed(){
+    private fun handelBackPressed(){
         // Use OnBackPressedDispatcher for API 12+ (and fallback for older versions)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

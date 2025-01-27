@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -35,7 +34,6 @@ import com.hardik.calendarapp.utillities.DateUtil.calculateNextOccurrence
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
 import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
-import com.hardik.calendarapp.utillities.LogUtil
 import com.hardik.calendarapp.utillities.createYearData
 import com.hardik.calendarapp.utillities.createYearMonthPairs
 import com.hardik.calendarapp.utillities.getUserCustomEvents
@@ -83,7 +81,6 @@ class MainViewModel @Inject constructor(
     val languageCode: StateFlow<String> = _languageCode // Public read-only StateFlow
 
     fun updateLanguageCode(languageCode: String){
-        Log.i(TAG, "updateLanguageCode: $languageCode")
         viewModelScope.launch {
             _languageCode.value = languageCode
         }
@@ -113,7 +110,6 @@ class MainViewModel @Inject constructor(
             .map { it.code }          // Map to country codes
             .toSet()
 
-        Log.e(TAG, "toggleCountrySelection: $selectedCountryCodes", )
         // Check if only one item is selected and it matches the last item
         if (selectedCountryCodes.size == 1 && selectedCountryCodes.contains(countryCode)) {
             // Prevent unselecting the last item if it's the only one selected
@@ -140,7 +136,7 @@ class MainViewModel @Inject constructor(
     //----------------------------------------------------------------//
 
     private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
-    val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
+    private val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
 
     init {
         generateYearList(2000, 2100, isZeroBased = true)
@@ -185,7 +181,6 @@ class MainViewModel @Inject constructor(
 
     /**Get holiday list by using API*/
     fun getHolidayCalendarData() {
-        Log.i(TAG, "getHolidayCalendarData: ")
         viewModelScope.launch (Dispatchers.IO) {
 
             //todo: delete all event which already in DB from 'REMOTE'
@@ -196,7 +191,6 @@ class MainViewModel @Inject constructor(
             val countryCodes: Set<String> =
                 sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
 
-            Log.d(TAG, "getHolidayCalendarData: countryCode:$countryCodes")
             // Create a list of deferred results for API calls
             val apiCalls = countryCodes.map { countryCode ->
                 async(Dispatchers.IO) {
@@ -220,53 +214,23 @@ class MainViewModel @Inject constructor(
 
             // Await all API calls to finish
             apiCalls.awaitAll()
-
-            /*countryCodes.forEach { countryCode ->
-                getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
-                    when (result) {
-                        is Resource.Success -> {
-                            _holidayApiState.value = DataState(data = result.data);
-                            launch(Dispatchers.IO) {
-                                collectHolidayApiState()// fetched all events (from API)
-                            }
-                        }
-
-                        is Resource.Error -> {
-                            _holidayApiState.value =
-                                DataState(error = result.message ?: "An unexpected error occurred")
-                        }
-
-                        is Resource.Loading -> {
-                            _holidayApiState.value = DataState(isLoading = true)
-                        }
-
-                        else -> {}
-                    }
-                }
-            }*/
         }
     }
 
     /**Observe [holidayApiState] after getting data from API*/
     private suspend fun collectHolidayApiState() {//insert in to DB
-        Log.i(TAG, "collectHolidayApiState: ")
         viewModelScope.launch(Dispatchers.IO) {
             holidayApiState.collectLatest { state ->
                 when {
-                    state.isLoading -> {
-                        // Handle loading state (maybe trigger other UI-related actions or logging)
-                        Log.d(TAG, "collectHolidayApiState: isLoading state: ${state.isLoading}")
+                    state.isLoading -> { // Handle loading state (maybe trigger other UI-related actions or logging)
                     }
 
-                    state.error.isNotEmpty() -> {
-                        // Handle error state (maybe trigger logging, analytics, etc.)
-                        Log.d(TAG, "collectHolidayApiState: Error state: ${state.error}")
+                    state.error.isNotEmpty() -> { // Handle error state (maybe trigger logging, analytics, etc.)
                     }
 
                     state.data != null -> {
                         // Handle success case (trigger actions like logging, analytics, etc.)
                         val calendarDetails = state.data
-                        Log.d(TAG, "collectHolidayApiState: data available")
 
                         // Process events
                         val events: List<Event> = calendarDetails.items
@@ -308,7 +272,7 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun collectCursorEventsState(context: Context){
-        val cursorEvent: List<CursorEvent> = getUserCustomEvents(context = context)//getAllCursorEvents(context = context)
+        val cursorEvent: List<CursorEvent> = getUserCustomEvents(context = context)
 
         val events: List<Event> = cursorEvent
             .mapNotNull { item ->
@@ -348,16 +312,9 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    fun insertEvent(event: Event) {
-        viewModelScope.launch {
-            eventRepository.upsertEvent(event)
-        }
-    }
-
     private val insertEventsMutex = Mutex()
     private suspend fun insertEvents(events: List<Event>) {
         // Ensure only one coroutine executes this block at a time
-        LogUtil.logLongMessage(TAG, "$events")
         insertEventsMutex.withLock {
             try {
                 // Step 1: Cancel all existing alarms concurrently
@@ -389,14 +346,11 @@ class MainViewModel @Inject constructor(
                         }
                     }.awaitAll() // Collect all updated events
                 }
-                //val eventJson = GsonUtil.toJson(updatedEvents)
-                //LogUtil.logLongMessage(TAG, "hardik_ $eventJson")
 
                 withContext(Dispatchers.IO) { eventRepository.upsertEvents(updatedEvents) }
 
             } catch (e: Exception) {
                 // Handle any errors
-                Log.e(TAG,"InsertEvents - Error inserting events", e)
             }
         }
     }
@@ -409,34 +363,8 @@ class MainViewModel @Inject constructor(
 
     private val _monthlyEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
-    fun getMonthlyEvents(startOfMonth: Long, endOfMonth: Long) {//todo: use in CalendarMonthFragment for onMonthSwipe
-        Log.i(TAG, "fetchEventsForMonth: ")
-        // Set initial loading state
-        _monthlyEventsState.value = DataListState(isLoading = true)
-
-        viewModelScope.launch {
-            try {
-                getMonthlyEventsUseCase.invoke(startOfMonth = startOfMonth, endOfMonth = endOfMonth)
-                    .collect { events ->
-                        // Update state with data
-                        val dummyList = mutableListOf<Event>()
-                        //repeat(10) { index -> dummyList.add(Event(title = "Dummy", startTime = 0L, endTime = 0L, startDate = "", endDate = "", isHoliday = false, description = "Dummy Event")) }
-                        //delay(100)//for showing progressbar
-
-                        _monthlyEventsState.value = DataListState(isLoading = false, data = events + dummyList)
-                    }
-            } catch (e: Exception) {
-                // Handle errors
-                _monthlyEventsState.value = DataListState(
-                    isLoading = false,
-                    error = e.message ?: "An unknown error occurred"
-                )
-            }
-        }
-    }
 
     fun getEventsByMonthOfYear(year: String, month: String){//todo: use in CalendarMonth1Fragment for onMonthSwipe or onMonthClick
-        Log.i(TAG, "getEventsByMonthOfYear: $year-$month")
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
@@ -456,7 +384,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String) {//todo: use in CalendarMonth1Fragment for onDateClick
-        Log.i(TAG, "getEventsByDateOfMonthOfYear: $year-$month-$date")
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
@@ -480,7 +407,6 @@ class MainViewModel @Inject constructor(
     private val _allEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val allEventsState: StateFlow<DataListState<Event>> get() = _allEventsState
     fun getAllEvents() {//todo: use in CalendarMonthFragment for onMonthSwipe
-        Log.i(TAG, "fetchEventsForMonth: ")
         // Set initial loading state
         _allEventsState.value = DataListState(isLoading = true)
 
@@ -506,7 +432,6 @@ class MainViewModel @Inject constructor(
 
     //todo:for event indicator showing in month view using map
     private fun getAllEventsDateInMap(){
-        Log.i(TAG, "fetchAllEventsOfDateMap: ")
         viewModelScope.launch {
             try {
                 getAllEventsUseCase.invoke().collectLatest{ events: List<Event> ->
@@ -525,7 +450,6 @@ class MainViewModel @Inject constructor(
     val yearState: StateFlow<Int> = _yearState
 
     fun updateYear(year: Int) {
-        Log.i(TAG, "updateYear: $year")
         viewModelScope.launch {
             _yearState.value = year
         }

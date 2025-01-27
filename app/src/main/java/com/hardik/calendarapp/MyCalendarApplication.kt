@@ -4,12 +4,10 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.utillities.LocaleHelper
-import com.hardik.calendarapp.utillities.Prefs
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -17,15 +15,12 @@ class MyCalendarApplication: Application() {
     private val TAG = BASE_TAG + MyCalendarApplication::class.java.simpleName
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate: ")
         // Step 1: Retrieve saved language and theme preferences
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
         val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
         val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
-
-        Log.e(TAG, "onCreate: timeFormat:$is24HourFormat, appTheme:$appTheme countryCode:$countryCode, languageCode:$languageCode", )
 
         // Step 2: Set the theme
         when (appTheme) {
@@ -37,10 +32,7 @@ class MyCalendarApplication: Application() {
         // Step 3: Update locale
         LocaleHelper.setLocale(this, languageCode)
 
-        // Step 4: Initialize shared preferences
-        Prefs.Builder().setContext(this).build()
-
-        // Step 5: Create notification channel
+        // Step 4: Create notification channel
         createNotificationChannel()
     }
     private fun createNotificationChannel() {

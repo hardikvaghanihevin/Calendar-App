@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,17 +44,15 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     var bundle: Bundle? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate: ")
         arguments?.let { }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? { Log.i(TAG, "onCreateView: ") ; return inflater.inflate(R.layout.fragment_search_event, container, false) }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? { return inflater.inflate(R.layout.fragment_search_event, container, false) }
 
     @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG, "onViewCreated: ")
         _binding = FragmentSearchEventBinding.bind(view)
 
         viewModel.getAllEvents()
@@ -67,12 +64,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
             if (isAdded){
                 // Set inactive background (null)
                 this.setBackgroundResource(0) // 0 removes any background
-                // Ensure SearchView stays expanded and doesn't collapse
-                //this.isIconified = false
-                //this.setIconifiedByDefault(false)
                 this.queryHint = getString(R.string.search_event)
-
-                /*this.setPadding(resources.getDimension(com.intuit.sdp.R.dimen._24sdp).toInt(), 0, 0, 0 )*/
 
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
@@ -81,27 +73,21 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         this.setBackgroundResource(R.drawable.item_background)
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
                             setMargins(
-                                0, //resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
-                                0,  // Top margin
+                                0, // Start margin
+                                0, // Top margin
                                 resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(), // End margin
-                                0   // Bottom margin
+                                0 // Bottom margin
                             )
                         }
 
                     } else {
                         // Refocus the SearchView if it loses focus
-                        //this.requestFocus()
-
-                        // Set inactive background (null)
-                        //this.setBackgroundResource(0) // 0 removes any background
-                        //this.setBackgroundResource(R.drawable.item_background)
-
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
                             setMargins(
                                 0, // Start margin
-                                0,  // Top margin
-                                0,//resources.getDimension(com.intuit.sdp.R.dimen._4sdp).toInt(), // End margin
-                                0   // Bottom margin
+                                0, // Top margin
+                                0, // End margin
+                                0  // Bottom margin
                             )
                         }
                     }
@@ -180,63 +166,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 }
             })
 
-
-            binding.rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    for (i in 0 until recyclerView.childCount) {
-                        val child = recyclerView.getChildAt(i)
-                        val viewHolder = recyclerView.getChildViewHolder(child) as EventAdapter.ViewHolder //ParallaxAdapter.ParallaxViewHolder
-
-                        // Calculate the offset for parallax scrolling
-                        val offset = calculateParallaxOffset(recyclerView, child)
-                        //viewHolder.updateParallaxOffset(offset)
-                    }
-                }
-
-                private fun calculateParallaxOffset(recyclerView: RecyclerView, view: View): Int {
-                    val recyclerViewHeight = recyclerView.height
-                    val itemCenter = (view.top + view.bottom) / 2
-                    val recyclerViewCenter = recyclerViewHeight / 2
-
-                    // Calculate the distance from the item center to the RecyclerView center
-                    val distanceFromCenter = recyclerViewCenter - itemCenter
-
-                    // Adjust the parallax intensity (higher values for stronger effect)
-                    val parallaxIntensity = 0.2//0.5f
-
-                    return (distanceFromCenter * parallaxIntensity).toInt()
-                }
-            })
-
-            //todo: or use this
-
-            /*binding.rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    for (i in 0 until recyclerView.childCount) {
-                        val child = recyclerView.getChildAt(i)
-                        val viewHolder = recyclerView.getChildViewHolder(child) as EventAdapter.ViewHolder //ParallaxAdapter.ParallaxViewHolder
-
-                        // Get item details
-                        val imageView = child.findViewById<ImageView>(R.id.img_itemEventLay_monthTransitionImage)
-                        val imageHeight = imageView.drawable?.intrinsicHeight ?: 0
-                        val viewTop = child.top
-                        val viewBottom = child.bottom
-
-                        // Update parallax offset
-                        viewHolder.updateParallaxOffset(
-                            imageHeight = imageHeight,
-                            viewTop = viewTop,
-                            viewBottom = viewBottom,
-                            recyclerViewHeight = recyclerView.height
-                        )
-                    }
-                }
-            })*/
-
             rvEvent.adapter = eventAdapter
 
             collectDataForAdapter()
@@ -288,11 +217,10 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                                 safeBinding.rvEvent.scrollToPosition(120) // Scroll to position 12 after the data is set
                             }
 
-                            //binding.recyclerview.setPadding(0, 0, 0, 0)  // To remove the extra space on top and bottom of the RecyclerVie
                             safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
                         }
                     }else {
-                        Log.w(TAG, "observeViewModelState: Binding is null, skipping UI update.")
+                        // observeViewModelState: Binding is null, skipping UI update.
                     }
                 }
 
@@ -301,15 +229,34 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     }
 
     private fun navigateToViewEventFrag(event: Event) {
-        Log.i(TAG, "navigateToViewEventFrag: ")
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToViewEventFrag:  ${Thread.currentThread().name}",)
             bundle = (bundle ?: Bundle()).apply {
                 putParcelable(Constants.KEY_EVENT, event)// Pass the event object
             }
             findNavController().navigate(R.id.viewEventFragment, bundle, MyNavigation.navOptions)
-            //findNavController().navigate(R.id.newEventFragment, bundle)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        resetSearchView()
+        _binding = null
+    }
+
+    private fun resetSearchView() {
+        currentQuery = null // Clear the query
+        eventAdapter.filter.filter("") // Reset the filter
+
+        val searchView = (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView
+        searchView.apply {
+            // Clear the text
+            setQuery("", false)
+            // Collapse the search view if it's open
+            clearFocus()
+            isIconified = true
+            // Reset background or other styles
+            setBackgroundResource(0)
         }
     }
 

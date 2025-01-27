@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +38,6 @@ class CalendarMonthPageAdapter() :
     // Set selected date
     @SuppressLint("NotifyDataSetChanged")
     fun setSelectedDate(yyyy_mm_dd: String?) {
-        Log.e(TAG, "setSelectedDate: $yyyy_mm_dd")
         if (selectedDate != yyyy_mm_dd) {
             selectedDate = yyyy_mm_dd
             notifyDataSetChanged()
@@ -59,7 +57,6 @@ class CalendarMonthPageAdapter() :
     }
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
-        //val monthIndex = position % 12
         val (year, month) = yearMonthPairList[position]
 
         val weekStart = when(firstDayOfTheWeek){
@@ -83,7 +80,6 @@ class CalendarMonthPageAdapter() :
             }
             configureCustomViewCallback?.invoke(cvm) // Optional callback for further customization
         }
-        //holder.bind(eventsOfDateMap)
     }
 
     override fun getItemCount(): Int = yearMonthPairList.size
@@ -94,16 +90,6 @@ class CalendarMonthPageAdapter() :
     fun configureCustomView(callback: (CustomViewMonth) -> Unit) {
         this.configureCustomViewCallback = callback
     }
-}
-
-private var dateSelectedCallback: ((String?) -> Unit)? = null
-fun setDateSelectedCallback(callback: (String?) -> Unit) {
-    dateSelectedCallback = callback
-}
-
-// Call this method when a date is selected
-fun notifyDateSelected(date: String?) {
-    dateSelectedCallback?.invoke(date)
 }
 
 

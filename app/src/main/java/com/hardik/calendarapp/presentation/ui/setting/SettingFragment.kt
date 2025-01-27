@@ -5,36 +5,25 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentSettingBinding
-import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
-import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.LocaleHelper
 
 
 class SettingFragment : Fragment(R.layout.fragment_setting) {
     private val TAG = BASE_TAG + SettingFragment::class.java.simpleName
 
-    private val viewModel: NewEventViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
     private var _binding: FragmentSettingBinding? = null
     private val binding get() = _binding!!
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate: ")
-        arguments?.let {}
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         applyThemeAndLocale()
@@ -42,7 +31,6 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.i(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSettingBinding.bind(view)
 
@@ -105,8 +93,7 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_time_format_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.time_format) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                    this.constLayItemSetting.setOnClickListener { /*Toast.makeText(requireContext(), "Time Format!",Toast.LENGTH_SHORT).show()*/
-                        (activity as MainActivity).showTimeFormatDialog()}
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).showTimeFormatDialog() }
                 }
 
                 //todo: About:
@@ -126,15 +113,13 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_share_app_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.share_app) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                    this.constLayItemSetting.setOnClickListener { //Toast.makeText(requireContext(), "Share App!",Toast.LENGTH_SHORT).show()
-                        (activity as MainActivity).shareApp() }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).shareApp() }
                 }
                 includedItemFeedBack.apply {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_feedback_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.feedback) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
-                    this.constLayItemSetting.setOnClickListener { //Toast.makeText(requireContext(), "Feedback!",Toast.LENGTH_SHORT).show()
-                        (activity as MainActivity).feedback() }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).feedback() }
                 }
                 includedItemDeviceInfo.apply {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_device_info_icon) }
@@ -146,7 +131,7 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.imgSettingIcon.apply { setImageResource(R.drawable.setting_version_icon) }
                     this.tvSettingItemTitle.apply { text = getString(R.string.version) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon); visibility = View.GONE }
-                    this.constLayItemSetting.setOnClickListener { /*Toast.makeText(requireContext(), "Version",Toast.LENGTH_SHORT).show()*/ }
+                    this.constLayItemSetting.setOnClickListener {  }
                     this.tvSettingItemDesc.apply {
                         visibility = View.VISIBLE
                         val appVersion = try {

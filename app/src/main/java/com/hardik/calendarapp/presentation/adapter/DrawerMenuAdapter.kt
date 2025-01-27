@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -24,11 +23,6 @@ data class DrawerMenuItem(
     var isSelected: Boolean = false // Track selected state
 )
 
-//fun getDrawableFromAttribute(context: Context, attr: Int): Drawable? {
-//    val typedValue = TypedValue()
-//    context.theme.resolveAttribute(attr, typedValue, true)
-//    return ContextCompat.getDrawable(context, typedValue.resourceId)
-//}
 /**
  * Retrieves a Drawable from either a theme attribute or a direct resource ID.
  *
@@ -75,7 +69,6 @@ fun getDrawableFromAttribute(context: Context, attr: Int): Drawable? {
             ContextCompat.getDrawable(context, attr)
         } catch (e: Resources.NotFoundException) {
             // Handle the case where the drawable is not found.
-            Log.e(TAG, "getDrawableFromAttribute: Drawable not found for ID: $attr", e)
             null
         }
     } else {
@@ -84,10 +77,7 @@ fun getDrawableFromAttribute(context: Context, attr: Int): Drawable? {
 }
 
 val TAG = BASE_TAG + DrawerMenuAdapter::class.java.simpleName
-class DrawerMenuAdapter(
-//    private val items: List<DrawerMenuItem>,
-//    private val onClick: (DrawerMenuItem) -> Unit
-) : RecyclerView.Adapter<DrawerMenuAdapter.ViewHolder>() {
+class DrawerMenuAdapter() : RecyclerView.Adapter<DrawerMenuAdapter.ViewHolder>() {
 
     private var items: List<DrawerMenuItem> = emptyList()
     private var onClick: ((DrawerMenuItem, Int) -> Unit)? = null
@@ -105,22 +95,6 @@ class DrawerMenuAdapter(
     fun setOnClickListener(listener: (DrawerMenuItem, Int) -> Unit) {
         onClick = listener
     }
-//    @SuppressLint("NotifyDataSetChanged")
-//    fun updateTitles(context: Context) {
-//        items.forEach { item ->
-//            when (item.id) {
-//                R.id.nav_year -> item.title = context.getString(R.string.year)
-//                R.id.nav_month -> item.title = context.getString(R.string.month)
-//                R.id.nav_select_country -> item.title = context.getString(R.string.select_country)
-//                R.id.nav_select_language -> item.title = context.getString(R.string.select_language)
-//                R.id.nav_first_day_of_week -> item.title = context.getString(R.string.first_day_of_the_week)
-//                R.id.nav_jump_to_date -> item.title = context.getString(R.string.jump_to_date)
-//                R.id.nav_privacy_policy -> item.title = context.getString(R.string.privacy_policy)
-//                R.id.nav_setting -> item.title = context.getString(R.string.setting)
-//            }
-//        }
-//        notifyDataSetChanged() // Notify the adapter of data changes
-//    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val container: LinearLayout = view.findViewById(R.id.drawer_menu_item_container)
@@ -159,11 +133,9 @@ class DrawerMenuAdapter(
             val previousSelectedPosition = selectedPosition
 
             onClick?.invoke(item, position)
-            //onClick(item) ;
-            //setSelectedPosition(position)
 
-            // Check if the item title is "Jump to Date", "App Theme", or "First Day of the Week"
-            if (item.title == "Jump to Date" || item.title == "App Theme" || item.title == "First Day of the Week" || item.title == "Device Information") {
+            // Check if the item title is "Jump to Date", or "First Day of the Week"
+            if ( item.title == ContextCompat.getString(it.context,R.string.jump_to_date) || item.title == ContextCompat.getString(it.context,R.string.first_day_of_the_week) ) {
                 // If title matches, unselect the item (clear selection)
                 selectedPosition = previousSelectedPosition//-1 // or any other logic for unselecting
 

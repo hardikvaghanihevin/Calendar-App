@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-//    id ("kotlin-kapt")
-    id("androidx.navigation.safeargs.kotlin") // Apply Safe Args here
     id("com.google.gms.google-services")
     id ("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
@@ -97,15 +95,13 @@ dependencies {
     implementation(libs.androidx.ui.graphics.android)
     implementation(libs.legacy.support.v4)
     implementation(libs.preference)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+//    testImplementation(libs.junit)
+//    androidTestImplementation(libs.androidx.junit)
+//    androidTestImplementation(libs.androidx.espresso.core)
 
     // Hilt DI
-//    implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03") // Todo:hilt-lifecycle-viewmodel is outdated. Hilt’s lifecycle integration is now part of the core Hilt library, so you can remove the androidx.hilt:hilt-lifecycle-viewmodel dependency entirely.
     implementation ("com.google.dagger:hilt-android:2.48")
     ksp ("com.google.dagger:hilt-compiler:2.48")
-//    kapt ("com.google.dagger:hilt-compiler:2.48.1")
 
     // Coroutine dependencies support
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -132,17 +128,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-//    implementation("androidx.room:room-runtime:2.6.1")
-//    implementation ("androidx.room:room-ktx:2.6.1")
-//    kapt ("androidx.room:room-compiler:2.6.1")
-
-
     // Glide for image loading
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
-
-    // Palette API works best with colorful images
-    implementation(libs.androidx.palette.ktx)
 
     // UI and layout dependencies
     implementation ("com.intuit.sdp:sdp-android:1.1.0")
@@ -164,8 +152,6 @@ dependencies {
     implementation ("androidx.activity:activity-ktx:1.7.2")
     // Fragment extensions for ViewModel
     implementation ("androidx.fragment:fragment-ktx:1.6.1")
-
-//    implementation("com.kizitonwose.calendar:view:2.0.0")
 
     // Material Design Components
     implementation ("com.google.android.material:material:1.9.0")

@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.content.res.ResourcesCompat
@@ -220,7 +219,6 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             _currentYear = typedArray.getInt(R.styleable.CustomView_running_year, Calendar.getInstance().get(Calendar.YEAR))
             _currentMonth = typedArray.getInt(R.styleable.CustomView_running_month, Calendar.getInstance().get(Calendar.MONTH))
             _currentDate = typedArray.getInt(R.styleable.CustomView_running_date, Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
-            //Log.d(TAG, "date $currentDate")
 
             _monthNameWithYear = typedArray.getBoolean(R.styleable.CustomView_month_name_with_year, false)
             _isMonthViewVisible = typedArray.getBoolean(R.styleable.CustomView_is_month_name_view_visible, true)
@@ -317,20 +315,14 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
             return super.onTouchEvent(event)
         }
 
-        //Log.e(TAG, "onTouchEvent: ${event.action}", )
         val x = event.x
         val y = event.y
         //parent?.requestDisallowInterceptTouchEvent(true)
         when(event.action){
 
-            MotionEvent.ACTION_DOWN -> {
-                //Log.d(TAG, "ACTION_DOWN")
-            }
-            MotionEvent.ACTION_MOVE -> {
-                //Log.d(TAG, "ACTION_MOVE")
-            }
+            MotionEvent.ACTION_DOWN -> {}
+            MotionEvent.ACTION_MOVE -> {}
             MotionEvent.ACTION_UP -> {
-                Log.d(TAG, "ACTION_UP")
                 CoroutineScope(Dispatchers.Main).launch {
                     // Check if the month name was clicked
                     if (monthNameBounds.contains(x, y)) {
@@ -350,9 +342,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                             // Get the clicked date from the Triple
                             val clickedDate = triple.third
                             // Update selected date
-                            Log.i(TAG, "onTouchEvent A : selected Date: $_selectedDate")
                             _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
-                            Log.i(TAG, "onTouchEvent B : selected Date: $_selectedDate")
                             // Trigger the listener and redraw the view
                             onDateItemClickListener?.invoke(triple)//todo: OR
 
@@ -370,17 +360,8 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.d(TAG, "onDraw: drawDateBlocks")
 
-/**     todo: here responsiveness to layout
-        val displayMetrics = context.resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels
-        val screenHeight = displayMetrics.heightPixels
-
-        val blockWidth = screenWidth / 7f
-        val monthNameHeight = paint.textSize * 2
-        val dayNameHeight = paint.textSize * 1.5f
-        val availableHeight = screenHeight - monthNameHeight - dayNameHeight // or (screenHeight - monthNameHeight - dayNameHeight)/6f */
+        //todo: here responsiveness to layout
 
         // Set padding (as a percentage of the view height/width for responsiveness)
         val verticalPadding = viewHeight * 0.02f // 2% vertical padding
@@ -552,7 +533,6 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
         dayNameHeight: Float,
         availableHeight: Float
     ) {
-        //Log.d(TAG, "drawDateBlocks: ")
         // Define padding as percentages or fixed values
         val horizontalPadding = viewWidth * 0.05f // 5% of the view width
         val verticalPadding = availableHeight * 0.05f // 5% of the available height
@@ -884,7 +864,7 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                 }
             }
             else -> {
-                Log.e("DrawableModifier", "Unsupported drawable type: ${drawable::class.java}")
+                // Unsupported drawable type: ${drawable::class.java}
             }
         }
 
@@ -962,7 +942,6 @@ fun checkIfDayMatches(dateString: String, targetDay: Int): Boolean {
 }
 
 fun checkIfDayMatches(dateString: String, targetDay: String): Boolean {
-    //Log.i(TAG, "checkIfDayMatches: $dateString == $targetDay")
     return dateString == targetDay
 }
 

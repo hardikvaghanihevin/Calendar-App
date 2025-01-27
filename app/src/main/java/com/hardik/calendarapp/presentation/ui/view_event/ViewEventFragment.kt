@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation.ui.view_event
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -11,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
-import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.data.database.entity.AlertOffset
@@ -40,30 +38,28 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     private lateinit var argEvent: Event
 
-    var is24HourFormat = false
+    private var is24HourFormat = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(Constants.KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
+                it.getParcelable(KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
             } else {
                 @Suppress("DEPRECATION")
-                it.getParcelable(Constants.KEY_EVENT) ?: throw IllegalArgumentException("Event is missing")
+                it.getParcelable(KEY_EVENT) ?: throw IllegalArgumentException("Event is missing")
             }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG, "onViewCreated: ")
         _binding = FragmentViewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
         if (arguments?.containsKey(KEY_EVENT) == true){
-            Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
             populateEventData(event = argEvent)
         }
 
@@ -143,12 +139,10 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             context = requireContext(),
             repeatOption = event.repeatOption
         )
-        //binding.tvAlertPicker.text = AlertOffsetConverter.toDisplayString(context = requireContext(), alertOffset = event.alertOffset)
         val minutesTime = if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME)
             event.customAlertOffset.let {value: Long? ->
-                if (value == null) "Custom time is not set"//"null"
+                if (value == null) getString(R.string.custom_time_is_not_set)
                 else {
-                    //DateUtil.longToString(timestamp = it, pattern = DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm)
                     "${DateUtil.timestampToMinutes(milliseconds = value)} " + resources.getString(R.string.minutes_before)
                 }
             }
@@ -157,45 +151,24 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             alertOffset = event.alertOffset
         )
         binding.tvAlertPicker.text = minutesTime
-
-
-        /*// Update ViewModel with the data
-        viewModel.updateTitle(event.title)
-        viewModel.updateDescription(event.description)
-        viewModel.updateStartDate(DateUtil.stringToLong(event.startDate))
-        viewModel.updateEndDate(DateUtil.stringToLong(event.endDate))
-        viewModel.updateStartTime(event.startTime)
-        viewModel.updateEndTime(event.endTime)
-        viewModel.updateAllDayStatus(false)//event.isAllDay)*/
     }
 
     private fun navigateToNewEventFragForEdit(event: Event) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToNewEventFragForEdit:  ${Thread.currentThread().name}", )
             val bundle = Bundle().apply {
-                putParcelable(Constants.KEY_EVENT, event)// Pass the event object
+                putParcelable(KEY_EVENT, event)// Pass the event object
             }
             findNavController().navigate(R.id.newEventFragment, bundle, navOptions)
         }
     }
 
     override fun onDestroy() {
-        Log.i(TAG, "onDestroy: ")
         lifecycleScope.coroutineContext.cancelChildren()
         super.onDestroy()
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i(TAG, "onDestroyView: ")
-
-        // Check if arguments are present and contain the required keys
-        if ( arguments?.containsKey(Constants.KEY_EVENT) == true ) {
-
-        } else {
-            // Fallback: No arguments,
-        }
-
         _binding = null
     }
 

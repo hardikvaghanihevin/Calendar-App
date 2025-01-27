@@ -43,18 +43,14 @@ data class HolidayApiDetail(
             val self: Boolean
         )
 
-
         data class Start(val date: String)
         data class End(val date: String)
-
 
         data class Organizer(
             val displayName: String,
             val email: String,
             val self: Boolean
         )
-
-
     }
 }
 

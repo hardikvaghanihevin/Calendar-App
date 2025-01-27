@@ -61,12 +61,8 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
             holder.countryFlag?.setImageResource(item.flag)
             if (item.isSelected) {
                 holder.countryCheckbox.setImageResource(R.drawable.icon_checked)
-                //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.accent_primary))
-                //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
             } else {
                 holder.countryCheckbox.setImageResource(R.drawable.icon_unchecked)
-                //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
-                //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
             }
         }else{
             if (item.isSelected) {
@@ -77,17 +73,12 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
         }
 
         holder.itemView.setOnClickListener {
-            //val isNowSelected = !selectedCountries.contains(item.code)// todo: used adapter data list base selected or unselected
             val isNowSelected = item.isSelected//todo: to importance it's set from viewModel base selected or unselected
             if(viewType == VERTICAL){
                 if (isNowSelected) {
                     holder.countryCheckbox.setImageResource(R.drawable.icon_checked)
-                    //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.accent_primary))
-                    //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_medium)
                 } else {
                     holder.countryCheckbox.setImageResource(R.drawable.icon_unchecked)
-                    //holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
-                    //holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
                 }
             }else{
                 if (isNowSelected) {
@@ -102,14 +93,7 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return viewType
-        /*when (position) {
-            0 -> VERTICAL   // For the first item, use VERTICAL view type
-            1 -> HORIZONTAL // For the second item, use HORIZONTAL view type
-            else -> 0       // Default case if no match is found
-        }*/
-    }
+    override fun getItemViewType(position: Int): Int { return viewType }
 
     inner class CountryViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
         val countryName: TextView

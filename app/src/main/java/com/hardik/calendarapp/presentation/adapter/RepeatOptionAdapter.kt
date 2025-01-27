@@ -52,12 +52,8 @@ class RepeatOptionAdapter(
         // Set the icon based on whether the item is selected
         if (item.isSelected) {
             holder.selectIcon.setImageResource(R.drawable.icon_checked)  // Selected icon
-            //holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.accent_primary))
-            //holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_medium)
         } else {
             holder.selectIcon.setImageResource(R.drawable.icon_unchecked)  // Unselected icon
-            //holder.languageText.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
-            //holder.languageText.typeface = ResourcesCompat.getFont(context, R.font.post_nord_sans_regular)
         }
 
         holder.itemView.setOnClickListener {

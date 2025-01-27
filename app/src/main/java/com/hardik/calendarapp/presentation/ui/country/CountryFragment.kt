@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation.ui.country
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
@@ -78,12 +77,9 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 //countryAdapter.submitList(countryItems) // Use Default item of list if needed
                 countryAdapter.apply {
                     submitFullList(countryItems) // Use the filtered list
-                    //currentQuery?.let { this.filter.filter(it) } //IndexOutOfBoundsException: Index: 9, Size: 9
                 }
 
                 val selectedCountryItems = countryItems.filter { it.isSelected } // Filter only selected items
-                //Log.i(TAG, "onViewCreated: selectedCountry $selectedItems", )
-                //selectedCountryAdapter.submitList(selectedCountryItems) // Use Default item of list if needed
                 selectedCountryAdapter.submitFullList(selectedCountryItems) // Use the filtered list
 
                 delay(100)
@@ -203,7 +199,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     if (findNavController().currentDestination?.id == R.id.nav_select_country) {
                         findNavController().popBackStack(R.id.nav_select_country, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                     } else {
-                        Log.e(TAG,"NavigationError ->: Destination not in back stack")
+                        // NavigationError ->: Destination not in back stack
                     }
                 }
             }

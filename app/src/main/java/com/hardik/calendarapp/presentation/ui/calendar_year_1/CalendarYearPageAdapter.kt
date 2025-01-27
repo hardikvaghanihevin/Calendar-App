@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.calendar_year_1
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,14 +9,6 @@ import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
 class CalendarYearPageAdapter(private var yearList: Map<Int, Map<Int, List<Int>>>) :
     RecyclerView.Adapter<CalendarYearPageAdapter.MonthViewHolder>() {
-
-    private var yr:Int = 0
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateYear(year: Int) {
-        yr = year
-        notifyItemChanged(year)
-        Log.i("TAG", "updateYear: $yr")
-    }
 
     // Method to update yearList and refresh the RecyclerView
     @SuppressLint("NotifyDataSetChanged")
@@ -38,11 +29,7 @@ class CalendarYearPageAdapter(private var yearList: Map<Int, Map<Int, List<Int>>
     }
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
-        val context = holder.itemView.context
         val yearKey: Int = yearList.keys.toList()[position]
-
-//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-//        val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
 
         val weekStart = when(firstDayOfTheWeek){
             "Sunday" -> CustomViewMonth.WeekStart.SUNDAY

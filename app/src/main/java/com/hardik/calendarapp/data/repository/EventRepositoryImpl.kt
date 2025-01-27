@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
@@ -35,21 +34,16 @@ class EventRepositoryImpl @Inject constructor(
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override suspend fun upsertEvent(event: Event) {
-        Log.d(TAG, "upsertEvent() called with: event = $event")
-        //cancelAlarm(event.eventId) // Cancel any existing alarms for this event
         eventDao.upsertEvent(event)
         scheduleAlarm(event)       // Set a new alarm for this event
     }
 
     override suspend fun upsertEvents(events: List<Event>) {
-        Log.v(TAG, "upsertEvents: ")
         eventDao.upsertEvents(events)
 
         // Get the current date and the date 365 days later
 
         val timeSlap: Pair<Long, Long> = DateUtil.getCurrentAndFutureRange()
-//        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
-//                if (event.year == currentYear) { scheduleAlarm(event) }
 
         // Use supervisorScope to handle independent coroutines
         supervisorScope {
@@ -116,17 +110,15 @@ class EventRepositoryImpl @Inject constructor(
 
     private fun scheduleAlarm(event: Event) {
         if (!hasExactAlarmPermission()) {
-            Log.w(TAG, "Exact alarm permission missing.")
+            // Exact alarm permission missing.
             requestExactAlarmPermission()//todo: here error occur on API 34 when event create( it has not permission to alarm manager)
         } else {
             AlarmScheduler.updateAlarm(context, event)
-            Log.v(TAG, "Alarm scheduled for event: ${event}")
-            //Toast.makeText(context, "Alarm set for event: ${event.title}", Toast.LENGTH_SHORT).show()
+            // Alarm scheduled for event: ${event}
         }
     }
 
     override suspend fun cancelAlarm(id: String) {
-        Log.i(TAG, "cancelAlarm: id:$id")
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = "com.hardik.calendarapp.NOTIFY_EVENT"
         val pendingIntent = PendingIntent.getBroadcast(
@@ -136,20 +128,12 @@ class EventRepositoryImpl @Inject constructor(
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
         pendingIntent?.let { alarmManager.cancel(it) }
-        Log.d(TAG, "Alarm canceled for eventId: ${id.hashCode()}")
     }
     private suspend fun cancelAllRemoteAlarms() {
-        Log.i(TAG, "cancelAllRemoteAlarms: ")
         CoroutineScope(Dispatchers.IO).launch {
             eventDao.getHolidayEventsFlow().collectLatest {
                 it.forEach { event -> cancelAlarm(event.id) }// currently no use
             }
-        }
-    }
-    private fun cancelAllAlarms() {
-        Log.i(TAG, "cancelAllAlarms: ")
-        CoroutineScope(Dispatchers.IO).launch {
-            eventDao.getAllEvents().forEach { event -> cancelAlarm(event.id) }// currently no use
         }
     }
 

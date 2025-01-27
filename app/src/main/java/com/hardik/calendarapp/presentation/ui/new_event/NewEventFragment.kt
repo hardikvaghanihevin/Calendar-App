@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -64,7 +63,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate: ")
         arguments?.let {
             argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getParcelable(KEY_EVENT, Event::class.java)
@@ -77,11 +75,9 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
 
         if (arguments?.containsKey(KEY_EVENT) == true){
-            Log.e(TAG, "onViewCreated: argEvent:$argEvent", )
             populateEventData(event = argEvent)
             updateToolbarTitle(resources.getString(R.string.update_event))
         }else{
-            Log.e(TAG, "onViewCreated: argEvent is null", )
             viewModel.resetEventState()
             updateToolbarTitle(resources.getString(R.string.new_event))
         }
@@ -93,7 +89,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG, "onViewCreated: ")
         _binding = FragmentNewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -103,10 +98,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.yearState.collectLatest { year ->
-                        Log.i(TAG, "setupUI: year:$year")
-                        //Toast.makeText(requireContext(), "$year", Toast.LENGTH_SHORT).show()
-                    }
+                    viewModel.yearState.collectLatest { year -> }
                 }
                 launch {
                     viewModel.startDate.collectLatest { startDate ->
@@ -190,9 +182,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                             if (value == AlertOffset.BEFORE_CUSTOM_TIME){
                                 launch {
                                     viewModel.customAlertOffset.collectLatest { value: Long? ->
-                                        val minutesTime = if (value == null) "Custom time is not set"//"null"
+                                        val minutesTime = if (value == null) getString(R.string.custom_time_is_not_set)
                                         else {
-                                            //DateUtil.longToString(timestamp = it, pattern = DateUtil.DATE_TIME_FORMAT_yyyy_MM_dd_HH_mm)
                                             "${DateUtil.timestampToMinutes(milliseconds = value)} " + resources.getString(R.string.minutes_before)
                                         }
                                         binding.tvAlertPicker.text = minutesTime
@@ -244,16 +235,12 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 lifecycleScope.launch {
                     val msg: String = viewModel.run {
                         val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
-                        val eventId = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.eventId else 0
-                        Log.e(TAG, "eventId is -> id: $id", )
-                        //AlarmScheduler.cancelAlarm(requireContext(), eventId.toInt())
+
                         if (id != null) { viewModel.cancelAlarm(id) }
                         insertCustomEvent(context = requireContext(),id = id)
                     }
 
                     // Display a message to the user
-                    //Snackbar.make(view, msg, Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
-                    //Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show()
 
                     // Reset the fields after successful insertion
@@ -261,7 +248,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                         viewModel.resetEventState()
                     }
                     findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
-                    //findNavController().popBackStack(R.id.newEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                 }
             }
         }
@@ -282,12 +268,10 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i(TAG, "onDestroyView: ")
         _binding = null
     }
 
     private fun populateEventData(event: Event) {
-        Log.e(TAG, "populateEventData: ${DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)}", )
         // Update ViewModel with the data
         viewModel.updateTitle(event.title)
         viewModel.updateDescription(event.description)
@@ -321,10 +305,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
 
         // Initialize DatePicker with the current date
-        datePicker?.init(currentYear, currentMonth, currentDay) { _, year, month, day ->
-            val selectedDate = "$day/${month + 1}/$year" // Month is 0-based
-            Log.d(TAG, "Selected Date: $selectedDate")
-        }
+        datePicker?.init(currentYear, currentMonth, currentDay) { _, year, month, day -> }
+
         // Programmatically set a date (e.g., January 1, 2025) datePicker.updateDate(2025,0,1)
         if (arguments?.containsKey(KEY_EVENT) == true){
             val data = DateUtil.stringToDateTriple(argEvent.startDate.takeIf { isStartDate } ?: argEvent.endDate,)
@@ -338,7 +320,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
         // Set background to transparent if needed
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -364,9 +345,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             }.timeInMillis
             selectedEpochTime = selectedCalendar
 
-            val selectedDate = "$selectedDay/$selectedMonth/$selectedYear"
-            Log.d(TAG, "Final Selected Date (Epoch): $selectedEpochTime, Date: $selectedDate ")
-
             // Update ViewModel based on start or end date
             if (isStartDate) {
                 viewModel.updateStartDate(selectedEpochTime)
@@ -385,107 +363,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         dialog.show()
     }
 
-    /*fun showDatePickerDialog(isStartDate: Boolean) {
-        Log.i(TAG, "showJumpToDateDialog: ")
-        val dialogView = layoutInflater.inflate(R.layout.dialog_item_date_picker, null)
-        bindingDatePicker = DialogItemDatePickerBinding.bind(dialogView)
-
-        // Create and display the dialog
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        // Set background to transparent if needed
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
-
-        // Ensure the dialog's size wraps the content
-        dialog.setOnShowListener {
-            dialog.window?.setLayout(
-                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
-                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
-            )
-        }
-
-        dialog.setCancelable(true)
-
-        bindingDatePicker?.apply {
-            yearPicker.apply {
-                minValue = 2000
-                maxValue = 2100
-                //value = Calendar.getInstance().get(Calendar.YEAR)//2025
-
-                lifecycleScope.launch {
-                    mainViewModel.yearJTD.collectLatest {
-                        value = it
-                    }
-                }
-
-                this.setOnValueChangedListener { picker, oldVal, newVal ->
-                    mainViewModel.updateYearJTD( year = newVal )
-                }
-            }
-            monthPicker.apply {
-                minValue = 1
-                maxValue = 12
-                //value = Calendar.getInstance().get(Calendar.MONTH) + 1 //12
-
-                lifecycleScope.launch {
-                    mainViewModel.monthJTD.collectLatest {
-                        value = it
-                    }
-                }
-
-                this.setOnValueChangedListener { picker, oldVal, newVal ->
-                    mainViewModel.updateMonthJTD( month = newVal )
-                }
-            }
-            datePicker.apply {
-                minValue = 1
-                //maxValue = 28
-                //value = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-
-                lifecycleScope.launch {
-                    mainViewModel.dateMaxJTD.collectLatest {
-                        maxValue = it
-                    }
-                }
-
-                lifecycleScope.launch {
-                    mainViewModel.dateJTD.collectLatest {
-                        value = it
-                    }
-                }
-
-                this.setOnValueChangedListener { picker, oldVal, newVal ->
-                    mainViewModel.updateDateJTD( date = newVal )
-                }
-
-                *//* // Listen for changes in the month picker value
-                 monthPicker.setOnValueChangedListener { _, _, newMonth ->
-
-                     val maxDays = getMinMaxDays(yearPicker.value, newMonth -1 )
-
-                     datePicker.maxValue = maxDays.second ?: 1
-                 }*//*
-            }
-
-            btnDone.setOnClickListener {
-                val selectedYear = yearPicker.value
-                val selectedMonth = monthPicker.value
-                val selectedDay = datePicker.value
-                // Perform your "Jump to Date" logic here
-                Log.d(TAG, "showDatePickerDialog: $selectedYear - $selectedMonth - $selectedDay")
-
-                dialog.dismiss()
-            }
-            btnCancel.setOnClickListener { dialog.dismiss() }
-        }
-
-        dialog.show()
-    }*/
-
     private var bindingTimePicker: DialogItemTimePickerBinding? = null
     @SuppressLint("InflateParams")
     fun showTimePickerDialog(isStartTime: Boolean) {
@@ -498,10 +375,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
         // Configure TimePicker
         timePicker?.apply {
-            //setIs24HourView(false) // Use 12-hour format
             setIs24HourView(is24HourFormat) // Use 12-hour format
-            //hour = 0 // Set the hour (0 for 12 AM)
-            //minute = 23 // Set the minute
             // Programmatically set a time (e.g., 0:12)
             if (arguments?.containsKey(KEY_EVENT) == true){
                 val data = DateUtil.longToString(timestamp = argEvent.startTime.takeIf { isStartTime } ?: argEvent.endTime,pattern = DateUtil.TIME_FORMAT_hh_mm_a)
@@ -557,10 +431,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
 
-            Log.d(TAG,"TimePicker: Selected Time in Millis: $selectedTimeInMillis")
-            val selectedTime = String.format("%02d:%02d", hour, minute)
-            Log.d(TAG,"TimePicker: Selected Time: $selectedTime")
-
             if (isStartTime) {
                 viewModel.updateStartTime(selectedTimeInMillis)
             } else {
@@ -587,7 +457,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private fun navigateToRepeatOptionFrag() {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToRepeatOptionFrag():  ${Thread.currentThread().name}", )
             val repeatOpt: String = RepeatOptionConverter.toDisplayString(requireContext(), viewModel.repeatOption.value)
             val bundle = Bundle().apply {
                 putString(KEY_EVENT_REPEAT,  repeatOpt)
@@ -600,10 +469,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     private fun navigateToAlertOptionFrag() {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToAlertOptionFrag():  ${Thread.currentThread().name}", )
             val alertOpt: String = AlertOffsetConverter.toDisplayString(requireContext(), viewModel.alertOffset.value)
             val bundle = Bundle().apply { putString(KEY_EVENT_ALERT, alertOpt) }
-                //putParcelable(KEY_EVENT, argEvent) // Pass the event object
 
             findNavController().navigate(R.id.alertOptionFragment, bundle, MyNavigation.navOptions)
         }

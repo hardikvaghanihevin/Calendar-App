@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation.ui.calendar_year_1
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -48,7 +47,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG, "onViewCreated: ")
 
         _binding = FragmentCalendarYear1Binding.bind(view)
 
@@ -60,10 +58,10 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                     // Launch setupViewPager after setupUI is complete
                     setupViewPager()
                 }else {
-                    Log.d("LanguageFragment", "Fragment is not added, skipping repeatOnLifecycle")
+                    // Fragment is not added, skipping repeatOnLifecycle
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error during setup: ${e.message}")
+                //"Error during setup: ${e.message}"
             }
 
         }
@@ -76,7 +74,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             // Get the yearKey at the given position
             val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
             if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
-            //Log.d(TAG, "refreshToYear: $yearKeyPos = $yearKeyAtPosition")
             if (::viewPager.isInitialized) {
                 if (yearKeyPos != null) { viewPager.setCurrentItem(yearKeyPos, true) } // Navigate to the desired position
                 adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
@@ -86,35 +83,29 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     override fun onResume() {
         super.onResume()
-        Log.i(TAG, "onResume: ")
         KeyboardUtils.hideKeyboard(requireActivity())
         requireActivity().invalidateOptionsMenu()
     }
 
     override fun onDestroy() {
-        Log.i(TAG, "onDestroy: ")
         lifecycleScope.coroutineContext.cancelChildren()
         super.onDestroy()
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i(TAG, "onDestroyView: ")
         _binding = null
     }
 
     private fun setupUI() {
-        Log.i(TAG, "setupUI: ")
 
         lifecycleScope.launch(Dispatchers.Main) {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.yearList.collectLatest{
-                    Log.e(TAG, "observeViewModelState: $it", )
 
                     yearList = it
                     adapter.updateYearList(it)
 
                     val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
-                    Log.i(TAG, "setupUI: current year: $year")
 
                     viewPager.setCurrentItem(yearPosition,false)
                 }
@@ -133,7 +124,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             // Safely collect yearState during STARTED state
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.yearState.collectLatest{//collectLatest
-                    Log.i(TAG, "setupUI: year: $it")
                     binding.tvYearTitle.text = "$it"
                     updateToolbarTitle("$it")
                     year = it
@@ -153,9 +143,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
 
     private fun setupViewPager(){
-        Log.i(TAG, "setupViewPager: ")
         val yearPosition = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
-        Log.i(TAG, "setupViewPager: $year")
 
         // When swipe happens, update the year in your adapter based on the position
         // todo: this is necessary to give previous position (which are you want)
@@ -177,11 +165,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 val yearKeyAtPosition = getYearKeyAtPosition(yearList,position)
                 if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
 
-                if (position > previousPosition) { // Swiped right: increment month
-                    Log.d(TAG, "onPageSelected: Swiped Right (Next Year)")
-                } else if (position < previousPosition) { // Swiped left: decrement month
-                    Log.d(TAG, "onPageSelected: Swiped Left (Next Year)")
-                }
                 // Update previous position to current one for next swipe comparison
                 previousPosition = position
             }
@@ -202,15 +185,12 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private fun navigateToCalendarMonth(year: Int, month: Int) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            Log.e(TAG, "navigateToCalendarMonth:  ${Thread.currentThread().name}", )
             val bundle = Bundle().apply {
                 putInt(KEY_YEAR, year)
                 putInt(KEY_MONTH, month)
             }
-            val action = CalendarYear1FragmentDirections.actionCalendarYear1FragmentToCalendarMonth1Fragment()
             findNavController().navigate(R.id.nav_month, bundle, navOptions)
         }
-        // setOnMonthClickListener { year, month -> navigateToCalendarMonth(year=year, month=month)}
     }
 
     private fun updateToolbarTitle(title: String) { }

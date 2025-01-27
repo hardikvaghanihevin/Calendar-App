@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -44,10 +43,9 @@ class NotificationReceiver : BroadcastReceiver() {
 
             if (event != null) {
 
-                val eventId = event.id //intent.getStringExtra("event_id") ?: "0"
-                val title = event.title //intent.getStringExtra("event_title") ?: "Event Reminder"
-                val description = event.description //intent.getStringExtra("event_description") ?: "You have an event!"
-                Log.d(TAG, "onReceive: $eventId")
+                val eventId = event.id
+                val title = event.title
+                val description = event.description
                 scheduleRepeatingNotification(context , event)
 
                 showNotification(context, title, description, eventId)
@@ -102,7 +100,6 @@ class NotificationReceiver : BroadcastReceiver() {
 
     private fun scheduleRepeatingNotification(context: Context, event: Event) {
         if (event.repeatOption != RepeatOption.NEVER && event.alertOffset != AlertOffset.NONE) { // Check if repeat option is not NEVER
-            Log.i(TAG, "scheduleRepeatingNotification: Scheduling repeat for event: $event")
 
             val nextTriggerTime = calculateTriggerTime(alertOffset = event.alertOffset, repeatOption = event.repeatOption, baseTimeInMillis = event.triggerTime)//System.currentTimeMillis() + event.repeatIntervalMillis
             val updatedEvent = event.copy(triggerTime = nextTriggerTime)
@@ -114,7 +111,7 @@ class NotificationReceiver : BroadcastReceiver() {
             }
 
         }else {
-            Log.i(TAG, "scheduleRepeatingNotification: Never scheduling repeat for event: $event")
+            //Never scheduling repeat for event: $event
         }
     }
 

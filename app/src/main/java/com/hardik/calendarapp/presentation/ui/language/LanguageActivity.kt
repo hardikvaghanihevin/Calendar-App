@@ -3,7 +3,6 @@ package com.hardik.calendarapp.presentation.ui.language
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -30,43 +29,30 @@ import java.util.Locale
 
 @AndroidEntryPoint
 class LanguageActivity : AppCompatActivity() {
-
     private val TAG = Constants.BASE_TAG + LanguageActivity::class.java.simpleName
 
     private lateinit var binding: ActivityLanguageBinding
     private val viewModel: MainViewModel by viewModels()
 
-    //private lateinit var languageEntries: Array<String>
-    //private lateinit var languageValues: Array<String>
     private var selectedLanguage: String? = null
 
     private lateinit var languageAdapter: LanguageAdapter
     private lateinit var languageItems: List<LanguageItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)
         binding = ActivityLanguageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
+        val isFirstLaunch = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("isFirstLaunch", true)
 
         // If it's the first launch, update the SharedPreferences
         if (isFirstLaunch) {
-            sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
             binding.includedLanguageActivityCustomToolbar.sivNavigationIcon.visibility = View.GONE
             binding.includedLanguageActivityCustomToolbar.toolbarTitle.apply {
-                setPadding(
-                    resources.getDimensionPixelSize(R.dimen.itemLayoutHorizontalSpacing), // Left padding
-                    0, // Top padding
-                    0, // Right padding
-                    0  // Bottom padding
-                )
+                setPadding(resources.getDimensionPixelSize(R.dimen.itemLayoutHorizontalSpacing), 0, 0, 0)
             }
         }
-
-        Log.e(TAG, "onCreate: $isFirstLaunch", )
 
         setupToolbar()
         loadLanguages()
@@ -94,10 +80,6 @@ class LanguageActivity : AppCompatActivity() {
     }
 
     private fun loadLanguages() {
-        //languageEntries = resources.getStringArray(R.array.language_entries)
-        //languageValues = resources.getStringArray(R.array.language_values)
-
-        //languageItems = languageEntries.mapIndexed { index, language -> LanguageItem(language, languageValues[index] == getCurrentLanguage()) }
         languageItems = getLanguageList().map { languageItem ->
             languageItem.copy(isSelected = languageItem.code == getCurrentLanguage())
         }
@@ -105,7 +87,7 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         languageAdapter = LanguageAdapter(this, languageItems) { position ->
-            selectedLanguage = languageItems.get(position).code//languageValues[position]
+            selectedLanguage = languageItems.get(position).code
         }
 
         binding.languageRecView.apply {
@@ -151,6 +133,7 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun setupSaveButton() {
         binding.includedLanguageActivityCustomToolbar.saveSelectionIcon.setOnClickListener {
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isFirstLaunch", false).apply()
             selectedLanguage?.let {
                 lifecycleScope.launch {
                     saveLanguage(it)
@@ -166,9 +149,9 @@ class LanguageActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun getCurrentLanguage(): String {
+    private fun getCurrentLanguage(): String? {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        return sharedPreferences.getString("language", Locale.getDefault().language) ?: "en"
+        return sharedPreferences.getString("language", Locale.getDefault().language)
     }
 
     private fun saveLanguage(languageCode: String) {
@@ -180,7 +163,6 @@ class LanguageActivity : AppCompatActivity() {
         viewModel.updateLanguageCode(languageCode)
 
         val selectedLanguageName = languageItems.find { it.code == languageCode }?.name
-        //Toast.makeText(this, "Language updated to ${languageEntries[languageValues.indexOf(languageCode)]}", Toast.LENGTH_SHORT).show()
         Toast.makeText(this, "Language updated to $selectedLanguageName", Toast.LENGTH_SHORT).show()
     }
 
@@ -189,12 +171,6 @@ class LanguageActivity : AppCompatActivity() {
 
         viewModel.updateLanguageCode(languageCode)
         viewModel.updateToolbarTitle(viewModel.toolbarTitle.value)
-
-        val selectedLanguageName = languageItems.find { it.code == languageCode }?.name
-        //Log.e(TAG, "setAppLanguage: Language updated to ${languageEntries[languageValues.indexOf(languageCode)]}")
-        Log.e(TAG, "setAppLanguage: Language updated to $selectedLanguageName")
-
-        //recreate()
     }
 
 
@@ -214,8 +190,6 @@ class LanguageActivity : AppCompatActivity() {
     }
 
     private fun updateToolbarTitle(title: String) {
-        // Dynamically update NavDestination label
-        //findNavController().currentDestination?.label = title
         viewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name))
     }
 
@@ -231,7 +205,6 @@ class LanguageActivity : AppCompatActivity() {
             LanguageItem(name = "Русский", code = "ru", isSelected = false), //Russian
             LanguageItem(name = "Español", code = "es", isSelected = false), //Spanish
             LanguageItem(name = "Українська", code = "uk", isSelected = false), //Ukrainian
-
         )
     }
 }

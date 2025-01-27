@@ -2,8 +2,6 @@ package com.hardik.calendarapp.utillities
 
 import android.content.Context
 import android.provider.CalendarContract
-import android.util.Log
-import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import java.util.TimeZone
@@ -22,53 +20,13 @@ data class CursorEvent(
     val alertOffset:AlertOffset = AlertOffset.AT_TIME_OF_EVENT
 )
 
-fun getAllCursorEvents(context: Context): List<CursorEvent> {
-    val events = mutableListOf<CursorEvent>()
-
-    val projection = arrayOf(
-        CalendarContract.Events._ID,
-        CalendarContract.Events.TITLE,
-        CalendarContract.Events.DESCRIPTION,
-        CalendarContract.Events.DTSTART,
-        CalendarContract.Events.DTEND,
-        CalendarContract.Events.CALENDAR_ID,
-        CalendarContract.Events.EVENT_LOCATION
-    )
-
-    val uri = CalendarContract.Events.CONTENT_URI
-    val selection = null // You can apply a filter if needed
-    val selectionArgs = null
-    val sortOrder = "${CalendarContract.Events.DTSTART} ASC" // Sort by start date
-
-    val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
-
-    cursor?.use {
-        while (it.moveToNext()) {
-            val id = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events._ID))
-            val title = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.TITLE))
-            val description = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION))
-            val startTime = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.DTSTART))
-            val endTime = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.DTEND))
-            val calendarId = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.CALENDAR_ID))
-            val location = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_LOCATION))
-
-            events.add(CursorEvent(id = id, title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location))
-        }
-    }
-
-    return events
-}
-
 fun getUserCustomEvents(context: Context): List<CursorEvent> {
-    Log.i(BASE_TAG, "getUserCustomEvents: ")
     val events = mutableListOf<CursorEvent>()
 
     // Step 1: Get all calendar IDs
     val calendarIds = getCalendarIds(context)
-    Log.i(BASE_TAG, "Calendar IDs: $calendarIds")
 
     if (calendarIds.isEmpty()) {
-        Log.i(BASE_TAG, "No calendars found")
         return events
     }
 
@@ -83,7 +41,6 @@ fun getUserCustomEvents(context: Context): List<CursorEvent> {
     val selectionArgs = calendarIds.map { it.toString() }.toMutableList().apply {
         add("%Holiday%")  // Exclude events with 'Holiday' in description
     }.toTypedArray()
-    Log.i(BASE_TAG, "Selection Args: ${selectionArgs.joinToString(", ")}")
 
     // Step 3: Define projection and query events
     val projection = arrayOf(
@@ -100,8 +57,6 @@ fun getUserCustomEvents(context: Context): List<CursorEvent> {
 
     val sortOrder = "${CalendarContract.Events.DTSTART} ASC"
     val cursor = context.contentResolver.query(CalendarContract.Events.CONTENT_URI, projection, selection, selectionArgs, sortOrder)
-
-    Log.i(BASE_TAG, "Cursor count: ${cursor?.count}")
 
     // Step 4: Process query results
     cursor?.use {
@@ -122,8 +77,6 @@ fun getUserCustomEvents(context: Context): List<CursorEvent> {
             events.add(CursorEvent(id = id, title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location, repeatOption = repeatOption))
         }
     }
-
-    Log.i(BASE_TAG, "getUserCustomEvents: Event size = ${events.size}")
 
     return events
 }
@@ -151,8 +104,7 @@ fun getCalendarIds(context: Context): List<Long> {
             val name = it.getString(it.getColumnIndexOrThrow(CalendarContract.Calendars.NAME))
             val accountName = it.getString(it.getColumnIndexOrThrow(CalendarContract.Calendars.ACCOUNT_NAME))
 
-            // Log or store calendar information
-            println("Calendar ID: $id, Name: $name, Account: $accountName")
+            // Store calendar information
             calendarIds.add(id)
         }
     }
@@ -172,17 +124,3 @@ fun parseRecurrenceRule(rrule: String?): RepeatOption {
     }
 }
 
-// Example helper method to parse alert offset (you can extend this logic)
-fun parseAlertOffset(description: String?): AlertOffset {
-    return when {
-        description.isNullOrEmpty() -> AlertOffset.NONE
-        description.contains("5 minutes", ignoreCase = true) -> AlertOffset.BEFORE_5_MINUTES
-        description.contains("10 minutes", ignoreCase = true) -> AlertOffset.BEFORE_10_MINUTES
-        description.contains("15 minutes", ignoreCase = true) -> AlertOffset.BEFORE_15_MINUTES
-        description.contains("30 minutes", ignoreCase = true) -> AlertOffset.BEFORE_30_MINUTES
-        description.contains("1 hour", ignoreCase = true) -> AlertOffset.BEFORE_1_HOUR
-        description.contains("1 day", ignoreCase = true) -> AlertOffset.BEFORE_1_DAY
-        description.contains("custom time", ignoreCase = true) -> AlertOffset.BEFORE_CUSTOM_TIME
-        else -> AlertOffset.AT_TIME_OF_EVENT // Default to AT_TIME_OF_EVENT if no matches found
-    }
-}
