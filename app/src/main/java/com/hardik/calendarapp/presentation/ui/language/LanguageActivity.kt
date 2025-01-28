@@ -133,7 +133,7 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun setupSaveButton() {
         binding.includedLanguageActivityCustomToolbar.saveSelectionIcon.setOnClickListener {
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isFirstLaunch", false).apply()
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isFirstLaunch", false).apply()
             selectedLanguage?.let {
                 lifecycleScope.launch {
                     saveLanguage(it)

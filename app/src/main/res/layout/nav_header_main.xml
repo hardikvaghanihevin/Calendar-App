@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/background_primary"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="16dp">
-    <!--    android:theme="@style/ThemeOverlay.AppCompat.Dark"-->
-    <!--    android:background="@drawable/side_nav_bar"-->
 
     <TextView
         android:id="@+id/tv_navHeader_date"
@@ -18,7 +16,7 @@
         android:textAlignment="center"
         android:gravity="center"
         android:singleLine="true"
-        android:text="13"
+        tools:text="13"
         android:textColor="@color/white"
         android:textSize="@dimen/_24ssp"
         android:background="@drawable/bg_nav_header_date" />
@@ -40,7 +38,7 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:singleLine="true"
-            android:text="Friday"
+            tools:text="Friday"
             android:textSize="@dimen/dialog_TextSize_2" />
 
         <TextView
@@ -50,7 +48,7 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:singleLine="true"
-            android:text="December 2024"
+            tools:text="December 2024"
             android:textColor="@color/text_secondary"
             android:textSize="@dimen/dialog_TextSize_2" />
 

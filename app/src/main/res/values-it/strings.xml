@@ -156,4 +156,8 @@
     <string name="start_time_cannot_be_after_end_time">L\'ora di inizio non può essere successiva all\'ora di fine.</string>
     <string name="an_event_with_this_title_and_type_already_exists">Esiste già un evento con questo titolo e tipo.</string>
 
+    <string name="custom_time_is_not_set">L\'orario personalizzato non è impostato!</string>
+    <string name="event_insert_successfully">Evento inserito con successo!</string>
+    <string name="event_update_successfully">Aggiornamento evento avvenuto con successo!</string>
+
 </resources>

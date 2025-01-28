@@ -155,4 +155,8 @@
     <string name="start_time_cannot_be_after_end_time">प्रारंभ समय समाप्ति समय के बाद का नहीं हो सकता.</string>
     <string name="an_event_with_this_title_and_type_already_exists">इस शीर्षक और प्रकार वाला एक ईवेंट पहले से मौजूद है।</string>
 
+    <string name="custom_time_is_not_set">कस्टम समय निर्धारित नहीं है!</string>
+    <string name="event_insert_successfully">इवेंट सफलतापूर्वक सम्मिलित हुआ!</string>
+    <string name="event_update_successfully">इवेंट अपडेट सफलतापूर्वक!</string>
+
 </resources>

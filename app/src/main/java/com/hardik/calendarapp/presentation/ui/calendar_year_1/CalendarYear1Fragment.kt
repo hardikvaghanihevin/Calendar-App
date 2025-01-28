@@ -44,6 +44,10 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     private lateinit var viewPager: ViewPager2
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,6 +87,10 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     override fun onResume() {
         super.onResume()
+        if (::viewPager.isInitialized) {
+            //do code for unselected data.
+            adapter.setSelectedDate(null)//"2025-1-5"
+        }
         KeyboardUtils.hideKeyboard(requireActivity())
         requireActivity().invalidateOptionsMenu()
     }
@@ -99,7 +107,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private fun setupUI() {
 
         lifecycleScope.launch(Dispatchers.Main) {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
                 viewModel.yearList.collectLatest{
 
                     yearList = it
@@ -125,7 +133,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.yearState.collectLatest{//collectLatest
                     binding.tvYearTitle.text = "$it"
-                    updateToolbarTitle("$it")
                     year = it
                 }
             }
@@ -192,6 +199,4 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             findNavController().navigate(R.id.nav_month, bundle, navOptions)
         }
     }
-
-    private fun updateToolbarTitle(title: String) { }
 }

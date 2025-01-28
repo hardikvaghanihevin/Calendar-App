@@ -39,6 +39,7 @@
         android:layout_height="@dimen/itemCountry_itemSelectionIconSize_2"
         android:src="@drawable/icon_cancel"
         android:layout_gravity="center_vertical"
+        android:contentDescription="@string/check_icon"
         />
 
     </LinearLayout>

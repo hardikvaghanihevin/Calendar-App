@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
@@ -36,11 +35,11 @@
 
             <EditText
                 android:id="@+id/edt_eventCustomAlertMinute"
-                android:layout_width="@dimen/_36sdp"
-                android:layout_height="wrap_content"
-                android:gravity="start"
+                android:layout_width="@dimen/_37sdp"
+                android:layout_height="@dimen/_37sdp"
+                android:gravity="center_vertical|start"
                 style="@style/EditTextStyle.regular"
-                android:hint="00"
+                android:hint="@string/_00"
                 android:inputType="number"
                 android:maxLength="2"
                 android:ems="2"
@@ -52,7 +51,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.05" />
+                app:layout_constraintHorizontal_bias="0.05"
+                android:importantForAutofill="no" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -60,15 +60,10 @@
                 style="@style/TextViewStyle.regular"
                 android:text="@string/minutes_before"
                 app:layout_constraintStart_toEndOf="@id/edt_eventCustomAlertMinute"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/edt_eventCustomAlertMinute"
+                app:layout_constraintBottom_toBottomOf="@id/edt_eventCustomAlertMinute" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <Space
-            android:id="@+id/spacer"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dialogVerticalSpacing" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

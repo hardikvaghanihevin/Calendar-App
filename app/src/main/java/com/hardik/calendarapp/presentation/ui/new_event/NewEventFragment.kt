@@ -41,7 +41,7 @@ import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_hh_mm_a
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
 import com.hardik.calendarapp.utillities.DisplayUtil
-import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
+import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -230,25 +230,31 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
             text = resources.getString(R.string.action_save)
             setOnClickListener {
-                DisplayUtil.isKeyboardVisible(requireContext()) { isVisible -> if (isVisible) { hideKeyboard(requireActivity(), binding.root) } }
+                if( (activity as MainActivity).areCalendarPermissionsGranted() ){
+                    DisplayUtil.isKeyboardVisible(requireContext()) { isVisible -> if (isVisible) {
+                        KeyboardUtils.hideKeyboard(requireActivity(), binding.root)
+                    } }
 
-                lifecycleScope.launch {
-                    val msg: String = viewModel.run {
-                        val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                    lifecycleScope.launch {
+                        val msg: String = viewModel.run {
+                            val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
 
-                        if (id != null) { viewModel.cancelAlarm(id) }
-                        insertCustomEvent(context = requireContext(),id = id)
+                            if (id != null) { viewModel.cancelAlarm(id) }
+                            insertCustomEvent(context = requireContext(),id = id)
+                        }
+
+                        // Display a message to the user
+                        val notifyUser = context.resources.getString(R.string.event_insert_successfully).takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY }?:context.resources.getString(R.string.event_update_successfully)
+                        Snackbar.make(view, notifyUser, Snackbar.LENGTH_LONG).show()
+
+                        // Reset the fields after successful insertion
+                        if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
+                            viewModel.resetEventState()
+                        }
+                        findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                     }
-
-                    // Display a message to the user
-                    Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show()
-
-                    // Reset the fields after successful insertion
-                    if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
-                        viewModel.resetEventState()
-                    }
-                    findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                 }
+                else { (activity as MainActivity).checkAndRequestCalendarPermissions() }
             }
         }
 

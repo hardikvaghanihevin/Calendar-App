@@ -9,32 +9,41 @@ import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.utillities.LocaleHelper
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class MyCalendarApplication: Application() {
     private val TAG = BASE_TAG + MyCalendarApplication::class.java.simpleName
     override fun onCreate() {
         super.onCreate()
-        // Step 1: Retrieve saved language and theme preferences
+
+        // Launch background operations
+        CoroutineScope(Dispatchers.Default).launch {
+            loadPreferencesAndInitializeApp()
+        }
+    }
+
+    private suspend fun loadPreferencesAndInitializeApp() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
-        val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
-        val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
-        // Step 2: Set the theme
+        // Set the theme based on preference
         when (appTheme) {
             "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
 
-        // Step 3: Update locale
+        // Update locale
         LocaleHelper.setLocale(this, languageCode)
 
-        // Step 4: Create notification channel
+        // Create notification channel if necessary
         createNotificationChannel()
     }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(

@@ -52,7 +52,7 @@
                 style="@style/TextViewStyle.regular"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="35 minutes"
+                tools:text="35 minutes"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/itemCountry_nameTextSize_2"
                 android:visibility="gone"
@@ -68,7 +68,7 @@
                 android:layout_height="@dimen/itemCountry_itemSelectionIconSize_1"
                 android:layout_gravity="end|center_vertical"
                 android:src="@drawable/icon_unchecked"
-                android:contentDescription="check box image" />
+                android:contentDescription="@string/check_icon" />
 
         </LinearLayout>
 

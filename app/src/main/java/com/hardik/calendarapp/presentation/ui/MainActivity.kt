@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.TextView
 import android.widget.Toast
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
@@ -24,12 +23,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -71,15 +68,12 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
     private final val TAG = BASE_TAG + MainActivity::class.java.simpleName
 
-    // Use activityViewModels() to share the ViewModel with SplashFullscreenActivity
-    val mainViewModel: MainViewModel by viewModels()//by viewModels()//by activityViewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
-    lateinit var toolbar: Toolbar
-    lateinit var drawerLayout: DrawerLayout
-    lateinit var navController: NavController
-    var drawerMenuAdapter = DrawerMenuAdapter()
+    private lateinit var navController: NavController
+    private var drawerMenuAdapter = DrawerMenuAdapter()
 
     var bundle: Bundle? = null
 
@@ -89,21 +83,20 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
-    private val toolbarTitle: TextView? by lazy { binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle }
     private fun updateToolbarTitle(title: String?) {
-        //toolbarTitle?.text = title ?: resources.getString(R.string.app_name)
-        mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name)) }//title
+        mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name)) }
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         // Step 1: Retrieve saved language preference
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
-        val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
-        val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
+
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
-        val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
+        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
+        //val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+        //val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
+        //val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
         // Step 2: Set the theme before locale
         when (appTheme) {
@@ -729,6 +722,7 @@ class MainActivity : AppCompatActivity() {
             context.startActivity(intent)
         }
     }
+
     fun privacyPolicy(context: Context = this) {
         val url = "https://gist.githubusercontent.com/hardikvaghanihevin/d45b7376a72f832d2e80573a46628a4c/raw/e79d8fd9bd36d38b31e619bdb41251a7417999a4/privacy_policy.html" // Replace with your URL
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -888,21 +882,17 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupDrawerMenu() {
         val drawerMenuItems = listOf(
-            DrawerMenuItem(R.drawable.year_icon, getString(R.string.year), R.id.nav_year,true),
-            DrawerMenuItem(R.drawable.month_icon, getString(R.string.month), R.id.nav_month),
-            DrawerMenuItem(R.drawable.select_country_icon, getString(R.string.select_country), R.id.nav_select_country),
-            DrawerMenuItem(R.drawable.select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
-            DrawerMenuItem(R.drawable.first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
-            DrawerMenuItem(R.drawable.jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
-            DrawerMenuItem(R.drawable.privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
-            DrawerMenuItem(R.drawable.setting_icon, getString(R.string.setting), R.id.nav_setting)
+            DrawerMenuItem(R.drawable.drawer_year_icon, getString(R.string.year), R.id.nav_year,true),
+            DrawerMenuItem(R.drawable.drawer_month_icon, getString(R.string.month), R.id.nav_month),
+            DrawerMenuItem(R.drawable.drawer_select_country_icon, getString(R.string.select_country), R.id.nav_select_country),
+            DrawerMenuItem(R.drawable.drawer_select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
+            DrawerMenuItem(R.drawable.drawer_first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
+            DrawerMenuItem(R.drawable.drawer_jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
+            DrawerMenuItem(R.drawable.drawer_privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
+            DrawerMenuItem(R.drawable.drawer_setting_icon, getString(R.string.setting), R.id.nav_setting)
         )
 
         // Initialize the adapter
-//        val drawerMenuAdapter = DrawerMenuAdapter(drawerMenuItems) { menuItem ->
-//            // Handle item click
-//            handleMenuClick(menuItem)
-//        }
         drawerMenuAdapter.setItems(drawerMenuItems)
         drawerMenuAdapter.setOnClickListener{ menuItem, _: Int -> handleMenuClick(menuItem) }
 
@@ -964,7 +954,6 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-
     private fun hideAllViewsWithAnimation() {
         val viewList = listOf(
             binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1,
@@ -982,30 +971,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region Call this function to request permissions as needed
-    private fun checkAndRequestCalendarPermissions() {
+    fun checkAndRequestCalendarPermissions() {
         val permissions = mutableListOf<String>()
-        // Check READ_CALENDAR permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            permissions.add(Manifest.permission.READ_CALENDAR)
-        }
-        // Check WRITE_CALENDAR permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            permissions.add(Manifest.permission.WRITE_CALENDAR)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-        if (permissions.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
-        } else {
-            // Permissions already granted
-            initializeViewModelIfNeeded()
-        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) { permissions.add(Manifest.permission.READ_CALENDAR) }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) { permissions.add(Manifest.permission.WRITE_CALENDAR) }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { permissions.add(Manifest.permission.POST_NOTIFICATIONS) } }
+
+        if (permissions.isNotEmpty()) { ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS) }
+        else { // Permissions already granted
+            initializeViewModelIfNeeded() }
     }
 
-    private fun areCalendarPermissionsGranted(): Boolean {
+    fun areCalendarPermissionsGranted(): Boolean {
         val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
         val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) } else { PackageManager.PERMISSION_GRANTED }
@@ -1084,6 +1061,19 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             )
+        }
+    }
+
+    fun resetSearchView() {
+        val searchView = binding.appBarMain.includedAppBarMainCustomToolbar.searchView
+        searchView.apply {
+            // Clear the text
+            setQuery("", false)
+            // Collapse the search view if it's open
+            clearFocus()
+            isIconified = true
+            // Reset background or other styles
+            setBackgroundResource(0)
         }
     }
 }

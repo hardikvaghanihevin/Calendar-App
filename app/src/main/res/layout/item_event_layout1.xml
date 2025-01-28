@@ -34,7 +34,8 @@
             android:scaleType="fitXY"
             android:visibility="gone"
             app:srcCompat="@drawable/bkg_01_jan"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            android:contentDescription="@string/schedule_s_image_for_month"/>
 
         <!--<ImageView
             android:id="@+id/img_itemEventLay_monthTransitionImage"

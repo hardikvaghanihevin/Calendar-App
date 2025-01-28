@@ -46,7 +46,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_DarkTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_DarkTheme"
-                android:src="@drawable/icon_unchecked"/>
+                android:src="@drawable/icon_unchecked"
+                android:contentDescription="@string/check_icon" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -73,7 +74,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_LightTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_LightTheme"
-                android:src="@drawable/icon_unchecked"/>
+                android:src="@drawable/icon_unchecked"
+                android:contentDescription="@string/check_icon"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -100,7 +102,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/dialogAppTheme_SystemTheme"
                 app:layout_constraintBottom_toBottomOf="@id/dialogAppTheme_SystemTheme"
-                android:src="@drawable/icon_unchecked"/>
+                android:src="@drawable/icon_unchecked"
+                android:contentDescription="@string/check_icon"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

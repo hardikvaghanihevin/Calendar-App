@@ -65,14 +65,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <!-- Search Icon -->
                 <ImageView
                     android:id="@+id/search_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="Search Icon"
+                    android:contentDescription="@string/search_icon"
                     android:gravity="center"
                     android:padding="@dimen/_8sdp"
                     android:src="@drawable/search_icon"
@@ -93,7 +94,6 @@
                     android:layout_gravity="center"
                     android:padding="0dp"
                     android:layout_marginStart="@dimen/itemDividerVerticalSpacingBetweenContent"
-                    android:text="31"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_9ssp"
                     android:layout_marginEnd="@dimen/_8sdp"

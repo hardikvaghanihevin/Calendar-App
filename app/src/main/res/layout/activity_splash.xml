@@ -31,7 +31,7 @@
             tools:text="@string/sunday" />
 
         <View
-            android:layout_width="@dimen/_36sdp"
+            android:layout_width="@dimen/_56sdp"
             android:layout_height="@dimen/_2sdp"
             android:layout_marginTop="@dimen/_6sdp"
             android:background="@drawable/line_white_drawable" />

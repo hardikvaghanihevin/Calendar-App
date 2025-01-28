@@ -33,7 +33,7 @@
             android:layout_weight="1"
             android:src="@drawable/left_icon"
             android:background="@android:color/transparent"
-            android:contentDescription="Previous Month"
+            android:contentDescription="@string/left_arrow_icon"
             app:layout_constraintTop_toTopOf="@id/tv_month_title"
             app:layout_constraintBottom_toBottomOf="@id/tv_month_title"
             app:layout_constraintEnd_toStartOf="@id/btnNextMonth"
@@ -47,24 +47,12 @@
             android:layout_weight="1"
             android:src="@drawable/right_icon"
             android:background="@android:color/transparent"
-            android:contentDescription="Next Month"
+            android:contentDescription="@string/right_arrow_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/btnPrevMonth"
             app:layout_constraintBottom_toBottomOf="@id/btnPrevMonth"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--<View
-        android:id="@+id/v_divider"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:background="@color/border_surface"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_8sdp"
-        app:layout_constraintTop_toBottomOf="@id/tv_month_title"
-        app:layout_constraintBottom_toTopOf="@id/viewPager_calendarMonth"
-        />-->
 
     <include
         android:layout_height="wrap_content"

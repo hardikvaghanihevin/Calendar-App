@@ -6,35 +6,35 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_year"
-            android:icon="@drawable/year_icon"
+            android:icon="@drawable/drawer_year_icon"
             android:title="@string/calendar_year" />
         <item
             android:id="@+id/nav_month"
-            android:icon="@drawable/month_icon"
+            android:icon="@drawable/drawer_month_icon"
             android:title="@string/calendar_month" />
         <item
             android:id="@+id/nav_select_country"
-            android:icon="@drawable/select_country_icon"
+            android:icon="@drawable/drawer_select_country_icon"
             android:title="Select country" />
         <item
             android:id="@+id/nav_select_language"
-            android:icon="@drawable/select_language_icon"
+            android:icon="@drawable/drawer_select_language_icon"
             android:title="Select language" />
         <item
             android:id="@+id/nav_first_day_of_week"
-            android:icon="@drawable/first_day_of_the_week_icon"
+            android:icon="@drawable/drawer_first_day_of_the_week_icon"
             android:title="First day of the week" />
         <item
             android:id="@+id/nav_jump_to_date"
-            android:icon="@drawable/jump_to_date_icon"
+            android:icon="@drawable/drawer_jump_to_date_icon"
             android:title="@string/jump_to_date" />
         <item
             android:id="@+id/nav_privacy_policy"
-            android:icon="@drawable/privacy_policy_icon"
+            android:icon="@drawable/drawer_privacy_policy_icon"
             android:title="Privacy policy" />
         <item
             android:id="@+id/nav_setting"
-            android:icon="@drawable/setting_icon"
+            android:icon="@drawable/drawer_setting_icon"
             android:title="@string/settings" />
     </group>
 </menu>

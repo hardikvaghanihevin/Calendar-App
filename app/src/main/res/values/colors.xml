@@ -13,14 +13,13 @@
 
     <color name="scrim_color">#600E0E0E</color>
 
+    <color name="black_overlay">#66000000</color>
+
     <color name="action_bar_color">@color/background_primary</color>
     <color name="app_bar_color">@color/background_primary</color>
     <color name="app_navbar_color">@color/background_primary</color>
     <color name="action_button_color">@color/accent_primary</color>
     <color name="action_button_color_secondary">@color/text_secondary</color>
-    <color name="drawerIconColor">@color/text_primary</color>
-    <color name="black_overlay">#66000000</color>
-    <color name="status_bar_color">@android:color/transparent</color>
 
     <color name="ic_launcher_app_logo_background">#3491AA</color>
 </resources>

@@ -13,8 +13,9 @@
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/setting_icon"
-        app:tint="@color/text_primary" />
+        android:src="@drawable/drawer_setting_icon"
+        app:tint="@color/text_primary"
+        android:contentDescription="@string/drawer_icon"/>
 
     <Space
         android:layout_width="@dimen/itemDividerHorizontalSpacingBetweenContent"
@@ -30,5 +31,5 @@
         android:gravity="center_vertical"
         style="@style/TextViewStyle.regular"
         android:textSize="@dimen/dialog_TextSize_4"
-        android:text="Menu Item" />
+        android:text="@string/menu_item" />
 </LinearLayout>

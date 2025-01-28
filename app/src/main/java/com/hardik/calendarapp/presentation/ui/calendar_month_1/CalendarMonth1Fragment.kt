@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -79,6 +80,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             month = it.getInt(KEY_MONTH)//0 base month 0-11 (jan-dec0
             day = it.getInt(KEY_DAY)
             selectedDate = if(day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
+            Log.e(TAG, "onCreate: $selectedDate", )
         }
 
         viewModel.updateYear(year)

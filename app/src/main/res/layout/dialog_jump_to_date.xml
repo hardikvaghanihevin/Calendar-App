@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Monday 1 January 2025"
+            android:text="@string/monday_1_january_2025"
             style="@style/TextViewStyle.regular"
             android:textAlignment="center"
             android:textColor="@color/text_secondary"
@@ -67,7 +67,8 @@
                 app:np_textColor="@color/text_primary"
                 app:np_textSize="@dimen/dialog_TextSize_3"
                 app:np_fadingEdgeEnabled="false"
-                app:np_value="2025" />
+                app:np_value="2025"
+                android:contentDescription="@string/year_picker"/>
 
             <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
                 android:id="@+id/month_picker"
@@ -86,7 +87,8 @@
                 app:np_textColor="@color/text_primary"
                 app:np_textSize="@dimen/dialog_TextSize_3"
                 app:np_fadingEdgeEnabled="false"
-                app:np_value="1" />
+                app:np_value="1"
+                android:contentDescription="@string/month_picker"/>
 
             <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
                 android:id="@+id/date_picker"
@@ -106,7 +108,8 @@
                 app:np_textColor="@color/text_primary"
                 app:np_textSize="@dimen/dialog_TextSize_3"
                 app:np_fadingEdgeEnabled="false"
-                app:np_value="3" />
+                app:np_value="3"
+                android:contentDescription="@string/date_picker"/>
 
         </LinearLayout>
 

@@ -88,16 +88,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.ui.graphics.android)
     implementation(libs.legacy.support.v4)
     implementation(libs.preference)
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
 
     // Hilt DI
     implementation ("com.google.dagger:hilt-android:2.48")
@@ -113,8 +106,8 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
 
     // Navigation components
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.3")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.8.3")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.4")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.8.4")
 
     // Retrofit for API calls
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")

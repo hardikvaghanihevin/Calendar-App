@@ -32,7 +32,7 @@
             android:layout_height="@dimen/_25sdp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:contentDescription="Previous Month"
+            android:contentDescription="@string/left_arrow_icon"
             android:src="@drawable/left_icon"
             app:layout_constraintBottom_toBottomOf="@id/tv_year_title"
             app:layout_constraintEnd_toStartOf="@id/btnNextYear"
@@ -45,7 +45,7 @@
             android:layout_height="@dimen/_25sdp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:contentDescription="Next Month"
+            android:contentDescription="@string/right_arrow_icon"
             android:src="@drawable/right_icon"
             app:layout_constraintBottom_toBottomOf="@id/btnPrevYear"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,21 +53,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--<View
-        android:id="@+id/v_divider"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:background="@color/border_surface"
-        app:layout_constraintBottom_toTopOf="@id/viewPager_calendarYear"
-        app:layout_constraintTop_toBottomOf="@id/tv_year_title" />-->
-
-    <!--<include
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        layout="@layout/item_divider_lay"/>-->
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"

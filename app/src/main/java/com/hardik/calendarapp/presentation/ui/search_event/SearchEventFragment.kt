@@ -247,17 +247,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     private fun resetSearchView() {
         currentQuery = null // Clear the query
         eventAdapter.filter.filter("") // Reset the filter
-
-        val searchView = (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView
-        searchView.apply {
-            // Clear the text
-            setQuery("", false)
-            // Collapse the search view if it's open
-            clearFocus()
-            isIconified = true
-            // Reset background or other styles
-            setBackgroundResource(0)
-        }
+        (activity as MainActivity).resetSearchView()
     }
 
 }

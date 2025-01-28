@@ -48,7 +48,8 @@
                 android:src="@drawable/icon_unchecked"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_12HR"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_12HR" />
+                app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_12HR"
+                android:contentDescription="@string/time_format_12_hr" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Space
@@ -75,7 +76,8 @@
                 android:src="@drawable/icon_unchecked"
                 app:layout_constraintBottom_toBottomOf="@id/dialogTimeFormat_24HR"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_24HR" />
+                app:layout_constraintTop_toTopOf="@id/dialogTimeFormat_24HR"
+                android:contentDescription="@string/time_format_24_hr"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

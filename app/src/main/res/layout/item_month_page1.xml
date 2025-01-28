@@ -46,6 +46,7 @@
         app:background_drawable_month="@null"
         app:background_drawable_day="@null"
         app:background_drawable_date="@null"
+        android:contentDescription="@string/month"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

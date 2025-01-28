@@ -10,4 +10,5 @@
     android:importantForAccessibility="no"
     android:hint="@null"
     android:singleLine="true"
-    android:visibility="invisible"/>
+    android:visibility="invisible"
+    android:autofillHints="no" />

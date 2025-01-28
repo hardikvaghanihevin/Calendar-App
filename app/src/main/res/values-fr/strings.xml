@@ -150,4 +150,8 @@
     <string name="start_time_cannot_be_after_end_time">L’heure de début ne peut pas être postérieure à l’heure de fin.</string>
     <string name="an_event_with_this_title_and_type_already_exists">Un événement portant ce titre et ce type existe déjà.</string>
 
+    <string name="custom_time_is_not_set">L’heure personnalisée n’est pas définie!</string>
+    <string name="event_insert_successfully">Insertion de l\'événement réussie!</string>
+    <string name="event_update_successfully">Mise à jour de l\'événement réussie!</string>
+
 </resources>
