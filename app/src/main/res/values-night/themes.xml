@@ -23,7 +23,8 @@
 
     <style name="Theme.CalendarApp.Fullscreen" parent="Theme.CalendarApp">
         <item name="android:windowBackground">@color/background_secondary</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/action_bar_color</item>

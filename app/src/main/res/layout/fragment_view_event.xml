@@ -319,24 +319,25 @@
                 android:id="@+id/edt_eventNote"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/_2sdp"
+                android:paddingHorizontal="@dimen/itemLayoutHorizontalSpacing"
+                android:paddingVertical="@dimen/itemLayoutHorizontalSpacing"
                 style="@style/EditTextStyle.regular"
                 android:textSize="@dimen/fragmentNewEvent_eventNoteTextSize"
                 android:background="@drawable/item_background"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:gravity="start|top"
                 android:hint="@string/note"
-                android:includeFontPadding="true"
-                android:inputType="textMultiLine"
-                android:lines="4"
+                android:includeFontPadding="false"
+                android:inputType="none"
+                android:lines="6"
                 android:maxLines="6"
-                android:layout_marginHorizontal="@dimen/itemLayoutHorizontalSpacing"
-                android:layout_marginVertical="@dimen/itemLayoutHorizontalSpacing"
                 android:scrollbars="vertical"
                 android:clickable="false"
-                android:enabled="false"
-                android:autofillHints="no" />
+                android:enabled="true"
+                android:autofillHints="no"
+                android:overScrollMode="always"/>
+
         </LinearLayout>
 
         <!--    base view-->

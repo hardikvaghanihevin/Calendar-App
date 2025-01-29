@@ -322,12 +322,13 @@
                 android:hint="@string/note"
                 android:includeFontPadding="true"
                 android:inputType="textMultiLine"
-                android:lines="4"
+                android:lines="6"
                 android:maxLines="6"
                 android:layout_marginHorizontal="@dimen/itemLayoutHorizontalSpacing"
                 android:layout_marginVertical="@dimen/itemLayoutHorizontalSpacing"
                 android:scrollbars="vertical"
-                android:autofillHints="no" />
+                android:autofillHints="no"
+                android:overScrollMode="always"/>
         </LinearLayout>
 
         <!--    base view-->

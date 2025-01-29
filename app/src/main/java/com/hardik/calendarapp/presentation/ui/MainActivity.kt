@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -52,6 +53,7 @@ import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
 import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
 import com.hardik.calendarapp.utillities.AlarmScheduler
+import com.hardik.calendarapp.utillities.AutoStartPermissionHelper
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
@@ -63,12 +65,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.properties.Delegates
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private final val TAG = BASE_TAG + MainActivity::class.java.simpleName
 
     private val mainViewModel: MainViewModel by viewModels()
+    private lateinit var sharedPreferences: SharedPreferences
+    private var isAutostartSet by Delegates.notNull<Boolean>()
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
@@ -90,13 +96,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         // Step 1: Retrieve saved language preference
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
         //val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
         //val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
         //val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
+        //sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
 
         // Step 2: Set the theme before locale
         when (appTheme) {
@@ -977,9 +984,29 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) { permissions.add(Manifest.permission.WRITE_CALENDAR) }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { permissions.add(Manifest.permission.POST_NOTIFICATIONS) } }
 
-        if (permissions.isNotEmpty()) { ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS) }
-        else { // Permissions already granted
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
+        } else { // Permissions already granted
             initializeViewModelIfNeeded() }
+    }
+    private var autoStartPermissionHelper: AutoStartPermissionHelper? = null
+    private fun getAutoStartPermission(){//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
+        autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
+
+        // Check if the auto-start permission is available on the device
+        val isAutoStartPermissionAvailable: Boolean = autoStartPermissionHelper!!.isAutoStartPermissionAvailable(this, false)
+
+        // Display a toast message indicating whether the permission is available or not
+        //Toast.makeText(this, "Auto-start permission is " + if (isAutoStartPermissionAvailable) "available" else "not available", Toast.LENGTH_SHORT).show()
+
+        // If the permission is available, request it
+        if (isAutoStartPermissionAvailable) {
+            val granted: Boolean = autoStartPermissionHelper!!.getAutoStartPermission(this, true, false)
+
+            // Display a toast message indicating whether the permission was granted or not  (It won't work but  because Android doesn't to provide any API for that ,I added it anyway.)
+            //Toast.makeText(this, "Auto-start permission " + if (granted) "granted" else "denied", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     fun areCalendarPermissionsGranted(): Boolean {
@@ -992,6 +1019,10 @@ class MainActivity : AppCompatActivity() {
     private fun initializeViewModelIfNeeded() {
         if (areCalendarPermissionsGranted()) {
             mainViewModel.initializeViewModel() // Call your ViewModel initialization function
+            if (!isAutostartSet){
+                getAutoStartPermission()
+                sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+            }
         }
     }
 

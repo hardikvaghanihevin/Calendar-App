@@ -76,7 +76,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             setOnClickListener {
                 lifecycleScope.launch {
                     viewModel.deleteEvent(argEvent)
-                    Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG).setAnchorView(binding.baseline).show()
+                    Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG).show()
                     viewModel.resetEventState()
                     findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                 }
