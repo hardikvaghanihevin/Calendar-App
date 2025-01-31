@@ -106,7 +106,8 @@
     <string name="before_30_minutes">30 minutes avant</string>
     <string name="before_1_hour">1 heure avant</string>
     <string name="before_1_day">1 jour avant</string>
-    <string name="before_custom_time">Heure personnalisée</string>
+    <!--<string name="before_custom_time">Heure personnalisée</string>-->
+    <string name="before_custom_time">Alerte personnalisée</string>
     <string name="custom_alert">"Alerte personnalisée "</string>
     <string name="minutes_before">"minutes avant "</string>
     <string name="cancel">Annuler</string>

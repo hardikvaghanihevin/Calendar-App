@@ -20,6 +20,43 @@ data class CursorEvent(
     val alertOffset:AlertOffset = AlertOffset.AT_TIME_OF_EVENT
 )
 
+fun getAllCursorEvents(context: Context): List<CursorEvent> {
+    val events = mutableListOf<CursorEvent>()
+
+    val projection = arrayOf(
+        CalendarContract.Events._ID,
+        CalendarContract.Events.TITLE,
+        CalendarContract.Events.DESCRIPTION,
+        CalendarContract.Events.DTSTART,
+        CalendarContract.Events.DTEND,
+        CalendarContract.Events.CALENDAR_ID,
+        CalendarContract.Events.EVENT_LOCATION
+    )
+
+    val uri = CalendarContract.Events.CONTENT_URI
+    val selection = null // You can apply a filter if needed
+    val selectionArgs = null
+    val sortOrder = "${CalendarContract.Events.DTSTART} ASC" // Sort by start date
+
+    val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
+
+    cursor?.use {
+        while (it.moveToNext()) {
+            val id = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events._ID))
+            val title = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.TITLE))
+            val description = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION))
+            val startTime = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.DTSTART))
+            val endTime = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.DTEND))
+            val calendarId = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.CALENDAR_ID))
+            val location = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_LOCATION))
+
+            events.add(CursorEvent(id = id, title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location))
+        }
+    }
+
+    return events
+}
+
 fun getUserCustomEvents(context: Context): List<CursorEvent> {
     val events = mutableListOf<CursorEvent>()
 

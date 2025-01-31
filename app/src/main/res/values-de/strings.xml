@@ -108,7 +108,8 @@
     <string name="before_30_minutes">30 Minuten vorher</string>
     <string name="before_1_hour">1 Stunde vorher</string>
     <string name="before_1_day">1 Tag vorher</string>
-    <string name="before_custom_time">Benutzerdefinierte Zeit</string>
+    <!--<string name="before_custom_time">Benutzerdefinierte Zeit</string>-->
+    <string name="before_custom_time">Benutzerdefinierte Benachrichtigung</string>
     <string name="custom_alert">Benutzerdefinierte Benachrichtigung</string>
     <string name="minutes_before">Minuten vorher</string>
 

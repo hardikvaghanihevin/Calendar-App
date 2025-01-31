@@ -2,9 +2,12 @@ package com.hardik.calendarapp.presentation.ui.language
 
 import android.content.Intent
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class LanguageActivity : AppCompatActivity() {
@@ -38,13 +42,14 @@ class LanguageActivity : AppCompatActivity() {
 
     private lateinit var languageAdapter: LanguageAdapter
     private lateinit var languageItems: List<LanguageItem>
+    private var isFirstLaunch by Delegates.notNull<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLanguageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val isFirstLaunch = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("isFirstLaunch", true)
+        isFirstLaunch = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("isFirstLaunch", true)
 
         // If it's the first launch, update the SharedPreferences
         if (isFirstLaunch) {
@@ -58,6 +63,7 @@ class LanguageActivity : AppCompatActivity() {
         loadLanguages()
         setupRecyclerView()
         setupSaveButton()
+        handelBackPressed()
     }
 
     private fun setupToolbar() {
@@ -143,6 +149,7 @@ class LanguageActivity : AppCompatActivity() {
         }
     }
 
+    // Back to main screen, escape coming from splash screen
     private fun navigateToMainActivity() {
         val i = Intent(this@LanguageActivity, MainActivity::class.java)
         startActivity(i)
@@ -163,7 +170,6 @@ class LanguageActivity : AppCompatActivity() {
         viewModel.updateLanguageCode(languageCode)
 
         val selectedLanguageName = languageItems.find { it.code == languageCode }?.name
-        Toast.makeText(this, "Language updated to $selectedLanguageName", Toast.LENGTH_SHORT).show()
     }
 
     private fun setAppLanguage(languageCode: String) {
@@ -206,5 +212,31 @@ class LanguageActivity : AppCompatActivity() {
             LanguageItem(name = "Español", code = "es", isSelected = false), //Spanish
             LanguageItem(name = "Українська", code = "uk", isSelected = false), //Ukrainian
         )
+    }
+
+    private fun handelBackPressed(){
+        // Use OnBackPressedDispatcher for API 12+ (and fallback for older versions)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handleBackAction()
+            }
+        })
+
+        // Optional: Handle OnBackInvokedCallback for Android 14+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                OnBackInvokedCallback {
+                   handleBackAction()
+                }
+            )
+        }
+    }
+    private fun handleBackAction() {
+        if (isFirstLaunch) {
+            finish() // This is sufficient; no need for onBackPressedDispatcher here
+        } else {
+            navigateToMainActivity()
+        }
     }
 }

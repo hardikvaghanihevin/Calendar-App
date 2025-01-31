@@ -24,6 +24,9 @@ import com.hardik.calendarapp.databinding.FragmentSearchEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
+import com.hardik.calendarapp.utillities.DisplayUtil
+import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
+import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,6 +72,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
+
+                        showHideBeckToCurrentEventIcon(wantToShow = false)
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
@@ -81,6 +86,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         }
 
                     } else {
+
                         // Refocus the SearchView if it loses focus
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
                             setMargins(
@@ -89,6 +95,17 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                                 0, // End margin
                                 0  // Bottom margin
                             )
+                        }
+
+                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
+
+                        DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
+                            if (isVisible) {
+                                //this.isIconified = false  // Keep SearchView expanded
+                                showHideBeckToCurrentEventIcon(wantToShow = false)
+                            } else {
+                                showHideBeckToCurrentEventIcon(wantToShow = true)
+                            }
                         }
                     }
 
@@ -116,6 +133,9 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
                 // Handle the close action of SearchView
                 this.setOnCloseListener {
+
+                    showHideBeckToCurrentEventIcon(wantToShow = true)
+
                     // Reset filter when the SearchView is closed
                     this.setBackgroundResource(0)
                     currentQuery = null // Clear the query
@@ -124,12 +144,14 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 }
             }
         }
+
+        /** Back to current Event */
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.setOnClickListener { scrollEventIndexAtCurrentDate() }
     }
 
     private fun setupUI() {
         binding.apply {
             //region Event handlers
-            //endregion
             rvEvent.layoutManager = LinearLayoutManager(requireContext())
             rvEvent.setHasFixedSize(true)
 
@@ -181,6 +203,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 tvNotify.visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
                 includedProgressLayout.progressBar.visibility = View.GONE
             }
+            //endregion
         }
     }
 
@@ -212,10 +235,10 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             //eventAdapter.updateData(data)
                             eventAdapter.apply { updateData(data) }
 
+                            viewModel.findPositionOfEvent(data)
                             // Scroll to position after data is loaded
-                            safeBinding.rvEvent.post {
-                                safeBinding.rvEvent.scrollToPosition(120) // Scroll to position 12 after the data is set
-                            }
+//                            safeBinding.rvEvent.post { safeBinding.rvEvent.scrollToPosition(viewModel.currentEventPos.value) } // Scroll to position 12 after the data is set
+                            scrollEventIndexAtCurrentDate()
 
                             safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
                         }
@@ -248,6 +271,28 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
         currentQuery = null // Clear the query
         eventAdapter.filter.filter("") // Reset the filter
         (activity as MainActivity).resetSearchView()
+        showHideBeckToCurrentEventIcon(wantToShow = true)
     }
 
+    // Show or Hide jump to current date event icon
+    private fun showHideBeckToCurrentEventIcon(wantToShow: Boolean) {
+        (activity as MainActivity).apply {
+            if(wantToShow){
+                showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
+            }else{
+                hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
+            }
+        }
+    }
+
+    // Reach out the current date's/month's event
+    @SuppressLint("NotifyDataSetChanged")
+    private fun scrollEventIndexAtCurrentDate() {
+        binding.rvEvent.post {
+            val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
+            layoutManager?.scrollToPositionWithOffset(viewModel.currentEventPos.value, 0)
+            eventAdapter.notifyDataSetChanged()
+            //binding.rvEvent.smoothScrollToPosition(viewModel.currentEventPos.value) // note: you want use also "scrollToPosition(pos)"
+        }
+    }
 }

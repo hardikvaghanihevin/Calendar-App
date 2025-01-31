@@ -3,6 +3,7 @@ package com.hardik.calendarapp.presentation.receiver
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
@@ -19,6 +21,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.domain.repository.EventRepository
+import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.AlarmScheduler
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +36,9 @@ class NotificationReceiver : BroadcastReceiver() {
     @Inject
     lateinit var eventRepository: EventRepository
 
+//    var bundle: Bundle? = null
+//    bundle = (bundle ?: Bundle()).apply { putParcelable(Constants.KEY_EVENT, event) }
+
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
             val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -42,20 +48,16 @@ class NotificationReceiver : BroadcastReceiver() {
             }
 
             if (event != null) {
-
-                val eventId = event.id
-                val title = event.title
-                val description = event.description
                 scheduleRepeatingNotification(context , event)
 
-                showNotification(context, title, description, eventId)
+                showNotification(context, event)
             }
         }
     }
 
 
 
-    private fun showNotification(context: Context, title: String, description: String, id: String) {
+    private fun showNotification(context: Context, event: Event) {
         val notificationManager = NotificationManagerCompat.from(context)
 
         // Create the notification channel for devices with API level 26 and above
@@ -70,6 +72,18 @@ class NotificationReceiver : BroadcastReceiver() {
             null
         }
 
+        // Intent to open MainActivity with the event data
+        val intent = Intent(context, MainActivity::class.java).apply {
+            putExtra(Constants.KEY_EVENT, event)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            event.id.hashCode(), // Unique request code
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         // If the channel is not null, create the channel (only on devices with API level 26 and above)
         channel?.let { notificationManager.createNotificationChannel(it) }
 
@@ -77,9 +91,10 @@ class NotificationReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, channelId)
             //.setSmallIcon(android.R.drawable.ic_dialog_info) // Fallback for small icon
             .setSmallIcon(R.drawable.notification_app_logo) // Fallback for small icon
-            .setContentTitle(title)
-            .setContentText(description)
+            .setContentTitle(event.title)
+            .setContentText(event.description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
 
@@ -95,7 +110,7 @@ class NotificationReceiver : BroadcastReceiver() {
             return
         }
 
-        notificationManager.notify(id.hashCode(), notification)
+        notificationManager.notify(event.id.hashCode(), notification)
     }
 
     private fun scheduleRepeatingNotification(context: Context, event: Event) {

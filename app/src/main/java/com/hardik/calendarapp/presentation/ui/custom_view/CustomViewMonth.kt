@@ -344,7 +344,8 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
                             // Update selected date
                             _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
                             // Trigger the listener and redraw the view
-                            onDateItemClickListener?.invoke(triple)//todo: OR
+                            _selectedDate = onDateClickListener?.invoke(selectedDate.takeIf { it != null } ?: "$currentYear-$currentMonth-${0}")
+                            //onDateItemClickListener?.invoke(triple)//todo: OR
 
                             //_selectedDate = onDateItemClickListener?.invoke(triple)
                             postInvalidate()
@@ -926,8 +927,11 @@ class CustomViewMonth(context: Context, val attributeSet: AttributeSet) : FrameL
     private var onMonthNameClickListener: ((YearKey, MonthKey) -> Unit)? = null
     fun getMonthNameClickListener(listener: (YearKey, MonthKey) -> Unit){ onMonthNameClickListener = listener }
 
-    private var onDateItemClickListener : ((Triple<Rect, Canvas, String>) -> String?)? = null
-    fun getDateClickListener(listener: (Triple<Rect, Canvas, String>) -> String?){ onDateItemClickListener = listener }
+    private var onDateClickListener: ((String) -> String)? = null
+    fun getDateClickListener(listener: (String) -> String){ onDateClickListener = listener }
+
+//    private var onDateItemClickListener : ((Triple<Rect, Canvas, String>) -> String?)? = null
+//    fun getDateClickListener(listener: (Triple<Rect, Canvas, String>) -> String?){ onDateItemClickListener = listener }
 
 }
 fun checkIfDayMatches(dateString: String, targetDay: Int): Boolean {

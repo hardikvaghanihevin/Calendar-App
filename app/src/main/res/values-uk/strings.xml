@@ -108,7 +108,8 @@
     <string name="before_30_minutes">За 30 хвилин</string>
     <string name="before_1_hour">За 1 годину</string>
     <string name="before_1_day">За 1 день</string>
-    <string name="before_custom_time">За власний час</string>
+    <!--<string name="before_custom_time">За власний час</string>-->
+    <string name="before_custom_time">Власне сповіщення</string>
     <string name="custom_alert">Власне сповіщення</string>
     <string name="minutes_before">хвилин до</string>
 

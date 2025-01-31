@@ -1,8 +1,10 @@
 package com.hardik.calendarapp.presentation.ui.calendar_year_1
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -83,10 +85,17 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
             }
         }
+
+        /** Go to newEvent */
+        (activity as MainActivity).binding.appBarMain.fab.setOnClickListener { view ->
+            findNavController().navigate(R.id.newEventFragment, null, navOptions)
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        viewModel.updateSelectedDate("2000-0-0")//reset selected date for back from monthView
+
         if (::viewPager.isInitialized) {
             //do code for unselected data.
             adapter.setSelectedDate(null)//"2025-1-5"
@@ -113,9 +122,9 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                     yearList = it
                     adapter.updateYearList(it)
 
-                    val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
+                    /*val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
 
-                    viewPager.setCurrentItem(yearPosition,false)
+                    viewPager.setCurrentItem(yearPosition,false)*/
                 }
             }
         }
@@ -134,16 +143,18 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 viewModel.yearState.collectLatest{//collectLatest
                     binding.tvYearTitle.text = "$it"
                     year = it
+
+                    val yearPosition  = getCurrentYearPosition(currentYear = it) // Calculate the position of the current year
+                    viewPager.setCurrentItem(yearPosition,false)
                 }
             }
         }
 
         binding.apply {
-            btnPrevYear.setOnClickListener {
-                navigateToYear(-1)
-            }
-            btnNextYear.setOnClickListener {
-                navigateToYear(1)
+            btnPrevYear.apply {
+                setOnClickListener { navigateToYear(-1) } }
+            btnNextYear.apply {
+                setOnClickListener { navigateToYear(1) }
             }
         }
     }
@@ -168,6 +179,8 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
+                setNextPrevBtnColor()
+
                 // Get the key at the given position
                 val yearKeyAtPosition = getYearKeyAtPosition(yearList,position)
                 if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
@@ -183,6 +196,18 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     }
 
+    //Set button color while reach last and first item of year
+    private fun setNextPrevBtnColor() {
+        val currentItem = binding.viewPagerCalendarYear.currentItem
+        val itemCount = binding.viewPagerCalendarYear.adapter?.itemCount ?: 0
+        val imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+
+        binding.btnPrevYear.imageTintList = imageTintList.takeIf { currentItem == 0 } ?: ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), R.color.text_primary))
+        binding.btnNextYear.imageTintList = imageTintList.takeIf { currentItem == itemCount -1 } ?: ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), R.color.text_primary))
+    }
+
     private fun navigateToYear(direction: Int) {
         // Update ViewPager position and display the new month and year
         val newPosition = binding.viewPagerCalendarYear.currentItem + direction
@@ -196,7 +221,11 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 putInt(KEY_YEAR, year)
                 putInt(KEY_MONTH, month)
             }
-            findNavController().navigate(R.id.nav_month, bundle, navOptions)
+            //findNavController().navigate(R.id.nav_month, bundle, navOptions)
+
+            val monthViewDate = "$year-$month-${0}"
+            viewModel.updateMonthViewDate(monthViewDate)//
+            findNavController().navigate(R.id.nav_month, null, navOptions)
         }
     }
 }

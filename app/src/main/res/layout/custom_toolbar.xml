@@ -174,6 +174,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:visibility="gone"
+                    tools:visibility="gone"
                     android:iconifiedByDefault="true"
                     app:animateMenuItems="true"
                     app:dividerPadding="@dimen/_2sdp"
@@ -201,6 +202,25 @@
                     android:singleLine="true"
                     android:textSize="@dimen/_8ssp"
                     android:layout_marginHorizontal="@dimen/_8sdp"
+                    android:visibility="gone"
+                    tools:visibility="gone" />
+
+                <!-- Back to currentEvent Icon -->
+                <TextView
+                    android:id="@+id/back_to_currentEvent_icon"
+                    android:layout_width="@dimen/_21sdp"
+                    android:layout_height="@dimen/_21sdp"
+                    android:background="@drawable/back_to_date_icon"
+                    style="@style/TextViewStyle.medium"
+                    android:textAlignment="center"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:padding="0dp"
+                    android:layout_marginStart="@dimen/itemDividerVerticalSpacingBetweenContent"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_9ssp"
+                    android:layout_marginEnd="@dimen/_8sdp"
                     android:visibility="gone"
                     tools:visibility="gone" />
             </LinearLayout>

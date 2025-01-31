@@ -207,6 +207,9 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
                     } else {
                         // Refocus the SearchView if it loses focus
+                        if (!this.isIconified) {
+                            this.setIconified(true) // Collapses SearchView
+                        }
                     }
 
                 }

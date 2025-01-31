@@ -108,7 +108,8 @@
     <string name="before_30_minutes">30분 전</string>
     <string name="before_1_hour">1시간 전</string>
     <string name="before_1_day">1일 전</string>
-    <string name="before_custom_time">맞춤 시간</string>
+    <!--<string name="before_custom_time">맞춤 시간</string>-->
+    <string name="before_custom_time">사용자 지정 알림</string>
     <string name="custom_alert">사용자 지정 알림</string>
     <string name="minutes_before">분 전</string>
 

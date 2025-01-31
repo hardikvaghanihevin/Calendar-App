@@ -107,7 +107,8 @@
     <string name="before_30_minutes">30 मिनट पहले</string>
     <string name="before_1_hour">1 घंटा पहले</string>
     <string name="before_1_day">1 दिन पहले</string>
-    <string name="before_custom_time">कस्टम समय</string>
+    <!--<string name="before_custom_time">कस्टम समय</string>-->
+    <string name="before_custom_time">कस्टम अलर्ट</string>
     <string name="custom_alert">कस्टम अलर्ट</string>
     <string name="minutes_before">मिनट पहले</string>
 

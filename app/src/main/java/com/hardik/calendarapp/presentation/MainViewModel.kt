@@ -36,7 +36,7 @@ import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.createYearData
 import com.hardik.calendarapp.utillities.createYearMonthPairs
-import com.hardik.calendarapp.utillities.getUserCustomEvents
+import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -72,6 +72,10 @@ class MainViewModel @Inject constructor(
     private val _toolbarTitle = MutableStateFlow<String>("")
     val toolbarTitle: StateFlow<String> = _toolbarTitle // Public read-only StateFlow
     fun updateToolbarTitle(title: String) { _toolbarTitle.value = title }
+
+    private val _tvMonthTitle = MutableStateFlow<String>("")
+    val tvMonthTitle: StateFlow<String> = _tvMonthTitle // Public read-only StateFlow
+    fun updateTvMonthTitle(tvMTitle: String) { _tvMonthTitle.value = tvMTitle }
 
     //----------------------------------------------------------------//
 
@@ -272,7 +276,7 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun collectCursorEventsState(context: Context){
-        val cursorEvent: List<CursorEvent> = getUserCustomEvents(context = context)
+        val cursorEvent: List<CursorEvent> = getAllCursorEvents(context = context)//getUserCustomEvents(context = context)
 
         val events: List<Event> = cursorEvent
             .mapNotNull { item ->
@@ -402,7 +406,42 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun fetchEventsForMonthView(sDate: String){
+        val date: Triple<String, String, String> = stringToDateTriple(sDate, isZeroBased = false)
+        if (sDate.last() == '0' && !sDate.endsWith("10") && !sDate.endsWith("20") && !sDate.endsWith("30")){//0,10,20,30
+            getEventsByMonthOfYear(year = date.first, month = date.second)
+        }else{
+            getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+        }
+    }
+
     //----------------------------------------------------------------//
+
+    private val _currentEventPos = MutableStateFlow<Int>(0)
+    val currentEventPos: StateFlow<Int> = _currentEventPos
+
+    fun findPositionOfEvent(data: List<Event>) {
+        val currentDate = DateUtil.getCurrentDate(pattern =  DateUtil.DATE_FORMAT_yyyy_MM_dd)//"2025-06-05"
+
+        /// Map events to their start dates and associate with original indices
+        val dateList: List<Pair<String, Int>> = data.mapIndexed { index, event -> event.startDate to index }
+
+        // Try to find the exact match
+        val exactIndex = dateList.indexOfFirst { it.first == currentDate }
+
+        if (exactIndex != -1) {
+            _currentEventPos.value = exactIndex
+            return
+        }
+
+        // Find the nearest future event (not sorted)
+        val nextFutureIndex = dateList.filter { it.first > currentDate }
+            .minByOrNull { it.first }?.second
+
+        // Assign the result; fallback to 0 if no future event
+        _currentEventPos.value = nextFutureIndex ?: 0
+    }
+
 
     private val _allEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val allEventsState: StateFlow<DataListState<Event>> get() = _allEventsState
@@ -455,10 +494,18 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _selectedDate = MutableStateFlow<String?>(null)//null, "2000-0-1"
-    val selectedDate: StateFlow<String?> = _selectedDate
+    private val _monthViewDate = MutableStateFlow<String>("2000-0-0")//null, "2000-0-1" //Triple<String, String, String>
+    val monthViewDate: StateFlow<String> = _monthViewDate
+    fun updateMonthViewDate(monthViewDate: String){
+        viewModelScope.launch {
+            _monthViewDate.value = monthViewDate
+        }
+    }
 
-    fun updateSelectedDate(selectedDate: String?){
+    private val _selectedDate = MutableStateFlow<String>("2000-0-0")//null, "2000-0-1"
+    val selectedDate: StateFlow<String> = _selectedDate
+
+    fun updateSelectedDate(selectedDate: String){
         viewModelScope.launch {
             _selectedDate.value = selectedDate
         }

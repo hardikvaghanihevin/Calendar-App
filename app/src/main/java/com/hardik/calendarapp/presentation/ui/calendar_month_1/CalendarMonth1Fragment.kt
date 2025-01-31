@@ -1,14 +1,14 @@
 package com.hardik.calendarapp.presentation.ui.calendar_month_1
 
 import android.annotation.SuppressLint
-import android.graphics.Canvas
+import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -20,10 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.common.Constants.KEY_DAY
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
-import com.hardik.calendarapp.common.Constants.KEY_MONTH
-import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
@@ -34,8 +31,6 @@ import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
-import com.hardik.calendarapp.utillities.DateUtil.getCurrentMonth
-import com.hardik.calendarapp.utillities.DateUtil.getCurrentYear
 import com.hardik.calendarapp.utillities.DateUtil.reverseYearMonth
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.DisplayUtil.dpToPx
@@ -47,11 +42,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
 
+@Suppress("NAME_SHADOWING")
 @AndroidEntryPoint
 class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private val TAG = BASE_TAG + CalendarMonth1Fragment::class.simpleName
@@ -75,15 +70,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            year = it.getInt(KEY_YEAR)
-            month = it.getInt(KEY_MONTH)//0 base month 0-11 (jan-dec0
-            day = it.getInt(KEY_DAY)
-            selectedDate = if(day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
-            Log.e(TAG, "onCreate: $selectedDate", )
-        }
-
-        viewModel.updateYear(year)
+//        arguments?.let {
+//            year = it.getInt(KEY_YEAR)
+//            month = it.getInt(KEY_MONTH)//0 base month 0-11 (jan-dec)
+//            day = it.getInt(KEY_DAY)
+//            selectedDate = if(day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
+//        }
+//
+//        viewModel.updateYear(year)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -96,13 +90,13 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         viewPager.adapter = pageAdapter
 
         // Fetch initial events for the month
-        fetchEventsForSelectedMonth()
+        //fetchEventsForSelectedMonth()
 
         CoroutineScope(Dispatchers.Main).launch {
             // Observe and update the event list
             observeViewModelState()
 
-            setupViewPager()
+            //setupViewPager()
 
             setupUI()
 
@@ -125,10 +119,20 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             val yearKeyAtPosition = yearList.keys.toList().getOrNull(yearKeyPos)
             if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
         }
+
+        /** Go to newEvent */
+        (activity as MainActivity).binding.appBarMain.fab.setOnClickListener { view ->
+
+            findNavController().navigate(R.id.newEventFragment, null, navOptions)
+        }
     }
 
     override fun onResume() {
         super.onResume()
+//        activity?.runOnUiThread {}
+        CoroutineScope(Dispatchers.Main).launch {
+            setupViewPager()
+        }
         requireActivity().invalidateOptionsMenu()
     }
 
@@ -140,7 +144,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         super.onDestroyView()
 
         // Check if arguments are present and contain the required keys
-        if (arguments?.containsKey(KEY_YEAR) == true && arguments?.containsKey(KEY_MONTH) == true) {
+       /* if (arguments?.containsKey(KEY_YEAR) == true && arguments?.containsKey(KEY_MONTH) == true) {
             year = arguments?.getInt(KEY_YEAR) ?: Calendar.getInstance().get(Calendar.YEAR)
             month = arguments?.getInt(KEY_MONTH) ?: Calendar.getInstance().get(Calendar.MONTH)
             day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
@@ -148,16 +152,18 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         } else {
             // Fallback: No arguments, use the current year
             viewModel.updateYear(Calendar.getInstance().get(Calendar.YEAR))
-        }
+        }*/
 
         _binding = null
     }
 
     @SuppressLint("SetTextI18n")
     private fun setupUI(){
+        viewModel.updateTvMonthTitle(tvMTitle = DateFormatSymbols().months[month]+" " + year)
         binding.apply {
             tvMonthTitle.apply {
-                text = "${getCurrentMonth(isString = true)} ${getCurrentYear()}"
+//                text = "${getCurrentMonth(isString = true)} ${getCurrentYear()}"
+//                text = DateFormatSymbols().months[month]+" " + year
 
                 setOnClickListener {
                     val d: CharSequence = tvMonthTitle.text
@@ -168,12 +174,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 }
             }
 
-            btnPrevMonth.setOnClickListener {
-                navigateToMonth(-1)
+            btnPrevMonth.apply {
+                setOnClickListener { navigateToMonth(-1) }
             }
 
-            btnNextMonth.setOnClickListener {
-                navigateToMonth(1)
+            btnNextMonth.apply {
+                setOnClickListener { navigateToMonth(1) }
             }
 
             rvEvent.layoutManager = LinearLayoutManager(requireContext())
@@ -228,7 +234,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             findNavController().navigate(R.id.viewEventFragment, bundle, navOptions)
         }
     }
-    private fun fetchEventsForSelectedMonth() {
+    /*private fun fetchEventsForSelectedMonth() {
 
         if (arguments?.containsKey(KEY_YEAR) == true && arguments?.containsKey(KEY_MONTH) == true && arguments?.containsKey(KEY_DAY) == true) {
             viewModel.getEventsByDateOfMonthOfYear(year = year.toString(),month = month.toString(), date = day.toString())// Its come from jump to date
@@ -237,13 +243,48 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             viewModel.getEventsByMonthOfYear(year = year.toString(),month = month.toString())//Its come from direct month fragment or year fragment
         }
 
-    }
+    }*/
 
     var _eventsOfDateMap: MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>> = mutableMapOf()
 
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun observeViewModelState() {
         // Collecting the StateFlow
+        lifecycleScope.launch {
+            viewModel.selectedDate.collectLatest { selectedDate = it
+                viewModel.fetchEventsForMonthView(it)
+
+                val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
+                viewModel.updateYear(year = date.first.toInt())
+                 if (it.last() == '0' && !it.endsWith("10") && !it.endsWith("20") && !it.endsWith("30")){//0,10,20,30
+                     viewModel.getEventsByMonthOfYear(year = date.first, month = date.second)
+                 }else{
+                     viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+                 }
+                pageAdapter.setSelectedDate(selectedDate)
+
+            }
+        }
+
+        lifecycleScope.launch{
+            viewModel.monthViewDate.collectLatest {monthDate ->
+                val date: Triple<String, String, String> = stringToDateTriple(monthDate, isZeroBased = false)
+                //viewModel.updateSelectedDate(selectedDate = monthDate)
+
+                year = date.first.toInt()
+                month = date.second.toInt()
+                day = date.third.toInt()
+
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.tvMonthTitle.collectLatest { tvMonthTitle ->
+                binding.tvMonthTitle.text = tvMonthTitle
+            }
+        }
+
+
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.yearList.collectLatest{
                 yearList = it
@@ -330,10 +371,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     private var selectedDate: String? = null
     private suspend fun setupViewPager() {
-        yield()
 
+        val date: Triple<String, String, String> = stringToDateTriple(viewModel.monthViewDate.value, isZeroBased = false)
         // When swipe happens, update the year in your adapter based on the position
-        val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, targetYear = year, targetMonth = month)
+        val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, targetYear = date.first.toInt(), targetMonth = date.second.toInt())
+//        val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, targetYear = year, targetMonth = month)
         var previousPosition = currentMonthPosition // todo: this is necessary to give previous position (which are you want)
 
         viewPager.adapter = pageAdapter
@@ -343,25 +385,43 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         //Todo: Start in the middle for infinite scrolling and set to the current month
         viewPager.setCurrentItem(previousPosition, false)
 
-        //viewModel.updateYear(year)
+        viewModel.updateYear(year)
+        //viewModel.getEventsByMonthOfYear(year = year.toString(),month = month.toString())
+
+        val findDateDataA = viewModel.selectedDate.value.let {it:String ->
+            val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
+            if (year.toString() == date.first && month.toString() == date.second){
+                //val findDateDataB = viewModel.selectedDate.value.takeIf { it != "2000-0-0" } ?: viewModel.monthViewDate.value
+                "$year-$month-${date.third}"
+            } else {
+                "$year-$month-${0}"
+            }
+        }
+        viewModel.fetchEventsForMonthView(findDateDataA)
 
         pageAdapter.configureCustomView {customViewMonth ->
             customViewMonth.getMonthNameClickListener{ year: YearKey, month: MonthKey ->
-                viewModel.getEventsByMonthOfYear(year = year, month = month) }
+                viewModel.getEventsByMonthOfYear(year = year, month = month)
+            }
 
-            customViewMonth.getDateClickListener{triple: Triple<Rect, Canvas, String> ->
+            customViewMonth.getDateClickListener { day:String ->
+                viewModel.updateSelectedDate(day)
+                val date: Triple<String, String, String> = stringToDateTriple(day, isZeroBased = false)
+                return@getDateClickListener viewModel.selectedDate.value
+            }
+            /*customViewMonth.getDateClickListener{triple: Triple<Rect, Canvas, String> ->
                 val date: Triple<String, String, String> = stringToDateTriple(triple.third, isZeroBased = false)
 
-                val clickedDate = triple.third
                 // Update selected date
                 lifecycleScope.launch {
-                    viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                    //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
                         viewModel.selectedDate.collectLatest {
                             customViewMonth.selectedDate = it
                             selectedDate = it
                         }
-                    }
+                    //}
                 }
+                val clickedDate = triple.third
                 if (selectedDate == clickedDate) {
                     viewModel.getEventsByMonthOfYear(year = date.first, month = date.second)
                     viewModel.updateSelectedDate(null)
@@ -373,7 +433,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 }
 
                 return@getDateClickListener selectedDate
-            }
+            }*/
 
 
         }
@@ -384,27 +444,44 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
+                setNextPrevBtnColor()
+
                 // Retrieve year and month directly from yearMonthPairList
                 val (year, month) = yearMonthPairList[position]
-                binding.tvMonthTitle.text = DateFormatSymbols().months[month]+" " + year
+
+                val tvMonthTitle = DateFormatSymbols().months[month]+" " + year
+                viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
                 viewModel.updateYear(year)
 
-                viewModel.updateSelectedDate(selectedDate)
-                pageAdapter.setSelectedDate(selectedDate)
+                viewModel.updateSelectedDate(selectedDate!!)
+                viewModel.updateMonthViewDate("$year-$month-${0}")
+
                 selectedDate?.let {it:String ->
-
                     val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-
-                    if (year.toString() == date.first && month.toString() == date.second)
-                        viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
-                    else viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
-
+                    if (year.toString() == date.first && month.toString() == date.second){
+                        //viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+                        val findDateDataB1 = "$year-$month-${date.third}"
+                        viewModel.fetchEventsForMonthView(findDateDataB1)
+                    } else {
+                        viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
+                    }
                 } ?: viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
+
 
                 // Update previous position
                 previousPosition = position
             }
         })
+    }
+
+    //Set button color while reach last and first item of month
+    private fun setNextPrevBtnColor() {
+        val currentItem = binding.viewPagerCalendarMonth.currentItem
+        val itemCount = binding.viewPagerCalendarMonth.adapter?.itemCount ?: 0
+        val imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+
+        binding.btnPrevMonth.imageTintList = imageTintList.takeIf { currentItem == 0 } ?: ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.text_primary))
+        binding.btnNextMonth.imageTintList = imageTintList.takeIf { currentItem == itemCount -1 } ?: ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.text_primary))
     }
 
     private fun navigateToMonth(direction: Int) {

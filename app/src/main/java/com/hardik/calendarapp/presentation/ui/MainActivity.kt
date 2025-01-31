@@ -41,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.databinding.DialogAppThemeBinding
 import com.hardik.calendarapp.databinding.DialogDeviceInformationBinding
@@ -128,10 +129,11 @@ class MainActivity : AppCompatActivity() {
         setupDrawerHeader()
         setupDrawerMenu() //setupDrawerMenu Function: Cleanly handles drawer menu initialization.
         handelBackPressed()
+        handleNotificationEventOpen()// when user click on notification event -> it's open 'ViewEventFragment'
 
-        binding.appBarMain.fab.setOnClickListener { view ->
+        /*binding.appBarMain.fab.setOnClickListener { view ->
             navController.navigate(R.id.newEventFragment, null, navOptions)
-        }
+        }*/
 
         mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
         // Collecting the StateFlow
@@ -195,6 +197,7 @@ class MainActivity : AppCompatActivity() {
             R.id.searchEventFragment -> {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon)
             }
 
             // Default case: Hide everything except FAB
@@ -421,15 +424,29 @@ class MainActivity : AppCompatActivity() {
                         putInt(Constants.KEY_DAY, selectedDay)
                     }
                     //navController.popBackStack()//for repeat entry clear
-                    navController.navigate(R.id.nav_month, bundle, navOptions)
+                    //navController.navigate(R.id.nav_month, bundle, navOptions)
+                    val jumpDate = "$selectedYear-${selectedMonth-1}-$selectedDay"
+                    mainViewModel.updateMonthViewDate(jumpDate)
+                    mainViewModel.updateSelectedDate(jumpDate)
+                    navController.navigate(R.id.nav_month, null, navOptions)
+                    resetJumpToDialog()
                 }
 
                 dialog.dismiss()
             }
-            btnCancel.setOnClickListener { dialog.dismiss() }
+            btnCancel.setOnClickListener {
+                mainViewModel.updateSelectedDate("2000-0-0")
+                resetJumpToDialog()
+                dialog.dismiss() }
         }
 
         dialog.show()
+    }
+
+    private fun resetJumpToDialog(){
+        mainViewModel.updateYearJTD( year = DateUtil.getCurrentYear() )
+        mainViewModel.updateMonthJTD( month = DateUtil.getCurrentMonth() as Int +1 )
+        mainViewModel.updateDateJTD( date = DateUtil.getCurrentDate())
     }
 
     private var dialogAppThemeBinding: DialogAppThemeBinding? = null
@@ -862,9 +879,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.apply {
-            text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
-        }
+        binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.apply { text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString() }
+
+        binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.apply { text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString() }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {}
 
@@ -972,7 +989,8 @@ class MainActivity : AppCompatActivity() {
             binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon,
             binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
             binding.appBarMain.includedAppBarMainCustomToolbar.searchView,
-            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon
+            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon,
+            binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon,
         )
         viewList.forEach { hideViewWithAnimation(it) }
     }
@@ -1107,4 +1125,31 @@ class MainActivity : AppCompatActivity() {
             setBackgroundResource(0)
         }
     }
+
+    // region When user click on notification event -> it's open 'ViewEventFragment'
+    private fun handleNotificationEventOpen() {
+        // Handle intent if launched from a notification
+        val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
+        } else {
+            intent.getParcelableExtra(Constants.KEY_EVENT)
+        }
+
+        if (event != null) {
+            navigateToViewEventFrag(event)
+        }
+    }
+
+    //From coming Notification click
+    private fun navigateToViewEventFrag(event: Event) {
+        lifecycleScope.launch {
+            // Make sure the navigation happens on the main thread
+            bundle = (bundle ?: Bundle()).apply {
+                putParcelable(Constants.KEY_EVENT, event)// Pass the event object
+            }
+            navController.navigate(R.id.viewEventFragment, bundle, navOptions)
+        }
+    }
+    // endregion
+
 }
