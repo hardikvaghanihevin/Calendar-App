@@ -21,13 +21,13 @@ class HolidayApiRepositoryImpl@Inject constructor(private val apiInterface: ApiI
         val currentYear = calendar.get(Calendar.YEAR)
 
         // Calculate min year (3 years ago)
-        val minYear = currentYear - 3
+        val minYear = currentYear - 4
         // Set the min date to the first day of the min year at 00:00:00
         calendar.set(minYear, Calendar.JANUARY, 1, 0, 0, 0)
         val minDate = calendar.time
 
         // Calculate max year (3 years ahead)
-        val maxYear = currentYear + 3
+        val maxYear = currentYear + 4
         // Set the max date to the last day of the max year at 23:59:59
         calendar.set(maxYear, Calendar.DECEMBER, 31, 23, 59, 59)
         val maxDate = calendar.time

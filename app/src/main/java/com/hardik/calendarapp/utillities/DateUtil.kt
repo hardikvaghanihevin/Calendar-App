@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.utillities
 
 import android.os.Build
-import android.util.Log
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import java.text.DateFormatSymbols
@@ -451,7 +450,7 @@ object DateUtil {
     // Get current year
     fun getCurrentYear(): Int { val calendar = Calendar.getInstance(); return calendar.get(Calendar.YEAR) } // Gets the year
 
-    // Get week range (e.g., "5-11 Jan 2025 | 26 Jan - 1 Feb 2025 | 29 Dec 2024 - 4 Jan 2025")
+    // Todo: Get week range for event's "eventFullWeekDate" (e.g., "5-11 Jan 2025 | 26 Jan - 1 Feb 2025 | 29 Dec 2024 - 4 Jan 2025")
     fun getWeekRange(startDate: String, startOfWeek: Int): String {
         val format = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy_1, Locale.getDefault())
         val parsedDate = format.parse(startDate)
@@ -481,7 +480,7 @@ object DateUtil {
         val endYear = yearFormat.format(endOfWeekDate)
 
         // Check if the week spans across months or years
-        return when {
+        val weekRange = when {
             startMonth == endMonth -> { // Same month
                 "$startDay-$endDay $startMonth $startYear"
             }
@@ -492,7 +491,53 @@ object DateUtil {
                 "$startDay $startMonth $startYear - $endDay $endMonth $endYear"
             }
         }
+        return weekRange
     }
+
+    fun getWeekRangeA(startDate: String, startOfWeek: Int): Triple<String, Int, Int> {
+        val format = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy_1, Locale.getDefault())
+        val parsedDate = format.parse(startDate)
+        val calendar = Calendar.getInstance().apply { time = parsedDate ?: Date() }
+
+        // Adjust calendar to the start of the week
+        calendar.firstDayOfWeek = startOfWeek
+        while (calendar.get(Calendar.DAY_OF_WEEK) != startOfWeek) {
+            calendar.add(Calendar.DAY_OF_WEEK, -1)
+        }
+        val startOfWeekDate = calendar.time
+
+        // Calculate the end of the week
+        calendar.add(Calendar.DAY_OF_WEEK, 6)
+        val endOfWeekDate = calendar.time
+
+        // Format start and end of the week
+        val dayFormat = SimpleDateFormat("dd", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
+
+        val startDay = dayFormat.format(startOfWeekDate).toInt()
+        val endDay = dayFormat.format(endOfWeekDate).toInt()
+        val startMonth = monthFormat.format(startOfWeekDate)
+        val endMonth = monthFormat.format(endOfWeekDate)
+        val startYear = yearFormat.format(startOfWeekDate)
+        val endYear = yearFormat.format(endOfWeekDate)
+
+        // Determine week range format
+        val weekRange = when {
+            startMonth == endMonth -> {
+                "$startDay-$endDay $startMonth $startYear"
+            }
+            startYear == endYear -> {
+                "$startDay $startMonth - $endDay $endMonth $startYear"
+            }
+            else -> {
+                "$startDay $startMonth $startYear - $endDay $endMonth $endYear"
+            }
+        }
+
+        return Triple(weekRange, startDay, endDay)
+    }
+
 
     // Function to get the week number of the year based on the provided date format
     fun getWeekOfYear(startDate: String, dateFormat: String): Int {

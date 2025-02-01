@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,12 +25,14 @@ import kotlinx.coroutines.cancelChildren
 import java.util.Calendar
 import java.util.Locale
 
-class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterable {
+class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterable {
     private val TAG = BASE_TAG + EventAdapter::class.java.simpleName
 
     // Keep a copy of the original list for filtering
-    private var originalList: List<Event> = list.toList() // Keep an immutable copy
+    private var originalList: MutableList<Event> = arrayListOf() // Keep an immutable copy
     private var filteredList: List<Event> = originalList
+
+    private val uniqueDates = mutableSetOf<String>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newData: List<Event>) {
@@ -53,10 +54,10 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
 
         // Calculate the diff and update lists
         val diffResult = DiffUtil.calculateDiff(diffCallback)
-        originalList = newData // Update original list
+        originalList = newData.toMutableList() // Update original list
         filteredList = originalList // Reset filtered list
-        list.clear()
-        list.addAll(newData)
+        originalList.clear()
+        originalList.addAll(newData)
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -80,7 +81,6 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
         val previousEvent = if (position > 0) filteredList[position - 1] else null
         holder.bind( filteredList[position], previousEvent, position )
     }
-
     inner class ViewHolder(private val binding: ItemEventLayout1Binding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -115,53 +115,53 @@ class EventAdapter(private var list: ArrayList<Event>): RecyclerView.Adapter<Eve
                     imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image
                 }
 
-                // Check if the current event's week is the same as the previous event
+                // Todo: Check if the current event's week is the same as the previous event
                 val currentEventWeek = DateUtil.getWeekOfYear(event.startDate, DATE_FORMAT_yyyy_MM_dd)
                 val previousEventWeek = previousEvent?.let { DateUtil.getWeekOfYear(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
+//                val previousEventWeek = event.let { DateUtil.getWeekOfYear(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
 
-                // Check if the current event's date is the same as the previous event
-                if (previousEvent != null && previousEvent.startDate == event.startDate) {
-                    // Hide day name and date for duplicate dates
-                    eventDayDate.visibility = View.INVISIBLE
-                    llItemEvent.visibility = View.GONE
-                    eventFullWeekDate.visibility = View.GONE
-                } else {
-                    // Show day name and date
-                    eventDayDate.visibility = View.VISIBLE
-                    eventDayDate.text = "${DateUtil.getDayName(event.startDate, isShort = true)}\n${event.date}" // e.g., Wed, 1
-                    //eventFullWeekDate.visibility = View.VISIBLE
-                    // Display the week range for the first event of each week
-                    if (previousEventWeek != currentEventWeek) {
 
-                        // Set week range if applicable
-                        // Display the full week range header for the first event of the week
-                        val dateForWeek = "${event.date}-${event.month.toInt().plus(1)}-${event.year}"
+
+                //Issue section
+                val dateForWeek = "${event.date}-${event.month.toInt().plus(1)}-${event.year}"
+                val weekRange = DateUtil.getWeekRangeA(dateForWeek, weekStart)
+                val weekStart = weekRange.second
+                val weekEnd = weekRange.third
+                eventFullWeekDate.text = weekRange.first
+                //llItemEvent.visibility = View.VISIBLE
+
+//                    if (previousEvent == null || previousEvent.startDate == event.startDate) { // Todo: for 'eventFullWeekDate'
+//                if (previousEvent != null){ llItemEvent.visibility = View.VISIBLE } else { llItemEvent.visibility = View.GONE }
+//                if (previousEventWeek == currentEventWeek) { llItemEvent.visibility = View.VISIBLE } else { llItemEvent.visibility = View.GONE }
+                if (previousEvent?.startDate != event.startDate){
+                    if (event.date.toInt() in weekStart..weekEnd){
                         llItemEvent.visibility = View.VISIBLE
-                        eventFullWeekDate.visibility = View.VISIBLE
-                        eventFullWeekDate.text = DateUtil.getWeekRange(dateForWeek, weekStart)
-
-//                        eventFullWeekDate.apply {
-//                            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-//                                val currentStart = marginStart // Preserve the current start margin
-//                                val currentEnd = marginEnd     // Preserve the current end margin
-//                                val currentBottom = marginBottom  // Preserve the current bottom margin
-//
-//                                // Update only top and bottom margins
-//                                setMargins(
-//                                    currentStart,// Start margin
-//                                    resources.getDimension(com.intuit.sdp.R.dimen._19sdp).toInt(), // Top margin
-//                                    currentEnd,// End margin
-//                                    currentBottom  // Bottom margin
-//                                )
-//                            }
-//                        }
-
-                    } else {
-                        llItemEvent.visibility = View.GONE
-                        eventFullWeekDate.visibility = View.GONE
-                        if (imgItemEventLayMonthTransitionImage.isVisible && cardItemEventImg.isVisible){ }
                     }
-                }
+
+                } else { llItemEvent.visibility = View.GONE }
+
+                /*val currentDate = event.startDate
+                if (uniqueDates.contains(currentDate)) {
+                    llItemEvent.visibility = View.GONE
+                } else {
+                    llItemEvent.visibility = View.VISIBLE
+                    uniqueDates.add(currentDate)
+                }*/
+
+
+                //End issue section
+
+
+
+
+
+
+                eventDayDate.text = "${DateUtil.getDayName(event.startDate, isShort = true)}\n${event.date}" // e.g., Wed, 1
+                // Handle event date visibility
+                if (previousEvent != null && previousEvent.startDate == event.startDate) { // Todo: for 'eventDayDate'
+                    eventDayDate.visibility = View.INVISIBLE }
+                else { eventDayDate.visibility = View.VISIBLE }
+
 
                 // Set event title
                 eventTitle.text = event.title

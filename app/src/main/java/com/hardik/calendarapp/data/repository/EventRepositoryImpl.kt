@@ -68,40 +68,22 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteEventsHoliday(){
-        //todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
+        //Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
         cancelAllRemoteAlarms()
         eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
     }
 
-    override fun getEventById(eventId: Long): Flow<Event>?{
-        return eventDao.getEventById(eventId)
-    }
-    override fun getAllEventIds(): Flow<List<Long>>{
-        return eventDao.getAllEventIds()
-    }
 
     override fun getAllEvents(): Flow<List<Event>> {
-        return eventDao.getAllEventsFlow()
+        return eventDao.getAllEvents()
     }
 
-    override fun getHolidayEvents(): Flow<List<Event>> {
-        return eventDao.getHolidayEventsFlow()
+    override fun getEventsByMonthOfTheYear(year: String, month: String): Flow<List<Event>>{
+        return eventDao.getEventsByMonthOfTheYear(year = year, month = month)
     }
-
-    override fun getEventsForMonth(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>> {
-        return eventDao.getEventsForMonth(startOfMonth, endOfMonth)
-    }
-
-    override fun getEventsByMonthOfYear(year: String, month: String): Flow<List<Event>>{
-        return eventDao.getEventsByMonthOfYear(year = year, month = month)
-    }
-     override fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String): Flow<List<Event>>{
-        return eventDao.getEventsByDateOfMonthOfYear(year = year, month = month, date = date)
+     override fun getEventsByDateOfMonthOfTheYear(year: String, month: String, date: String): Flow<List<Event>>{
+        return eventDao.getEventsByDateOfMonthOfTheYear(year = year, month = month, date = date)
      }
-
-    override fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>{
-        return eventDao.getEventsByYearAndMonth(year, month)
-    }
 
     override fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>{
         return eventDao.getEventByTitleAndType(title = title, eventType = eventType)
@@ -131,7 +113,7 @@ class EventRepositoryImpl @Inject constructor(
     }
     private suspend fun cancelAllRemoteAlarms() {
         CoroutineScope(Dispatchers.IO).launch {
-            eventDao.getHolidayEventsFlow().collectLatest {
+            eventDao.getHolidayEvents().collectLatest {
                 it.forEach { event -> cancelAlarm(event.id) }// currently no use
             }
         }

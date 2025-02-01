@@ -21,40 +21,38 @@ interface EventDao {
     @Delete
     suspend fun deleteEvent(event: Event)
 
+    //region Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms() by using 'getHolidayEvents' and then delete all event where sourceType is 'REMOTE'
     @Query("DELETE FROM events WHERE sourceType = :sourceType")
     suspend fun deleteEventsBySourceType(sourceType: SourceType = SourceType.REMOTE) // For deleting all events with a specific source type
     //select count(*) from events where sourceType = "LOCAL"// CURSOR/REMOTE
 
-    @Query("SELECT * FROM events WHERE eventId = :eventId LIMIT 1")
-    fun getEventById(eventId: Long): Flow<Event>?
-
-    @Query("SELECT eventId FROM events")
-    fun getAllEventIds(): Flow<List<Long>>
-
-    @Query("SELECT * FROM events")
-    suspend fun getAllEvents(): List<Event>
-
-    @Query("SELECT * FROM events ORDER BY startTime ASC, endTime ASC, title ASC")
-    fun getAllEventsFlow(): Flow<List<Event>> // Flow-based query
-
-    @Query("SELECT * FROM events WHERE isHoliday = 1")
-    suspend fun getHolidayEvents(): List<Event>
-
     @Query("SELECT * FROM events WHERE sourceType = :sourceType")
-    fun getHolidayEventsFlow(sourceType: SourceType = SourceType.REMOTE): Flow<List<Event>> // Flow-based query
+    fun getHolidayEvents(sourceType: SourceType = SourceType.REMOTE): Flow<List<Event>> // Todo: 'cancelAllRemoteAlarms' before delete all remote events
+    //endregion
 
-    //@Query("SELECT * FROM events WHERE startTime >= :startOfMonth AND startTime <= :endOfMonth ORDER BY startTime ASC, endTime DESC, title ASC")//todo: use in CalendarMonthFragment
-    @Query("SELECT * FROM events WHERE startTime >= :startOfMonth AND startTime <= :endOfMonth ORDER BY startTime ASC, endTime ASC, title ASC")//todo: use in CalendarMonthFragment
-    fun getEventsForMonth(startOfMonth: Long, endOfMonth: Long): Flow<List<Event>>
 
-    @Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY startTime ASC, endTime ASC, title ASC")//todo: use in CalendarMonth1Fragment
-    fun getEventsByMonthOfYear(year: String, month: String): Flow<List<Event>>
+    //region Todo: GetEvents for year, month, date
+    //@Query("SELECT * FROM events ORDER BY startTime ASC, endTime ASC, title ASC")
+    //@Query("SELECT * FROM events WHERE (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events GROUP BY title))) ORDER BY year ASC, month ASC, date ASC, startTime ASC, endTime ASC, title ASC")
+    @Query("SELECT * FROM events WHERE (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events GROUP BY title))) ORDER BY startTime ASC, endTime ASC, title ASC")
+    fun getAllEvents(): Flow<List<Event>> // Todo: For schedule event list
 
-    @Query("SELECT * FROM events WHERE year = :year AND month = :month AND date =:date ORDER BY startTime ASC, endTime ASC, title ASC")//todo: use in CalendarMonth1Fragment
-    fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String): Flow<List<Event>>
+    //@Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY startTime ASC, endTime ASC, title ASC")
+    @Query("SELECT * FROM events WHERE year = :year AND month = :month AND (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events WHERE year = :year AND month = :month GROUP BY title))) ORDER BY startTime ASC, endTime ASC, title ASC")
+    fun getEventsByMonthOfTheYear(
+        year: String,
+        month: String
+    ): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
 
-    @Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY startTime ASC, endTime ASC, title ASC")
-    fun getEventsByYearAndMonth(year: String, month: String): Flow<List<Event>>
+    //@Query("SELECT * FROM events WHERE year = :year AND month = :month AND date =:date ORDER BY startTime ASC, endTime ASC, title ASC")
+    @Query("SELECT * FROM events WHERE year = :year AND month = :month AND date = :date AND (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events WHERE year = :year AND month = :month AND date = :date GROUP BY title))) ORDER BY startTime ASC, endTime ASC, title ASC")
+    fun getEventsByDateOfMonthOfTheYear(
+        year: String,
+        month: String,
+        date: String
+    ): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
+    //endregion
+
 
     @Query("SELECT * FROM events WHERE title = :title AND eventType = :eventType LIMIT 1")
     fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>

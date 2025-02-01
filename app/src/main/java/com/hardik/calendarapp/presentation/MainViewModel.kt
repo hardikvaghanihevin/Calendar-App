@@ -23,10 +23,9 @@ import com.hardik.calendarapp.data.database.entity.organizeEvents
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetAllEventsUseCase
-import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfYear
-import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfYear
+import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfTheYear
+import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
-import com.hardik.calendarapp.domain.use_case.GetMonthlyEventsUseCase
 import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.utillities.CursorEvent
 import com.hardik.calendarapp.utillities.DateUtil
@@ -63,9 +62,8 @@ class MainViewModel @Inject constructor(
     private val getHolidayApiUseCase: GetHolidayApiUseCase,// For API compatibility
     private val eventRepository: EventRepository,// For Database compatibility
     private val getAllEventsUseCase : GetAllEventsUseCase,// For getting all events (indicator use)
-    private val getMonthlyEventsUseCase: GetMonthlyEventsUseCase,// For getting monthly events compatibility (start to end date) (eventAdapter use)
-    private val getEventsByMonthOfYear: GetEventsByMonthOfYear,
-    private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfYear,
+    private val getEventsByMonthOfYear: GetEventsByMonthOfTheYear,
+    private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfTheYear,
 ) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
@@ -243,9 +241,14 @@ class MainViewModel @Inject constructor(
                                 val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
                                 val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                                val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+
+                                if (item.summary.contains("Makar Sankranti", ignoreCase = true)){
+                                    //Log.e(TAG, "Api: (${item.start.date} -> $startTime) - (${item.end.date} -> $endTime)", )
+                                }
 
                                 Event(
-                                    id = item.id,//"${DateUtil.stringToLong(item.start.date,DateUtil.DATE_FORMAT_yyyy_MM_dd)} | ${item.summary}",
+                                    id = item.id,
                                     title = item.summary,
                                     description = item.description,
                                     startDate = item.start.date,
@@ -254,7 +257,7 @@ class MainViewModel @Inject constructor(
                                     month = date.second,
                                     date = date.third,
                                     startTime = startTime,
-                                    endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd),
+                                    endTime = endTime,
                                     isHoliday = true,
                                     sourceType = SourceType.REMOTE,
                                     repeatOption = RepeatOption.NEVER,//*
@@ -281,17 +284,28 @@ class MainViewModel @Inject constructor(
         val events: List<Event> = cursorEvent
             .mapNotNull { item ->
 
+                val startDate = longToString(item.startTime)
+                val endDate = longToString(item.endTime)
+
                 val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
 
-                val startTime = DateUtil.separateDateTime(item.startTime).first
-                val endTime = DateUtil.separateDateTime(item.endTime).first
-                val id = "$startTime | ${item.title}"
+                //val startTime = DateUtil.separateDateTime(item.startTime).second
+                //val endTime = DateUtil.separateDateTime(item.endTime).second
+
+                val startTime = DateUtil.stringToLong(startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                val endTime = DateUtil.stringToLong(endDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+
+                if (item.title.contains("Makar Sankranti", ignoreCase = true)){
+                    //Log.e(TAG, "Cursor: (${item.startTime} -> $startTime) - (${item.endTime} -> $endTime)", )
+                }
+
+                val id = "${item.startTime} | ${item.title}"
                 Event(
                     id = id,
                     title = item.title,
                     description = item.description ?: "",
-                    startDate = longToString(item.startTime),
-                    endDate = longToString(item.endTime),
+                    startDate = startDate,
+                    endDate = endDate,
                     year = date.first,
                     month = date.second,
                     date = date.third,

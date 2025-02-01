@@ -41,7 +41,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     private var _binding: FragmentSearchEventBinding? = null
 
     private val viewModel: MainViewModel by activityViewModels()
-    private val eventAdapter: EventAdapter = EventAdapter(arrayListOf())
+    private val eventAdapter: EventAdapter = EventAdapter()
     private var currentQuery: String? = null // Variable to store the current query for search
 
     var bundle: Bundle? = null

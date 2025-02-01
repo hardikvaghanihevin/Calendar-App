@@ -216,7 +216,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                 }
             })
-            eventAdapter = EventAdapter(ArrayList<Event>())
+            eventAdapter = EventAdapter()
             binding.rvEvent.adapter = eventAdapter
             eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event:Event->
