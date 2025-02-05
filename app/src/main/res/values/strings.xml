@@ -95,7 +95,6 @@
     <string name="number_picker_formatter_date" translatable="false">%02d</string>
     <string name="title_activity_splash_fullscreen" translatable="false">SplashFullscreenActivity</string>
     <string name="app_icon" translatable="false">App icon</string>
-    <string name="abi" translatable="false">ABI</string>
 
     <string name="all_day">All Day</string>
     <string name="start">Start</string>
@@ -139,6 +138,7 @@
     <string name="device">Device</string>
     <string name="app_version">App Version</string>
     <string name="os">Os</string>
+    <string name="abi">ABI</string>
     <string name="version">Version</string>
     <string name="okay">Okay</string>
     <string name="description">Description</string>

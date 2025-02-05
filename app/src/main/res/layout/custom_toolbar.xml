@@ -6,11 +6,13 @@
     android:layout_height="wrap_content">
 
     <!-- Custom Toolbar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/custom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:padding="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:background="@color/background_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,36 +26,30 @@
             android:contentDescription="Navigation Icon"
             android:paddingHorizontal="@dimen/_6sdp"
             android:src="@drawable/hamburger_icon"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ShapeAbleImageView"
             tools:ignore="HardcodedText" />
 
-        <!-- Toolbar Title -->
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="@style/TextViewStyle.medium"
-            android:gravity="start"
-            android:text="@string/app_name"
-            android:textSize="@dimen/dialog_TextSize_1"
-            android:singleLine="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/toolbarMenuIcon"
-            app:layout_constraintStart_toEndOf="@id/siv_navigation_icon"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbarMenuIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintStart_toStartOf="@id/toolbar_title"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+
+            <!-- Toolbar Title -->
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/TextViewStyle.medium"
+                android:paddingStart="@dimen/_3sdp"
+                android:paddingEnd="0dp"
+                android:gravity="start"
+                android:text="@string/app_name"
+                android:textSize="@dimen/dialog_TextSize_1"
+                android:singleLine="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <LinearLayout
                 android:id="@+id/ll_toolbarMenuIcon_1"
@@ -171,6 +167,8 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:background="@drawable/item_background"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:visibility="gone"
@@ -184,6 +182,7 @@
                     app:searchHintIcon="@null"
                     app:theme="@style/SearchViewStyle"
                     app:searchIcon="@drawable/search_icon"
+                    app:closeIcon="@drawable/icon_cancel"
                     />
                 <!--app:searchHintIcon="@null"-->
                 <!--app:closeIcon="@android:drawable/btn_dialog"-->
@@ -227,6 +226,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

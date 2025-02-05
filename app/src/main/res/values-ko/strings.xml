@@ -130,6 +130,7 @@
     <string name="app_version">앱 버전</string>
     <string name="os">OS</string>
     <string name="version">버전</string>
+    <string name="abi">아비</string>
     <string name="okay">확인</string>
     <string name="description">설명</string>
     <string name="title">제목</string>
@@ -160,5 +161,23 @@
     <string name="custom_time_is_not_set">맞춤 시간이 설정되지 않았습니다!</string>
     <string name="event_insert_successfully">이벤트 삽입 성공!</string>
     <string name="event_update_successfully">이벤트 업데이트가 성공적으로 완료되었습니다!</string>
+
+    <string name="search_icon">검색 아이콘</string>
+    <string name="check_icon">아이콘 확인</string>
+    <string name="_00">00</string>
+    <string name="monday_1_january_2025">2025년 1월 1일 월요일</string>
+    <string name="year_picker">연도 선택기</string>
+    <string name="month_picker">월 선택기</string>
+    <string name="date_picker">날짜 선택기</string>
+    <string name="time_format_12_hr">시간 형식 12시간</string>
+    <string name="time_format_24_hr">시간 형식 24시간</string>
+    <string name="drawer_icon">서랍 아이콘</string>
+    <string name="menu_item">메뉴 항목</string>
+    <string name="left_arrow_icon">왼쪽 화살표 아이콘</string>
+    <string name="right_arrow_icon">오른쪽 화살표 아이콘</string>
+    <string name="start_date_to_end_date_icon">시작일부터 종료일까지 아이콘</string>
+    <string name="schedule_s_image_for_month">월별 일정의 이미지</string>
+    <string name="yearview_scrolling">YearView 스크롤</string>
+    <string name="default_selected_1_country">기본적으로 국가 1개가 선택되었습니다.</string>
 
 </resources>

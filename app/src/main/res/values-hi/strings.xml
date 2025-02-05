@@ -128,6 +128,7 @@
     <string name="device">डिवाइस</string>
     <string name="app_version">ऐप वर्ज़न</string>
     <string name="os">ओएस</string>
+    <string name="abi">ए.बी.आई</string>
     <string name="version">वर्ज़न</string>
     <string name="okay">ठीक है</string>
     <string name="description">विवरण</string>
@@ -159,5 +160,23 @@
     <string name="custom_time_is_not_set">कस्टम समय निर्धारित नहीं है!</string>
     <string name="event_insert_successfully">इवेंट सफलतापूर्वक सम्मिलित हुआ!</string>
     <string name="event_update_successfully">इवेंट अपडेट सफलतापूर्वक!</string>
+
+    <string name="search_icon">खोज चिह्न</string>
+    <string name="check_icon">आइकन जांचें</string>
+    <string name="_00">00</string>
+    <string name="monday_1_january_2025">सोमवार 1 जनवरी 2025</string>
+    <string name="year_picker">वर्ष चुनने वाला</string>
+    <string name="month_picker">महीना बीनने वाला</string>
+    <string name="date_picker">तिथि चयनकर्ता</string>
+    <string name="time_format_12_hr">समय प्रारूप 12 घंटा</string>
+    <string name="time_format_24_hr">समय प्रारूप 24 घंटे</string>
+    <string name="drawer_icon">दराज चिह्न</string>
+    <string name="menu_item">मेनू आइटम</string>
+    <string name="left_arrow_icon">बायां तीर चिह्न</string>
+    <string name="right_arrow_icon">दायां तीर चिह्न</string>
+    <string name="start_date_to_end_date_icon">प्रारंभ दिनांक से समाप्ति दिनांक आइकन</string>
+    <string name="schedule_s_image_for_month">महीने के लिए शेड्यूल की छवि</string>
+    <string name="yearview_scrolling">वर्ष दृश्य स्क्रॉलिंग</string>
+    <string name="default_selected_1_country">डिफ़ॉल्ट रूप से 1 देश चयनित</string>
 
 </resources>

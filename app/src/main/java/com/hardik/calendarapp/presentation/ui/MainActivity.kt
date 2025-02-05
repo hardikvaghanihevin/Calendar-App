@@ -135,9 +135,16 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.newEventFragment, null, navOptions)
         }*/
 
-        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
         // Collecting the StateFlow
         lifecycleScope.launch {
+
+            launch {
+                mainViewModel.isCursorDataCollected.collect{
+                    if (it){
+                        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
+                    }
+                }
+            }
 
             mainViewModel.toolbarTitle.collectLatest { title->
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.text = title
@@ -229,7 +236,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        dialog.setCancelable(true)
+        dialog.setCancelable(false)
 
         dialogFirstDayOfTheWeekBinding?.apply {
             val sundayText = this.dialogFirstDayOfTheWeekSunday
@@ -301,9 +308,6 @@ class MainActivity : AppCompatActivity() {
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("firstDayOfWeek", "Saturday").apply()
             }
-        }
-
-        dialogFirstDayOfTheWeekBinding?.apply {
 
             btnDone.setOnClickListener {
                 lifecycleScope.launch {
@@ -314,7 +318,10 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
 
-            btnCancel.setOnClickListener { dialog.dismiss() }
+            btnCancel.setOnClickListener {
+                // Save selection to SharedPreferences when user can 'cancel'
+                sharedPreferences.edit().putString("firstDayOfWeek", firstDayOfTheWeek).apply()
+                dialog.dismiss() }
         }
 
         dialog.show()

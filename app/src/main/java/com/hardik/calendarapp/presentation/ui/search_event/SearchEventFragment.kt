@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
@@ -27,6 +28,7 @@ import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
+import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,7 +99,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             )
                         }
 
-                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
+//                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
 
                         DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
                             if (isVisible) {
@@ -119,6 +121,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             // Perform search or filtering based on the query
                             currentQuery = query // Save the query
                             eventAdapter.filter.filter(query)
+
+                            KeyboardUtils.hideKeyboard(this@SearchEventFragment.requireActivity())
                         }
                         return true
                     }
@@ -132,15 +136,10 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 })
 
                 // Handle the close action of SearchView
-                this.setOnCloseListener {
-
-                    showHideBeckToCurrentEventIcon(wantToShow = true)
-
-                    // Reset filter when the SearchView is closed
-                    this.setBackgroundResource(0)
-                    currentQuery = null // Clear the query
-                    eventAdapter.filter.filter("")
-                    false // Return false if the event hasn't been consumed yet
+                //this.setOnCloseListener {}
+                val closeButton = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+                closeButton?.setOnClickListener {
+                   resetSearchView()
                 }
             }
         }
@@ -200,7 +199,10 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
             eventAdapter.setNoDataCallback {hasData ->
                 rvEvent.visibility = View.GONE.takeUnless { hasData } ?: View.VISIBLE
-                tvNotify.visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
+                tvNotify.apply {
+                    text = resources.getString(R.string.no_data)
+                    visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
+                }
                 includedProgressLayout.progressBar.visibility = View.GONE
             }
             //endregion
@@ -208,7 +210,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     }
 
     private fun collectDataForAdapter() {
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             lifecycleScope.launch(Dispatchers.Main) {
                 viewModel.allEventsState.collectLatest {dataState ->
                     val safeBinding = _binding // Safely reference the binding
@@ -222,8 +224,10 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             // Show error message
                             Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
                             safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                            safeBinding.tvNotify.text = dataState.error
-                            safeBinding.tvNotify.visibility = View.VISIBLE
+                            safeBinding.tvNotify.apply {
+                                text = dataState.error
+                                visibility = View.VISIBLE
+                            }
 
                         } else {
                             // Update UI with the user list
@@ -233,7 +237,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
                             //eventAdapter.updateData(data)
-                            eventAdapter.apply { updateData(data) }
+                            eventAdapter.apply { updateData(data, viewModel.firstEventOfEachWeek.value) }
 
                             viewModel.findPositionOfEvent(data)
                             // Scroll to position after data is loaded
@@ -246,7 +250,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         // observeViewModelState: Binding is null, skipping UI update.
                     }
                 }
-
             }
         }
     }

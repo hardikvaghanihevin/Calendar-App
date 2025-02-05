@@ -1,13 +1,16 @@
 package com.hardik.calendarapp.utillities
 
 import android.content.Context
+import android.database.Cursor
 import android.provider.CalendarContract
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.RepeatOption
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.TimeZone
 
 data class CursorEvent(
-    val id: Long? = null,
+    val id: String = "",
     val calendarId: Long,
     val title: String,
     val description: String? = null,
@@ -20,7 +23,70 @@ data class CursorEvent(
     val alertOffset:AlertOffset = AlertOffset.AT_TIME_OF_EVENT
 )
 
-fun getAllCursorEvents(context: Context): List<CursorEvent> {
+suspend fun getAllCursorEvents(context: Context): List<CursorEvent> =
+    withContext(Dispatchers.IO) {
+        val events = mutableListOf<CursorEvent>()
+        val projection = arrayOf(
+            CalendarContract.Events._ID,
+            CalendarContract.Events.TITLE,
+            CalendarContract.Events.DESCRIPTION,
+            CalendarContract.Events.DTSTART,
+            CalendarContract.Events.DTEND,
+            CalendarContract.Events.CALENDAR_ID,
+            CalendarContract.Events.EVENT_LOCATION
+        )
+        val uri = CalendarContract.Events.CONTENT_URI
+        val sortOrder = "${CalendarContract.Events.DTSTART} ASC"
+
+        val cursor: Cursor? = try {
+            context.contentResolver.query(uri, projection, null, null, sortOrder)
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            return@withContext emptyList() // Handle permission issues
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return@withContext emptyList() // Handle other exceptions
+        }
+
+        cursor?.use {
+            while (it.moveToNext()) {
+                try {
+                    val id = it.getLongOrNull(CalendarContract.Events._ID) ?: continue
+                    val title = it.getStringOrNull(CalendarContract.Events.TITLE) ?: "Untitled"
+                    val description = it.getStringOrNull(CalendarContract.Events.DESCRIPTION) ?: ""
+                    val startTime = it.getLongOrNull(CalendarContract.Events.DTSTART) ?: continue
+                    val endTime = it.getLongOrNull(CalendarContract.Events.DTEND) ?: startTime
+                    val calendarId = it.getLongOrNull(CalendarContract.Events.CALENDAR_ID) ?: -1L
+                    val location = it.getStringOrNull(CalendarContract.Events.EVENT_LOCATION) ?: ""
+
+                    events.add(
+                        CursorEvent(
+                            id = id.toString(),
+                            title = title,
+                            description = description,
+                            startTime = startTime,
+                            endTime = endTime,
+                            calendarId = calendarId,
+                            location = location
+                        )
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        return@withContext events
+    }
+
+
+private fun Cursor.getStringOrNull(columnName: String): String? =
+    getColumnIndex(columnName).takeIf { it >= 0 }?.let { getString(it) }
+
+private fun Cursor.getLongOrNull(columnName: String): Long? =
+    getColumnIndex(columnName).takeIf { it >= 0 }?.let { getLong(it) }
+
+fun getAllCursorEvents1(context: Context): List<CursorEvent> {
     val events = mutableListOf<CursorEvent>()
 
     val projection = arrayOf(
@@ -50,7 +116,7 @@ fun getAllCursorEvents(context: Context): List<CursorEvent> {
             val calendarId = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.CALENDAR_ID))
             val location = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_LOCATION))
 
-            events.add(CursorEvent(id = id, title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location))
+            events.add(CursorEvent(id = id.toString(), title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location))
         }
     }
 
@@ -111,7 +177,7 @@ fun getUserCustomEvents(context: Context): List<CursorEvent> {
             // Process recurrence rule to set RepeatOption
             val repeatOption = parseRecurrenceRule(rrule)
 
-            events.add(CursorEvent(id = id, title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location, repeatOption = repeatOption))
+            events.add(CursorEvent(id = id.toString(), title = title, description = description, startTime = startTime, endTime = endTime, calendarId = calendarId, location = location, repeatOption = repeatOption))
         }
     }
 

@@ -129,6 +129,7 @@
     <string name="device">Пристрій</string>
     <string name="app_version">Версія програми</string>
     <string name="os">ОС</string>
+    <string name="abi">ABI</string>
     <string name="version">Версія</string>
     <string name="okay">Гаразд</string>
     <string name="description">Опис</string>
@@ -160,5 +161,23 @@
     <string name="custom_time_is_not_set">Індивідуальний час не встановлено!</string>
     <string name="event_insert_successfully">Подія успішно вставлена!</string>
     <string name="event_update_successfully">Подію успішно оновлено!</string>
+
+    <string name="search_icon">Значок пошуку</string>
+    <string name="check_icon">Значок перевірки</string>
+    <string name="_00">00</string>
+    <string name="monday_1_january_2025">Понеділок, 1 січня 2025 р</string>
+    <string name="year_picker">Вибір року</string>
+    <string name="month_picker">Вибір місяця</string>
+    <string name="date_picker">Вибір дати</string>
+    <string name="time_format_12_hr">Формат часу 12 год</string>
+    <string name="time_format_24_hr">Формат часу 24 год</string>
+    <string name="drawer_icon">Ящик значок</string>
+    <string name="menu_item">Пункт меню</string>
+    <string name="left_arrow_icon">Значок стрілки вліво</string>
+    <string name="right_arrow_icon">значок стрілки вправо</string>
+    <string name="start_date_to_end_date_icon">Піктограма від дати початку до дати завершення</string>
+    <string name="schedule_s_image_for_month">Розклад зображення на місяць</string>
+    <string name="yearview_scrolling">Прокручування YearView</string>
+    <string name="default_selected_1_country">За умовчанням вибрано 1 країну</string>
 
 </resources>

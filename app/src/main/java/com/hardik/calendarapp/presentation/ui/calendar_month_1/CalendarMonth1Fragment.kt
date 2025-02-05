@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -108,6 +109,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
             val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
             val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)
+            Log.v(TAG, "onViewCreated: $currentMonthPosition", )
             if (::viewPager.isInitialized) {
                 viewPager.setCurrentItem(currentMonthPosition, true) // Navigate to the desired position
                 pageAdapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
@@ -347,8 +349,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         // Show error message
                         Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
                         safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                        safeBinding.tvNotify.text = dataState.error
-                        safeBinding.tvNotify.visibility = View.VISIBLE
+                        safeBinding.tvNotify.apply {
+                            text = dataState.error
+                            visibility = View.VISIBLE
+                        }
+
 
                     } else {
                         // Update UI with the user list
@@ -356,7 +361,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                         safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
-                        eventAdapter.updateData(data)
+                        eventAdapter.apply { updateData(data, viewModel.firstEventOfEachWeek.value) }
                         //binding.recyclerview.setPadding(0, 0, 0, 0)  // To remove the extra space on top and bottom of the RecyclerVie
                         safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
                     }

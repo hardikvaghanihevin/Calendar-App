@@ -31,9 +31,12 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
     private var filteredList = listOf<CountryItem>() // Store the filtered list
 
     // Update the adapter list
-    fun submitFullList(list: List<CountryItem>) {
+    fun submitFullList(list: List<CountryItem>, query: String? = "") {
         originalList = list
-        filteredList = list
+        filteredList = if (query.isNullOrEmpty()) { list } else {
+            list.filter { it.name.contains(query, ignoreCase = true) }
+                //.sortedBy { it.name }  // Sort the filtered list by name
+        }
         submitList(filteredList)
     }
 
@@ -48,48 +51,44 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
 
         return CountryViewHolder(binding)
     }
+   override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
+       val item = filteredList[position] // Use the filtered list
 
-    override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
-        //val item = getItem(position)// Use Default item of list if needed
-        val item = filteredList[position] // Use the filtered list
-
-        holder.countryName.text = item.name
+       holder.countryName.text = item.name
 //        holder.countryName.setTextColor(ContextCompat.getColor(holder.countryName.context, R.color.text_primary))
-        holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
+       holder.countryName.typeface = ResourcesCompat.getFont(holder.countryName.context, R.font.post_nord_sans_regular)
 
-        if(viewType == VERTICAL){
-            holder.countryFlag?.setImageResource(item.flag)
-            if (item.isSelected) {
-                holder.countryCheckbox.setImageResource(R.drawable.icon_checked)
-            } else {
-                holder.countryCheckbox.setImageResource(R.drawable.icon_unchecked)
-            }
-        }else{
-            if (item.isSelected) {
-                holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
-            } else {
-                holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
-            }
+       // Set flag and checkbox based on viewType and selection state
+       updateCheckboxState(holder, item)
+
+       // Handle checkbox click for horizontal viewType
+       if (viewType == HORIZONTAL) {
+           holder.countryCheckbox.setOnClickListener {
+               val isNowSelected = item.isSelected
+               updateCheckboxState(holder, item)
+               onCountryChecked(item.code, isNowSelected)
+           }
+       }else{
+           // Handle item click
+           holder.itemView.setOnClickListener {
+               val isNowSelected = item.isSelected
+               updateCheckboxState(holder, item)
+               onCountryChecked(item.code, isNowSelected)
+           }
+       }
+   }
+
+    // Helper function to update checkbox state
+    private fun updateCheckboxState(holder: CountryViewHolder, item: CountryItem) {
+        val checkboxResource = when {
+            item.isSelected -> R.drawable.icon_checked.takeIf { viewType == VERTICAL } ?: R.drawable.icon_cancel
+            viewType == VERTICAL -> R.drawable.icon_unchecked
+            else -> R.drawable.icon_cancel
         }
 
-        holder.itemView.setOnClickListener {
-            val isNowSelected = item.isSelected//todo: to importance it's set from viewModel base selected or unselected
-            if(viewType == VERTICAL){
-                if (isNowSelected) {
-                    holder.countryCheckbox.setImageResource(R.drawable.icon_checked)
-                } else {
-                    holder.countryCheckbox.setImageResource(R.drawable.icon_unchecked)
-                }
-            }else{
-                if (isNowSelected) {
-                    holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
-                } else {
-                    holder.countryCheckbox.setImageResource(R.drawable.icon_cancel)
-                }
-            }
-
-            // Callback to the parent activity/fragment with the selected state
-            onCountryChecked(item.code, isNowSelected)
+        holder.countryCheckbox.setImageResource(checkboxResource)
+        if (viewType == VERTICAL) {
+            holder.countryFlag?.setImageResource(item.flag)
         }
     }
 

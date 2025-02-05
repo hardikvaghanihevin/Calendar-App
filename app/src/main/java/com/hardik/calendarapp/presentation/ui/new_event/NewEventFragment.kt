@@ -299,8 +299,12 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_item_date_picker, null)
         bindingDatePicker = DialogItemDatePickerBinding.bind(dialogView)
-
         val datePicker = bindingDatePicker?.datePicker
+        datePicker.apply {
+            // Set spinner mode for the DatePicker
+//            this.datePickerMode = DatePicker.MODE_SPINNER
+        }
+
         val btnOkay = bindingDatePicker?.btnDone
         val btnCancel = bindingDatePicker?.btnCancel
 

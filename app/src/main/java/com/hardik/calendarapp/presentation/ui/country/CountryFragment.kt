@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.databinding.FragmentCountryBinding
@@ -22,6 +24,8 @@ import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.presentation.adapter.HORIZONTAL
 import com.hardik.calendarapp.presentation.adapter.VERTICAL
 import com.hardik.calendarapp.presentation.ui.MainActivity
+import com.hardik.calendarapp.utillities.DisplayUtil
+import com.hardik.calendarapp.utillities.KeyboardUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -68,7 +72,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         lifecycleScope.launch {
             viewModel.countryItems.collectLatest { countryItems ->
                 countryAdapter.apply {
-                    submitFullList(countryItems) // Use the filtered list
+                    submitFullList(countryItems, currentQuery) // Update the full list
                 }
 
                 val selectedCountryItems = countryItems.filter { it.isSelected } // Filter only selected items
@@ -81,6 +85,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
             countryRecView.apply {
                 layoutManager = LinearLayoutManager(context)
                 setHasFixedSize(true)
+                (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
                 val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
@@ -121,6 +126,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 // Set the LayoutManager with horizontal orientation
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 setHasFixedSize(true)
+                (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
                 val margin = resources.getDimension(com.intuit.sdp.R.dimen._4sdp).toInt()
 
@@ -172,7 +178,13 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     )
 
                     // Optional: Update ViewModel or trigger side effects
-                    viewModel.getHolidayCalendarData()
+                    launch {
+                        viewModel.isCursorDataCollected.collect{
+                            if (it){
+                                viewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
+                            }
+                        }
+                    }
                     
                     if (findNavController().currentDestination?.id == R.id.nav_select_country) {
                         findNavController().popBackStack(R.id.nav_select_country, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
@@ -189,29 +201,45 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 this.setBackgroundResource(0) // 0 removes any background and Set inactive background
                 this.queryHint = getString(R.string.search_country)
 
-                // Adjust margins dynamically
-                val params = (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                    setMargins(
-                        resources.getDimension(com.intuit.sdp.R.dimen._36sdp).toInt(), // Start margin
-                        0,  // Top margin
-                        0,//resources.getDimension(com.intuit.sdp.R.dimen._12sdp).toInt(), // End margin
-                        0   // Bottom margin
-                    )
-                }
-
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
+
+                        showHideSaveSelectionIcon(wantToShow = false)
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
+                        (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                            setMargins(
+                                0, // Start margin
+                                0, // Top margin
+                                resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(), // End margin
+                                0 // Bottom margin
+                            )
+                        }
 
                     } else {
+
                         // Refocus the SearchView if it loses focus
-                        if (!this.isIconified) {
-                            this.setIconified(true) // Collapses SearchView
+                        (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                            setMargins(
+                                0, // Start margin
+                                0, // Top margin
+                                0, // End margin
+                                0  // Bottom margin
+                            )
+                        }
+
+//                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
+
+                        DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
+                            if (isVisible) {
+                                //this.isIconified = false  // Keep SearchView expanded
+                                showHideSaveSelectionIcon(wantToShow = false)
+                            } else {
+                                showHideSaveSelectionIcon(wantToShow = true)
+                            }
                         }
                     }
-
                 }
 
                 // Set query text listener for filtering and search actions
@@ -221,7 +249,9 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         if (!query.isNullOrBlank()) {
                             // Perform search or filtering based on the query
                             currentQuery = query // Save the query
-                            countryAdapter.filter.filter(query)
+                            //countryAdapter.filter.filter(query)
+
+                            KeyboardUtils.hideKeyboard(this@CountryFragment.requireActivity())
                         }
                         return true
                     }
@@ -229,19 +259,19 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     override fun onQueryTextChange(newText: String?): Boolean {
                         // Handle query text changes
                         currentQuery = newText // Save the query
-                        countryAdapter.filter.filter(newText ?: "")
+                        //countryAdapter.filter.filter(newText ?: "")
+                        countryAdapter.submitFullList(viewModel.countryItems.value, currentQuery) // Update the full list
                         return true
                     }
                 })
 
                 // Handle the close action of SearchView
-                this.setOnCloseListener {
-                    // Reset filter when the SearchView is closed
-                    this.setBackgroundResource(0) // 0 removes any background
-                    currentQuery = null // Clear the query
-                    countryAdapter.filter.filter("")
-                    false // Return false if the event hasn't been consumed yet
+                //this.setOnCloseListener {}
+                val closeButton = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+                closeButton?.setOnClickListener {
+                    resetSearchView()
                 }
+
             }
         }
     }
@@ -265,8 +295,19 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
     /** Search view reset */
     private fun resetSearchView() {
         currentQuery = null // Clear the query
-        countryAdapter.filter.filter("") // Reset the filter
+        //countryAdapter.filter.filter("") // Reset the filter
         (activity as MainActivity).resetSearchView()
+        showHideSaveSelectionIcon(wantToShow = true)
+    }
+
+    private fun showHideSaveSelectionIcon(wantToShow: Boolean) {
+        (activity as MainActivity).apply {
+            if(wantToShow){
+                DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
+            }else{
+                DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
+            }
+        }
     }
 
     /** Get list of Countries */

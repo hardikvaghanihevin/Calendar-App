@@ -451,50 +451,7 @@ object DateUtil {
     fun getCurrentYear(): Int { val calendar = Calendar.getInstance(); return calendar.get(Calendar.YEAR) } // Gets the year
 
     // Todo: Get week range for event's "eventFullWeekDate" (e.g., "5-11 Jan 2025 | 26 Jan - 1 Feb 2025 | 29 Dec 2024 - 4 Jan 2025")
-    fun getWeekRange(startDate: String, startOfWeek: Int): String {
-        val format = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy_1, Locale.getDefault())
-        val parsedDate = format.parse(startDate)
-        val calendar = Calendar.getInstance().apply { time = parsedDate ?: Date() }
-
-        // Adjust calendar to the start of the week
-        calendar.firstDayOfWeek = startOfWeek
-        while (calendar.get(Calendar.DAY_OF_WEEK) != startOfWeek) {
-            calendar.add(Calendar.DAY_OF_WEEK, -1)
-        }
-        val startOfWeekDate = calendar.time
-
-        // Calculate the end of the week
-        calendar.add(Calendar.DAY_OF_WEEK, 6)
-        val endOfWeekDate = calendar.time
-
-        // Format start and end of the week
-        val dayFormat = SimpleDateFormat("dd", Locale.getDefault())
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault()) // 3-letter month
-        val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
-
-        val startDay = dayFormat.format(startOfWeekDate)
-        val endDay = dayFormat.format(endOfWeekDate)
-        val startMonth = monthFormat.format(startOfWeekDate)
-        val endMonth = monthFormat.format(endOfWeekDate)
-        val startYear = yearFormat.format(startOfWeekDate)
-        val endYear = yearFormat.format(endOfWeekDate)
-
-        // Check if the week spans across months or years
-        val weekRange = when {
-            startMonth == endMonth -> { // Same month
-                "$startDay-$endDay $startMonth $startYear"
-            }
-            startYear == endYear -> { // Different months within the same year
-                "$startDay $startMonth - $endDay $endMonth $startYear"
-            }
-            else -> { // Week spans across years
-                "$startDay $startMonth $startYear - $endDay $endMonth $endYear"
-            }
-        }
-        return weekRange
-    }
-
-    fun getWeekRangeA(startDate: String, startOfWeek: Int): Triple<String, Int, Int> {
+    fun getWeekRange(startDate: String, startOfWeek: Int): Triple<String, Int, Int> {
         val format = SimpleDateFormat(DATE_FORMAT_dd_MM_yyyy_1, Locale.getDefault())
         val parsedDate = format.parse(startDate)
         val calendar = Calendar.getInstance().apply { time = parsedDate ?: Date() }

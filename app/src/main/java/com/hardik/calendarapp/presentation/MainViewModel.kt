@@ -2,6 +2,7 @@ package com.hardik.calendarapp.presentation
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.DataListState
-import com.hardik.calendarapp.common.DataState
 import com.hardik.calendarapp.common.Resource
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.DayKey
@@ -27,8 +27,8 @@ import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.presentation.adapter.CountryItem
-import com.hardik.calendarapp.utillities.CursorEvent
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
 import com.hardik.calendarapp.utillities.DateUtil.calculateNextOccurrence
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
 import com.hardik.calendarapp.utillities.DateUtil.longToString
@@ -47,11 +47,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -137,8 +142,8 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
-    private val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
+    //private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
+    //private val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
 
     init {
         generateYearList(2000, 2100, isZeroBased = true)
@@ -181,6 +186,70 @@ class MainViewModel @Inject constructor(
         }
     }
 
+//    private val _holidayApiState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
+//    private val holidayApiState: StateFlow<DataListState<Event>> get() = _holidayApiState
+
+    private val _isLoading = MutableStateFlow<Boolean>(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _isCursorDataCollected = MutableStateFlow<Boolean>(false)
+    val isCursorDataCollected: StateFlow<Boolean> = _isCursorDataCollected
+
+    val allEvents : MutableList<Event> = mutableListOf()
+
+    /**Observe [holidayApiState] after getting data from API*/
+    private fun collectCursorEventsState(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _isCursorDataCollected.value = false
+
+                val cursorEvent = withContext(Dispatchers.IO) { getAllCursorEvents(context) }
+
+                val events = cursorEvent.map { item ->
+                    val startDate = longToString(item.startTime)
+                    val endDate = longToString(item.endTime)
+                    val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
+
+                    val startTime = DateUtil.stringToLong(startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                    val endTime = DateUtil.stringToLong(endDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+
+                    //val id = "${item.startTime} | ${item.title}"
+                    Event(
+                        id = item.id,
+                        title = item.title,
+                        description = item.description.orEmpty(),
+                        startDate = startDate,
+                        endDate = endDate,
+                        year = date.first,
+                        month = date.second,
+                        date = date.third,
+                        startTime = startTime,
+                        endTime = endTime,
+                        isHoliday = false,
+                        sourceType = SourceType.CURSOR,
+                        repeatOption = RepeatOption.NEVER,
+                        alertOffset = AlertOffset.AT_TIME_OF_EVENT,
+                        customAlertOffset = null,
+                        triggerTime = startTime,
+                    )
+                }
+
+                // Insert events into DB sequentially to avoid concurrency issues
+                withContext(Dispatchers.IO) {
+                    if (events.isNotEmpty()) {
+                        insertEvents(events)
+                    }
+                }
+
+            } catch (e: Exception) {
+                // Log or handle errors here
+                e.printStackTrace()
+            } finally {
+                _isCursorDataCollected.value = true
+            }
+        }
+    }
+
     /**Get holiday list by using API*/
     fun getHolidayCalendarData() {
         viewModelScope.launch (Dispatchers.IO) {
@@ -188,10 +257,12 @@ class MainViewModel @Inject constructor(
             //todo: delete all event which already in DB from 'REMOTE'
             withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
 
-            val languageCode =
-                sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-            val countryCodes: Set<String> =
-                sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+            allEvents.clear()
+
+            _isLoading.value = true
+
+            val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+            val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
 
             // Create a list of deferred results for API calls
             val apiCalls = countryCodes.map { countryCode ->
@@ -200,15 +271,48 @@ class MainViewModel @Inject constructor(
                     getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
                         when (result) {
                             is Resource.Success -> {
-                                _holidayApiState.value = DataState(data = result.data)
-                                collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
+                                //_holidayApiState.value = DataState(data = result.data)
+                                //collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
+                                if (result.data != null) {
+                                    // Handle success case (trigger actions like logging, analytics, etc.)
+                                    val calendarDetails = result.data
+
+                                    // Process events
+                                    val events: List<Event> = calendarDetails.items
+                                        .map { item ->
+
+                                            val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
+
+                                            val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                                            val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+
+                                            Event(
+                                                id = item.id,
+                                                title = item.summary,
+                                                description = item.description,
+                                                startDate = item.start.date,
+                                                endDate = item.end.date,
+                                                year = date.first,
+                                                month = date.second,
+                                                date = date.third,
+                                                startTime = startTime,
+                                                endTime = endTime,
+                                                isHoliday = true,
+                                                sourceType = SourceType.REMOTE,
+                                                repeatOption = RepeatOption.NEVER,//*
+                                                alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
+                                                customAlertOffset = null,//*
+                                                triggerTime = startTime, // todo: set triggerTime as start time
+                                            )
+
+                                        }
+                                    allEvents.addAll(events)
+                                }
                             }
 
-                            is Resource.Error -> { _holidayApiState.value = DataState(error = result.message ?: "An unexpected error occurred") }
+                            is Resource.Error -> { }
 
-                            is Resource.Loading -> {
-                                _holidayApiState.value = DataState(isLoading = true)
-                            }
+                            is Resource.Loading -> { }
                         }
                     }
                 }
@@ -216,116 +320,13 @@ class MainViewModel @Inject constructor(
 
             // Await all API calls to finish
             apiCalls.awaitAll()
-        }
-    }
 
-    /**Observe [holidayApiState] after getting data from API*/
-    private suspend fun collectHolidayApiState() {//insert in to DB
-        viewModelScope.launch(Dispatchers.IO) {
-            holidayApiState.collectLatest { state ->
-                when {
-                    state.isLoading -> { // Handle loading state (maybe trigger other UI-related actions or logging)
-                    }
-
-                    state.error.isNotEmpty() -> { // Handle error state (maybe trigger logging, analytics, etc.)
-                    }
-
-                    state.data != null -> {
-                        // Handle success case (trigger actions like logging, analytics, etc.)
-                        val calendarDetails = state.data
-
-                        // Process events
-                        val events: List<Event> = calendarDetails.items
-                            .mapNotNull { item ->
-
-                                val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
-
-                                val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                                val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-
-                                if (item.summary.contains("Makar Sankranti", ignoreCase = true)){
-                                    //Log.e(TAG, "Api: (${item.start.date} -> $startTime) - (${item.end.date} -> $endTime)", )
-                                }
-
-                                Event(
-                                    id = item.id,
-                                    title = item.summary,
-                                    description = item.description,
-                                    startDate = item.start.date,
-                                    endDate = item.end.date,
-                                    year = date.first,
-                                    month = date.second,
-                                    date = date.third,
-                                    startTime = startTime,
-                                    endTime = endTime,
-                                    isHoliday = true,
-                                    sourceType = SourceType.REMOTE,
-                                    repeatOption = RepeatOption.NEVER,//*
-                                    alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
-                                    customAlertOffset = null,//*
-                                    eventId = item.id.hashCode().toLong(),//DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd), //as event id
-                                    triggerTime = startTime, // todo: set triggerTime as start time
-                                )
-
-                            }
-                            .filterNotNull() // Filter out null values resulting from mapNotNull
-
-                        // Insert events into your database or UI
-                        insertEvents(events)
-                    }
-                }
+            withContext(Dispatchers.IO) {
+                insertEvents(allEvents)
+                _isLoading.value = false
+                allEvents.clear()
             }
         }
-    }
-
-    private suspend fun collectCursorEventsState(context: Context){
-        val cursorEvent: List<CursorEvent> = getAllCursorEvents(context = context)//getUserCustomEvents(context = context)
-
-        val events: List<Event> = cursorEvent
-            .mapNotNull { item ->
-
-                val startDate = longToString(item.startTime)
-                val endDate = longToString(item.endTime)
-
-                val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
-
-                //val startTime = DateUtil.separateDateTime(item.startTime).second
-                //val endTime = DateUtil.separateDateTime(item.endTime).second
-
-                val startTime = DateUtil.stringToLong(startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                val endTime = DateUtil.stringToLong(endDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-
-                if (item.title.contains("Makar Sankranti", ignoreCase = true)){
-                    //Log.e(TAG, "Cursor: (${item.startTime} -> $startTime) - (${item.endTime} -> $endTime)", )
-                }
-
-                val id = "${item.startTime} | ${item.title}"
-                Event(
-                    id = id,
-                    title = item.title,
-                    description = item.description ?: "",
-                    startDate = startDate,
-                    endDate = endDate,
-                    year = date.first,
-                    month = date.second,
-                    date = date.third,
-                    startTime = startTime,
-                    endTime = endTime,
-                    isHoliday = false,
-                    sourceType = SourceType.CURSOR,
-                    repeatOption = RepeatOption.NEVER,
-                    alertOffset = AlertOffset.AT_TIME_OF_EVENT,
-                    customAlertOffset = null,
-                    eventId = id.hashCode().toLong(),//todo: here to set unique things set for loop by 1 to n list size
-                    triggerTime = startTime, // todo: set triggerTime as start time
-                )
-
-            }
-            .filterNotNull() // Filter out null values resulting from mapNotNull
-
-        // Insert events into your database or UI
-        insertEvents(events)
-
     }
 
     //----------------------------------------------------------------//
@@ -334,6 +335,7 @@ class MainViewModel @Inject constructor(
     private suspend fun insertEvents(events: List<Event>) {
         // Ensure only one coroutine executes this block at a time
         insertEventsMutex.withLock {
+            _isLoading.value = true
             try {
                 // Step 1: Cancel all existing alarms concurrently
                 // Cancel all alarms concurrently (Cancel all existing alarms first)
@@ -369,6 +371,8 @@ class MainViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 // Handle any errors
+            }finally {
+                _isLoading.value = false
             }
         }
     }
@@ -386,17 +390,24 @@ class MainViewModel @Inject constructor(
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            try {
-                getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
-                    // Update state with data
-                    _monthlyEventsState.value = DataListState(isLoading = false, data = events)
+            isLoading.collect{
+                if (it == true){
+                    _monthlyEventsState.value = DataListState(isLoading = true)
+                }else{
+                    try {
+                        getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
+                            // Update state with data
+                            _monthlyEventsState.value = DataListState(isLoading = false, data = events)
+                            setFirstEventOfEachWeek(events)
+                        }
+                    } catch (e: Exception) {
+                        // Handle errors
+                        _monthlyEventsState.value = DataListState(
+                            isLoading = false,
+                            error = e.message ?: "An unknown error occurred"
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                // Handle errors
-                _monthlyEventsState.value = DataListState(
-                    isLoading = false,
-                    error = e.message ?: "An unknown error occurred"
-                )
             }
         }
     }
@@ -405,17 +416,25 @@ class MainViewModel @Inject constructor(
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            try {
-                getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date).collectLatest { events ->
-                    // Update state with data
-                    _monthlyEventsState.value = DataListState(isLoading = false, data = events)
+            isLoading.collect{
+                if (it == true){
+                    _monthlyEventsState.value = DataListState(isLoading = true)
+                }else {
+                    try {
+                        getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date)
+                            .collectLatest { events ->
+                                // Update state with data
+                                _monthlyEventsState.value = DataListState(isLoading = false, data = events)
+                                setFirstEventOfEachWeek(events)
+                            }
+                    } catch (e: Exception) {
+                        // Handle errors
+                        _monthlyEventsState.value = DataListState(
+                            isLoading = false,
+                            error = e.message ?: "An unknown error occurred"
+                        )
+                    }
                 }
-            } catch (e: Exception){
-                // Handle errors
-                _monthlyEventsState.value = DataListState(
-                    isLoading = false,
-                    error = e.message ?: "An unknown error occurred"
-                )
             }
         }
     }
@@ -427,6 +446,42 @@ class MainViewModel @Inject constructor(
         }else{
             getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
         }
+    }//Use this for both combo base on date it-selves call
+
+    //----------------------------------------------------------------//
+
+    private val _firstEventOfEachWeek = MutableStateFlow<Map<String, Event>>(emptyMap())
+    val firstEventOfEachWeek: StateFlow<Map<String, Event>> = _firstEventOfEachWeek
+
+    // Function to update events grouped by week
+    private fun setFirstEventOfEachWeek(newData: List<Event>) {
+        val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+
+        val firstDayOfWeek = when (_firstDayOfTheWeek.value) {
+            "Monday" -> DayOfWeek.MONDAY
+            "Saturday" -> DayOfWeek.SATURDAY
+            else -> DayOfWeek.SUNDAY
+        }
+
+        val groupedByYearWeek = newData.groupBy { event ->
+            val localDate = LocalDate.parse(event.startDate, dateFormatter)
+            val weekField = WeekFields.of(firstDayOfWeek, 1).weekOfWeekBasedYear()
+            val year = localDate.getYear()
+            val month = localDate.monthValue - 1  // Convert to 0-based month
+            val week = localDate.get(weekField)
+            "$year-$month-$week"  // Unique key for year-week combination
+        }
+
+        val firstEvents = groupedByYearWeek.mapValues { (key, events) ->
+            events.minByOrNull { LocalDate.parse(it.startDate, dateFormatter) }!!
+        }
+
+        // Update StateFlow with new values
+        _firstEventOfEachWeek.update { firstEvents.mapKeys { it.key } }
     }
 
     //----------------------------------------------------------------//
@@ -435,7 +490,7 @@ class MainViewModel @Inject constructor(
     val currentEventPos: StateFlow<Int> = _currentEventPos
 
     fun findPositionOfEvent(data: List<Event>) {
-        val currentDate = DateUtil.getCurrentDate(pattern =  DateUtil.DATE_FORMAT_yyyy_MM_dd)//"2025-06-05"
+        val currentDate = DateUtil.getCurrentDate(pattern =  DATE_FORMAT_yyyy_MM_dd)//"2025-06-05"
 
         /// Map events to their start dates and associate with original indices
         val dateList: List<Pair<String, Int>> = data.mapIndexed { index, event -> event.startDate to index }
@@ -464,21 +519,29 @@ class MainViewModel @Inject constructor(
         _allEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            try {
-                getAllEventsUseCase.invoke().collectLatest { events ->
-                    // Update state with data
-                    _allEventsState.value = DataListState(isLoading = false, data = events )
+            isLoading.collect{
+                if (it == true){
+                    _allEventsState.value = DataListState(isLoading = true)
+                }else {
+                    try {
+                        getAllEventsUseCase.invoke().collectLatest { events ->
+                            // Update state with data
+                            setFirstEventOfEachWeek(events)
+                            _allEventsState.value = DataListState(isLoading = false, data = events )
+                        }
+                    } catch (e: Exception) {
+                        // Handle errors
+                        _allEventsState.value = DataListState(
+                            isLoading = false,
+                            error = e.message ?: "An unknown error occurred"
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                // Handle errors
-                _allEventsState.value = DataListState(
-                    isLoading = false,
-                    error = e.message ?: "An unknown error occurred"
-                )
             }
         }
     }
 
+    // for month view's indicator
     private val _allEventsDateInMapState = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())
     val allEventsDateInMapState: StateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>> get() = _allEventsDateInMapState
 

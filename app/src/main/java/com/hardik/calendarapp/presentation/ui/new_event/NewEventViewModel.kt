@@ -267,7 +267,6 @@ class NewEventViewModel @Inject constructor(
             repeatOption = repeatOption.value,
             alertOffset = alertOffset.value,
             customAlertOffset = customAlertOffset.value,
-            eventId = currentEpochTime,
             triggerTime = latestTriggerTime ?: 0L, // todo: set triggerTime as start time
         )
 

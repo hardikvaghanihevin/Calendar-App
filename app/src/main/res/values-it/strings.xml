@@ -129,6 +129,7 @@
     <string name="device">Dispositivo</string>
     <string name="app_version">Versione app</string>
     <string name="os">Sistema operativo</string>
+    <string name="abi">ABI</string>
     <string name="version">Versione</string>
     <string name="okay">Okay</string>
     <string name="description">Descrizione</string>
@@ -160,5 +161,23 @@
     <string name="custom_time_is_not_set">L\'orario personalizzato non è impostato!</string>
     <string name="event_insert_successfully">Evento inserito con successo!</string>
     <string name="event_update_successfully">Aggiornamento evento avvenuto con successo!</string>
+
+    <string name="search_icon">Icona di ricerca</string>
+    <string name="check_icon">Controlla l\'icona</string>
+    <string name="_00">00</string>
+    <string name="monday_1_january_2025">Lunedì 1 gennaio 2025</string>
+    <string name="year_picker">Selettore dell\'anno</string>
+    <string name="month_picker">Selettore del mese</string>
+    <string name="date_picker">Selettore data</string>
+    <string name="time_format_12_hr">Formato ora 12 ore</string>
+    <string name="time_format_24_hr">Formato ora 24 ore</string>
+    <string name="drawer_icon">Icona del cassetto</string>
+    <string name="menu_item">Voce di menu</string>
+    <string name="left_arrow_icon">Icona della freccia sinistra</string>
+    <string name="right_arrow_icon">Icona freccia destra</string>
+    <string name="start_date_to_end_date_icon">Icona dalla data di inizio alla data di fine</string>
+    <string name="schedule_s_image_for_month">Immagine della pianificazione per il mese</string>
+    <string name="yearview_scrolling">Scorrimento vista anno</string>
+    <string name="default_selected_1_country">Per impostazione predefinita è selezionato 1 paese</string>
 
 </resources>

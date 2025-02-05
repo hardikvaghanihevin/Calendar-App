@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.databinding.ItemEventLayout1Binding
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_dd_MM_yyyy_1
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.DateUtil.isAllDay
@@ -22,6 +24,12 @@ import com.hardik.calendarapp.utillities.ImageColorUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
 import java.util.Calendar
 import java.util.Locale
 
@@ -32,35 +40,48 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
     private var originalList: MutableList<Event> = arrayListOf() // Keep an immutable copy
     private var filteredList: List<Event> = originalList
 
-    private val uniqueDates = mutableSetOf<String>()
-
+    private var firstEventOfEachWeek: Map<String, Event> = mutableMapOf()
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newData: List<Event>) {
-
-        val diffCallback = object : DiffUtil.Callback() {
-            override fun getOldListSize() = originalList.size
-            override fun getNewListSize() = newData.size
-
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                // Assuming `id` is a unique identifier for `Event`
-                return originalList[oldItemPosition].id == newData[newItemPosition].id
-            }
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                // Compare entire content or specific fields
-                return originalList[oldItemPosition] == newData[newItemPosition]
-            }
-        }
-
-        // Calculate the diff and update lists
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        originalList = newData.toMutableList() // Update original list
-        filteredList = originalList // Reset filtered list
-        originalList.clear()
-        originalList.addAll(newData)
-        diffResult.dispatchUpdatesTo(this)
+    fun updateFirstEventOfWeek(fEEW : Map<String, Event>){
+        firstEventOfEachWeek = fEEW
+    }
+    fun isEventPresent(event: Event): Boolean {
+        return firstEventOfEachWeek.containsValue(event)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateData(newData: List<Event>, fEEW : Map<String, Event> ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch {
+                updateFirstEventOfWeek(fEEW = fEEW)
+            }.join()
+            CoroutineScope(Dispatchers.Default).launch {
+
+                // Calculate DiffUtil
+                val diffCallback = object : DiffUtil.Callback() {
+                    override fun getOldListSize() = originalList.size
+                    override fun getNewListSize() = newData.size
+
+                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                        return originalList[oldItemPosition].id == newData[newItemPosition].id
+                    }
+
+                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                        return originalList[oldItemPosition] == newData[newItemPosition]
+                    }
+                }
+
+                val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+                withContext(Dispatchers.Main) {
+                    // Update the list and notify changes
+                    originalList = newData.toMutableList()
+                    filteredList = originalList
+                    diffResult.dispatchUpdatesTo(this@EventAdapter)
+                }
+            }
+        }
+    }
     var weekStart = Calendar.SUNDAY
     @SuppressLint("NotifyDataSetChanged")
     fun updateFirstDayOfWeek(weekStart: Int = Calendar.SUNDAY) {
@@ -91,16 +112,17 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
         fun bind(event: Event, previousEvent: Event?, position: Int) {
             binding.apply {
                 // Check if the current event's month is different from the previous event
+                // ===== Month header code (unchanged) =====
                 val currentMonth = DateUtil.getMonthName(event.startDate, DATE_FORMAT_yyyy_MM_dd)
                 val previousMonth = previousEvent?.let { DateUtil.getMonthName(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
-
 
                 // Show divider image when the month changes
                 if (previousMonth != null && previousMonth != currentMonth) {
                     cardItemEventImg.visibility = View.VISIBLE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.VISIBLE // Show the image
-                    binding.tvItemEventMonthName.text = "$currentMonth ${event.year}"
+                    tvItemEventMonthName.text = "$currentMonth ${event.year}"
 
+                    llItemEvent.visibility = View.VISIBLE// Show week range after image (need)
 
                     val imageUrl = ImageColorUtil.monthImgResource.get(event.month.toInt())
 
@@ -109,74 +131,62 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                         .placeholder(R.drawable.bkg_01_jan)
                         .error(R.drawable.bkg_01_jan)
                         .into(imgItemEventLayMonthTransitionImage)
-
                 } else {
-                    cardItemEventImg.visibility = View.GONE // Show the CardView
-                    imgItemEventLayMonthTransitionImage.visibility = View.GONE // Hide the image
+                    cardItemEventImg.visibility = View.GONE
+                    imgItemEventLayMonthTransitionImage.visibility = View.GONE
                 }
-
-                // Todo: Check if the current event's week is the same as the previous event
-                val currentEventWeek = DateUtil.getWeekOfYear(event.startDate, DATE_FORMAT_yyyy_MM_dd)
-                val previousEventWeek = previousEvent?.let { DateUtil.getWeekOfYear(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
-//                val previousEventWeek = event.let { DateUtil.getWeekOfYear(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
+                // ===== End Month header code =====
 
 
-
-                //Issue section
-                val dateForWeek = "${event.date}-${event.month.toInt().plus(1)}-${event.year}"
-                val weekRange = DateUtil.getWeekRangeA(dateForWeek, weekStart)
+                // ===== Week header logic =====
+                val dateForWeek = DateUtil.stringToString( dateString = event.startDate,
+                    inputPattern = DATE_FORMAT_yyyy_MM_dd,
+                    outputPattern = DATE_FORMAT_dd_MM_yyyy_1)
+                val weekRange = DateUtil.getWeekRange(dateForWeek, weekStart)
                 val weekStart = weekRange.second
                 val weekEnd = weekRange.third
                 eventFullWeekDate.text = weekRange.first
-                //llItemEvent.visibility = View.VISIBLE
 
-//                    if (previousEvent == null || previousEvent.startDate == event.startDate) { // Todo: for 'eventFullWeekDate'
-//                if (previousEvent != null){ llItemEvent.visibility = View.VISIBLE } else { llItemEvent.visibility = View.GONE }
-//                if (previousEventWeek == currentEventWeek) { llItemEvent.visibility = View.VISIBLE } else { llItemEvent.visibility = View.GONE }
-                if (previousEvent?.startDate != event.startDate){
-                    if (event.date.toInt() in weekStart..weekEnd){
-                        llItemEvent.visibility = View.VISIBLE
-                    }
-
-                } else { llItemEvent.visibility = View.GONE }
-
-                /*val currentDate = event.startDate
-                if (uniqueDates.contains(currentDate)) {
-                    llItemEvent.visibility = View.GONE
-                } else {
+                // Show week header (llItemEvent) only for the first event of a week
+                val isMatchFound = firstEventOfEachWeek.keys.any {
+                    it.lowercase(Locale.getDefault()).contains("${event.year}-${event.month}")
+                }
+                if (isEventPresent(event) && isMatchFound) {
                     llItemEvent.visibility = View.VISIBLE
-                    uniqueDates.add(currentDate)
-                }*/
-
-
-                //End issue section
-
-
+                } else {
+                    llItemEvent.visibility = View.GONE
+                }
+                // ===== End Week header logic =====
 
 
 
 
-                eventDayDate.text = "${DateUtil.getDayName(event.startDate, isShort = true)}\n${event.date}" // e.g., Wed, 1
-                // Handle event date visibility
-                if (previousEvent != null && previousEvent.startDate == event.startDate) { // Todo: for 'eventDayDate'
-                    eventDayDate.visibility = View.INVISIBLE }
-                else { eventDayDate.visibility = View.VISIBLE }
-
+                // ===== Date header logic for individual dates =====
+                // Only show the date if the previous event has a different startDate
+                if (previousEvent != null && previousEvent.startDate == event.startDate) {
+                    eventDayDate.visibility = View.INVISIBLE
+                } else {
+                    eventDayDate.visibility = View.VISIBLE
+                    eventDayDate.text = "${DateUtil.getDayName(event.startDate, isShort = true)}\n${event.date}" // e.g., Wed, 1
+                }
+                // ===== End Date header logic =====
 
                 // Set event title
                 eventTitle.text = event.title
 
                 // Set "All day" or time period based on start and end time
-                eventTimePeriod.text = if ( isAllDay(startTime = event.startTime, endTime = event.endTime) ) ContextCompat.getString(binding.root.context, R.string.all_day)
+                eventTimePeriod.text = if (isAllDay(startTime = event.startTime, endTime = event.endTime))
+                    ContextCompat.getString(binding.root.context, R.string.all_day)
                 else {
                     val startTime = DateUtil.longToString(event.startTime, TIME_FORMAT_HH_mm)
                     val endTime = DateUtil.longToString(event.endTime, TIME_FORMAT_HH_mm)
                     if (startTime == "00:00" && endTime == "00:00") "-"
                     else "$startTime - $endTime"
-
                 }
+
                 // Handle item clicks
                 itemEventLayout.setOnClickListener { configureEventCallBack?.invoke(event) }
+
             }
 
         }
@@ -215,6 +225,7 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
             @SuppressLint("NotifyDataSetChanged")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 filteredList = results?.values as? List<Event> ?: originalList
+                setFirstEventOfEachWeek(filteredList)
 
                 noDataCallback?.invoke(true.takeUnless { filteredList.isEmpty() } ?: false) // Notify when no data is found
 
@@ -229,4 +240,33 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
         noDataCallback = callback
     }
 
+    fun setFirstEventOfEachWeek(newData: List<Event>) {
+        val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+
+        val firstDayOfWeek = when (weekStart) {
+            Calendar.MONDAY -> DayOfWeek.MONDAY
+            Calendar.SATURDAY -> DayOfWeek.SATURDAY
+            else -> DayOfWeek.SUNDAY
+        }
+
+        val groupedByYearWeek = newData.groupBy { event ->
+            val localDate = LocalDate.parse(event.startDate, dateFormatter)
+            val weekField = WeekFields.of(firstDayOfWeek, 1).weekOfWeekBasedYear()
+            val year = localDate.getYear()
+            val month = localDate.monthValue - 1  // Convert to 0-based month
+            val week = localDate.get(weekField)
+            "$year-$month-$week"  // Unique key for year-week combination
+        }
+
+        val firstEvents = groupedByYearWeek.mapValues { (key, events) ->
+            events.minByOrNull { LocalDate.parse(it.startDate, dateFormatter) }!!
+        }
+
+        // Update StateFlow with new values
+        firstEventOfEachWeek = firstEvents.mapKeys { it.key }
+    }
 }

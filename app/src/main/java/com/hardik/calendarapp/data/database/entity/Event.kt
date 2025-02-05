@@ -3,19 +3,17 @@ package com.hardik.calendarapp.data.database.entity
 import android.content.Context
 import android.os.Parcelable
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.hardik.calendarapp.R
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "events",
-    indices = [Index(value = ["eventId"], unique = false)] // Enforce uniqueness on eventId //304 | 268
+    //indices = [Index(value = ["eventId"], unique = false)] // Enforce uniqueness on eventId //304 | 268
 )
 @Parcelize
 data class Event(
     @PrimaryKey(autoGenerate = false)
     val id: String = "", // Primary key
-    var eventId: Long = 0L, // Auto-incremented, unique
     val title: String,
     val startTime: Long, // Timestamp
     val endTime: Long,   // Timestamp

@@ -3,8 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingVertical="@dimen/itemCountryVerticalSpacing_dev2"
-    android:paddingHorizontal="@dimen/itemCountryHorizontalSpacing"
     android:background="@drawable/item_background">
 
     <LinearLayout
@@ -12,36 +10,49 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="@dimen/itemCountryHorizontalSpacing"
+        android:paddingEnd="0dp"
+        android:paddingVertical="@dimen/itemCountryVerticalSpacing_dev2"
+        app:layout_constraintEnd_toStartOf="@id/ll_second"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-        android:id="@+id/itemSelection_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/TextViewStyle.regular"
-        android:layout_gravity="center_vertical"
-        android:includeFontPadding="false"
-        android:textSize="@dimen/itemCountry_nameTextSize_2"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:text="@string/language_header"
-        />
+        <TextView
+            android:id="@+id/itemSelection_text"
+            style="@style/TextViewStyle.regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:text="@string/language_header"
+            android:textSize="@dimen/itemCountry_nameTextSize_2" />
 
-        <Space
+        <!--<Space
             android:layout_width="@dimen/itemCountryHorizontalSpacingBetweenContent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />-->
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_second"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ll_first"
+        app:layout_constraintBottom_toBottomOf="@id/ll_first"
+        app:layout_constraintTop_toTopOf="@id/ll_first">
 
-    <ImageView
-        android:id="@+id/itemSelection_text_icon"
-        android:layout_width="@dimen/itemCountry_itemSelectionIconSize_2"
-        android:layout_height="@dimen/itemCountry_itemSelectionIconSize_2"
-        android:src="@drawable/icon_cancel"
-        android:layout_gravity="center_vertical"
-        android:contentDescription="@string/check_icon"
-        />
-
+        <ImageView
+            android:id="@+id/itemSelection_text_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:paddingHorizontal="@dimen/itemCountryHorizontalSpacingBetweenContent"
+            android:paddingVertical="@dimen/itemCountry_itemSelectionIconSize_2_padding"
+            android:contentDescription="@string/check_icon"
+            android:src="@drawable/icon_cancel" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

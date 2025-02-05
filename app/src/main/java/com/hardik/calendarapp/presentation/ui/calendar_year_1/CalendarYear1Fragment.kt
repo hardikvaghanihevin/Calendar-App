@@ -42,7 +42,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private val viewModel: MainViewModel by activityViewModels()
     private var year = Calendar.getInstance().get(Calendar.YEAR)
     var yearList: Map<Int, Map<Int, List<Int>>> = emptyMap()
-    val adapter = CalendarYearPageAdapter(yearList)
+    val adapter = CalendarYearPageAdapter()
 
     private lateinit var viewPager: ViewPager2
 

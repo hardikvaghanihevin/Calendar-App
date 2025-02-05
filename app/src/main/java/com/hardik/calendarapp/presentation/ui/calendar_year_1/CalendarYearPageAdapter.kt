@@ -7,9 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.databinding.ItemYearPage1Binding
 import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 
-class CalendarYearPageAdapter(private var yearList: Map<Int, Map<Int, List<Int>>>) :
+class CalendarYearPageAdapter() :
     RecyclerView.Adapter<CalendarYearPageAdapter.MonthViewHolder>() {
 
+    private var yearList: Map<Int, Map<Int, List<Int>>> = mutableMapOf()
     // Method to update yearList and refresh the RecyclerView
     @SuppressLint("NotifyDataSetChanged")
     fun updateYearList(newYearList: Map<Int, Map<Int, List<Int>>>) {

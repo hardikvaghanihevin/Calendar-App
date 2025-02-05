@@ -43,7 +43,7 @@ class EventRepositoryImpl @Inject constructor(
 
         // Get the current date and the date 365 days later
 
-        val timeSlap: Pair<Long, Long> = DateUtil.getCurrentAndFutureRange()
+        val timeSlap: Pair<Long, Long> = DateUtil.getCurrentAndFutureRange(daysInFuture = 30)
 
         // Use supervisorScope to handle independent coroutines
         supervisorScope {
@@ -69,7 +69,9 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun deleteEventsHoliday(){
         //Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
-        cancelAllRemoteAlarms()
+        CoroutineScope(Dispatchers.IO).launch {
+            cancelAllRemoteAlarms()
+        }.join()
         eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
     }
 

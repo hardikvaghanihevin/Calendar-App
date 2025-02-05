@@ -129,6 +129,7 @@
     <string name="device">Устройство</string>
     <string name="app_version">Версия приложения</string>
     <string name="os">ОС</string>
+    <string name="abi">АБИ</string>
     <string name="version">Версия</string>
     <string name="okay">ОК</string>
     <string name="description">Описание</string>
@@ -160,5 +161,23 @@
     <string name="custom_time_is_not_set">Пользовательское время не установлено!</string>
     <string name="event_insert_successfully">Событие вставлено успешно!</string>
     <string name="event_update_successfully">Обновление мероприятия успешно!</string>
+
+    <string name="search_icon">Иконка Поиск</string>
+    <string name="check_icon">Значок проверки</string>
+    <string name="_00">00</string>
+    <string name="monday_1_january_2025">Понедельник, 1 января 2025 г.</string>
+    <string name="year_picker">Выбор года</string>
+    <string name="month_picker">Выбор месяца</string>
+    <string name="date_picker">Выбор даты</string>
+    <string name="time_format_12_hr">Формат времени 12 часов</string>
+    <string name="time_format_24_hr">Формат времени 24 часа</string>
+    <string name="drawer_icon">Иконка ящика</string>
+    <string name="menu_item">Пункт меню</string>
+    <string name="left_arrow_icon">Значок стрелки влево</string>
+    <string name="right_arrow_icon">Значок стрелки вправо</string>
+    <string name="start_date_to_end_date_icon">Значок даты начала и даты окончания</string>
+    <string name="schedule_s_image_for_month">Расписание изображения на месяц</string>
+    <string name="yearview_scrolling">Прокрутка просмотра года</string>
+    <string name="default_selected_1_country">По умолчанию выбрана 1 страна</string>
 
 </resources>

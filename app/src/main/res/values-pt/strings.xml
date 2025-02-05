@@ -129,6 +129,7 @@
     <string name="device">Dispositivo</string>
     <string name="app_version">Versão do aplicativo</string>
     <string name="os">SO</string>
+    <string name="abi">ABI</string>
     <string name="version">Versão</string>
     <string name="okay">OK</string>
     <string name="description">Descrição</string>
@@ -160,5 +161,23 @@
     <string name="custom_time_is_not_set">O horário personalizado não está definido!</string>
     <string name="event_insert_successfully">Inserção de evento com sucesso!</string>
     <string name="event_update_successfully">Atualização do evento com sucesso!</string>
+
+    <string name="search_icon">Ícone de pesquisa</string>
+    <string name="check_icon">Ícone de verificação</string>
+    <string name="_00">00</string>
+    <string name="monday_1_january_2025">Segunda-feira, 1º de janeiro de 2025</string>
+    <string name="year_picker">Seletor de ano</string>
+    <string name="month_picker">Seletor de mês</string>
+    <string name="date_picker">Seletor de data</string>
+    <string name="time_format_12_hr">Formato de hora 12 horas</string>
+    <string name="time_format_24_hr">Formato de hora 24 horas</string>
+    <string name="drawer_icon">Ícone de gaveta</string>
+    <string name="menu_item">Item do cardápio</string>
+    <string name="left_arrow_icon">Ícone de seta para a esquerda</string>
+    <string name="right_arrow_icon">Ícone de seta para a direita</string>
+    <string name="start_date_to_end_date_icon">Ícone da data de início até a data de término</string>
+    <string name="schedule_s_image_for_month">Imagem da programação por mês</string>
+    <string name="yearview_scrolling">Rolagem YearView</string>
+    <string name="default_selected_1_country">Padrão selecionado 1 país</string>
 
 </resources>

@@ -86,6 +86,7 @@
     <dimen name="itemCountry_itemSelectionFlag_sImg">@dimen/_28sdp</dimen>
     <dimen name="itemCountry_itemSelectionIconSize_1">@dimen/_22sdp</dimen>
     <dimen name="itemCountry_itemSelectionIconSize_2">@dimen/_14sdp</dimen>
+    <dimen name="itemCountry_itemSelectionIconSize_2_padding">@dimen/_6sdp</dimen>
 
     <dimen name="itemCountryVerticalSpacing">@dimen/_10sdp</dimen>
     <dimen name="itemCountryHorizontalSpacing">@dimen/_12sdp</dimen>
