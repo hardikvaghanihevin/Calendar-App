@@ -29,7 +29,7 @@
         app:month_name_with_year="true"
         app:is_month_name_view_visible="false"
         app:week_start="monday"
-        app:month_display_option="hideAdjacentMonthDates"
+        app:month_display_option="showAdjacentMonthDates"
         app:text_size_month="@dimen/customMonthView_monthTextSize"
         app:text_size_day="@dimen/customMonthView_dayTextSize"
         app:text_size_date="@dimen/customMontView_dateTextSize"

@@ -2,6 +2,7 @@ package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,38 +51,50 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newData: List<Event>, fEEW : Map<String, Event> ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            CoroutineScope(Dispatchers.IO).launch {
-                updateFirstEventOfWeek(fEEW = fEEW)
-            }.join()
-            CoroutineScope(Dispatchers.Default).launch {
+    fun updateData(newData: List<Event>, fEEW: Map<String, Event>) {
+        CoroutineScope(Dispatchers.Main).launch {
+            updateFirstEventOfWeek(fEEW = fEEW)
 
-                // Calculate DiffUtil
+            // Create copies of the lists *before* starting DiffUtil
+            val oldListCopy = originalList.toList() // Important: Create a copy
+            val newListCopy = newData.toList()     // Important: Create a copy
+
+            withContext(Dispatchers.Default) {
                 val diffCallback = object : DiffUtil.Callback() {
-                    override fun getOldListSize() = originalList.size
-                    override fun getNewListSize() = newData.size
+                    override fun getOldListSize() = oldListCopy.size // Use the copy
+                    override fun getNewListSize() = newListCopy.size // Use the copy
 
                     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        return originalList[oldItemPosition].id == newData[newItemPosition].id
+                        // Use the copies here as well
+                        return if (oldItemPosition < oldListCopy.size && newItemPosition < newListCopy.size) {
+                            oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
+                        } else {
+                            Log.e(TAG, "areItemsTheSame: false", )
+                            false // Handle potential out-of-bounds cases
+                        }
                     }
 
                     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        return originalList[oldItemPosition] == newData[newItemPosition]
+                        return if (oldItemPosition < oldListCopy.size && newItemPosition < newListCopy.size) {
+                            oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
+                        } else {
+                            Log.e(TAG, "areContentsTheSame: false A", )
+                            false
+                        }
                     }
                 }
 
                 val diffResult = DiffUtil.calculateDiff(diffCallback)
 
                 withContext(Dispatchers.Main) {
-                    // Update the list and notify changes
-                    originalList = newData.toMutableList()
-                    filteredList = originalList
+                    originalList = newListCopy.toMutableList() // Update with the *new* list
+                    filteredList = originalList // Update filtered list
                     diffResult.dispatchUpdatesTo(this@EventAdapter)
                 }
             }
         }
     }
+
     var weekStart = Calendar.SUNDAY
     @SuppressLint("NotifyDataSetChanged")
     fun updateFirstDayOfWeek(weekStart: Int = Calendar.SUNDAY) {
@@ -241,9 +254,10 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
     }
 
     fun setFirstEventOfEachWeek(newData: List<Event>) {
-        val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val dateFormatter: DateTimeFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
         } else {
+            //SimpleDateFormat(DATE_FORMAT_yyyy_MM_dd, Locale.getDefault())
             TODO("VERSION.SDK_INT < O")
         }
 

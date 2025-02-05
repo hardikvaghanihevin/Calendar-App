@@ -35,6 +35,7 @@ import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.createYearData
 import com.hardik.calendarapp.utillities.createYearMonthPairs
+import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -179,6 +181,18 @@ class MainViewModel @Inject constructor(
     }
 
 
+    val findYearViewPos: StateFlow<Int> = yearList.map { yearMap ->
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        yearMap.keys.indexOf(currentYear) // Directly search for the year (key)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
+    val findMonthViewPos: StateFlow<Int> = yearMonthPairList.map {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
+        var currentMonthPosition  = findIndexOfYearMonth(it, currentYear, currentMonth)
+        currentMonthPosition
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
 
     fun initializeViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -186,8 +200,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-//    private val _holidayApiState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
-//    private val holidayApiState: StateFlow<DataListState<Event>> get() = _holidayApiState
 
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -397,8 +409,8 @@ class MainViewModel @Inject constructor(
                     try {
                         getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
                             // Update state with data
-                            _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                             setFirstEventOfEachWeek(events)
+                            _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                         }
                     } catch (e: Exception) {
                         // Handle errors
@@ -424,8 +436,8 @@ class MainViewModel @Inject constructor(
                         getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date)
                             .collectLatest { events ->
                                 // Update state with data
-                                _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                                 setFirstEventOfEachWeek(events)
+                                _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                             }
                     } catch (e: Exception) {
                         // Handle errors
@@ -466,10 +478,16 @@ class MainViewModel @Inject constructor(
             "Saturday" -> DayOfWeek.SATURDAY
             else -> DayOfWeek.SUNDAY
         }
+        val minimalDays = when (firstDayOfWeek) {
+            DayOfWeek.MONDAY -> 4 // Monday week typically requires 4 days for the first week
+            DayOfWeek.SATURDAY -> 1 // More lenient for Saturday-based weeks
+            DayOfWeek.SUNDAY -> 1 // Common for Sunday-based weeks
+            else -> 1
+        }
 
         val groupedByYearWeek = newData.groupBy { event ->
             val localDate = LocalDate.parse(event.startDate, dateFormatter)
-            val weekField = WeekFields.of(firstDayOfWeek, 1).weekOfWeekBasedYear()
+            val weekField = WeekFields.of(firstDayOfWeek, minimalDays).weekOfWeekBasedYear()
             val year = localDate.getYear()
             val month = localDate.monthValue - 1  // Convert to 0-based month
             val week = localDate.get(weekField)
@@ -511,6 +529,7 @@ class MainViewModel @Inject constructor(
         _currentEventPos.value = nextFutureIndex ?: 0
     }
 
+    //----------------------------------------------------------------//
 
     private val _allEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val allEventsState: StateFlow<DataListState<Event>> get() = _allEventsState

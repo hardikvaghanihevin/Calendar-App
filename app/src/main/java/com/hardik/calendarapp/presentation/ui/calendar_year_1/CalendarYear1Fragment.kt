@@ -22,7 +22,6 @@ import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.getCurrentYearPosition
-import com.hardik.calendarapp.utillities.getPositionFromYear
 import com.hardik.calendarapp.utillities.getYearKeyAtPosition
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -74,15 +73,19 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
         /** Back to current year */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
-            val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
-            // Get the position of the key in the yearList
-            val yearKeyPos: Int? = getPositionFromYear(yearList, backToCurrentYear)
-            // Get the yearKey at the given position
-            val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
-            if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
-            if (::viewPager.isInitialized) {
-                if (yearKeyPos != null) { viewPager.setCurrentItem(yearKeyPos, true) } // Navigate to the desired position
-                adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
+//            val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
+//            // Get the position of the key in the yearList
+//            val yearKeyPos: Int? = getPositionFromYear(yearList, backToCurrentYear)
+//            // Get the yearKey at the given position
+//            val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
+//            if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
+            CoroutineScope(Dispatchers.Main).launch {
+                viewModel.findYearViewPos.collect{
+                    if (::viewPager.isInitialized) {
+                        viewPager.setCurrentItem(it, true)  // Navigate to the desired position
+                        adapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
+                    }
+                }
             }
         }
 

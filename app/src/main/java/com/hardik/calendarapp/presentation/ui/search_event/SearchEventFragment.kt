@@ -30,7 +30,6 @@ import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -210,8 +209,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     }
 
     private fun collectDataForAdapter() {
-        CoroutineScope(Dispatchers.IO).launch {
-            lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.Main) {
                 viewModel.allEventsState.collectLatest {dataState ->
                     val safeBinding = _binding // Safely reference the binding
                     if (safeBinding != null) {
@@ -237,21 +235,23 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
                             //eventAdapter.updateData(data)
-                            eventAdapter.apply { updateData(data, viewModel.firstEventOfEachWeek.value) }
+                            viewModel.firstEventOfEachWeek.collect{
 
-                            viewModel.findPositionOfEvent(data)
-                            // Scroll to position after data is loaded
-//                            safeBinding.rvEvent.post { safeBinding.rvEvent.scrollToPosition(viewModel.currentEventPos.value) } // Scroll to position 12 after the data is set
-                            scrollEventIndexAtCurrentDate()
+                                eventAdapter.apply { updateData(data, it) }
+                                viewModel.findPositionOfEvent(data)
+                                // Scroll to position after data is loaded
+    //                            safeBinding.rvEvent.post { safeBinding.rvEvent.scrollToPosition(viewModel.currentEventPos.value) } // Scroll to position 12 after the data is set
+                                scrollEventIndexAtCurrentDate()
 
-                            safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                                safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                            }
+
                         }
                     }else {
                         // observeViewModelState: Binding is null, skipping UI update.
                     }
                 }
             }
-        }
     }
 
     private fun navigateToViewEventFrag(event: Event) {

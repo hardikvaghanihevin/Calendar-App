@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -41,6 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
@@ -106,20 +106,28 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
         /** Back to current month */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
-            val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
-            val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
-            val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)
-            Log.v(TAG, "onViewCreated: $currentMonthPosition", )
-            if (::viewPager.isInitialized) {
-                viewPager.setCurrentItem(currentMonthPosition, true) // Navigate to the desired position
-                pageAdapter.notifyDataSetChanged() // Refresh the adapter's data if necessary
+            lifecycleScope.launch {
+//                val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
+//                val backToCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)
+//                var currentMonthPosition  = findIndexOfYearMonth(yearMonthPairList, backToCurrentYear, backToCurrentMonth)
+//                Log.v(TAG, "onViewCreated: $currentMonthPosition", )
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.findMonthViewPos.collect{
+                        if (::viewPager.isInitialized) {
+                            viewPager.setCurrentItem(it, true) // Navigate to the desired position
+                        }
+                    }
+                }
+
+//                // Get the position of the key in the yearList
+//                val yearKeyPos: Int = yearList.keys.toList().indexOf(backToCurrentYear)
+//                // Get the yearKey at the given position
+//                val yearKeyAtPosition = yearList.keys.toList().getOrNull(yearKeyPos)
+//                if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
+
             }
 
-            // Get the position of the key in the yearList
-            val yearKeyPos: Int = yearList.keys.toList().indexOf(backToCurrentYear)
-            // Get the yearKey at the given position
-            val yearKeyAtPosition = yearList.keys.toList().getOrNull(yearKeyPos)
-            if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
+
         }
 
         /** Go to newEvent */
@@ -361,9 +369,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                         safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
-                        eventAdapter.apply { updateData(data, viewModel.firstEventOfEachWeek.value) }
-                        //binding.recyclerview.setPadding(0, 0, 0, 0)  // To remove the extra space on top and bottom of the RecyclerVie
-                        safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                        delay(500)
+                        viewModel.firstEventOfEachWeek.collect{
+                            eventAdapter.apply { updateData(data, it) }
+                            safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                        }
                     }
                 }else {
                     // Binding is null, skipping UI update.
