@@ -24,8 +24,10 @@ import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.ImageColorUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -36,6 +38,11 @@ import java.util.Locale
 
 class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterable {
     private val TAG = BASE_TAG + EventAdapter::class.java.simpleName
+
+    // To handle concurrent updates
+    private val updateMutex = Mutex()
+    private var updateJob: Job? = null
+    private var latestData: Pair<List<Event>, Map<String, Event>>? = null
 
     // Keep a copy of the original list for filtering
     private var originalList: MutableList<Event> = arrayListOf() // Keep an immutable copy
@@ -52,12 +59,17 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newData: List<Event>, fEEW: Map<String, Event>) {
-        CoroutineScope(Dispatchers.Main).launch {
-            updateFirstEventOfWeek(fEEW = fEEW)
+        latestData = newData to fEEW
+
+        updateJob?.cancel()
+        updateJob = CoroutineScope(Dispatchers.Main).launch {
+//            updateMutex.withLock { // Ensure sequential processing
+            val (finalNewData, finalFEEW) = latestData ?: return@launch
+            updateFirstEventOfWeek(fEEW = finalFEEW)
 
             // Create copies of the lists *before* starting DiffUtil
             val oldListCopy = originalList.toList() // Important: Create a copy
-            val newListCopy = newData.toList()     // Important: Create a copy
+            val newListCopy = finalNewData.toList()     // Important: Create a copy
 
             withContext(Dispatchers.Default) {
                 val diffCallback = object : DiffUtil.Callback() {
@@ -65,14 +77,31 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                     override fun getNewListSize() = newListCopy.size // Use the copy
 
                     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        Log.d(TAG, "Original List Size: ${originalList.size}, Filtered List Size: ${filteredList.size}")
                         if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
                         return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
                     }
 
                     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                         if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
-                        return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
+                        // Compare all properties to check if the contents are the same
+                        return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id &&
+                                oldListCopy[oldItemPosition].title == newListCopy[newItemPosition].title &&
+                                oldListCopy[oldItemPosition].startTime == newListCopy[newItemPosition].startTime &&
+                                oldListCopy[oldItemPosition].endTime == newListCopy[newItemPosition].endTime &&
+                                oldListCopy[oldItemPosition].startDate == newListCopy[newItemPosition].startDate &&
+                                oldListCopy[oldItemPosition].endDate == newListCopy[newItemPosition].endDate &&
+                                oldListCopy[oldItemPosition].year == newListCopy[newItemPosition].year &&
+                                oldListCopy[oldItemPosition].month == newListCopy[newItemPosition].month &&
+                                oldListCopy[oldItemPosition].date == newListCopy[newItemPosition].date &&
+                                oldListCopy[oldItemPosition].isHoliday == newListCopy[newItemPosition].isHoliday &&
+                                oldListCopy[oldItemPosition].eventType == newListCopy[newItemPosition].eventType &&
+                                oldListCopy[oldItemPosition].sourceType == newListCopy[newItemPosition].sourceType &&
+                                oldListCopy[oldItemPosition].description == newListCopy[newItemPosition].description &&
+                                oldListCopy[oldItemPosition].repeatOption == newListCopy[newItemPosition].repeatOption &&
+                                oldListCopy[oldItemPosition].alertOffset == newListCopy[newItemPosition].alertOffset &&
+                                oldListCopy[oldItemPosition].customAlertOffset == newListCopy[newItemPosition].customAlertOffset &&
+                                oldListCopy[oldItemPosition].triggerTime == newListCopy[newItemPosition].triggerTime
+
                     }
 
                 }
@@ -85,6 +114,7 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                     diffResult.dispatchUpdatesTo(this@EventAdapter)
                 }
             }
+//            }
         }
     }
 

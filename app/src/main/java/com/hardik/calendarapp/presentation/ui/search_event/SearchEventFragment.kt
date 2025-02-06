@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -139,7 +140,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 //this.setOnCloseListener {}
                 val closeButton = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
                 closeButton?.setOnClickListener {
-                   resetSearchView()
+                    resetSearchView()
                 }
             }
         }
@@ -153,6 +154,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
             //region Event handlers
             rvEvent.layoutManager = LinearLayoutManager(requireContext())
             rvEvent.setHasFixedSize(true)
+            (rvEvent.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
             val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
@@ -227,47 +229,47 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
             delay(100)
             viewModel.allEventsState.collectLatest {dataState ->
-                    val safeBinding = _binding // Safely reference the binding
-                    if (safeBinding != null) {
-                        if (dataState.isLoading) {
-                            // Show loading indicator
-                            safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-                            safeBinding.tvNotify.visibility = View.GONE
+                val safeBinding = _binding // Safely reference the binding
+                if (safeBinding != null) {
+                    if (dataState.isLoading) {
+                        // Show loading indicator
+                        safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
+                        safeBinding.tvNotify.visibility = View.GONE
 
-                        } else if (dataState.error.isNotEmpty()) {
-                            // Show error message
-                            Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
-                            safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                            safeBinding.tvNotify.apply {
-                                text = dataState.error
-                                visibility = View.VISIBLE
-                            }
-
-                        } else {
-                            // Update UI with the user list
-                            val data = dataState.data
-
-                            safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
-                            safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-
-                            viewModel.firstEventOfEachWeek.collectLatest {
-
-                                eventAdapter.apply {
-                                    updateData(data, it)
-                                    this.notifyDataSetChanged()
-                                }
-                                viewModel.findPositionOfEvent(data)
-                                // Scroll to position after data is loaded
-                                scrollEventIndexAtCurrentDate()
-
-                                safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                            }
-
+                    } else if (dataState.error.isNotEmpty()) {
+                        // Show error message
+                        Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
+                        safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                        safeBinding.tvNotify.apply {
+                            text = dataState.error
+                            visibility = View.VISIBLE
                         }
-                    }else {
-                        // observeViewModelState: Binding is null, skipping UI update.
+
+                    } else {
+                        // Update UI with the user list
+                        val data = dataState.data
+
+                        safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
+                        safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+
+                        viewModel.firstEventOfEachWeek.collectLatest {
+
+                            eventAdapter.apply {
+                                updateData(data, it)
+                                this.notifyDataSetChanged()
+                            }
+                            viewModel.findPositionOfEvent(data)
+                            // Scroll to position after data is loaded
+                            scrollEventIndexAtCurrentDate()
+
+                            safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                        }
+
                     }
+                }else {
+                    // observeViewModelState: Binding is null, skipping UI update.
                 }
+            }
         }
     }
 

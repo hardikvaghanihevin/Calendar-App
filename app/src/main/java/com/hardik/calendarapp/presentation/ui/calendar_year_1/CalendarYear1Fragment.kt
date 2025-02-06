@@ -135,7 +135,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                     binding.tvYearTitle.text = "$it"
 
                     val yearPosition  = getCurrentYearPosition(currentYear = it) // Calculate the position of the current year
-                    viewPager.setCurrentItem(yearPosition,false)
+                    viewPager.setCurrentItem(yearPosition,true)
                 }
             }
         }
@@ -159,7 +159,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 viewModel.yearState.collectLatest {
                     val previousPosition = getCurrentYearPosition(currentYear = it) // Update the previous position
                     // Update the viewPager's position when the year changes
-                    viewPager.setCurrentItem(previousPosition, false)
+                    viewPager.setCurrentItem(previousPosition, true)
                 }
             }
         }

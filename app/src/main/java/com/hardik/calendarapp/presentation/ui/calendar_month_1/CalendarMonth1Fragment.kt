@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -163,6 +164,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
             rvEvent.layoutManager = LinearLayoutManager(requireContext())
             rvEvent.setHasFixedSize(true)
+            (rvEvent.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
             val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
@@ -224,11 +226,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 viewModel.fetchEventsForMonthView(it)
 
                 val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-                 if (it.last() == '0' && !it.endsWith("10") && !it.endsWith("20") && !it.endsWith("30")){//0,10,20,30
-                     viewModel.getEventsByMonthOfYear(year = date.first, month = date.second)
-                 }else{
-                     viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
-                 }
+                if (it.last() == '0' && !it.endsWith("10") && !it.endsWith("20") && !it.endsWith("30")){//0,10,20,30
+                    viewModel.getEventsByMonthOfYear(year = date.first, month = date.second)
+                }else{
+                    viewModel.getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+                }
                 pageAdapter.setSelectedDate(selectedDate)
 
             }
@@ -237,7 +239,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         lifecycleScope.launch{
             viewModel.monthViewDate.collectLatest {monthDate ->
                 val date: Triple<String, String, String> = stringToDateTriple(monthDate, isZeroBased = false)
-                
+
                 if (monthDate != "2000-0-0"){
                     year = date.first.toInt()
                     month = date.second.toInt()
@@ -277,13 +279,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.yearMonthPairList.collectLatest{
                 yearMonthPairList = it
-                val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, targetYear = year, targetMonth = month)
-                launch(Dispatchers.Main) {
-                    pageAdapter.updateYearMonthPairList(it)
-                    if(::viewPager.isInitialized){
-                        viewPager.setCurrentItem(currentMonthPosition, false)
-                    }
-                }
             }
         }
 
@@ -346,7 +341,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         lifecycleScope.launch(Dispatchers.Main){
             viewModel.yearMonthPairList.collectLatest {
                 // When swipe happens, update the year in your adapter based on the position
-                val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, targetYear = year, targetMonth = month)
+                val currentMonthPosition = findIndexOfYearMonth(it, targetYear = year, targetMonth = month)
 
                 //Todo: Start in the middle for infinite scrolling and set to the current month
                 if (::viewPager.isInitialized){
