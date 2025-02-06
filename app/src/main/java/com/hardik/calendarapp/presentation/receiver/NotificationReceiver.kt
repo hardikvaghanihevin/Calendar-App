@@ -36,9 +36,6 @@ class NotificationReceiver : BroadcastReceiver() {
     @Inject
     lateinit var eventRepository: EventRepository
 
-//    var bundle: Bundle? = null
-//    bundle = (bundle ?: Bundle()).apply { putParcelable(Constants.KEY_EVENT, event) }
-
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
             val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

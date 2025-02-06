@@ -1,9 +1,5 @@
 package com.hardik.calendarapp.utillities
 
-import org.joda.time.DateTime
-import java.util.Calendar
-import java.util.Date
-
 /**
  * Creates a map of years with corresponding months and their days.
  *
@@ -98,27 +94,6 @@ fun getCurrentYearPosition(currentYear: Int, startYear: Int = 2000): Int {
 fun getYearKeyAtPosition(yearListMap: Map<Int, Map<Int, List<Int>>>, position: Int): Int? {
     return yearListMap.keys.toList().getOrNull(position)
 }
-
-/**
- * Finds the position (index) of a given year in the yearListMap.
- *
- * @param yearListMap A map where the keys represent years (Int), and the values are maps containing months as keys and lists of integers as values.
- * @param year The target year (Int) for which the position in the map is to be found.
- *
- * @return The index (position) of the specified year in the map’s keys as a list. Returns null if the year is not found.
- */
-fun getPositionFromYear(yearListMap: Map<Int, Map<Int, List<Int>>>, year: Int): Int? {
-    return yearListMap.keys.toList().indexOf(year).takeIf { it >= 0 } // Returns -1 if year is not found
-}
-// Get the current date
-val calendar = Calendar.getInstance()
-val currentYear = calendar.get(Calendar.YEAR)
-val currentMonth = calendar.get(Calendar.MONTH) // Month is 0-based
-val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-
-// Example usage
-//val yearData = createYearData(2023, 2025, false) // 1-based month calendar
-//println(yearData)
 
 
 

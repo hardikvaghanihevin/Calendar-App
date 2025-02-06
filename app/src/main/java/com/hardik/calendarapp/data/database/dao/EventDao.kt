@@ -24,7 +24,6 @@ interface EventDao {
     //region Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms() by using 'getHolidayEvents' and then delete all event where sourceType is 'REMOTE'
     @Query("DELETE FROM events WHERE sourceType = :sourceType")
     suspend fun deleteEventsBySourceType(sourceType: SourceType = SourceType.REMOTE) // For deleting all events with a specific source type
-    //select count(*) from events where sourceType = "LOCAL"// CURSOR/REMOTE
 
     @Query("SELECT * FROM events WHERE sourceType = :sourceType")
     fun getHolidayEvents(sourceType: SourceType = SourceType.REMOTE): Flow<List<Event>> // Todo: 'cancelAllRemoteAlarms' before delete all remote events
@@ -32,27 +31,14 @@ interface EventDao {
 
 
     //region Todo: GetEvents for year, month, date
-    //@Query("SELECT * FROM events ORDER BY startTime ASC, endTime ASC, title ASC")
-    //@Query("SELECT * FROM events WHERE (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events GROUP BY title))) ORDER BY year ASC, month ASC, date ASC, startTime ASC, endTime ASC, title ASC")
     @Query("SELECT * FROM events e1 WHERE ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
     fun getAllEvents(): Flow<List<Event>> // Todo: For schedule event list
 
-    //@Query("SELECT * FROM events WHERE year = :year AND month = :month ORDER BY startTime ASC, endTime ASC, title ASC")
-    //@Query("SELECT * FROM events WHERE year = :year AND month = :month AND (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events WHERE year = :year AND month = :month GROUP BY title))) ORDER BY startTime ASC, endTime ASC, title ASC")
     @Query("SELECT * FROM events e1 WHERE e1.year =:year AND e1.month =:month AND ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
-    fun getEventsByMonthOfTheYear(
-        year: String,
-        month: String
-    ): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
+    fun getEventsByMonthOfTheYear(year: String, month: String): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
 
-    //@Query("SELECT * FROM events WHERE year = :year AND month = :month AND date =:date ORDER BY startTime ASC, endTime ASC, title ASC")
-    //@Query("SELECT * FROM events WHERE year = :year AND month = :month AND date = :date AND (sourceType = 'LOCAL' OR sourceType = 'CURSOR' OR (sourceType = 'REMOTE' AND id IN (SELECT MIN(id) FROM events WHERE year = :year AND month = :month AND date = :date GROUP BY title))) ORDER BY startTime ASC, endTime ASC, title ASC")
-    @Query("SELECT * FROM events e1 WHERE e1.year =:year AND e1.month =:month AND date = :date AND ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND date = :date AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
-    fun getEventsByDateOfMonthOfTheYear(
-        year: String,
-        month: String,
-        date: String
-    ): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
+   @Query("SELECT * FROM events e1 WHERE e1.year =:year AND e1.month =:month AND date = :date AND ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND date = :date AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
+    fun getEventsByDateOfMonthOfTheYear(year: String, month: String, date: String): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
     //endregion
 
 

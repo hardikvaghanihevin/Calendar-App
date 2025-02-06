@@ -41,12 +41,10 @@ class CountryAdapter(private val onCountryChecked: (String, Boolean) -> Unit, pr
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
-        //val view = LayoutInflater.from(parent.context).inflate(R.layout.item_country_language_selection, parent, false)
         val binding = when(viewType){
             VERTICAL -> { ItemCountrySelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false) }
             HORIZONTAL -> { ItemCountrySelectionSmallBinding.inflate(LayoutInflater.from(parent.context), parent, false)}
             else -> { ItemCountrySelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false) }
-            //else -> throw IllegalArgumentException("Unknown binding type")
         }
 
         return CountryViewHolder(binding)

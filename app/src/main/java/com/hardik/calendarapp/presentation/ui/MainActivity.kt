@@ -1021,15 +1021,9 @@ class MainActivity : AppCompatActivity() {
         // Check if the auto-start permission is available on the device
         val isAutoStartPermissionAvailable: Boolean = autoStartPermissionHelper!!.isAutoStartPermissionAvailable(this, false)
 
-        // Display a toast message indicating whether the permission is available or not
-        //Toast.makeText(this, "Auto-start permission is " + if (isAutoStartPermissionAvailable) "available" else "not available", Toast.LENGTH_SHORT).show()
-
         // If the permission is available, request it
         if (isAutoStartPermissionAvailable) {
             val granted: Boolean = autoStartPermissionHelper!!.getAutoStartPermission(this, true, false)
-
-            // Display a toast message indicating whether the permission was granted or not  (It won't work but  because Android doesn't to provide any API for that ,I added it anyway.)
-            //Toast.makeText(this, "Auto-start permission " + if (granted) "granted" else "denied", Toast.LENGTH_SHORT).show()
         }
 
     }

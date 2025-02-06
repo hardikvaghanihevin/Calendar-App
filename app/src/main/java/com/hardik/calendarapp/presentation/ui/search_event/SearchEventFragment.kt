@@ -13,7 +13,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,8 +33,10 @@ import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
@@ -63,7 +67,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
 
         setupUI()
 
-        /** Search view for Country */
+        /** Search view for Event */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
             if (isAdded){
                 // Set inactive background (null)
@@ -98,11 +102,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             )
                         }
 
-//                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
-
                         DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
                             if (isVisible) {
-                                //this.isIconified = false  // Keep SearchView expanded
                                 showHideBeckToCurrentEventIcon(wantToShow = false)
                             } else {
                                 showHideBeckToCurrentEventIcon(wantToShow = true)
@@ -208,9 +209,24 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun collectDataForAdapter() {
         lifecycleScope.launch(Dispatchers.Main) {
-                viewModel.allEventsState.collectLatest {dataState ->
+            lifecycleScope.launch(Dispatchers.Main) {
+                viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                    viewModel.firstDayOfTheWeek.collectLatest { firstDay->
+                        when(firstDay){
+                            "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
+                            "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
+                            "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
+                        }
+
+                    }
+                }
+            }
+
+            delay(100)
+            viewModel.allEventsState.collectLatest {dataState ->
                     val safeBinding = _binding // Safely reference the binding
                     if (safeBinding != null) {
                         if (dataState.isLoading) {
@@ -234,13 +250,14 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                             safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                             safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
-                            //eventAdapter.updateData(data)
-                            viewModel.firstEventOfEachWeek.collect{
+                            viewModel.firstEventOfEachWeek.collectLatest {
 
-                                eventAdapter.apply { updateData(data, it) }
+                                eventAdapter.apply {
+                                    updateData(data, it)
+                                    this.notifyDataSetChanged()
+                                }
                                 viewModel.findPositionOfEvent(data)
                                 // Scroll to position after data is loaded
-    //                            safeBinding.rvEvent.post { safeBinding.rvEvent.scrollToPosition(viewModel.currentEventPos.value) } // Scroll to position 12 after the data is set
                                 scrollEventIndexAtCurrentDate()
 
                                 safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
@@ -251,7 +268,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         // observeViewModelState: Binding is null, skipping UI update.
                     }
                 }
-            }
+        }
     }
 
     private fun navigateToViewEventFrag(event: Event) {
@@ -267,6 +284,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     override fun onDestroyView() {
         super.onDestroyView()
         resetSearchView()
+        binding.rvEvent.adapter = null
         _binding = null
     }
 

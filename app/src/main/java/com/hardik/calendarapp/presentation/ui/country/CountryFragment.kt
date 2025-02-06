@@ -181,7 +181,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     launch {
                         viewModel.isCursorDataCollected.collect{
                             if (it){
-                                viewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
+                                viewModel.getHolidayCalendarData() // todo: 2 getting api data after getting locale calendar data
                             }
                         }
                     }
@@ -189,7 +189,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     if (findNavController().currentDestination?.id == R.id.nav_select_country) {
                         findNavController().popBackStack(R.id.nav_select_country, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                     } else {
-                        // NavigationError ->: Destination not in back stack
+                        // Todo: NavigationError ->: Destination not in back stack
                     }
                 }
             }
@@ -259,14 +259,12 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                     override fun onQueryTextChange(newText: String?): Boolean {
                         // Handle query text changes
                         currentQuery = newText // Save the query
-                        //countryAdapter.filter.filter(newText ?: "")
                         countryAdapter.submitFullList(viewModel.countryItems.value, currentQuery) // Update the full list
                         return true
                     }
                 })
 
                 // Handle the close action of SearchView
-                //this.setOnCloseListener {}
                 val closeButton = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
                 closeButton?.setOnClickListener {
                     resetSearchView()
@@ -295,7 +293,6 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
     /** Search view reset */
     private fun resetSearchView() {
         currentQuery = null // Clear the query
-        //countryAdapter.filter.filter("") // Reset the filter
         (activity as MainActivity).resetSearchView()
         showHideSaveSelectionIcon(wantToShow = true)
     }

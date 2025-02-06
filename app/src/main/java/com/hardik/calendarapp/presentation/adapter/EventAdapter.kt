@@ -24,7 +24,7 @@ import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.ImageColorUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
@@ -65,23 +65,16 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                     override fun getNewListSize() = newListCopy.size // Use the copy
 
                     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        // Use the copies here as well
-                        return if (oldItemPosition < oldListCopy.size && newItemPosition < newListCopy.size) {
-                            oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
-                        } else {
-                            Log.e(TAG, "areItemsTheSame: false", )
-                            false // Handle potential out-of-bounds cases
-                        }
+                        Log.d(TAG, "Original List Size: ${originalList.size}, Filtered List Size: ${filteredList.size}")
+                        if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
+                        return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
                     }
 
                     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        return if (oldItemPosition < oldListCopy.size && newItemPosition < newListCopy.size) {
-                            oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
-                        } else {
-                            Log.e(TAG, "areContentsTheSame: false A", )
-                            false
-                        }
+                        if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
+                        return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
                     }
+
                 }
 
                 val diffResult = DiffUtil.calculateDiff(diffCallback)
@@ -112,14 +105,25 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Pass the previous event to check if the current one is on the same date
-        val previousEvent = if (position > 0) filteredList[position - 1] else null
-        holder.bind( filteredList[position], previousEvent, position )
+        if (position in filteredList.indices) {
+            val previousEvent = if (position > 0) filteredList[position - 1] else null
+            holder.bind(filteredList[position], previousEvent, position)
+        } else {
+            Log.e(TAG, "Invalid position: $position")
+        }
+
     }
     inner class ViewHolder(private val binding: ItemEventLayout1Binding) :
         RecyclerView.ViewHolder(binding.root) {
 
         private val layout = binding.root
         private val scope = CoroutineScope(Dispatchers.Main) // Create a CoroutineScope for this ViewHolder
+
+        fun clear() {
+            // Cancel the CoroutineScope to clean up resources when ViewHolder is recycled
+            //scope.coroutineContext.cancelChildren()
+            scope.cancel()
+        }
 
         @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
         fun bind(event: Event, previousEvent: Event?, position: Int) {
@@ -202,11 +206,6 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
 
             }
 
-        }
-
-        fun clear() {
-            // Cancel the CoroutineScope to clean up resources when ViewHolder is recycled
-            scope.coroutineContext.cancelChildren()
         }
     }
 

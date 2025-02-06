@@ -44,6 +44,7 @@ import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -217,10 +218,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 }
             }
         }
-        binding.tvRepeat.setOnClickListener { navigateToRepeatOptionFrag() ; //showRepetitionDialog()
-        }
-        binding.tvAlert.setOnClickListener { navigateToAlertOptionFrag(); //showAlertRemindDialog()
-        }
+        binding.tvRepeat.setOnClickListener { navigateToRepeatOptionFrag() }
+        binding.tvAlert.setOnClickListener { navigateToAlertOptionFrag() }
         binding.edtEventNote.addTextChangedListener { viewModel.updateDescription(it.toString()) }
         binding.switchAllDay.apply {
            setOnCheckedChangeListener { buttonView, isChecked -> viewModel.updateAllDayStatus(isChecked) }
@@ -285,7 +284,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         viewModel.updateEndDate(DateUtil.stringToLong(event.endDate))
         viewModel.updateStartTime(event.startTime)
         viewModel.updateEndTime(event.endTime)
-        viewModel.updateAllDayStatus(DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime))//event.isAllDay)
+        viewModel.updateAllDayStatus(DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime))
         viewModel.updateRepeatOption(event.repeatOption)
         viewModel.updateAlertOffset(event.alertOffset)
         viewModel.updateCustomAlertOffset(event.customAlertOffset)
@@ -300,10 +299,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_item_date_picker, null)
         bindingDatePicker = DialogItemDatePickerBinding.bind(dialogView)
         val datePicker = bindingDatePicker?.datePicker
-        datePicker.apply {
-            // Set spinner mode for the DatePicker
-//            this.datePickerMode = DatePicker.MODE_SPINNER
-        }
 
         val btnOkay = bindingDatePicker?.btnDone
         val btnCancel = bindingDatePicker?.btnCancel
@@ -415,7 +410,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
         // Set background to transparent if needed
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //dialog.window?.setBackgroundDrawableResource(android.R.drawable.screen_background_light_transparent) // Set your background drawable here
 
         // Ensure the dialog's size wraps the content
         dialog.setOnShowListener {
@@ -459,13 +453,11 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     }
 
     private fun updateToolbarTitle(title: String) {
-        // Dynamically update NavDestination label
-        //findNavController().currentDestination?.label = title
         mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name))
     }
 
     private fun navigateToRepeatOptionFrag() {
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Main) {
             // Make sure the navigation happens on the main thread
             val repeatOpt: String = RepeatOptionConverter.toDisplayString(requireContext(), viewModel.repeatOption.value)
             val bundle = Bundle().apply {

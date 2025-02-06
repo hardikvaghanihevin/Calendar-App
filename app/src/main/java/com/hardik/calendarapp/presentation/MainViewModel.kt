@@ -4,8 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -144,12 +142,8 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    //private val _holidayApiState = MutableStateFlow<DataState<HolidayApiDetail>>(DataState(isLoading = true))
-    //private val holidayApiState: StateFlow<DataState<HolidayApiDetail>> get() = _holidayApiState
-
     init {
         generateYearList(2000, 2100, isZeroBased = true)
-        //getHolidayCalendarData()
         getAllEventsDateInMap()
     }
 
@@ -390,10 +384,7 @@ class MainViewModel @Inject constructor(
     }
 
     //----------------------------------------------------------------//
-    // todo:for event showing below inside month view
-
-    private val _text = MutableLiveData<String>().apply { value = "No Events" }
-    val text: LiveData<String> = _text
+    // Todo:for event showing below inside month view
 
     private val _monthlyEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
@@ -560,7 +551,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    // for month view's indicator
+    // For month view's indicator
     private val _allEventsDateInMapState = MutableStateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>>(mutableMapOf())
     val allEventsDateInMapState: StateFlow<MutableMap<YearKey, MutableMap<MonthKey, MutableMap<DayKey, EventValue>>>> get() = _allEventsDateInMapState
 
@@ -590,7 +581,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _monthViewDate = MutableStateFlow<String>("2000-0-0")//null, "2000-0-1" //Triple<String, String, String>
+    private val _monthViewDate = MutableStateFlow<String>("2000-0-0")
     val monthViewDate: StateFlow<String> = _monthViewDate
     fun updateMonthViewDate(monthViewDate: String){
         viewModelScope.launch {
@@ -598,7 +589,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _selectedDate = MutableStateFlow<String>("2000-0-0")//null, "2000-0-1"
+    //----------------------------------------------------------------//
+
+    private val _selectedDate = MutableStateFlow<String>("2000-0-0")
     val selectedDate: StateFlow<String> = _selectedDate
 
     fun updateSelectedDate(selectedDate: String){

@@ -14,8 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.common.Constants.KEY_MONTH
-import com.hardik.calendarapp.common.Constants.KEY_YEAR
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
@@ -29,7 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 
 @AndroidEntryPoint
@@ -39,8 +36,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarYear1Binding? = null
     private val viewModel: MainViewModel by activityViewModels()
-    private var year = Calendar.getInstance().get(Calendar.YEAR)
-    var yearList: Map<Int, Map<Int, List<Int>>> = emptyMap()
     val adapter = CalendarYearPageAdapter()
 
     private lateinit var viewPager: ViewPager2
@@ -73,12 +68,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
         /** Back to current year */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
-//            val backToCurrentYear = Calendar.getInstance().get(Calendar.YEAR)
-//            // Get the position of the key in the yearList
-//            val yearKeyPos: Int? = getPositionFromYear(yearList, backToCurrentYear)
-//            // Get the yearKey at the given position
-//            val yearKeyAtPosition = yearKeyPos?.let { getYearKeyAtPosition(yearList, it) }
-//            if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
             CoroutineScope(Dispatchers.Main).launch {
                 viewModel.findYearViewPos.collect{
                     if (::viewPager.isInitialized) {
@@ -99,8 +88,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         super.onResume()
         viewModel.updateSelectedDate("2000-0-0")//reset selected date for back from monthView
 
-        if (::viewPager.isInitialized) {
-            //do code for unselected data.
+        if (::viewPager.isInitialized) { // Code for unselected data.
             adapter.setSelectedDate(null)//"2025-1-5"
         }
         KeyboardUtils.hideKeyboard(requireActivity())
@@ -119,15 +107,15 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     private fun setupUI() {
 
         lifecycleScope.launch(Dispatchers.Main) {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.yearList.collectLatest{
 
-                    yearList = it
                     adapter.updateYearList(it)
 
-                    /*val yearPosition  = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
-
-                    viewPager.setCurrentItem(yearPosition,false)*/
+                    val yearPosition  = getCurrentYearPosition(currentYear = viewModel.yearState.value) // Calculate the position of the current year
+                    if (::viewPager.isInitialized){
+                        viewPager.setCurrentItem(yearPosition,false)
+                    }
                 }
             }
         }
@@ -142,10 +130,9 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
         lifecycleScope.launch(Dispatchers.Main) {
             // Safely collect yearState during STARTED state
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.yearState.collectLatest{//collectLatest
                     binding.tvYearTitle.text = "$it"
-                    year = it
 
                     val yearPosition  = getCurrentYearPosition(currentYear = it) // Calculate the position of the current year
                     viewPager.setCurrentItem(yearPosition,false)
@@ -164,18 +151,18 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
 
     private fun setupViewPager(){
-        val yearPosition = getCurrentYearPosition(currentYear = year) // Calculate the position of the current year
-
-        // When swipe happens, update the year in your adapter based on the position
-        // todo: this is necessary to give previous position (which are you want)
-        var previousPosition = yearPosition // Track the previous position
-
         viewPager = binding.viewPagerCalendarYear
         viewPager.adapter = adapter
 
-        // Set the current item to the calculated position of the current year
-        viewPager.setCurrentItem( previousPosition, false )
-
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.yearState.collectLatest {
+                    val previousPosition = getCurrentYearPosition(currentYear = it) // Update the previous position
+                    // Update the viewPager's position when the year changes
+                    viewPager.setCurrentItem(previousPosition, false)
+                }
+            }
+        }
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
             @SuppressLint("NotifyDataSetChanged")
@@ -185,11 +172,8 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                 setNextPrevBtnColor()
 
                 // Get the key at the given position
-                val yearKeyAtPosition = getYearKeyAtPosition(yearList,position)
+                val yearKeyAtPosition = getYearKeyAtPosition(yearListMap = viewModel.yearList.value, position = position)
                 if (yearKeyAtPosition != null) viewModel.updateYear(yearKeyAtPosition)
-
-                // Update previous position to current one for next swipe comparison
-                previousPosition = position
             }
         })
         adapter.getYearMonth { mYear, mMonth ->
@@ -218,16 +202,9 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
     }
 
     private fun navigateToCalendarMonth(year: Int, month: Int) {
-        lifecycleScope.launch {
-            // Make sure the navigation happens on the main thread
-            val bundle = Bundle().apply {
-                putInt(KEY_YEAR, year)
-                putInt(KEY_MONTH, month)
-            }
-            //findNavController().navigate(R.id.nav_month, bundle, navOptions)
-
+        lifecycleScope.launch(Dispatchers.Main) {
             val monthViewDate = "$year-$month-${0}"
-            viewModel.updateMonthViewDate(monthViewDate)//
+            viewModel.updateMonthViewDate(monthViewDate)// update date and get that data for monthViewDate in monthView
             findNavController().navigate(R.id.nav_month, null, navOptions)
         }
     }
