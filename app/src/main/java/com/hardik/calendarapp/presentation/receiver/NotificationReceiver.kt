@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -23,6 +24,7 @@ import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.AlarmScheduler
+import com.hardik.calendarapp.utillities.DateUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,12 +40,14 @@ class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
+
             val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra("event", Event::class.java)
             } else {
                 intent.getParcelableExtra("event")
             }
 
+            Log.i(TAG, "onReceive: $event", )
             if (event != null) {
                 scheduleRepeatingNotification(context , event)
 
@@ -78,7 +82,7 @@ class NotificationReceiver : BroadcastReceiver() {
             context,
             event.id.hashCode(), // Unique request code
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE//FLAG_UPDATE_CURRENT , FLAG_CANCEL_CURRENT
         )
 
         // If the channel is not null, create the channel (only on devices with API level 26 and above)
@@ -86,7 +90,6 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // Build notification with default
         val notification = NotificationCompat.Builder(context, channelId)
-            //.setSmallIcon(android.R.drawable.ic_dialog_info) // Fallback for small icon
             .setSmallIcon(R.drawable.notification_app_logo) // Fallback for small icon
             .setContentTitle(event.title)
             .setContentText(event.description)
@@ -107,13 +110,26 @@ class NotificationReceiver : BroadcastReceiver() {
             return
         }
 
+        Log.e(TAG, "showNotification: $event", )
         notificationManager.notify(event.id.hashCode(), notification)
     }
 
     private fun scheduleRepeatingNotification(context: Context, event: Event) {
         if (event.repeatOption != RepeatOption.NEVER && event.alertOffset != AlertOffset.NONE) { // Check if repeat option is not NEVER
 
-            val nextTriggerTime = calculateTriggerTime(alertOffset = event.alertOffset, repeatOption = event.repeatOption, baseTimeInMillis = event.triggerTime)//System.currentTimeMillis() + event.repeatIntervalMillis
+            //val nextTriggerTime = calculateTriggerTime(alertOffset = event.alertOffset, repeatOption = event.repeatOption, baseTimeInMillis = event.triggerTime)//System.currentTimeMillis() + event.repeatIntervalMillis
+            val nextTriggerTime: Long
+
+            val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
+            val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+
+            nextTriggerTime = if (calculatedTriggerTime != null) {
+                calculatedTriggerTime - minus
+            }else{
+                event.startTime - minus
+            }
+
+            Log.w(TAG, "scheduleRepeatingNotification: $nextTriggerTime", )
             val updatedEvent = event.copy(triggerTime = nextTriggerTime)
             AlarmScheduler.updateAlarm(context, updatedEvent, isComingFromNotificationReceiver = true)
 

@@ -2,6 +2,7 @@ package com.hardik.calendarapp.presentation.ui.view_event
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,6 +19,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.databinding.FragmentViewEventBinding
+import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
@@ -33,6 +35,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     private val TAG = BASE_TAG + ViewEventFragment::class.java.simpleName
 
     private val viewModel: NewEventViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private var _binding: FragmentViewEventBinding? = null
     private val binding get() = _binding!!
 
@@ -42,6 +45,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.e(TAG, "onCreate: ", )
         arguments?.let {
             argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getParcelable(KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
@@ -49,6 +53,19 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
                 @Suppress("DEPRECATION")
                 it.getParcelable(KEY_EVENT) ?: throw IllegalArgumentException("Event is missing")
             }
+        }
+    }
+
+    override fun onResume() {
+        Log.e(TAG, "onResume: ", )
+        super.onResume()
+        arguments?.let {
+            val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getParcelable(KEY_EVENT, Event::class.java)
+            } else {
+                it.getParcelable(KEY_EVENT)
+            }
+            event?.let { populateEventData(it) }
         }
     }
 
@@ -76,9 +93,15 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             setOnClickListener {
                 lifecycleScope.launch {
                     viewModel.deleteEvent(argEvent)
-                    Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_SHORT).show()
                     viewModel.resetEventState()
-                    findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+
+                    if (mainViewModel.isComingFromNotification.value){
+                        (activity as MainActivity).navigateToYearView()
+                        mainViewModel.setIsComingFromNotification(isComing = false)
+                    }else{
+                        findNavController().popBackStack(R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                    }
                 }
             }
         }

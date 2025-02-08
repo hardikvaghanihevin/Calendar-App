@@ -157,7 +157,7 @@ class NewEventViewModel @Inject constructor(
     }
 
     //todo: Event Alert (Before 5 min,10 min, 15 min, 1 hour, 1 day...)
-    private val _alertOffset = MutableStateFlow(AlertOffset.NONE)
+    private val _alertOffset = MutableStateFlow(AlertOffset.AT_TIME_OF_EVENT)
     val alertOffset: StateFlow<AlertOffset> = _alertOffset
 
     fun updateAlertOffset(alertOffset: AlertOffset){
@@ -211,6 +211,8 @@ class NewEventViewModel @Inject constructor(
             return context.resources.getString(R.string.start_time_cannot_be_after_end_time)
         }
 
+        //region event title uniqueness check for personal events
+        /*
         // Check if the event is new or being updated
         val existingEvent = if (eventId == null) {
             // Creating a new event, check if a similar event exists
@@ -227,9 +229,9 @@ class NewEventViewModel @Inject constructor(
             }
         }
 
-        if (existingEvent != null) {
-            return context.resources.getString(R.string.an_event_with_this_title_and_type_already_exists)
-        }
+        if (existingEvent != null) { return context.resources.getString(R.string.an_event_with_this_title_and_type_already_exists) }
+        */
+        //endregion
 
         return null // No validation errors
     }
@@ -295,7 +297,7 @@ class NewEventViewModel @Inject constructor(
             _description.value = ""
             _isAllDay.value = false
             _repeatOption.value = RepeatOption.NEVER
-            _alertOffset.value = AlertOffset.NONE
+            _alertOffset.value = AlertOffset.AT_TIME_OF_EVENT
             _customAlertOffset.value = null
         }
     }
@@ -314,16 +316,38 @@ class NewEventViewModel @Inject constructor(
                 try {
                     val updatedEvent = coroutineScope {
                             async(Dispatchers.Default) {
-                                var nextTriggerTime = event.triggerTime
+                                val nextTriggerTime: Long
 
                                 // Calculate nextTriggerTime if needed
-                                if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
+                               /* if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
                                     val calculatedTriggerTime = DateUtil.calculateNextOccurrence(nextTriggerTime, event.repeatOption)
                                     if (calculatedTriggerTime != null) {
                                         nextTriggerTime = calculatedTriggerTime
+                                        Log.v(TAG, "insertEvent: now: $nextTriggerTime ", )
+                                    }else{
+                                        Log.v(TAG, "insertEvent: ", )
                                     }
+                                }else{
+                                    Log.d(TAG, "insertEvent: else", )
+                                    val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+                                    if (calculatedTriggerTime != null) {
+                                        nextTriggerTime = calculatedTriggerTime
+                                        Log.d(TAG, "insertEvent: now: $nextTriggerTime ", )
+                                    }else{
+                                        Log.d(TAG, "insertEvent: ", )
+                                    }
+                                }*/
+
+                                val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
+                                val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+
+                                nextTriggerTime = if (calculatedTriggerTime != null) {
+                                    calculatedTriggerTime - minus
+                                }else{
+                                    event.startTime - minus
                                 }
 
+                                // Todo: Log.v(TAG, "insertEvent: final: $nextTriggerTime = ${event.startTime} - $minus | ctt: $calculatedTriggerTime", )
                                 // Return the updated event
                                 event.copy(triggerTime = nextTriggerTime)
                             }.await() // Collect all updated events

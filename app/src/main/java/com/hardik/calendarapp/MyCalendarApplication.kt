@@ -6,6 +6,8 @@ import android.app.NotificationManager
 import android.database.CursorWindow
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.utillities.LocaleHelper
@@ -15,13 +17,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @HiltAndroidApp
-class MyCalendarApplication: Application() {
+class MyCalendarApplication: Application(), LifecycleObserver {
     private val TAG = BASE_TAG + MyCalendarApplication::class.java.simpleName
     override fun onCreate() {
         super.onCreate()
 
         // Increase cursor window size to prevent crashes during large queries
         increaseCursorWindowSize()
+
+        // Observe lifecycle for potential app state handling
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         // Launch background operations
         CoroutineScope(Dispatchers.Default).launch {

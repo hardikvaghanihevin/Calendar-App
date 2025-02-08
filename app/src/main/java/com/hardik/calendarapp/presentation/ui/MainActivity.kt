@@ -14,11 +14,13 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
-import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -28,9 +30,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -84,17 +88,19 @@ class MainActivity : AppCompatActivity() {
 
     var bundle: Bundle? = null
 
-    companion object{
+    companion object {
         //val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
         //val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
     private fun updateToolbarTitle(title: String?) {
-        mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name)) }
+        mainViewModel.updateToolbarTitle(title ?: resources.getString(R.string.app_name))
+    }
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.e(TAG, "onCreate: ", )
 
         // Step 1: Retrieve saved language preference
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -128,30 +134,32 @@ class MainActivity : AppCompatActivity() {
         setupToolbar() //setupNavigation Function: Centralized navigation setup, including AppBarConfiguration.
         setupDrawerHeader()
         setupDrawerMenu() //setupDrawerMenu Function: Cleanly handles drawer menu initialization.
+        setupDrawerListener() //setupDrawerListener Function:
         handelBackPressed()
-        handleNotificationEventOpen()// when user click on notification event -> it's open 'ViewEventFragment'
 
-        /*binding.appBarMain.fab.setOnClickListener { view ->
-            navController.navigate(R.id.newEventFragment, null, navOptions)
-        }*/
+        handleNotificationEventOpen(intent)// when user click on notification event -> it's open 'ViewEventFragment'
 
         // Collecting the StateFlow
         lifecycleScope.launch {
 
-            launch {
-                mainViewModel.isCursorDataCollected.collect{
-                    if (it){
-                        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
-                    }
-                }
-            }
+//            launch {
+//                mainViewModel.isCursorDataCollected.collect {
+//                    if (it) {
+//                        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
+//                    }
+//                }
+//            }
 
-            mainViewModel.toolbarTitle.collectLatest { title->
+            mainViewModel.toolbarTitle.collectLatest { title ->
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.text = title
             }
         }
-
-        navController.addOnDestinationChangedListener { _: NavController, destination: NavDestination, _: Bundle? -> updateToolbarAndViews(destination) }
+    }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.e(TAG, "onNewIntent: ", )
+        setIntent(intent) // Update the current intent
+        handleNotificationEventOpen(intent) // Handle the new intent
     }
 
     private fun updateToolbarAndViews(destination: NavDestination) {
@@ -162,47 +170,68 @@ class MainActivity : AppCompatActivity() {
         when (destination.id) {
             // Destinations where FAB/Menu should be hidden
             R.id.newEventFragment -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)
             }
 
             // Destinations where Save Event Icon should be shown
             R.id.viewEventFragment -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)//but it's for edit option not save use
             }
 
             // Destinations for Year and Month navigation
             R.id.nav_year, R.id.nav_month -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon)
                 showViewWithAnimation(binding.appBarMain.fab)
             }
 
             R.id.nav_select_country -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
             }
 
             R.id.nav_select_language -> {}
 
-            R.id.nav_setting -> { }// todo: own setting fragment
+            R.id.nav_setting -> {}// todo: own setting fragment
 
             R.id.repeatOptionFragment -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
             }
 
             R.id.alertOptionFragment -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
             }
 
             R.id.searchEventFragment -> {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                showViewWithAnimation(
+                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
+                    duration = 0
+                )
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon)
             }
@@ -215,7 +244,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var dialogFirstDayOfTheWeekBinding: DialogFirstDayOfTheWeekBinding? = null
-    fun showFirstDayOfTheWeek(){
+    fun showFirstDayOfTheWeek() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_first_day_of_the_week, null)
         dialogFirstDayOfTheWeekBinding = DialogFirstDayOfTheWeekBinding.bind(dialogView)
 
@@ -244,35 +273,74 @@ class MainActivity : AppCompatActivity() {
             val saturdayText = this.dialogFirstDayOfTheWeekSaturday
 
             //rest all icon and text
-            fun resetSelections(){
+            fun resetSelections() {
 
-                sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
-                mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
-                saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                sundayText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.text_primary
+                    )
+                )
+                mondayText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.text_primary
+                    )
+                )
+                saturdayText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.text_primary
+                    )
+                )
 
-                sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
-                mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
-                saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                sundayText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                mondayText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                saturdayText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
 
             }
 
 
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-            val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
+            val firstDayOfTheWeek =
+                sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
 
             when (firstDayOfTheWeek) {
                 "Sunday" -> {
-                    sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                    sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                    sundayText.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_primary
+                        )
+                    )
+                    sundayText.typeface =
+                        ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
+
                 "Monday" -> {
-                    mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                    mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                    mondayText.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_primary
+                        )
+                    )
+                    mondayText.typeface =
+                        ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
+
                 "Saturday" -> {
-                    saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                    saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                    saturdayText.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_primary
+                        )
+                    )
+                    saturdayText.typeface =
+                        ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
             }
 
@@ -280,8 +348,14 @@ class MainActivity : AppCompatActivity() {
             sundayText.setOnClickListener {
                 resetSelections()
 
-                sundayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                sundayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                sundayText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                sundayText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("firstDayOfWeek", "Sunday").apply()
@@ -291,8 +365,14 @@ class MainActivity : AppCompatActivity() {
             mondayText.setOnClickListener {
                 resetSelections()
 
-                mondayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                mondayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                mondayText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                mondayText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("firstDayOfWeek", "Monday").apply()
@@ -302,8 +382,14 @@ class MainActivity : AppCompatActivity() {
             saturdayText.setOnClickListener {
                 resetSelections()
 
-                saturdayText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                saturdayText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                saturdayText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                saturdayText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("firstDayOfWeek", "Saturday").apply()
@@ -312,7 +398,8 @@ class MainActivity : AppCompatActivity() {
             btnDone.setOnClickListener {
                 lifecycleScope.launch {
                     // Make sure the navigation happens on the main thread
-                    PreferenceManager.getDefaultSharedPreferences(this@MainActivity).getString("firstDayOfWeek", "Sunday")
+                    PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+                        .getString("firstDayOfWeek", "Sunday")
                         ?.let { it1 -> mainViewModel.updateFirstDayOfTheWeek(refresh = it1) }
                 }
                 dialog.dismiss()
@@ -321,7 +408,8 @@ class MainActivity : AppCompatActivity() {
             btnCancel.setOnClickListener {
                 // Save selection to SharedPreferences when user can 'cancel'
                 sharedPreferences.edit().putString("firstDayOfWeek", firstDayOfTheWeek).apply()
-                dialog.dismiss() }
+                dialog.dismiss()
+            }
         }
 
         dialog.show()
@@ -364,7 +452,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 this.setOnValueChangedListener { picker, oldVal, newVal ->
-                    mainViewModel.updateYearJTD( year = newVal )
+                    mainViewModel.updateYearJTD(year = newVal)
                 }
             }
             monthPicker.apply {
@@ -379,7 +467,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 this.setOnValueChangedListener { picker, oldVal, newVal ->
-                    mainViewModel.updateMonthJTD( month = newVal )
+                    mainViewModel.updateMonthJTD(month = newVal)
                 }
             }
             datePicker.apply {
@@ -400,10 +488,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 this.setOnValueChangedListener { picker, oldVal, newVal ->
-                    mainViewModel.updateDateJTD( date = newVal )
+                    mainViewModel.updateDateJTD(date = newVal)
                 }
 
-               /* // Listen for changes in the month picker value
+                /* // Listen for changes in the month picker value
                 monthPicker.setOnValueChangedListener { _, _, newMonth ->
 
                     val maxDays = getMinMaxDays(yearPicker.value, newMonth -1 )
@@ -427,12 +515,12 @@ class MainActivity : AppCompatActivity() {
                     // Make sure the navigation happens on the main thread
                     val bundle = Bundle().apply {
                         putInt(Constants.KEY_YEAR, selectedYear)
-                        putInt(Constants.KEY_MONTH, selectedMonth -1)
+                        putInt(Constants.KEY_MONTH, selectedMonth - 1)
                         putInt(Constants.KEY_DAY, selectedDay)
                     }
                     //navController.popBackStack()//for repeat entry clear
                     //navController.navigate(R.id.nav_month, bundle, navOptions)
-                    val jumpDate = "$selectedYear-${selectedMonth-1}-$selectedDay"
+                    val jumpDate = "$selectedYear-${selectedMonth - 1}-$selectedDay"
                     mainViewModel.updateMonthViewDate(jumpDate)
                     mainViewModel.updateSelectedDate(jumpDate)
                     navController.navigate(R.id.nav_month, null, navOptions)
@@ -444,20 +532,21 @@ class MainActivity : AppCompatActivity() {
             btnCancel.setOnClickListener {
                 mainViewModel.updateSelectedDate("2000-0-0")
                 resetJumpToDialog()
-                dialog.dismiss() }
+                dialog.dismiss()
+            }
         }
 
         dialog.show()
     }
 
-    private fun resetJumpToDialog(){
-        mainViewModel.updateYearJTD( year = DateUtil.getCurrentYear() )
-        mainViewModel.updateMonthJTD( month = DateUtil.getCurrentMonth() as Int +1 )
-        mainViewModel.updateDateJTD( date = DateUtil.getCurrentDate())
+    private fun resetJumpToDialog() {
+        mainViewModel.updateYearJTD(year = DateUtil.getCurrentYear())
+        mainViewModel.updateMonthJTD(month = DateUtil.getCurrentMonth() as Int + 1)
+        mainViewModel.updateDateJTD(date = DateUtil.getCurrentDate())
     }
 
     private var dialogAppThemeBinding: DialogAppThemeBinding? = null
-    fun showAppThemeDialog(){
+    fun showAppThemeDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_app_theme, null)
         dialogAppThemeBinding = DialogAppThemeBinding.bind(dialogView)
 
@@ -489,7 +578,7 @@ class MainActivity : AppCompatActivity() {
             val systemThemeText = this.dialogAppThemeSystemTheme
 
             //rest all icon and text
-            fun resetSelections(){
+            fun resetSelections() {
                 darkThemeIcon.setImageResource(R.drawable.icon_unchecked)
                 lightThemeIcon.setImageResource(R.drawable.icon_unchecked)
                 systemThemeIcon.setImageResource(R.drawable.icon_unchecked)
@@ -506,23 +595,44 @@ class MainActivity : AppCompatActivity() {
 
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-            val appTheme = sharedPreferences.getString("app_theme", "system")// Default to system theme
+            val appTheme =
+                sharedPreferences.getString("app_theme", "system")// Default to system theme
 
-            when(appTheme){
+            when (appTheme) {
                 "dark" -> {
                     darkThemeIcon.setImageResource(R.drawable.icon_checked)
-                    darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                    darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                    darkThemeText.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_primary
+                        )
+                    )
+                    darkThemeText.typeface =
+                        ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
+
                 "light" -> {
                     lightThemeIcon.setImageResource(R.drawable.icon_checked)
-                    lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                    lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                    lightThemeText.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_primary
+                        )
+                    )
+                    lightThemeText.typeface =
+                        ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
+
                 "system" -> {
                     systemThemeIcon.setImageResource(R.drawable.icon_checked)
-                    systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                    systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                    systemThemeText.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_primary
+                        )
+                    )
+                    systemThemeText.typeface =
+                        ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
                 }
             }
 
@@ -531,8 +641,14 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 darkThemeIcon.setImageResource(R.drawable.icon_checked)
-                darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                darkThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                darkThemeText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                darkThemeText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) // Dark Theme
 
@@ -546,8 +662,14 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 lightThemeIcon.setImageResource(R.drawable.icon_checked)
-                lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                lightThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                lightThemeText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                lightThemeText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Light Theme
 
@@ -561,8 +683,14 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 systemThemeIcon.setImageResource(R.drawable.icon_checked)
-                systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                systemThemeText.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                systemThemeText.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                systemThemeText.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) // System Default Theme
 
@@ -572,7 +700,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             btnDone.setOnClickListener {
-                val selectedTheme = sharedPreferences.getString("app_theme", "system") // Get saved preference
+                val selectedTheme =
+                    sharedPreferences.getString("app_theme", "system") // Get saved preference
 
                 // Apply the selected theme
                 when (selectedTheme) {
@@ -590,7 +719,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var dialogTimeFormatBinding: DialogTimeFormatBinding? = null
-    fun showTimeFormatDialog(){
+    fun showTimeFormatDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_time_format, null)
         dialogTimeFormatBinding = DialogTimeFormatBinding.bind(dialogView)
 
@@ -620,29 +749,56 @@ class MainActivity : AppCompatActivity() {
             val timeFormat24hrIcon = this.dialogTimeFormat24HRIcon
 
             //rest all icon and text
-            fun resetSelections(){
+            fun resetSelections() {
                 timeFormat12hrIcon.setImageResource(R.drawable.icon_unchecked)
                 timeFormat24hrIcon.setImageResource(R.drawable.icon_unchecked)
 
-                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
-                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                timeFormat12hr.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.text_primary
+                    )
+                )
+                timeFormat24hr.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.text_primary
+                    )
+                )
 
-                timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
-                timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                timeFormat12hr.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
+                timeFormat24hr.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
             }
 
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-            var is24HourFormat = sharedPreferences.getBoolean("time_format", false)  // Default to false (12-hour format)
+            var is24HourFormat = sharedPreferences.getBoolean(
+                "time_format",
+                false
+            )  // Default to false (12-hour format)
 
-            if(is24HourFormat){
+            if (is24HourFormat) {
                 timeFormat24hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
-            }else {
+                timeFormat24hr.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                timeFormat24hr.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+            } else {
                 timeFormat12hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                timeFormat12hr.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                timeFormat12hr.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
             }
 
             // Handle timeFormat12hr click
@@ -650,8 +806,14 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 timeFormat12hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                timeFormat12hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                timeFormat12hr.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                timeFormat12hr.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
                 is24HourFormat = false
@@ -661,8 +823,14 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 timeFormat24hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-                timeFormat24hr.typeface = ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
+                timeFormat24hr.setTextColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.accent_primary
+                    )
+                )
+                timeFormat24hr.typeface =
+                    ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
                 is24HourFormat = true
@@ -684,8 +852,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var dialogDeviceInformationBinding: DialogDeviceInformationBinding? = null
+
     @SuppressLint("SetTextI18n")
-    fun showDeviceInfoDialog(){
+    fun showDeviceInfoDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_device_information, null)
         dialogDeviceInformationBinding = DialogDeviceInformationBinding.bind(dialogView)
 
@@ -739,28 +908,33 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun rateApp(context: Context = this){
+    fun rateApp(context: Context = this) {
         val appPackageName = context.packageName // Get the current app's package name
         try {
             // Try to open Play Store app
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
+            val intent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             // If Play Store app is not available, open in the browser
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName"))
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+            )
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
     }
 
     fun privacyPolicy(context: Context = this) {
-        val url = "https://gist.githubusercontent.com/hardikvaghanihevin/d45b7376a72f832d2e80573a46628a4c/raw/e79d8fd9bd36d38b31e619bdb41251a7417999a4/privacy_policy.html" // Replace with your URL
+        val url =
+            "https://gist.githubusercontent.com/hardikvaghanihevin/d45b7376a72f832d2e80573a46628a4c/raw/e79d8fd9bd36d38b31e619bdb41251a7417999a4/privacy_policy.html" // Replace with your URL
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
     }
 
-    fun shareApp(){
+    fun shareApp() {
         val appPackageName = this.packageName // Get the current app's package name
         val appLink = "https://play.google.com/store/apps/details?id=$appPackageName"
 
@@ -774,8 +948,9 @@ class MainActivity : AppCompatActivity() {
         // Start the sharing activity
         startActivity(Intent.createChooser(shareIntent, "Share via"))
     }
+
     @SuppressLint("QueryPermissionsNeeded")
-    fun feedback(){
+    fun feedback() {
         val emailAddress = "feedback@company.com"// Replace with your company's email address
         val subject = "Feedback for Your App"
         val body = "Please provide your feedback here."
@@ -803,7 +978,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(emailIntent, "Choose an email client"))
         } else {
             // No email client found
-            Toast.makeText(this, "Please install an email client to send feedback.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Please install an email client to send feedback.",
+                Toast.LENGTH_SHORT
+            ).show()
 
             // If no email client is found, we create an alternative fallback using ACTION_SEND
             emailIntent = Intent(Intent.ACTION_SEND).apply {
@@ -833,19 +1012,48 @@ class MainActivity : AppCompatActivity() {
 
         // Listen for destination changes to update the navigation icon
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            updateToolbarAndViews(destination)
             updateSelectedDrawerItem(destination.id)
-            val navIcon = binding.appBarMain.includedAppBarMainCustomToolbar.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
+
+            // Observe navigation changes to control drawer locking
             if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            } else {
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            }
+
+            val navIcon = binding.appBarMain.includedAppBarMainCustomToolbar.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
+
+            if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
+
                 val iconDrawable = getDrawableFromAttribute(this, R.drawable.hamburger_icon)
                 navIcon.setImageDrawable(iconDrawable)
                 navIcon.contentDescription = getString(R.string.open_drawer)
             } else {
-                val iconDrawableBackArrow = getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
+                val iconDrawableBackArrow =
+                    getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
                 navIcon.setImageDrawable(iconDrawableBackArrow)
                 navIcon.contentDescription = getString(R.string.navigate_up)
             }
         }
     }
+
+    private fun setupDrawerListener() {
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener{
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) { }
+
+            override fun onDrawerOpened(drawerView: View) {
+                // Hide the keyboard if it's visible when the drawer opens
+                KeyboardUtils.hideKeyboard(this@MainActivity, binding.root)
+            }
+
+            override fun onDrawerClosed(drawerView: View) { }
+
+            override fun onDrawerStateChanged(newState: Int) { }
+
+        })
+    }
+
 
     private fun updateSelectedDrawerItem(selectedId: Int) {
         val adapter = binding.drawerRecyclerView.adapter
@@ -862,8 +1070,13 @@ class MainActivity : AppCompatActivity() {
     private fun setupToolbar() {
         val navIcon = binding.appBarMain.includedAppBarMainCustomToolbar.customToolbar.findViewById<ShapeableImageView>(R.id.siv_navigation_icon)
         navIcon.setOnClickListener {
-            DisplayUtil.isKeyboardVisible(this) { isVisible -> if (isVisible) { KeyboardUtils.hideKeyboard(this,binding.root) } }
-            handleNavigationIconClick()  }
+            DisplayUtil.isKeyboardVisible(this) { isVisible ->
+                if (isVisible) {
+                    KeyboardUtils.hideKeyboard(this, binding.root)
+                }
+            }
+            handleNavigationIconClick()
+        }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon.setOnClickListener {
 
@@ -877,25 +1090,27 @@ class MainActivity : AppCompatActivity() {
 
                 // Request focus to display keyboard
                 binding.appBarMain.includedAppBarMainCustomToolbar.searchView.requestFocus()
-            }
-            else if (navController.currentDestination?.id == R.id.nav_select_country) {
+            } else if (navController.currentDestination?.id == R.id.nav_select_country) {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-            }
-            else {
+            } else {
                 //"NavigationError ->: Destination on SearchView
             }
         }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.apply { text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString() }
+        binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.apply {
+            text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.apply { text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString() }
+        binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.apply {
+            text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {}
 
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setupDrawerHeader(){
+    private fun setupDrawerHeader() {
         val currentDate: Int = DateUtil.getCurrentDate()
         val currentDay: String = DateUtil.getCurrentDay()
         val currentMonth: Any = DateUtil.getCurrentMonth(isString = true)
@@ -913,19 +1128,48 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupDrawerMenu() {
         val drawerMenuItems = listOf(
-            DrawerMenuItem(R.drawable.drawer_year_icon, getString(R.string.year), R.id.nav_year,true),
+            DrawerMenuItem(
+                R.drawable.drawer_year_icon,
+                getString(R.string.year),
+                R.id.nav_year,
+                true
+            ),
             DrawerMenuItem(R.drawable.drawer_month_icon, getString(R.string.month), R.id.nav_month),
-            DrawerMenuItem(R.drawable.drawer_select_country_icon, getString(R.string.select_country), R.id.nav_select_country),
-            DrawerMenuItem(R.drawable.drawer_select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
-            DrawerMenuItem(R.drawable.drawer_first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
-            DrawerMenuItem(R.drawable.drawer_jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
-            DrawerMenuItem(R.drawable.drawer_privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
-            DrawerMenuItem(R.drawable.drawer_setting_icon, getString(R.string.setting), R.id.nav_setting)
+            DrawerMenuItem(
+                R.drawable.drawer_select_country_icon,
+                getString(R.string.select_country),
+                R.id.nav_select_country
+            ),
+            DrawerMenuItem(
+                R.drawable.drawer_select_language_icon,
+                getString(R.string.select_language),
+                R.id.nav_select_language
+            ),
+            DrawerMenuItem(
+                R.drawable.drawer_first_day_of_the_week_icon,
+                getString(R.string.first_day_of_the_week),
+                R.id.nav_first_day_of_week
+            ),
+            DrawerMenuItem(
+                R.drawable.drawer_jump_to_date_icon,
+                getString(R.string.jump_to_date),
+                R.id.nav_jump_to_date
+            ),
+            DrawerMenuItem(
+                R.drawable.drawer_privacy_policy_icon,
+                getString(R.string.privacy_policy),
+                R.id.nav_privacy_policy
+            ),
+            DrawerMenuItem(
+                R.drawable.drawer_setting_icon,
+                getString(R.string.setting),
+                R.id.nav_setting
+            )
         )
 
         // Initialize the adapter
         drawerMenuAdapter.setItems(drawerMenuItems)
-        drawerMenuAdapter.setOnClickListener{ menuItem, _: Int -> handleMenuClick(menuItem) }
+        drawerMenuAdapter.setOnClickListener { menuItem, _: Int -> handleMenuClick(menuItem) }
 
 
         // Set the adapter to the RecyclerView
@@ -937,18 +1181,30 @@ class MainActivity : AppCompatActivity() {
      * Handles click events on drawer menu items.
      */
     private fun handleMenuClick(item: DrawerMenuItem) {
+
         when (item.id) {
-            R.id.nav_year -> navController.navigate(R.id.nav_year)
+            R.id.nav_year -> { //navController.navigate(R.id.nav_year,)
+                navigateToYearView() }
             R.id.nav_month -> navController.navigate(R.id.nav_month)
-            R.id.nav_select_country -> navController.navigate(R.id.nav_select_country, null, navOptions = navOptions, null)
+            R.id.nav_select_country -> navController.navigate(
+                R.id.nav_select_country,
+                null,
+                navOptions = navOptions,
+                null
+            )
+
             R.id.nav_select_language -> {
                 val intent = Intent(this@MainActivity, LanguageActivity::class.java)
                 startActivity(intent)
                 finish()
             }
+
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()
             R.id.nav_jump_to_date -> showJumpToDateDialog()
-            R.id.nav_privacy_policy -> { privacyPolicy() }
+            R.id.nav_privacy_policy -> {
+                privacyPolicy()
+            }
+
             R.id.nav_setting -> navController.navigate(R.id.nav_setting)
         }
 
@@ -956,6 +1212,14 @@ class MainActivity : AppCompatActivity() {
         updateSelectedDrawerItem(item.id)
 
         toggleDrawer()
+    }
+    fun navigateToYearView() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(navController.graph.startDestinationId, inclusive = true)
+            .setLaunchSingleTop(true)
+            .build()
+
+        navController.navigate(R.id.nav_year, null, navOptions)
     }
 
     /**
@@ -1005,21 +1269,33 @@ class MainActivity : AppCompatActivity() {
     // region Call this function to request permissions as needed
     fun checkAndRequestCalendarPermissions() {
         val permissions = mutableListOf<String>()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) { permissions.add(Manifest.permission.READ_CALENDAR) }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) { permissions.add(Manifest.permission.WRITE_CALENDAR) }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { permissions.add(Manifest.permission.POST_NOTIFICATIONS) } }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.READ_CALENDAR)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.WRITE_CALENDAR)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
 
         if (permissions.isNotEmpty()) {
+            mainViewModel.getHolidayCalendarData()
             ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
         } else { // Permissions already granted
-            initializeViewModelIfNeeded() }
+            initializeViewModelIfNeeded()
+        }
     }
+
     private var autoStartPermissionHelper: AutoStartPermissionHelper? = null
-    private fun getAutoStartPermission(){//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
+    private fun getAutoStartPermission() {//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
         autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
 
         // Check if the auto-start permission is available on the device
-        val isAutoStartPermissionAvailable: Boolean = autoStartPermissionHelper!!.isAutoStartPermissionAvailable(this, false)
+        val isAutoStartPermissionAvailable: Boolean =
+            autoStartPermissionHelper!!.isAutoStartPermissionAvailable(this, false)
 
         // If the permission is available, request it
         if (isAutoStartPermissionAvailable) {
@@ -1029,31 +1305,52 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun areCalendarPermissionsGranted(): Boolean {
-        val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
-        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
-        val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) } else { PackageManager.PERMISSION_GRANTED }
+        val readPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
+        val writePermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
+        val postNotificationPermission =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                PackageManager.PERMISSION_GRANTED
+            }
         return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED && postNotificationPermission == PackageManager.PERMISSION_GRANTED
     }
 
     private fun initializeViewModelIfNeeded() {
         if (areCalendarPermissionsGranted()) {
             mainViewModel.initializeViewModel() // Call your ViewModel initialization function
-            if (!isAutostartSet){
+            if (!isAutostartSet) {
                 getAutoStartPermission()
                 sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
             }
+            if (!this.isBatteryOptimizationPermissionGranted()){
+                this.requestBatteryOptimizationPermission()
+            }
+        }else{
+            mainViewModel.getHolidayCalendarData()
         }
+    }
+
+    fun Context.requestBatteryOptimizationPermission(){
+        startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${packageName}")))
+    }
+    fun Context.isBatteryOptimizationPermissionGranted(): Boolean{
+        val pkg = packageName;
+        val pm = getSystemService(PowerManager::class.java)
+        return pm.isIgnoringBatteryOptimizations(pkg)
     }
 
     // Handle the result of permission requests
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
-            if (areCalendarPermissionsGranted()){
+            if (areCalendarPermissionsGranted()) {
                 initializeViewModelIfNeeded()
             } else {
                 // Permission denied, show a message to the user
-                Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_calendar), Snackbar.LENGTH_LONG).setAction(getString(R.string.setting)) {
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_calendar), Snackbar.LENGTH_SHORT).setAction(getString(R.string.setting)) {
                     // Open app settings
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.fromParts("package", packageName, null)
@@ -1068,11 +1365,7 @@ class MainActivity : AppCompatActivity() {
                     //onRequestPermissionsResult: Permission granted, schedule the alarm"
                 } else {
                     // Permission denied, show a message to the user
-                    Snackbar.make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.deny_permission_msg_notification),
-                        Snackbar.LENGTH_LONG
-                    ).setAction(getString(R.string.setting)) {
+                    Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_notification), Snackbar.LENGTH_SHORT).setAction(getString(R.string.setting)) {
                         // Open app settings
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                             data = Uri.fromParts("package", packageName, null)
@@ -1081,36 +1374,64 @@ class MainActivity : AppCompatActivity() {
                     }.show()
                 }
             }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
-        else { super.onRequestPermissionsResult(requestCode, permissions, grantResults) }
     }
     //endregion
 
-    private fun handelBackPressed(){
-        // Use OnBackPressedDispatcher for API 12+ (and fallback for older versions)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
+    private fun handelBackPressed() {
+        KeyboardUtils.hideKeyboard(this@MainActivity, binding.root)
+
+        val navigateToYear: () -> Unit = {
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.nav_year, inclusive = false)
+                .build()
+            navController.navigate(R.id.nav_year, null, navOptions)
+        }
+
+        val handleExit: () -> Unit = {
+            finishAffinity() //  moveTaskToBack(true) Consistent app exit for both APIs
+
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
                 if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer first
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                } else if (navController.currentDestination?.id == R.id.nav_year) {
+                    handleExit()
+                } else if ( navController.currentDestination?.id == R.id.alertOptionFragment ||
+                    navController.currentDestination?.id == R.id.repeatOptionFragment ||
+                    navController.currentDestination?.id == R.id.newEventFragment ||
+                    navController.currentDestination?.id == R.id.viewEventFragment ||
+                    navController.currentDestination?.id == R.id.searchEventFragment
+                    ){
+                    navController.popBackStack()
                 } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
+                    Log.e(TAG, "handelBackPressed: ", )
+                    navigateToYear()
                 }
             }
-        })
-
-        // Optional: Handle OnBackInvokedCallback for Android 14+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                OnBackInvokedCallback {
+        } else {
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
                     if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                         binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    } else if (navController.currentDestination?.id == R.id.nav_year) {
+                        handleExit()
+                    } else if ( navController.currentDestination?.id == R.id.alertOptionFragment ||
+                        navController.currentDestination?.id == R.id.repeatOptionFragment ||
+                        navController.currentDestination?.id == R.id.newEventFragment ||
+                        navController.currentDestination?.id == R.id.viewEventFragment ||
+                        navController.currentDestination?.id == R.id.searchEventFragment
+                        ){
+                        navController.popBackStack()
                     } else {
-                        finish()
+                        navigateToYear()
                     }
                 }
-            )
+            })
         }
     }
 
@@ -1137,17 +1458,42 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (event != null) {
+
+            // Clear the intent to prevent handling it again
+            intent.removeExtra(Constants.KEY_EVENT)
+
+            navigateToViewEventFrag(event)
+
+        }
+    }
+    private fun handleNotificationEventOpen(intent: Intent?) {
+        // Handle intent if launched from a notification
+        val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent?.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
+        } else {
+            intent?.getParcelableExtra(Constants.KEY_EVENT)
+        }
+
+        if (event != null) {
+            intent?.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
             navigateToViewEventFrag(event)
         }
     }
 
     //From coming Notification click
     private fun navigateToViewEventFrag(event: Event) {
+        Log.e(TAG, "navigateToViewEventFrag: ", )
+        mainViewModel.setIsComingFromNotification(isComing = true)
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
             bundle = (bundle ?: Bundle()).apply {
                 putParcelable(Constants.KEY_EVENT, event)// Pass the event object
             }
+
+            // Mange the navigation from the notification object stack of screen
+            val navOptions = NavOptions.Builder().setPopUpTo(navController.graph.startDestinationId, inclusive = true) // Clears entire back stack up to start destination
+                .setLaunchSingleTop(true) // Ensures no duplicate fragment instance
+                .build()
             navController.navigate(R.id.viewEventFragment, bundle, navOptions)
         }
     }

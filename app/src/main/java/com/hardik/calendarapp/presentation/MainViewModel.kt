@@ -10,6 +10,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.common.Resource
 import com.hardik.calendarapp.data.database.entity.AlertOffset
+import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
@@ -27,7 +28,6 @@ import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
 import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
-import com.hardik.calendarapp.utillities.DateUtil.calculateNextOccurrence
 import com.hardik.calendarapp.utillities.DateUtil.epochToDateTriple
 import com.hardik.calendarapp.utillities.DateUtil.longToString
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
@@ -360,11 +360,21 @@ class MainViewModel @Inject constructor(
                             var nextTriggerTime = event.triggerTime
 
                             // Calculate nextTriggerTime if needed
-                            if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
+                            /*if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
                                 val calculatedTriggerTime = calculateNextOccurrence(nextTriggerTime, event.repeatOption)
                                 if (calculatedTriggerTime != null) {
                                     nextTriggerTime = calculatedTriggerTime
                                 }
+                            }*/
+
+
+                            val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
+                            val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+
+                            nextTriggerTime = if (calculatedTriggerTime != null) {
+                                calculatedTriggerTime - minus
+                            }else{
+                                event.startTime - minus
                             }
 
                             // Return the updated event
@@ -686,6 +696,17 @@ class MainViewModel @Inject constructor(
         val dateFormat = SimpleDateFormat("EEEE dd MMMM yyyy", locale)
         return dateFormat.format(calendar.time)
     }
+    //----------------------------------------------------------------//
+
+    private val _isComingFromNotification = MutableStateFlow<Boolean>(false)
+    val isComingFromNotification: StateFlow<Boolean> = _isComingFromNotification
+
+    fun setIsComingFromNotification(isComing: Boolean){
+        viewModelScope.launch {
+            _isComingFromNotification.value = isComing
+        }
+    }
+
     //----------------------------------------------------------------//
 
     // Unregister listener to avoid memory leaks when ViewModel is cleared

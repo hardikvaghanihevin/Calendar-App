@@ -230,7 +230,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             text = resources.getString(R.string.action_save)
             setOnClickListener {
                 if( (activity as MainActivity).areCalendarPermissionsGranted() ){
-                    DisplayUtil.isKeyboardVisible(requireContext()) { isVisible -> if (isVisible) {
+                    DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
+                        if (isVisible) {
                         KeyboardUtils.hideKeyboard(requireActivity(), binding.root)
                     } }
 
@@ -243,14 +244,22 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                         }
 
                         // Display a message to the user
-                        val notifyUser = context.resources.getString(R.string.event_insert_successfully).takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY }?:context.resources.getString(R.string.event_update_successfully)
-                        Snackbar.make(view, notifyUser, Snackbar.LENGTH_LONG).show()
+                        val notifyUser = context.resources.getString(R.string.event_insert_successfully)
+                            .takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY } ?: context.resources.getString(R.string.event_update_successfully)
+                            .takeIf { msg == Constants.EVENT_UPDATE_SUCCESSFULLY } ?: msg
+                        Snackbar.make(view, notifyUser, Snackbar.LENGTH_SHORT).show()
 
                         // Reset the fields after successful insertion
                         if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
                             viewModel.resetEventState()
+
+                            if (mainViewModel.isComingFromNotification.value){
+                                (activity as MainActivity).navigateToYearView()
+                                mainViewModel.setIsComingFromNotification(isComing = false)
+                            }else{
+                                findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg } ?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                            }
                         }
-                        findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg }?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                     }
                 }
                 else { (activity as MainActivity).checkAndRequestCalendarPermissions() }

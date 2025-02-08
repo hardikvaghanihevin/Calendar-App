@@ -57,12 +57,7 @@ object AlarmScheduler {
 
         if (event.alertOffset != AlertOffset.NONE){
             // updateAlarm: alertOffset is valid
-            if (event.triggerTime < System.currentTimeMillis() - 5000L){
-                // updateAlarm: TriggerTime is past time from current!
-            }else{
-                scheduleExactTime(context, event.triggerTime, event)
-            }
-
+            scheduleExactTime(context, event.triggerTime, event)
         }else{
             // do not set any alarm, because updateAlarm: alertOffset is NONE
         }
@@ -75,6 +70,14 @@ object AlarmScheduler {
         // AlarmManager is null, cannot schedule notification.
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
 
+        val currentTime = System.currentTimeMillis()
+
+        // Skip scheduling if the time is already in the past
+        if (triggerTime <= currentTime) {
+            // Todo: Log.w(TAG, "Cannot schedule past event: ${event.title} at $triggerTime")
+            return
+        }
+
         val intent = Intent(context, NotificationReceiver::class.java).apply {
             action = "com.hardik.calendarapp.NOTIFY_EVENT"
             putExtra("event", event)
@@ -86,6 +89,8 @@ object AlarmScheduler {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+        // Todo: Log.i(TAG, "scheduleExactTime: ${event.title} ,trigger: $triggerTime, startTime: ${event.startTime}", )
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,

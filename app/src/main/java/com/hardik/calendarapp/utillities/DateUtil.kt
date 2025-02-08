@@ -393,20 +393,26 @@ object DateUtil {
     /** Function to Calculate Next Occurrence:
     Write a utility function to calculate the next occurrence based on the current time and the selected repeat option. */
     fun calculateNextOccurrence(startTime: Long, repeatOption: RepeatOption): Long? {
-        //if (repeatOption == RepeatOption.ONCE) return null // No repeat
-        if (repeatOption == RepeatOption.NEVER) return null // No repeat
 
+        if (repeatOption == RepeatOption.NEVER) return null
+
+        val now = System.currentTimeMillis()
         val calendar = Calendar.getInstance().apply { timeInMillis = startTime }
-        when (repeatOption) {
-            RepeatOption.DAILY -> calendar.add(Calendar.DAY_OF_YEAR, 1)
-            RepeatOption.WEEKLY -> calendar.add(Calendar.WEEK_OF_YEAR, 1)
-            RepeatOption.MONTHLY -> calendar.add(Calendar.MONTH, 1)
-            RepeatOption.YEARLY -> calendar.add(Calendar.YEAR, 1)
-            else -> return null
+
+        // Adjust until we find a future occurrence
+        while (calendar.timeInMillis <= now) {
+            when (repeatOption) {
+                RepeatOption.DAILY -> calendar.add(Calendar.DAY_OF_YEAR, 1)
+                RepeatOption.WEEKLY -> calendar.add(Calendar.WEEK_OF_YEAR, 1)
+                RepeatOption.MONTHLY -> calendar.add(Calendar.MONTH, 1)
+                RepeatOption.YEARLY -> calendar.add(Calendar.YEAR, 1)
+                else -> return null
+            }
         }
+
+        // Todo: Log.i(TAG, "Next valid occurrence: ${calendar.timeInMillis}")
         return calendar.timeInMillis
     }
-
     /**
      * Converts the given number of minutes to milliseconds.
      *

@@ -300,12 +300,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     if (dataState.isLoading) {
                         // Show loading indicator
                         safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
+                        safeBinding.rvEvent.visibility = View.VISIBLE
                         safeBinding.tvNotify.visibility = View.GONE
 
                     } else if (dataState.error.isNotEmpty()) {
                         // Show error message
                         Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
                         safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
+                        safeBinding.rvEvent.visibility = View.VISIBLE
                         safeBinding.tvNotify.apply {
                             text = dataState.error
                             visibility = View.VISIBLE

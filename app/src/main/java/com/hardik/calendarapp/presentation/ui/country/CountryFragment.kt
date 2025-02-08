@@ -179,11 +179,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
                     // Optional: Update ViewModel or trigger side effects
                     launch {
-                        viewModel.isCursorDataCollected.collect{
-                            if (it){
-                                viewModel.getHolidayCalendarData() // todo: 2 getting api data after getting locale calendar data
-                            }
-                        }
+                        viewModel.getHolidayCalendarData() // todo: 2 getting api data after getting locale calendar data
                     }
                     
                     if (findNavController().currentDestination?.id == R.id.nav_select_country) {
