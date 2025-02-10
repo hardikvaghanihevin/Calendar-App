@@ -18,15 +18,18 @@ import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.FragmentViewEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
+import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
@@ -65,23 +68,27 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             } else {
                 it.getParcelable(KEY_EVENT)
             }
-            event?.let { populateEventData(it) }
+            event?.let {
+                lifecycleScope.launch(Dispatchers.Main) {
+                   populateEventData(it)
+                }
+            }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.e(TAG, "onViewCreated: ", )
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentViewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
-        if (arguments?.containsKey(KEY_EVENT) == true){
-            populateEventData(event = argEvent)
-        }
+        //if (arguments?.containsKey(KEY_EVENT) == true){ populateEventData(event = argEvent) }
 
         /** Delete Event  */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon.apply {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
                 if (argEvent.eventType != EventType.PERSONAL){
@@ -107,7 +114,8 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
 
         /** Edit Event  */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
                 if (argEvent.eventType != EventType.PERSONAL){
@@ -124,10 +132,12 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         // Populate the title and description
         binding.edtEventName.setText(event.title)
         binding.edtEventNote.setText(event.description.takeUnless { it.isBlank() } ?: resources.getString(R.string.no_description))
-        binding.switchAllDay.isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
 
         // Set the "All Day" status
-        binding.switchAllDay.isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
+        binding.switchAllDay.apply {
+            visibility = if (event.sourceType == SourceType.REMOTE || event.sourceType == SourceType.CURSOR) View.INVISIBLE else View.VISIBLE
+            isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
+        }
 
         // Populate start and end dates
         binding.tvStartDatePicker.text = DateUtil.stringToString(
@@ -188,6 +198,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     override fun onDestroy() {
         lifecycleScope.coroutineContext.cancelChildren()
+        DisplayUtil.showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu)
         super.onDestroy()
     }
     override fun onDestroyView() {

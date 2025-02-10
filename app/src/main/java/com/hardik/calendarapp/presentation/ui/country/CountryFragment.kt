@@ -167,7 +167,8 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
 
         /** Save Selected Country */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     viewModel.saveSelectedCountries(
@@ -192,7 +193,8 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         }
 
         /** Search view for Country */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSearchView.root.apply {
             if (isAdded){
                 this.setBackgroundResource(0) // 0 removes any background and Set inactive background
                 this.queryHint = getString(R.string.search_country)
@@ -206,11 +208,13 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         this.setBackgroundResource(R.drawable.item_background)
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
                             setMargins(
-                                0, // Start margin
+                                resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), // Start margin
                                 0, // Top margin
-                                resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(), // End margin
+                                resources.getDimension(com.intuit.sdp.R.dimen._minus3sdp).toInt(), // End margin
                                 0 // Bottom margin
                             )
+                            width = ViewGroup.LayoutParams.MATCH_PARENT
+                            height = ViewGroup.LayoutParams.MATCH_PARENT
                         }
 
                     } else {
@@ -223,6 +227,8 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                                 0, // End margin
                                 0  // Bottom margin
                             )
+                            width = ViewGroup.LayoutParams.WRAP_CONTENT
+                            height = ViewGroup.LayoutParams.WRAP_CONTENT
                         }
 
 //                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
@@ -289,16 +295,23 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
     /** Search view reset */
     private fun resetSearchView() {
         currentQuery = null // Clear the query
-        (activity as MainActivity).resetSearchView()
+        val searchView = (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSearchView.root
+        (activity as MainActivity).resetSearchView(searchView)
         showHideSaveSelectionIcon(wantToShow = true)
     }
 
     private fun showHideSaveSelectionIcon(wantToShow: Boolean) {
         (activity as MainActivity).apply {
             if(wantToShow){
-                DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
+                //DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
+                DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
+                //DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
+                DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }else{
-                DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
+                //DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
+                DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
+                //DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
+                DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }
         }
     }

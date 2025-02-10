@@ -118,7 +118,8 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
         }
 
         /** Save Selected Language */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedRepeatOption.includedSaveSelect.root.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
                     selectedRepeatOption?.let { it1 -> viewModel.updateRepeatOption(it1) }

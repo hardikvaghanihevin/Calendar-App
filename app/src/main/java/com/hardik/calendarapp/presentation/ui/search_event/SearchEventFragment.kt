@@ -24,6 +24,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.FragmentSearchEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.EventAdapter
@@ -34,7 +35,6 @@ import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -69,7 +69,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
         setupUI()
 
         /** Search view for Event */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedSearchView.root.apply {
             if (isAdded){
                 // Set inactive background (null)
                 this.setBackgroundResource(0) // 0 removes any background
@@ -84,11 +85,14 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                         this.setBackgroundResource(R.drawable.item_background)
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
                             setMargins(
-                                0, // Start margin
+                                resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), // Start margin
                                 0, // Top margin
-                                resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(), // End margin
+                                resources.getDimension(com.intuit.sdp.R.dimen._minus3sdp).toInt(), // End margin
                                 0 // Bottom margin
                             )
+                            //resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(),
+                            width = ViewGroup.LayoutParams.MATCH_PARENT
+                            height = ViewGroup.LayoutParams.MATCH_PARENT
                         }
 
                     } else {
@@ -101,6 +105,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                                 0, // End margin
                                 0  // Bottom margin
                             )
+                            width = ViewGroup.LayoutParams.WRAP_CONTENT
+                            height = ViewGroup.LayoutParams.WRAP_CONTENT
                         }
 
                         DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
@@ -146,7 +152,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
         }
 
         /** Back to current Event */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.setOnClickListener { scrollEventIndexAtCurrentDate() }
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.setOnClickListener { scrollEventIndexAtCurrentDate() }
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root.setOnClickListener { scrollEventIndexAtCurrentDate() }
     }
 
     private fun setupUI() {
@@ -227,7 +234,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 }
             }
 
-            delay(100)
+            //delay(100)
             viewModel.allEventsState.collectLatest {dataState ->
                 val safeBinding = _binding // Safely reference the binding
                 if (safeBinding != null) {
@@ -279,6 +286,31 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
             bundle = (bundle ?: Bundle()).apply {
                 putParcelable(Constants.KEY_EVENT, event)// Pass the event object
             }
+
+            //region Todo : this is for title and menu items for ViewEventsFragment
+            val visibility = if (event.sourceType in listOf(SourceType.CURSOR, SourceType.REMOTE)) View.GONE else View.VISIBLE
+            if (visibility == View.GONE) {
+                hideViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
+                    }
+                }
+
+            } else {
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        setMargins(0, 0, 0, 0)
+                    }
+                }
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root, duration = 0)
+            }
+            //endregion
+
             findNavController().navigate(R.id.viewEventFragment, bundle, MyNavigation.navOptions)
         }
     }
@@ -293,7 +325,8 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     private fun resetSearchView() {
         currentQuery = null // Clear the query
         eventAdapter.filter.filter("") // Reset the filter
-        (activity as MainActivity).resetSearchView()
+        val searchView = (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedSearchView.root
+        (activity as MainActivity).resetSearchView(searchView)
         showHideBeckToCurrentEventIcon(wantToShow = true)
     }
 
@@ -301,9 +334,15 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     private fun showHideBeckToCurrentEventIcon(wantToShow: Boolean) {
         (activity as MainActivity).apply {
             if(wantToShow){
-                showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
+                //showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
+                showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }else{
-                hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
+                //hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
+                hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root, duration = 0)
+                //hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
+                hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }
         }
     }

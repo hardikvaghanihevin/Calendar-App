@@ -3,6 +3,25 @@
     android:id="@+id/manuItemViewEvent"
     android:layout_width="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:visibility="visible"
     android:layout_height="wrap_content">
+
+    <include
+        android:id="@+id/included_delete"
+        layout="@layout/view_delete"
+        android:layout_width="@dimen/_53sdp"
+        android:layout_height="@dimen/_23sdp" />
+
+    <Space
+        android:layout_width="@dimen/menuItemHorizontalSpacing"
+        android:layout_height="match_parent" />
+
+    <include
+        android:id="@+id/included_save"
+        layout="@layout/view_save"
+        android:layout_width="@dimen/_53sdp"
+        android:layout_height="@dimen/_23sdp"
+        android:layout_marginEnd="@dimen/menuItemHorizontalSpacing" />
 
 </LinearLayout>

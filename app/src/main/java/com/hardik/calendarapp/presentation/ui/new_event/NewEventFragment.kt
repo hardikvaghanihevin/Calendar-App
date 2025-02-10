@@ -226,7 +226,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
 
         /** Save Event  */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.includedSave.root.apply {
             text = resources.getString(R.string.action_save)
             setOnClickListener {
                 if( (activity as MainActivity).areCalendarPermissionsGranted() ){

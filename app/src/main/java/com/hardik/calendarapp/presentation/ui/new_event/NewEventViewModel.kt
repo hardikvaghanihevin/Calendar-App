@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.R
@@ -116,6 +117,7 @@ class NewEventViewModel @Inject constructor(
 
     fun updateStartTime(startTime: Long) {
         viewModelScope.launch {
+            Log.e(TAG, "updateStartTime: $startTime", )
             _startTime.value = startTime
         }
     }
@@ -179,12 +181,13 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
-    private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime) { alertOffset, startTime ->
+    private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime, _startDate) { alertOffset, startTime, startDate ->
 
         val alertOffsetValue = if (alertOffset == AlertOffset.BEFORE_CUSTOM_TIME) { _customAlertOffset.value }
         else { AlertOffsetConverter.toMilliseconds(alertOffset) }
 
         if (alertOffsetValue != null) {
+            Log.e(TAG, "trigger: $startTime: ", )
             startTime - alertOffsetValue
         } else {
             null
@@ -252,6 +255,7 @@ class NewEventViewModel @Inject constructor(
         // Get the latest trigger time value
         val latestTriggerTime = triggerTime.firstOrNull() // Use `firstOrNull` to get the latest value synchronously
 
+        Log.e(TAG, "insertCustomEvent: ${startTime.value}, triggerTime: ${triggerTime.value} = $latestTriggerTime", )
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
             title = title.value,

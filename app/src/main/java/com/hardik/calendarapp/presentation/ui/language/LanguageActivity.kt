@@ -69,8 +69,9 @@ class LanguageActivity : AppCompatActivity() {
     private fun setupToolbar() {
         updateToolbarTitle(resources.getString(R.string.select_language))
         hideAllViewsWithAnimation()
-        showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon3, duration = 0)
-        showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.saveSelectionIcon)
+        //showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon3, duration = 0)
+        //showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.saveSelectionIcon)
+        showViewWithAnimation(binding.includedLanguageActivityCustomToolbar.includedSelectLanguage.root)
 
         val iconDrawableBackArrow = getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
         binding.includedLanguageActivityCustomToolbar.sivNavigationIcon.apply {
@@ -138,7 +139,8 @@ class LanguageActivity : AppCompatActivity() {
     }
 
     private fun setupSaveButton() {
-        binding.includedLanguageActivityCustomToolbar.saveSelectionIcon.setOnClickListener {
+//        binding.includedLanguageActivityCustomToolbar.saveSelectionIcon.setOnClickListener {
+        binding.includedLanguageActivityCustomToolbar.includedSelectLanguage.includedSaveSelect.root.setOnClickListener {
             PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isFirstLaunch", false).apply()
             selectedLanguage?.let {
                 lifecycleScope.launch {
@@ -182,15 +184,24 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun hideAllViewsWithAnimation() {
         val viewList = listOf(
-            binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon1,
-            binding.includedLanguageActivityCustomToolbar.searchIcon,
-            binding.includedLanguageActivityCustomToolbar.backToDateIcon,
-            binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon2,
-            binding.includedLanguageActivityCustomToolbar.deleteEventIcon,
-            binding.includedLanguageActivityCustomToolbar.saveEventIcon,
-            binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon3,
-            binding.includedLanguageActivityCustomToolbar.searchView,
-            binding.includedLanguageActivityCustomToolbar.saveSelectionIcon
+//            binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon1,
+//            binding.includedLanguageActivityCustomToolbar.searchIcon,
+//            binding.includedLanguageActivityCustomToolbar.backToDateIcon,
+//            binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon2,
+//            binding.includedLanguageActivityCustomToolbar.deleteEventIcon,
+//            binding.includedLanguageActivityCustomToolbar.saveEventIcon,
+//            binding.includedLanguageActivityCustomToolbar.llToolbarMenuIcon3,
+//            binding.includedLanguageActivityCustomToolbar.searchView,
+//            binding.includedLanguageActivityCustomToolbar.saveSelectionIcon
+            binding.includedLanguageActivityCustomToolbar.includedSchedule.root,
+            binding.includedLanguageActivityCustomToolbar.includedMonthView.root,
+            binding.includedLanguageActivityCustomToolbar.includedYearView.root,
+            binding.includedLanguageActivityCustomToolbar.includedViewEvent.root,
+            binding.includedLanguageActivityCustomToolbar.includedNewEvent.root,
+            binding.includedLanguageActivityCustomToolbar.includedSelectCountry.root,
+            binding.includedLanguageActivityCustomToolbar.includedSelectLanguage.root,
+            binding.includedLanguageActivityCustomToolbar.includedAlertOption.root,
+            binding.includedLanguageActivityCustomToolbar.includedRepeatOption.root,
         )
         viewList.forEach { DisplayUtil.hideViewWithAnimation(it) }
     }

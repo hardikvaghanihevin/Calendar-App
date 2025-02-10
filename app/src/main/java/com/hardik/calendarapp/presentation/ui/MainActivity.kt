@@ -26,6 +26,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -46,6 +47,7 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.Event
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.databinding.DialogAppThemeBinding
 import com.hardik.calendarapp.databinding.DialogDeviceInformationBinding
@@ -170,41 +172,50 @@ class MainActivity : AppCompatActivity() {
         when (destination.id) {
             // Destinations where FAB/Menu should be hidden
             R.id.newEventFragment -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.root, duration = 0)
             }
 
             // Destinations where Save Event Icon should be shown
             R.id.viewEventFragment -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)//but it's for edit option not save use
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)//but it's for edit option not save use
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
+//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
+//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root, duration = 0)
+//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root, duration = 0)
+
             }
 
             // Destinations for Year and Month navigation
-            R.id.nav_year, R.id.nav_month -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon)
-                showViewWithAnimation(binding.appBarMain.fab)
+            R.id.nav_year -> {
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon)
+                //showViewWithAnimation(binding.appBarMain.fab)
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.root, duration = 0)
+                showViewWithAnimation(binding.appBarMain.fab, duration = 0)
+
+            }
+
+            R.id.nav_month -> {
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.root, duration = 0)
+                showViewWithAnimation(binding.appBarMain.fab, duration = 0)
+
             }
 
             R.id.nav_select_country -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.root, duration = 0)
             }
 
             R.id.nav_select_language -> {}
@@ -212,28 +223,26 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_setting -> {}// todo: own setting fragment
 
             R.id.repeatOptionFragment -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedRepeatOption.root, duration = 0)
+
             }
 
             R.id.alertOptionFragment -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedAlertOption.root, duration = 0)
             }
 
             R.id.searchEventFragment -> {
-                showViewWithAnimation(
-                    binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
-                    duration = 0
-                )
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
+                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon)
+
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.root, duration = 0)
             }
 
             // Default case: Hide everything except FAB
@@ -1078,34 +1087,42 @@ class MainActivity : AppCompatActivity() {
             handleNavigationIconClick()
         }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon.setOnClickListener {
+        binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedSearch.root.setOnClickListener {
+            navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
+        }
+        //binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon.setOnClickListener {
+
+        binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedSearch.root.setOnClickListener {
 
             // todo: navigate to show all events
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
 
-            if (navController.currentDestination?.id == R.id.nav_select_country) {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-                // Expand SearchView
-                binding.appBarMain.includedAppBarMainCustomToolbar.searchView.setIconified(false)
-
-                // Request focus to display keyboard
-                binding.appBarMain.includedAppBarMainCustomToolbar.searchView.requestFocus()
-            } else if (navController.currentDestination?.id == R.id.nav_select_country) {
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-            } else {
-                //"NavigationError ->: Destination on SearchView
-            }
+//            if (navController.currentDestination?.id == R.id.nav_select_country) {
+//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
+//                // Expand SearchView
+//                binding.appBarMain.includedAppBarMainCustomToolbar.searchView.setIconified(false)
+//
+//                // Request focus to display keyboard
+//                binding.appBarMain.includedAppBarMainCustomToolbar.searchView.requestFocus()
+//            } else if (navController.currentDestination?.id == R.id.nav_select_country) {
+//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
+//            } else {
+//                //"NavigationError ->: Destination on SearchView
+//            }
         }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.apply {
+        binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedBackToDate.backToDateIcon.apply {
             text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
         }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.apply {
+        binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedBackToDate.backToDateIcon.apply {
             text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
         }
 
-        binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {}
+        binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.backToDateIcon.apply {
+            text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        }
+
 
     }
 
@@ -1251,17 +1268,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideAllViewsWithAnimation() {
         val viewList = listOf(
-            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1,
             binding.appBarMain.fab,
-            binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon,
-            binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon,
-            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
-            binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon,
-            binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon,
-            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
-            binding.appBarMain.includedAppBarMainCustomToolbar.searchView,
-            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon,
-            binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.searchView,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon,
+//            binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectLanguage.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedAlertOption.root,
+            binding.appBarMain.includedAppBarMainCustomToolbar.includedRepeatOption.root,
         )
         viewList.forEach { hideViewWithAnimation(it) }
     }
@@ -1435,8 +1461,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun resetSearchView() {
-        val searchView = binding.appBarMain.includedAppBarMainCustomToolbar.searchView
+    fun resetSearchView(searchView: SearchView) {
         searchView.apply {
             // Clear the text
             setQuery("", false)
@@ -1446,6 +1471,8 @@ class MainActivity : AppCompatActivity() {
             // Reset background or other styles
             setBackgroundResource(0)
         }
+        //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle)
+        showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle)
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
@@ -1494,6 +1521,31 @@ class MainActivity : AppCompatActivity() {
             val navOptions = NavOptions.Builder().setPopUpTo(navController.graph.startDestinationId, inclusive = true) // Clears entire back stack up to start destination
                 .setLaunchSingleTop(true) // Ensures no duplicate fragment instance
                 .build()
+
+            //region Todo : this is for title and menu items for ViewEventsFragment
+            val visibility = if (event.sourceType in listOf(SourceType.CURSOR, SourceType.REMOTE)) View.GONE else View.VISIBLE
+            if (visibility == View.GONE) {
+                hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
+                binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
+                    }
+                }
+
+            } else {
+                binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        setMargins(0, 0, 0, 0)
+                    }
+                }
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root, duration = 0)
+                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root, duration = 0)
+            }
+            //endregion
+
             navController.navigate(R.id.viewEventFragment, bundle, navOptions)
         }
     }

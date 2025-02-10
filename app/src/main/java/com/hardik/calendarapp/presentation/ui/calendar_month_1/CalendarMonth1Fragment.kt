@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -26,6 +27,7 @@ import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
+import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
@@ -36,13 +38,14 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.reverseYearMonth
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.DisplayUtil.dpToPx
+import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
+import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
@@ -96,10 +99,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
 
         /** Back to current month */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedBackToDate.root.setOnClickListener {
             lifecycleScope.launch {
                 CoroutineScope(Dispatchers.Main).launch {
-                    viewModel.findMonthViewPos.collect{
+                    viewModel.findMonthViewPos.collectLatest{
                         if (::viewPager.isInitialized) {
                             viewPager.setCurrentItem(it, true) // Navigate to the desired position
                         }
@@ -212,6 +216,31 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             bundle = (bundle ?: Bundle()).apply {
                 putParcelable(KEY_EVENT, event)// Pass the event object
             }
+
+            //region Todo : this is for title and menu items for ViewEventsFragment
+            val visibility = if (event.sourceType in listOf(SourceType.CURSOR, SourceType.REMOTE)) View.GONE else View.VISIBLE
+            if (visibility == View.GONE) {
+                hideViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
+                    }
+                }
+
+            } else {
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        setMargins(0, 0, 0, 0)
+                    }
+                }
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root, duration = 0)
+                showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root, duration = 0)
+            }
+            //endregion
+
             findNavController().navigate(R.id.viewEventFragment, bundle, navOptions)
         }
     }
@@ -292,7 +321,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
-            delay(100)
+            //delay(100)
             viewModel.monthlyEventsState.collectLatest { dataState ->
                 val safeBinding = _binding // Safely reference the binding
                 if (safeBinding != null) {

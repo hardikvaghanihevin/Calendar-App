@@ -3,6 +3,8 @@
 
     <dimen name="dateRoundSize">0.95dp</dimen>
 
+    <dimen name="menuItemHorizontalSpacing">@dimen/_8sdp</dimen>
+
     <dimen name="dialog_padding">@dimen/_20sdp</dimen>
     <dimen name="dialogVerticalSpacing">@dimen/_9sdp</dimen>
     <dimen name="dialogVerticalSpacing_dev2">@dimen/_4sdp</dimen>

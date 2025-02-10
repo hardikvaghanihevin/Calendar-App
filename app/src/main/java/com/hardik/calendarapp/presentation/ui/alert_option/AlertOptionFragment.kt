@@ -145,7 +145,8 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
         }
 
         /** Save Selected Icon */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedAlertOption.includedSaveSelect.root.setOnClickListener {
             if (isAdded) {
                 lifecycleScope.launch {
                     selectedAlertOffset?.let { it1 -> viewModel.updateAlertOffset(it1) }

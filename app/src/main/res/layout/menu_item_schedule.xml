@@ -3,6 +3,26 @@
     android:id="@+id/manuItemSchedule"
     android:layout_width="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center_vertical|end"
+    android:layout_gravity="start"
+    android:visibility="visible"
     android:layout_height="wrap_content">
+
+    <include
+        android:id="@+id/included_searchView"
+        layout="@layout/view_search_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Space
+        android:layout_width="@dimen/menuItemHorizontalSpacing"
+        android:layout_height="match_parent" />
+
+    <include
+        android:id="@+id/included_backToDate"
+        layout="@layout/view_back_to_date"
+        android:layout_width="@dimen/_21sdp"
+        android:layout_height="@dimen/_21sdp"
+        android:layout_marginEnd="@dimen/menuItemHorizontalSpacing" />
 
 </LinearLayout>

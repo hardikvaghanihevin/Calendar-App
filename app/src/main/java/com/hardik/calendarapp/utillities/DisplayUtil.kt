@@ -78,7 +78,7 @@ object DisplayUtil {
     }
 
     // Function to hide VIEW with animation
-    fun hideViewWithAnimation(fab: View, duration: Long = 300) {
+    fun hideViewWithAnimation(fab: View, duration: Long = 0) {
         CoroutineScope(Dispatchers.Main).launch {
             fab.animate()
                 .alpha(0f)

@@ -67,7 +67,8 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         }
 
         /** Back to current year */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
+        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedBackToDate.root.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
                 viewModel.findYearViewPos.collect{
                     if (::viewPager.isInitialized) {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/save_selection_icon"
+    style="@style/TextViewStyle.medium"
+    android:layout_width="@dimen/_34sdp"
+    android:layout_height="@dimen/_22sdp"
+    android:layout_marginHorizontal="@dimen/_8sdp"
+    android:background="@drawable/done_icon"
+    android:gravity="center"
+    android:singleLine="true"
+    android:text=""
+    android:textColor="@color/background_secondary"
+    android:textSize="@dimen/_8ssp"
+    android:visibility="visible"
+    tools:visibility="visible" />
