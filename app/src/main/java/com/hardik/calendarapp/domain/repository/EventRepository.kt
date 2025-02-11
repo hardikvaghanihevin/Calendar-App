@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface EventRepository {
     suspend fun upsertEvent(event: Event)
     suspend fun upsertEvents(events: List<Event>)
-    suspend fun updateEvent(event: Event)
     suspend fun deleteEvent(event: Event)
     suspend fun deleteEventsHoliday()
 

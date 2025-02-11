@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.e(TAG, "onCreate: ", )
 
         // Step 1: Retrieve saved language preference
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)

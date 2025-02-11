@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation.ui.view_event
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -48,7 +47,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e(TAG, "onCreate: ", )
         arguments?.let {
             argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getParcelable(KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
@@ -60,7 +58,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     }
 
     override fun onResume() {
-        Log.e(TAG, "onResume: ", )
         super.onResume()
         arguments?.let {
             val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -77,7 +74,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.e(TAG, "onViewCreated: ", )
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentViewEventBinding.bind(view)
 

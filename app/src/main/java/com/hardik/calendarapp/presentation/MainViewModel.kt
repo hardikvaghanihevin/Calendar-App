@@ -211,7 +211,7 @@ class MainViewModel @Inject constructor(
 
                 val cursorEvent = withContext(Dispatchers.IO) { getAllCursorEvents(context) }
 
-                val events = cursorEvent.map { item ->
+                val events = cursorEvent.map  { item ->
                     val startDate = longToString(item.startTime)
                     val endDate = longToString(item.endTime)
                     val date: Triple<String, String, String> = epochToDateTriple(item.startTime)

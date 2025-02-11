@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -67,6 +68,7 @@ object AlarmScheduler {
     // Schedule the notification for a specific time.
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleExactTime(context: Context, triggerTime: Long, event: Event) {
+        Log.i(TAG, "scheduleExactTime: $triggerTime")
         // AlarmManager is null, cannot schedule notification.
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
 

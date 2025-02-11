@@ -17,16 +17,14 @@ import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetEventByTitleAndType
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
+import com.hardik.calendarapp.utillities.DateUtil.separateDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -117,7 +115,6 @@ class NewEventViewModel @Inject constructor(
 
     fun updateStartTime(startTime: Long) {
         viewModelScope.launch {
-            Log.e(TAG, "updateStartTime: $startTime", )
             _startTime.value = startTime
         }
     }
@@ -181,22 +178,22 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
-    private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime, _startDate) { alertOffset, startTime, startDate ->
-
-        val alertOffsetValue = if (alertOffset == AlertOffset.BEFORE_CUSTOM_TIME) { _customAlertOffset.value }
-        else { AlertOffsetConverter.toMilliseconds(alertOffset) }
-
-        if (alertOffsetValue != null) {
-            Log.e(TAG, "trigger: $startTime: ", )
-            startTime - alertOffsetValue
-        } else {
-            null
-        }
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        AlertOffsetConverter.toMilliseconds(alertOffset.value)//null // Default value, if no trigger time has been set
-    )
+//    private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime, _startDate) { alertOffset, startTime, startDate ->
+//
+//        val alertOffsetValue = if (alertOffset == AlertOffset.BEFORE_CUSTOM_TIME) { _customAlertOffset.value }
+//        else { AlertOffsetConverter.toMilliseconds(alertOffset) }
+//        
+//        if (alertOffsetValue != null) {
+//            startTime - alertOffsetValue
+//        } else {
+//            null
+//        }
+//    }.stateIn(
+//        viewModelScope,
+//        SharingStarted.Lazily,
+//        AlertOffsetConverter.toMilliseconds(alertOffset.value)//null // Default value, if no trigger time has been set
+//    )
+    
 
     private suspend fun validateEvent(context: Context, eventId: String? = null): String? {
         // Validate event title
@@ -253,9 +250,8 @@ class NewEventViewModel @Inject constructor(
         )
 
         // Get the latest trigger time value
-        val latestTriggerTime = triggerTime.firstOrNull() // Use `firstOrNull` to get the latest value synchronously
-
-        Log.e(TAG, "insertCustomEvent: ${startTime.value}, triggerTime: ${triggerTime.value} = $latestTriggerTime", )
+        val getTriggerTime = getTriggerTime(alertOffset.value, startTime.value, startDate.value)
+        
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
             title = title.value,
@@ -273,11 +269,20 @@ class NewEventViewModel @Inject constructor(
             repeatOption = repeatOption.value,
             alertOffset = alertOffset.value,
             customAlertOffset = customAlertOffset.value,
-            triggerTime = latestTriggerTime ?: 0L, // todo: set triggerTime as start time
+            triggerTime = getTriggerTime, // todo: set triggerTime as start time
         )
 
         insertEvent(event)
         return EVENT_INSERT_SUCCESSFULLY.takeIf { id == null } ?: EVENT_UPDATE_SUCCESSFULLY// Event inserted/update successfully
+    }
+
+    private fun getTriggerTime(alert: AlertOffset, startTime: Long, startDate: Long): Long {
+        val dateLong = separateDateTime(startDate)
+        val timeLong = separateDateTime(startTime)
+
+        val triggerTime = mergeDateAndTime(dateLong.first, timeLong.second)
+        Log.w(TAG, "getTriggerTime: $triggerTime", )
+        return triggerTime - (AlertOffsetConverter.toMilliseconds(alert) ?: 0L)
     }
 
     fun resetEventState() {
@@ -342,14 +347,9 @@ class NewEventViewModel @Inject constructor(
                                     }
                                 }*/
 
-                                val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
-                                val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+                                val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
 
-                                nextTriggerTime = if (calculatedTriggerTime != null) {
-                                    calculatedTriggerTime - minus
-                                }else{
-                                    event.startTime - minus
-                                }
+                                nextTriggerTime = calculatedTriggerTime ?: event.triggerTime
 
                                 // Todo: Log.v(TAG, "insertEvent: final: $nextTriggerTime = ${event.startTime} - $minus | ctt: $calculatedTriggerTime", )
                                 // Return the updated event

@@ -120,14 +120,11 @@ class NotificationReceiver : BroadcastReceiver() {
             //val nextTriggerTime = calculateTriggerTime(alertOffset = event.alertOffset, repeatOption = event.repeatOption, baseTimeInMillis = event.triggerTime)//System.currentTimeMillis() + event.repeatIntervalMillis
             val nextTriggerTime: Long
 
-            val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
-            val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+            //val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
+            val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
 
-            nextTriggerTime = if (calculatedTriggerTime != null) {
-                calculatedTriggerTime - minus
-            }else{
-                event.startTime - minus
-            }
+            nextTriggerTime = calculatedTriggerTime //- minus
+                ?: event.triggerTime //- minus
 
             Log.w(TAG, "scheduleRepeatingNotification: $nextTriggerTime", )
             val updatedEvent = event.copy(triggerTime = nextTriggerTime)
