@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -420,7 +419,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
                 val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
 
-                Log.w(TAG, "onPageSelected: $tvMonthTitle", )
                 viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
 
                 viewModel.updateSelectedDate(selectedDate!!)

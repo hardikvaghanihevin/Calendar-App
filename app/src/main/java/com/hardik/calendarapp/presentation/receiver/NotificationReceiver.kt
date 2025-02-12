@@ -45,7 +45,6 @@ class NotificationReceiver : BroadcastReceiver() {
                 intent.getParcelableExtra("event")
             }
 
-            Log.i(TAG, "onReceive: $event", )
             if (event != null) {
                 scheduleRepeatingNotification(context , event)
 
@@ -108,7 +107,6 @@ class NotificationReceiver : BroadcastReceiver() {
             return
         }
 
-        Log.e(TAG, "showNotification: $event", )
         notificationManager.notify(event.id.hashCode(), notification)
     }
 

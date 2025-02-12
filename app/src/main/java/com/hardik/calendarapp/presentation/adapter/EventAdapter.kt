@@ -61,7 +61,6 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
     @SuppressLint("NotifyDataSetChanged")
     suspend fun updateData(newData: List<Event>, fEEW: Map<String, Event>) {
         latestData = newData to fEEW
-        Log.e(TAG, "updateData: ${newData.size} , ${fEEW.size}", )
 
         updateMutex.withLock { // Ensure sequential processing
             updateJob?.cancel()
