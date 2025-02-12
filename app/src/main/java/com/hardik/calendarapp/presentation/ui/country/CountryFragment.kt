@@ -90,12 +90,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
                 addItemDecoration(object: RecyclerView.ItemDecoration() {
-                    override fun getItemOffsets(
-                        outRect: Rect,
-                        view: View,
-                        parent: RecyclerView,
-                        state: RecyclerView.State
-                    ) {
+                    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                         val position = parent.getChildAdapterPosition(view) // Get the position of the item
                         val itemCount = parent.adapter?.itemCount ?: 0
 
@@ -131,12 +126,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 val margin = resources.getDimension(com.intuit.sdp.R.dimen._4sdp).toInt()
 
                 addItemDecoration(object: RecyclerView.ItemDecoration() {
-                    override fun getItemOffsets(
-                        outRect: Rect,
-                        view: View,
-                        parent: RecyclerView,
-                        state: RecyclerView.State
-                    ) {
+                    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                         val position = parent.getChildAdapterPosition(view) // Get the position of the item
                         val itemCount = parent.adapter?.itemCount ?: 0
 
@@ -167,7 +157,6 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
 
         /** Save Selected Country */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {
@@ -193,7 +182,6 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         }
 
         /** Search view for Country */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSearchView.root.apply {
             if (isAdded){
                 this.setBackgroundResource(0) // 0 removes any background and Set inactive background
@@ -207,12 +195,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(
-                                resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), // Start margin
-                                0, // Top margin
-                                resources.getDimension(com.intuit.sdp.R.dimen._minus3sdp).toInt(), // End margin
-                                0 // Bottom margin
-                            )
+                            setMargins(resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0, resources.getDimension(com.intuit.sdp.R.dimen._minus3sdp).toInt(), 0)
                             width = ViewGroup.LayoutParams.MATCH_PARENT
                             height = ViewGroup.LayoutParams.MATCH_PARENT
                         }
@@ -221,12 +204,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
                         // Refocus the SearchView if it loses focus
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(
-                                0, // Start margin
-                                0, // Top margin
-                                0, // End margin
-                                0  // Bottom margin
-                            )
+                            setMargins(0, 0, 0, 0)
                             width = ViewGroup.LayoutParams.WRAP_CONTENT
                             height = ViewGroup.LayoutParams.WRAP_CONTENT
                         }
@@ -251,7 +229,6 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         if (!query.isNullOrBlank()) {
                             // Perform search or filtering based on the query
                             currentQuery = query // Save the query
-                            //countryAdapter.filter.filter(query)
 
                             KeyboardUtils.hideKeyboard(this@CountryFragment.requireActivity())
                         }
@@ -303,14 +280,10 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
     private fun showHideSaveSelectionIcon(wantToShow: Boolean) {
         (activity as MainActivity).apply {
             if(wantToShow){
-                //DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
                 DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
-                //DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
                 DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }else{
-                //DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon, duration = 0)
                 DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
-                //DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
                 DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }
         }

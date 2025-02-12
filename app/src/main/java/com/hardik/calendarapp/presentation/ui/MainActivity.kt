@@ -91,8 +91,6 @@ class MainActivity : AppCompatActivity() {
     var bundle: Bundle? = null
 
     companion object {
-        //val yearList: Map<Int, Map<Int, List<Int>>> = createYearData(2000,2100, isZeroBased = true)
-        //val yearMonthPairList: List<Pair<Int, Int>> = yearList.flatMap { (year, monthsMap) -> monthsMap.keys.map { month -> year to month } }
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
     }
 
@@ -108,10 +106,6 @@ class MainActivity : AppCompatActivity() {
         isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
-        //val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
-        //val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
-        //val is24HourFormat = sharedPreferences.getBoolean("time_format", false)
-        //sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
 
         // Step 2: Set the theme before locale
         when (appTheme) {
@@ -142,15 +136,6 @@ class MainActivity : AppCompatActivity() {
 
         // Collecting the StateFlow
         lifecycleScope.launch {
-
-//            launch {
-//                mainViewModel.isCursorDataCollected.collect {
-//                    if (it) {
-//                        mainViewModel.getHolidayCalendarData() //todo: 2 getting api data after getting locale calendar data
-//                    }
-//                }
-//            }
-
             mainViewModel.toolbarTitle.collectLatest { title ->
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.text = title
             }
@@ -170,32 +155,16 @@ class MainActivity : AppCompatActivity() {
         when (destination.id) {
             // Destinations where FAB/Menu should be hidden
             R.id.newEventFragment -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)
-
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.root, duration = 0)
+                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.root, duration = 0)
             }
 
             // Destinations where Save Event Icon should be shown
             R.id.viewEventFragment -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon)//but it's for edit option not save use
-
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
-//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
-//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root, duration = 0)
-//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root, duration = 0)
-
             }
 
             // Destinations for Year and Month navigation
             R.id.nav_year -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon)
-                //showViewWithAnimation(binding.appBarMain.fab)
-
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.root, duration = 0)
                 showViewWithAnimation(binding.appBarMain.fab, duration = 0)
 
@@ -209,10 +178,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.nav_select_country -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
-
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.root, duration = 0)
             }
 
@@ -221,25 +186,15 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_setting -> {}// todo: own setting fragment
 
             R.id.repeatOptionFragment -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
-
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedRepeatOption.root, duration = 0)
 
             }
 
             R.id.alertOptionFragment -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon)
-
-                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedAlertOption.root, duration = 0)
+                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedAlertOption.root, duration = 0)
             }
 
             R.id.searchEventFragment -> {
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon)
-
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.root, duration = 0)
             }
 
@@ -465,7 +420,6 @@ class MainActivity : AppCompatActivity() {
             monthPicker.apply {
                 minValue = 1
                 maxValue = 12
-                //value = Calendar.getInstance().get(Calendar.MONTH) + 1 //12
 
                 lifecycleScope.launch {
                     mainViewModel.monthJTD.collectLatest {
@@ -479,8 +433,6 @@ class MainActivity : AppCompatActivity() {
             }
             datePicker.apply {
                 minValue = 1
-                //maxValue = 28
-                //value = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
                 lifecycleScope.launch {
                     mainViewModel.dateMaxJTD.collectLatest {
@@ -498,13 +450,6 @@ class MainActivity : AppCompatActivity() {
                     mainViewModel.updateDateJTD(date = newVal)
                 }
 
-                /* // Listen for changes in the month picker value
-                monthPicker.setOnValueChangedListener { _, _, newMonth ->
-
-                    val maxDays = getMinMaxDays(yearPicker.value, newMonth -1 )
-
-                    datePicker.maxValue = maxDays.second ?: 1
-                }*/
             }
 
             lifecycleScope.launch {
@@ -520,13 +465,7 @@ class MainActivity : AppCompatActivity() {
 
                 lifecycleScope.launch {
                     // Make sure the navigation happens on the main thread
-                    val bundle = Bundle().apply {
-                        putInt(Constants.KEY_YEAR, selectedYear)
-                        putInt(Constants.KEY_MONTH, selectedMonth - 1)
-                        putInt(Constants.KEY_DAY, selectedDay)
-                    }
-                    //navController.popBackStack()//for repeat entry clear
-                    //navController.navigate(R.id.nav_month, bundle, navOptions)
+
                     val jumpDate = "$selectedYear-${selectedMonth - 1}-$selectedDay"
                     mainViewModel.updateMonthViewDate(jumpDate)
                     mainViewModel.updateSelectedDate(jumpDate)
@@ -648,16 +587,10 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 darkThemeIcon.setImageResource(R.drawable.icon_checked)
-                darkThemeText.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                darkThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 darkThemeText.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
-                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) // Dark Theme
 
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("app_theme", "dark").apply()
@@ -669,16 +602,9 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 lightThemeIcon.setImageResource(R.drawable.icon_checked)
-                lightThemeText.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                lightThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 lightThemeText.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
-
-                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Light Theme
 
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("app_theme", "light").apply()
@@ -690,16 +616,9 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 systemThemeIcon.setImageResource(R.drawable.icon_checked)
-                systemThemeText.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                systemThemeText.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 systemThemeText.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
-
-                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) // System Default Theme
 
                 // Save selection to SharedPreferences
                 sharedPreferences.edit().putString("app_theme", "system").apply()
@@ -760,18 +679,8 @@ class MainActivity : AppCompatActivity() {
                 timeFormat12hrIcon.setImageResource(R.drawable.icon_unchecked)
                 timeFormat24hrIcon.setImageResource(R.drawable.icon_unchecked)
 
-                timeFormat12hr.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.text_primary
-                    )
-                )
-                timeFormat24hr.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.text_primary
-                    )
-                )
+                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
+                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
 
                 timeFormat12hr.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_regular)
@@ -788,22 +697,12 @@ class MainActivity : AppCompatActivity() {
 
             if (is24HourFormat) {
                 timeFormat24hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat24hr.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat24hr.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
             } else {
                 timeFormat12hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat12hr.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat12hr.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
             }
@@ -813,12 +712,7 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 timeFormat12hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat12hr.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                timeFormat12hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat12hr.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -830,12 +724,7 @@ class MainActivity : AppCompatActivity() {
                 resetSelections()
 
                 timeFormat24hrIcon.setImageResource(R.drawable.icon_checked)
-                timeFormat24hr.setTextColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.accent_primary
-                    )
-                )
+                timeFormat24hr.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
                 timeFormat24hr.typeface =
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
@@ -845,8 +734,7 @@ class MainActivity : AppCompatActivity() {
 
             btnDone.setOnClickListener {
 
-                // Apply the selected timeFormat
-                // Save the selected time format (true for 24-hour format, false for 12-hour format)
+                // Apply/Save the selected time format (true for 24-hour format, false for 12-hour format)
                 sharedPreferences.edit().putBoolean("time_format", is24HourFormat).apply()
 
                 dialog.dismiss()
@@ -1090,26 +978,12 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.getAllEvents()
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions)
         }
-        //binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon.setOnClickListener {
 
         binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedSearch.root.setOnClickListener {
 
             // todo: navigate to show all events
             mainViewModel.getAllEvents()
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions,)
-
-//            if (navController.currentDestination?.id == R.id.nav_select_country) {
-//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-//                // Expand SearchView
-//                binding.appBarMain.includedAppBarMainCustomToolbar.searchView.setIconified(false)
-//
-//                // Request focus to display keyboard
-//                binding.appBarMain.includedAppBarMainCustomToolbar.searchView.requestFocus()
-//            } else if (navController.currentDestination?.id == R.id.nav_select_country) {
-//                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
-//            } else {
-//                //"NavigationError ->: Destination on SearchView
-//            }
         }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedBackToDate.backToDateIcon.apply {
@@ -1146,43 +1020,14 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupDrawerMenu() {
         val drawerMenuItems = listOf(
-            DrawerMenuItem(
-                R.drawable.drawer_year_icon,
-                getString(R.string.year),
-                R.id.nav_year,
-                true
-            ),
+            DrawerMenuItem(R.drawable.drawer_year_icon, getString(R.string.year), R.id.nav_year, true),
             DrawerMenuItem(R.drawable.drawer_month_icon, getString(R.string.month), R.id.nav_month),
-            DrawerMenuItem(
-                R.drawable.drawer_select_country_icon,
-                getString(R.string.select_country),
-                R.id.nav_select_country
-            ),
-            DrawerMenuItem(
-                R.drawable.drawer_select_language_icon,
-                getString(R.string.select_language),
-                R.id.nav_select_language
-            ),
-            DrawerMenuItem(
-                R.drawable.drawer_first_day_of_the_week_icon,
-                getString(R.string.first_day_of_the_week),
-                R.id.nav_first_day_of_week
-            ),
-            DrawerMenuItem(
-                R.drawable.drawer_jump_to_date_icon,
-                getString(R.string.jump_to_date),
-                R.id.nav_jump_to_date
-            ),
-            DrawerMenuItem(
-                R.drawable.drawer_privacy_policy_icon,
-                getString(R.string.privacy_policy),
-                R.id.nav_privacy_policy
-            ),
-            DrawerMenuItem(
-                R.drawable.drawer_setting_icon,
-                getString(R.string.setting),
-                R.id.nav_setting
-            )
+            DrawerMenuItem(R.drawable.drawer_select_country_icon, getString(R.string.select_country), R.id.nav_select_country),
+            DrawerMenuItem(R.drawable.drawer_select_language_icon, getString(R.string.select_language), R.id.nav_select_language),
+            DrawerMenuItem(R.drawable.drawer_first_day_of_the_week_icon, getString(R.string.first_day_of_the_week), R.id.nav_first_day_of_week),
+            DrawerMenuItem(R.drawable.drawer_jump_to_date_icon, getString(R.string.jump_to_date), R.id.nav_jump_to_date),
+            DrawerMenuItem(R.drawable.drawer_privacy_policy_icon, getString(R.string.privacy_policy), R.id.nav_privacy_policy),
+            DrawerMenuItem(R.drawable.drawer_setting_icon, getString(R.string.setting), R.id.nav_setting)
         )
 
         // Initialize the adapter
@@ -1201,8 +1046,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleMenuClick(item: DrawerMenuItem) {
 
         when (item.id) {
-            R.id.nav_year -> { //navController.navigate(R.id.nav_year,)
-                navigateToYearView() }
+            R.id.nav_year -> { navigateToYearView() }
             R.id.nav_month -> {
                 lifecycleScope.launch{
                     val resetDate = "${DateUtil.getCurrentYear()}-${DateUtil.getCurrentMonth()}-${0}"
@@ -1276,16 +1120,6 @@ class MainActivity : AppCompatActivity() {
     private fun hideAllViewsWithAnimation() {
         val viewList = listOf(
             binding.appBarMain.fab,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon1,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon2,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenuIcon3,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.searchView,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon,
-//            binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon,
             binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.root,
             binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.root,
             binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.root,
@@ -1478,28 +1312,10 @@ class MainActivity : AppCompatActivity() {
             // Reset background or other styles
             setBackgroundResource(0)
         }
-        //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle)
         showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle)
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
-    private fun handleNotificationEventOpen() {
-        // Handle intent if launched from a notification
-        val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
-        } else {
-            intent.getParcelableExtra(Constants.KEY_EVENT)
-        }
-
-        if (event != null) {
-
-            // Clear the intent to prevent handling it again
-            intent.removeExtra(Constants.KEY_EVENT)
-
-            navigateToViewEventFrag(event)
-
-        }
-    }
     private fun handleNotificationEventOpen(intent: Intent?) {
         // Handle intent if launched from a notification
         val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -1534,16 +1350,12 @@ class MainActivity : AppCompatActivity() {
             if (visibility == View.GONE) {
                 hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
-                    }
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply { setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0) }
                 }
 
             } else {
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        setMargins(0, 0, 0, 0)
-                    }
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply { setMargins(0, 0, 0, 0) }
                 }
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
@@ -1557,37 +1369,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
     // endregion
-
-    fun setToolbarTitleAndMenuSpacing(){
-//        binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-//            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-//                setMargins(0, 0, 0, 0)
-//                width = 0//ViewGroup.LayoutParams.WRAP_CONTENT
-//                height = ViewGroup.LayoutParams.MATCH_PARENT
-//            }
-//        }
-//        binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
-//            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-//                setMargins(0, 0, 0, 0)
-//                width = 0
-//                height = ViewGroup.LayoutParams.MATCH_PARENT
-//            }
-//        }
-    }
-    fun resetToolbarTitleAndMenuSpacing(){
-        binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
-                width = 0
-                height = ViewGroup.LayoutParams.MATCH_PARENT
-            }
-        }
-        binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
-            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                setMargins(0, 0, 0, 0)
-                width = 0
-                height = ViewGroup.LayoutParams.MATCH_PARENT
-            }
-        }
-    }
 }

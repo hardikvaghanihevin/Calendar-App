@@ -41,8 +41,6 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         // Step 1: Retrieve saved language preference
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
-        val countryCode = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
-        val firstDayOfTheWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
 
         // Step 2: Set the theme before locale
@@ -152,15 +150,3 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
     }
 
 }
-//            includedItemAppTheme
-//            includedItemAppLanguage
-//            includedItemFirstDayOfTheWeek
-//            includedItemJumpToDate
-//            includedItemTimeFormat
-//
-//            includedItemPrivacyPolicy
-//            includedItemRateOnGooglePlay
-//            includedItemShareApp
-//            includedItemFeedBack
-//            includedItemDeviceInfo
-//            includedItemVersion

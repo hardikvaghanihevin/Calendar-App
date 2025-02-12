@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.domain.use_case
 
 import com.hardik.calendarapp.data.database.entity.Event
-import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -19,8 +18,4 @@ class GetEventsByDateOfMonthOfTheYear @Inject constructor(private val repository
 
 class GetAllEventsUseCase @Inject constructor(private val repository: EventRepository) {
     operator fun invoke(): Flow<List<Event>> = repository.getAllEvents()
-}
-
-class GetEventByTitleAndType @Inject constructor(private val repository: EventRepository){
-    operator fun invoke(title: String, type: EventType = EventType.PERSONAL): Flow<Event?> = repository.getEventByTitleAndType(title, type)
 }

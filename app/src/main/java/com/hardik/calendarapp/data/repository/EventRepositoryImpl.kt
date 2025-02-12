@@ -83,10 +83,6 @@ class EventRepositoryImpl @Inject constructor(
         return eventDao.getEventsByDateOfMonthOfTheYear(year = year, month = month, date = date)
      }
 
-    override fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>{
-        return eventDao.getEventByTitleAndType(title = title, eventType = eventType)
-    }
-
 
     private fun scheduleAlarm(event: Event) {
         if (!hasExactAlarmPermission()) {

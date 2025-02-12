@@ -84,8 +84,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) { super.onActivityCreated(savedInstanceState) }
-
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -226,7 +224,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
 
         /** Save Event  */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.includedSave.root.apply {
             text = resources.getString(R.string.action_save)
             setOnClickListener {

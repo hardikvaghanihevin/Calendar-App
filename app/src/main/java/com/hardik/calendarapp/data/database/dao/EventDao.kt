@@ -2,7 +2,6 @@ package com.hardik.calendarapp.data.database.dao
 
 import androidx.room.*
 import com.hardik.calendarapp.data.database.entity.Event
-import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.SourceType
 import kotlinx.coroutines.flow.Flow
 
@@ -37,9 +36,5 @@ interface EventDao {
    @Query("SELECT * FROM events e1 WHERE e1.year =:year AND e1.month =:month AND date = :date AND ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND date = :date AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
     fun getEventsByDateOfMonthOfTheYear(year: String, month: String, date: String): Flow<List<Event>> // Todo: use in CalendarMonth1Fragment
     //endregion
-
-
-    @Query("SELECT * FROM events WHERE title = :title AND eventType = :eventType LIMIT 1")
-    fun getEventByTitleAndType(title: String, eventType: EventType): Flow<Event?>
 
 }

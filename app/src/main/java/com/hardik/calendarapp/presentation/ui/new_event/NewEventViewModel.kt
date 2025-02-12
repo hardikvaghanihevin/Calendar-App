@@ -14,7 +14,6 @@ import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
-import com.hardik.calendarapp.domain.use_case.GetEventByTitleAndType
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
 import com.hardik.calendarapp.utillities.DateUtil.separateDateTime
@@ -34,7 +33,6 @@ import javax.inject.Inject
 @HiltViewModel
 class NewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,// For Database compatibility
-    private val getEventByTitleAndType: GetEventByTitleAndType,
 ): ViewModel() {
     private val TAG = BASE_TAG + NewEventViewModel::class.java.simpleName
 
@@ -177,22 +175,6 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
-//    private val triggerTime: StateFlow<Long?> = combine(_alertOffset, _startTime, _startDate) { alertOffset, startTime, startDate ->
-//
-//        val alertOffsetValue = if (alertOffset == AlertOffset.BEFORE_CUSTOM_TIME) { _customAlertOffset.value }
-//        else { AlertOffsetConverter.toMilliseconds(alertOffset) }
-//        
-//        if (alertOffsetValue != null) {
-//            startTime - alertOffsetValue
-//        } else {
-//            null
-//        }
-//    }.stateIn(
-//        viewModelScope,
-//        SharingStarted.Lazily,
-//        AlertOffsetConverter.toMilliseconds(alertOffset.value)//null // Default value, if no trigger time has been set
-//    )
-    
 
     private suspend fun validateEvent(context: Context, eventId: String? = null): String? {
         // Validate event title
@@ -209,28 +191,6 @@ class NewEventViewModel @Inject constructor(
         if (!isAllDay.value && startTime.value >= endTime.value) {
             return context.resources.getString(R.string.start_time_cannot_be_after_end_time)
         }
-
-        //region event title uniqueness check for personal events
-        /*
-        // Check if the event is new or being updated
-        val existingEvent = if (eventId == null) {
-            // Creating a new event, check if a similar event exists
-            getEventByTitleAndType.invoke(title = title.value).firstOrNull()
-        } else {
-            // Updating an existing event, allow duplicates only for the current event ID
-            val result = getEventByTitleAndType.invoke(title = title.value).firstOrNull()
-            if (result?.id == eventId) {
-                // If the event's ID matches the current event ID, return null (no conflict)
-                null
-            } else {
-                // Otherwise, return the conflicting event (indicating a validation error)
-                result
-            }
-        }
-
-        if (existingEvent != null) { return context.resources.getString(R.string.an_event_with_this_title_and_type_already_exists) }
-        */
-        //endregion
 
         return null // No validation errors
     }
@@ -325,32 +285,11 @@ class NewEventViewModel @Inject constructor(
                             async(Dispatchers.Default) {
                                 val nextTriggerTime: Long
 
-                                // Calculate nextTriggerTime if needed
-                               /* if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
-                                    val calculatedTriggerTime = DateUtil.calculateNextOccurrence(nextTriggerTime, event.repeatOption)
-                                    if (calculatedTriggerTime != null) {
-                                        nextTriggerTime = calculatedTriggerTime
-                                        Log.v(TAG, "insertEvent: now: $nextTriggerTime ", )
-                                    }else{
-                                        Log.v(TAG, "insertEvent: ", )
-                                    }
-                                }else{
-                                    Log.d(TAG, "insertEvent: else", )
-                                    val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
-                                    if (calculatedTriggerTime != null) {
-                                        nextTriggerTime = calculatedTriggerTime
-                                        Log.d(TAG, "insertEvent: now: $nextTriggerTime ", )
-                                    }else{
-                                        Log.d(TAG, "insertEvent: ", )
-                                    }
-                                }*/
-
                                 val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
 
                                 nextTriggerTime = calculatedTriggerTime ?: event.triggerTime
 
                                 // Todo: Log.v(TAG, "insertEvent: final: $nextTriggerTime = ${event.startTime} - $minus | ctt: $calculatedTriggerTime", )
-                                // Return the updated event
                                 event.copy(triggerTime = nextTriggerTime)
                             }.await() // Collect all updated events
                     }

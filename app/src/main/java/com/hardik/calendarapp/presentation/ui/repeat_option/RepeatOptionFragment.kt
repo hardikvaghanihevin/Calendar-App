@@ -85,12 +85,7 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
             val margin = resources.getDimension(R.dimen.itemRepeatAlertVerticalSpacing_dev2).toInt()
 
             addItemDecoration(object: RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
+                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                     val position = parent.getChildAdapterPosition(view) // Get the position of the item
                     val itemCount = parent.adapter?.itemCount ?: 0
 
@@ -118,7 +113,6 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
         }
 
         /** Save Selected Language */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveSelectionIcon.setOnClickListener {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedRepeatOption.includedSaveSelect.root.setOnClickListener {
             if (isAdded){
                 lifecycleScope.launch {

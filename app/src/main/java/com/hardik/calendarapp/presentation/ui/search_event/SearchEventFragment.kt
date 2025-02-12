@@ -35,8 +35,6 @@ import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -73,14 +71,9 @@ class SearchEventFragment : Fragment() {
             adapter = eventAdapter
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-
-            //observeViewModelState()
-            setupUI()
-        }
+        setupUI()
 
         /** Search view for Event */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedSearchView.root.apply {
             if (isAdded){
                 // Set inactive background (null)
@@ -95,13 +88,7 @@ class SearchEventFragment : Fragment() {
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(
-                                resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), // Start margin
-                                0, // Top margin
-                                resources.getDimension(com.intuit.sdp.R.dimen._minus3sdp).toInt(), // End margin
-                                0 // Bottom margin
-                            )
-                            //resources.getDimension(com.intuit.sdp.R.dimen._6sdp).toInt(),
+                            setMargins(resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0, resources.getDimension(com.intuit.sdp.R.dimen._minus3sdp).toInt(), 0 )
                             width = ViewGroup.LayoutParams.MATCH_PARENT
                             height = ViewGroup.LayoutParams.MATCH_PARENT
                         }
@@ -110,12 +97,7 @@ class SearchEventFragment : Fragment() {
 
                         // Refocus the SearchView if it loses focus
                         (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                            setMargins(
-                                0, // Start margin
-                                0, // Top margin
-                                0, // End margin
-                                0  // Bottom margin
-                            )
+                            setMargins(0, 0, 0, 0)
                             width = ViewGroup.LayoutParams.WRAP_CONTENT
                             height = ViewGroup.LayoutParams.WRAP_CONTENT
                         }
@@ -163,7 +145,6 @@ class SearchEventFragment : Fragment() {
         }
 
         /** Back to current Event */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon.setOnClickListener { scrollEventIndexAtCurrentDate() }
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root.setOnClickListener { scrollEventIndexAtCurrentDate() }
     }
 
@@ -224,21 +205,6 @@ class SearchEventFragment : Fragment() {
     private fun observeViewModelState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
-                /*launch {
-                    viewModel.firstDayOfTheWeek.collectLatest { firstDay->
-                        when(firstDay){
-                            "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-                            "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-                            "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-                        }
-                    }
-                }
-
-                launch {
-                    viewModel.allEventsState.collectLatest {dataState ->
-                       handleDataState(dataState)
-                    }
-                }*/
                 combine(viewModel.firstDayOfTheWeek, viewModel.allEventsState) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
@@ -257,7 +223,6 @@ class SearchEventFragment : Fragment() {
         if (dataState.isLoading) {
             // Show loading indicator
             binding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-            //binding.rvEvent.visibility = View.VISIBLE
             binding.tvNotify.visibility = View.GONE
 
         } else if (dataState.error.isNotEmpty()) {
@@ -273,7 +238,6 @@ class SearchEventFragment : Fragment() {
             // Update UI with the user list
             val data = dataState.data
 
-            //binding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
             binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
             viewModel.firstEventOfEachWeek.collectLatest {
@@ -341,14 +305,10 @@ class SearchEventFragment : Fragment() {
     private fun showHideBeckToCurrentEventIcon(wantToShow: Boolean) {
         (activity as MainActivity).apply {
             if(wantToShow){
-                //showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
                 showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root, duration = 0)
-                //showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }else{
-                //hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.backToCurrentEventIcon, duration = 0)
                 hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root, duration = 0)
-                //hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarTitle, duration = 0)
                 hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }
         }
@@ -362,7 +322,6 @@ class SearchEventFragment : Fragment() {
                 val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
                 layoutManager?.scrollToPositionWithOffset(viewModel.currentEventPos.value, 0)
                 eventAdapter.notifyDataSetChanged()
-                //binding.rvEvent.smoothScrollToPosition(viewModel.currentEventPos.value) // note: you want use also "scrollToPosition(pos)"
             }
         }
     }

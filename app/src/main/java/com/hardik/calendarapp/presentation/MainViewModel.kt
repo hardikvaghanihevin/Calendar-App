@@ -201,15 +201,11 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _isCursorDataCollected = MutableStateFlow<Boolean>(false)
-    val isCursorDataCollected: StateFlow<Boolean> = _isCursorDataCollected
-
 
     /**Observe [holidayApiState] after getting data from API*/
     private fun collectCursorEventsState(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _isCursorDataCollected.value = false
 
                 val cursorEvent = withContext(Dispatchers.IO) { getAllCursorEvents(context) }
 
@@ -218,10 +214,9 @@ class MainViewModel @Inject constructor(
                     val endDate = longToString(item.endTime)
                     val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
 
-                    val startTime = DateUtil.stringToLong(startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                    val endTime = DateUtil.stringToLong(endDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                    val startTime = DateUtil.stringToLong(startDate, DATE_FORMAT_yyyy_MM_dd)
+                    val endTime = DateUtil.stringToLong(endDate, DATE_FORMAT_yyyy_MM_dd)
 
-                    //val id = "${item.startTime} | ${item.title}"
                     Event(
                         id = item.id,
                         title = item.title,
@@ -252,8 +247,6 @@ class MainViewModel @Inject constructor(
             } catch (e: Exception) {
                 // Log or handle errors here
                 e.printStackTrace()
-            } finally {
-                _isCursorDataCollected.value = true
             }
         }
     }
@@ -287,8 +280,7 @@ class MainViewModel @Inject constructor(
                         getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
                             when (result) {
                                 is Resource.Success -> {
-                                    //_holidayApiState.value = DataState(data = result.data)
-                                    //collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
+
                                     if (result.data != null) {
                                         // Handle success case (trigger actions like logging, analytics, etc.)
                                         val calendarDetails = result.data
@@ -299,8 +291,8 @@ class MainViewModel @Inject constructor(
 
                                                 val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
-                                                val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                                                val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                                                val startTime = DateUtil.stringToLong(item.start.date, DATE_FORMAT_yyyy_MM_dd)
+                                                val endTime = DateUtil.stringToLong(item.end.date, DATE_FORMAT_yyyy_MM_dd)
 
                                                 Event(
                                                     id = item.id,
@@ -364,14 +356,11 @@ class MainViewModel @Inject constructor(
             try {
                 // Step 1: Cancel all existing alarms concurrently
                 // Cancel all alarms concurrently (Cancel all existing alarms first)
-                //val cancelJobs = events.map { event -> async(Dispatchers.IO) { eventRepository.cancelAlarm(event.id) } } // before UpsertEvents
                 val cancelJobs = coroutineScope { events.map { event -> async { withContext(Dispatchers.IO) { eventRepository.cancelAlarm(event.id) } } } } // before UpsertEvents
                 // Wait for all cancellation jobs to complete
                 cancelJobs.awaitAll()
 
-                //eventRepository.upsertEvents(events)
                 // Upsert events after all alarms are canceled
-
                 // Step 2: Update each event's nextTriggerTime
                 val updatedEvents = coroutineScope {
                     events.map { event ->
@@ -379,14 +368,6 @@ class MainViewModel @Inject constructor(
                             var nextTriggerTime = event.triggerTime
 
                             // Calculate nextTriggerTime if needed
-                            /*if (nextTriggerTime <= System.currentTimeMillis() && event.repeatOption != RepeatOption.NEVER) {
-                                val calculatedTriggerTime = calculateNextOccurrence(nextTriggerTime, event.repeatOption)
-                                if (calculatedTriggerTime != null) {
-                                    nextTriggerTime = calculatedTriggerTime
-                                }
-                            }*/
-
-
                             val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
                             val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
 
@@ -419,7 +400,6 @@ class MainViewModel @Inject constructor(
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
 
     fun getEventsByMonthOfYear(year: String, month: String){//todo: use in CalendarMonth1Fragment for onMonthSwipe or onMonthClick
-        //Log.e(TAG, "getEventsByMonthOfYear: $year, $month", )
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
@@ -476,7 +456,6 @@ class MainViewModel @Inject constructor(
     fun fetchEventsForMonthView(sDate: String){
         fetchEventJob?.cancel()
         fetchEventJob = viewModelScope.launch {
-            //Log.v(TAG, "fetchEventsForMonthView: $sDate", )
             val date: Triple<String, String, String> = stringToDateTriple(sDate, isZeroBased = false)
             if (sDate.last() == '0' && !sDate.endsWith("10") && !sDate.endsWith("20") && !sDate.endsWith("30")){//0,10,20,30
                 getEventsByMonthOfYear(year = date.first, month = date.second)

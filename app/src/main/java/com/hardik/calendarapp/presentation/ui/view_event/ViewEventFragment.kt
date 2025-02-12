@@ -81,10 +81,8 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         is24HourFormat = sharedPreferences.getBoolean("time_format", false)
 
-        //if (arguments?.containsKey(KEY_EVENT) == true){ populateEventData(event = argEvent) }
 
         /** Delete Event  */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.deleteEventIcon.apply {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
@@ -111,7 +109,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
 
         /** Edit Event  */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.saveEventIcon.apply {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){

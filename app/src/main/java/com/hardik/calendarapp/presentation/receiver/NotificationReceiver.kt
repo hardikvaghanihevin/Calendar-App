@@ -17,10 +17,8 @@ import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.entity.AlertOffset
-import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.RepeatOption
-import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.AlarmScheduler
@@ -117,10 +115,8 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun scheduleRepeatingNotification(context: Context, event: Event) {
         if (event.repeatOption != RepeatOption.NEVER && event.alertOffset != AlertOffset.NONE) { // Check if repeat option is not NEVER
 
-            //val nextTriggerTime = calculateTriggerTime(alertOffset = event.alertOffset, repeatOption = event.repeatOption, baseTimeInMillis = event.triggerTime)//System.currentTimeMillis() + event.repeatIntervalMillis
             val nextTriggerTime: Long
 
-            //val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
             val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
 
             nextTriggerTime = calculatedTriggerTime //- minus
@@ -138,17 +134,5 @@ class NotificationReceiver : BroadcastReceiver() {
         }else {
             //Never scheduling repeat for event: $event
         }
-    }
-
-    // Calculate the actual trigger time based on AlertOffset and RepeatOption
-    private fun calculateTriggerTime(alertOffset: AlertOffset, repeatOption: RepeatOption, baseTimeInMillis: Long): Long {
-        val offsetInMillis = AlertOffsetConverter.toMilliseconds(alertOffset) ?: return 0L // Return 0L if offsetInMillis is null
-        val repeatOptionInMillis = RepeatOptionConverter.toMilliseconds(repeatOption) ?: return 0L // Return 0L if repeatOptionInMillis is null
-
-        // Adjust base time based on repeat option
-        val adjustedBaseTime = baseTimeInMillis + repeatOptionInMillis
-
-        // Calculate the trigger time by subtracting the offset
-        return adjustedBaseTime - offsetInMillis
     }
 }

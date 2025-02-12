@@ -67,7 +67,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private val viewModel: MainViewModel by activityViewModels()
     private val eventAdapter by lazy { EventAdapter() }
     private var yearMonthPairList: List<Pair<Int, Int>> = emptyList()
-    //private var yearList: Map<Int, Map<Int, List<Int>>> = emptyMap()
     private val pageAdapter by lazy { CalendarMonthPageAdapter() }
 
     var year: Int = Calendar.getInstance().get(Calendar.YEAR)
@@ -77,16 +76,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     var bundle: Bundle? = null
 
     private lateinit var viewPager: ViewPager2
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            year = it.getInt(Constants.KEY_YEAR)
-//            month = it.getInt(Constants.KEY_MONTH)//0 base month 0-11 (jan-dec0
-//            day = it.getInt(Constants.KEY_DAY)
-//            selectedDate = if (day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
-//        }
-//    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCalendarMonth1Binding.inflate(inflater, container,false)
@@ -114,7 +103,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
 
         /** Back to current month */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedBackToDate.root.setOnClickListener {
             lifecycleScope.launch {
                 CoroutineScope(Dispatchers.Main).launch {
@@ -167,8 +155,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     override fun onDestroy() {
         lifecycleScope.coroutineContext.cancelChildren()
         super.onDestroy()
-
-        //Log.e(TAG, "onDestroy: ", )
         // reset date for drawer navigation option 'month'
         val resetDate = "${DateUtil.getCurrentYear()}-${DateUtil.getCurrentMonth()}-${0}"
         viewModel.updateMonthViewDate(monthViewDate = resetDate)
@@ -179,7 +165,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         val (y, m) = reverseYearMonth(viewModel.tvMonthTitle.value) ?: Pair(-1, -1)
         if (y != -1 && m != -1){
             val resetDate = "${y}-${m}-${0}"
-            //Log.i(TAG, "onDestroyView: $y- $m", )
             viewModel.updateMonthViewDate(monthViewDate = resetDate)
         }
         _binding = null
@@ -274,57 +259,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                /*launch() {
-                    viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
-                        viewModel.firstDayOfTheWeek.collectLatest { firstDay->
-                            pageAdapter.updateFirstDayOfTheWeek(firstDay)
-                            when(firstDay){
-                                "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-                                "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-                                "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-                            }
-
-                        }
-                    }
-                }
-
-                launch() {
-                    viewModel.monthlyEventsState.collectLatest { dataState ->
-
-                        if (dataState.isLoading) {
-                            // Show loading indicator
-                            binding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-                            binding.rvEvent.visibility = View.VISIBLE
-                            binding.tvNotify.visibility = View.GONE
-
-                        } else if (dataState.error.isNotEmpty()) {
-                            // Show error message
-                            Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
-                            binding.includedProgressLayout.progressBar.visibility = View.GONE
-                            binding.rvEvent.visibility = View.VISIBLE
-                            binding.tvNotify.apply {
-                                text = dataState.error
-                                visibility = View.VISIBLE
-                            }
-
-
-                        } else {
-                            // Update UI with the user list
-                            val data = dataState.data
-                            binding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
-                            binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-
-                            viewModel.firstEventOfEachWeek.collectLatest {
-
-                                eventAdapter.apply {
-                                    updateData(data, it)
-                                    this.notifyDataSetChanged()
-                                }
-                                binding.includedProgressLayout.progressBar.visibility = View.GONE
-                            }
-                        }
-                    }
-                }*/
                 combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
@@ -358,7 +292,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             // Update UI with the user list
             val data = dataState.data
 
-            //binding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
             binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
             viewModel.firstEventOfEachWeek.collectLatest {
@@ -397,7 +330,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         year = date.first.toInt()
                         month = date.second.toInt()
                         day = date.third.toInt()
-                        //Log.i(TAG, "observeViewModelState: 1 $monthDate")
                     }
                 }
 
@@ -407,11 +339,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                 }
 
-//                launch(Dispatchers.IO) {
-//                    viewModel.yearList.collectLatest{
-//                        yearList = it
-//                    }
-//                }
                 launch() {
                     viewModel.firstDayOfTheWeek.collectLatest { firstDay->
                         pageAdapter.updateFirstDayOfTheWeek(firstDay)
@@ -459,7 +386,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             }
         }
 
-        //viewPager.adapter = pageAdapter
         pageAdapter.updateYearMonthPairList(yearMonthPairList)
         pageAdapter.updateEventsOfDate(_eventsOfDateMap)
         pageAdapter.setSelectedDate(selectedDate)
@@ -492,14 +418,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 // Retrieve year and month directly from yearMonthPairList
                 val (yr, mn) = yearMonthPairList[position]
 
-                //val tvMonthTitle = DateFormatSymbols().months[mn]+" " + yr
                 val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
 
                 Log.w(TAG, "onPageSelected: $tvMonthTitle", )
                 viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
 
                 viewModel.updateSelectedDate(selectedDate!!)
-                //viewModel.updateMonthViewDate("$year-$month-${0}")
 
                 selectedDate?.let {it:String ->
                     val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
