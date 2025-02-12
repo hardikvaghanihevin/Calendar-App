@@ -1326,13 +1326,13 @@ class MainActivity : AppCompatActivity() {
 
         if (event != null) {
             intent?.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
+            setIntent(Intent()) // Set intent
             navigateToViewEventFrag(event)
         }
     }
 
     //From coming Notification click
     private fun navigateToViewEventFrag(event: Event) {
-        Log.e(TAG, "navigateToViewEventFrag: ", )
         mainViewModel.setIsComingFromNotification(isComing = true)
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
