@@ -3,6 +3,7 @@ package com.hardik.calendarapp.presentation
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
@@ -37,6 +38,7 @@ import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import com.hardik.calendarapp.utillities.getAllCursorEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -60,6 +62,7 @@ import java.time.temporal.WeekFields
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -201,7 +204,6 @@ class MainViewModel @Inject constructor(
     private val _isCursorDataCollected = MutableStateFlow<Boolean>(false)
     val isCursorDataCollected: StateFlow<Boolean> = _isCursorDataCollected
 
-    val allEvents : MutableList<Event> = mutableListOf()
 
     /**Observe [holidayApiState] after getting data from API*/
     private fun collectCursorEventsState(context: Context) {
@@ -257,80 +259,97 @@ class MainViewModel @Inject constructor(
     }
 
     /**Get holiday list by using API*/
+    val allEvents : MutableList<Event> = mutableListOf()
+    private var currentJob: Job? = null
+
+
     fun getHolidayCalendarData() {
-        viewModelScope.launch (Dispatchers.IO) {
+        // Cancel any existing job
+        currentJob?.cancel()
+        // Launch a new job
+        currentJob = viewModelScope.launch (Dispatchers.IO) {
 
-            //todo: delete all event which already in DB from 'REMOTE'
-            withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
+            try {
+                //todo: delete all event which already in DB from 'REMOTE'
+                withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
 
-            allEvents.clear()
+                allEvents.clear()
 
-            _isLoading.value = true
+                _isLoading.value = true
 
-            val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-            val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+                val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+                val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
 
-            // Create a list of deferred results for API calls
-            val apiCalls = countryCodes.map { countryCode ->
-                async(Dispatchers.IO) {
-                    // Call the API for each country and collect results
-                    getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
-                        when (result) {
-                            is Resource.Success -> {
-                                //_holidayApiState.value = DataState(data = result.data)
-                                //collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
-                                if (result.data != null) {
-                                    // Handle success case (trigger actions like logging, analytics, etc.)
-                                    val calendarDetails = result.data
+                // Create a list of deferred results for API calls
+                val apiCalls = countryCodes.map { countryCode ->
+                    async(Dispatchers.IO) {
+                        // Call the API for each country and collect results
+                        getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
+                            when (result) {
+                                is Resource.Success -> {
+                                    //_holidayApiState.value = DataState(data = result.data)
+                                    //collectHolidayApiState() // assuming this is a suspending function // fetched all events (from API)
+                                    if (result.data != null) {
+                                        // Handle success case (trigger actions like logging, analytics, etc.)
+                                        val calendarDetails = result.data
 
-                                    // Process events
-                                    val events: List<Event> = calendarDetails.items
-                                        .map { item ->
+                                        // Process events
+                                        val events: List<Event> = calendarDetails.items
+                                            .map { item ->
 
-                                            val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
+                                                val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
-                                            val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                                            val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                                                val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                                                val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
 
-                                            Event(
-                                                id = item.id,
-                                                title = item.summary,
-                                                description = item.description,
-                                                startDate = item.start.date,
-                                                endDate = item.end.date,
-                                                year = date.first,
-                                                month = date.second,
-                                                date = date.third,
-                                                startTime = startTime,
-                                                endTime = endTime,
-                                                isHoliday = true,
-                                                sourceType = SourceType.REMOTE,
-                                                repeatOption = RepeatOption.NEVER,//*
-                                                alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
-                                                customAlertOffset = null,//*
-                                                triggerTime = startTime, // todo: set triggerTime as start time
-                                            )
+                                                Event(
+                                                    id = item.id,
+                                                    title = item.summary,
+                                                    description = item.description,
+                                                    startDate = item.start.date,
+                                                    endDate = item.end.date,
+                                                    year = date.first,
+                                                    month = date.second,
+                                                    date = date.third,
+                                                    startTime = startTime,
+                                                    endTime = endTime,
+                                                    isHoliday = true,
+                                                    sourceType = SourceType.REMOTE,
+                                                    repeatOption = RepeatOption.NEVER,//*
+                                                    alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
+                                                    customAlertOffset = null,//*
+                                                    triggerTime = startTime, // todo: set triggerTime as start time
+                                                )
 
-                                        }
-                                    allEvents.addAll(events)
+                                            }
+                                        allEvents.addAll(events)
+                                    }
                                 }
+
+                                is Resource.Error -> { }
+
+                                is Resource.Loading -> { }
                             }
-
-                            is Resource.Error -> { }
-
-                            is Resource.Loading -> { }
                         }
                     }
                 }
-            }
 
-            // Await all API calls to finish
-            apiCalls.awaitAll()
+                // Await all API calls to finish
+                apiCalls.awaitAll()
 
-            withContext(Dispatchers.IO) {
-                insertEvents(allEvents)
+                withContext(Dispatchers.IO) {
+                    insertEvents(allEvents)
+                    _isLoading.value = false
+                    allEvents.clear()
+                }
+            }catch (e: CancellationException) {
+                // Handle coroutine cancellation cleanly if needed
+                Log.e(TAG, "getHolidayCalendarData: ", e)
+            } catch (e: Exception) {
+                // Handle other exceptions
+                Log.e(TAG, "getHolidayCalendarData: ", e )
+            } finally {
                 _isLoading.value = false
-                allEvents.clear()
             }
         }
     }
@@ -400,6 +419,7 @@ class MainViewModel @Inject constructor(
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
 
     fun getEventsByMonthOfYear(year: String, month: String){//todo: use in CalendarMonth1Fragment for onMonthSwipe or onMonthClick
+        //Log.e(TAG, "getEventsByMonthOfYear: $year, $month", )
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
@@ -452,12 +472,17 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private var fetchEventJob: Job? = null
     fun fetchEventsForMonthView(sDate: String){
-        val date: Triple<String, String, String> = stringToDateTriple(sDate, isZeroBased = false)
-        if (sDate.last() == '0' && !sDate.endsWith("10") && !sDate.endsWith("20") && !sDate.endsWith("30")){//0,10,20,30
-            getEventsByMonthOfYear(year = date.first, month = date.second)
-        }else{
-            getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+        fetchEventJob?.cancel()
+        fetchEventJob = viewModelScope.launch {
+            //Log.v(TAG, "fetchEventsForMonthView: $sDate", )
+            val date: Triple<String, String, String> = stringToDateTriple(sDate, isZeroBased = false)
+            if (sDate.last() == '0' && !sDate.endsWith("10") && !sDate.endsWith("20") && !sDate.endsWith("30")){//0,10,20,30
+                getEventsByMonthOfYear(year = date.first, month = date.second)
+            }else{
+                getEventsByDateOfMonthOfYear(year = date.first, month = date.second, date = date.third)
+            }
         }
     }//Use this for both combo base on date it-selves call
 
@@ -467,40 +492,45 @@ class MainViewModel @Inject constructor(
     val firstEventOfEachWeek: StateFlow<Map<String, Event>> = _firstEventOfEachWeek
 
     // Function to update events grouped by week
+    private var firstEventOfEachWeekJob: Job? = null
     private fun setFirstEventOfEachWeek(newData: List<Event>) {
-        val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
+        firstEventOfEachWeekJob?.cancel()
 
-        val firstDayOfWeek = when (_firstDayOfTheWeek.value) {
-            "Monday" -> DayOfWeek.MONDAY
-            "Saturday" -> DayOfWeek.SATURDAY
-            else -> DayOfWeek.SUNDAY
-        }
-        val minimalDays = when (firstDayOfWeek) {
-            DayOfWeek.MONDAY -> 4 // Monday week typically requires 4 days for the first week
-            DayOfWeek.SATURDAY -> 1 // More lenient for Saturday-based weeks
-            DayOfWeek.SUNDAY -> 1 // Common for Sunday-based weeks
-            else -> 1
-        }
+        firstEventOfEachWeekJob = viewModelScope.launch {
+            val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
 
-        val groupedByYearWeek = newData.groupBy { event ->
-            val localDate = LocalDate.parse(event.startDate, dateFormatter)
-            val weekField = WeekFields.of(firstDayOfWeek, minimalDays).weekOfWeekBasedYear()
-            val year = localDate.getYear()
-            val month = localDate.monthValue - 1  // Convert to 0-based month
-            val week = localDate.get(weekField)
-            "$year-$month-$week"  // Unique key for year-week combination
-        }
+            val firstDayOfWeek = when (_firstDayOfTheWeek.value) {
+                "Monday" -> DayOfWeek.MONDAY
+                "Saturday" -> DayOfWeek.SATURDAY
+                else -> DayOfWeek.SUNDAY
+            }
+            val minimalDays = when (firstDayOfWeek) {
+                DayOfWeek.MONDAY -> 4 // Monday week typically requires 4 days for the first week
+                DayOfWeek.SATURDAY -> 1 // More lenient for Saturday-based weeks
+                DayOfWeek.SUNDAY -> 1 // Common for Sunday-based weeks
+                else -> 1
+            }
 
-        val firstEvents = groupedByYearWeek.mapValues { (key, events) ->
-            events.minByOrNull { LocalDate.parse(it.startDate, dateFormatter) }!!
-        }
+            val groupedByYearWeek = newData.groupBy { event ->
+                val localDate = LocalDate.parse(event.startDate, dateFormatter)
+                val weekField = WeekFields.of(firstDayOfWeek, minimalDays).weekOfWeekBasedYear()
+                val year = localDate.getYear()
+                val month = localDate.monthValue - 1  // Convert to 0-based month
+                val week = localDate.get(weekField)
+                "$year-$month-$week"  // Unique key for year-week combination
+            }
 
-        // Update StateFlow with new values
-        _firstEventOfEachWeek.update { firstEvents.mapKeys { it.key } }
+            val firstEvents = groupedByYearWeek.mapValues { (key, events) ->
+                events.minByOrNull { LocalDate.parse(it.startDate, dateFormatter) }!!
+            }
+
+            // Update StateFlow with new values
+            _firstEventOfEachWeek.update { firstEvents.mapKeys { it.key } }
+        }
     }
 
     //----------------------------------------------------------------//
@@ -591,9 +621,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _monthViewDate = MutableStateFlow<String>("2000-0-0")
+    private val _monthViewDate = MutableStateFlow<String>("1999-0-0")
     val monthViewDate: StateFlow<String> = _monthViewDate
-    fun updateMonthViewDate(monthViewDate: String){
+    fun updateMonthViewDate(monthViewDate: String){//Todo: check here
+        //Log.v(TAG, "updateMonthViewDate: $monthViewDate", )
         viewModelScope.launch {
             _monthViewDate.value = monthViewDate
         }
@@ -601,7 +632,7 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    private val _selectedDate = MutableStateFlow<String>("2000-0-0")
+    private val _selectedDate = MutableStateFlow<String>("1999-0-0")
     val selectedDate: StateFlow<String> = _selectedDate
 
     fun updateSelectedDate(selectedDate: String){

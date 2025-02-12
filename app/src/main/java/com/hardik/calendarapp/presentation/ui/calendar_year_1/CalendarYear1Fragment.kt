@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
@@ -206,7 +207,12 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         lifecycleScope.launch(Dispatchers.Main) {
             val monthViewDate = "$year-$month-${0}"
             viewModel.updateMonthViewDate(monthViewDate)// update date and get that data for monthViewDate in monthView
-            findNavController().navigate(R.id.nav_month, null, navOptions)
+            val bundle = Bundle().apply {
+                putInt(Constants.KEY_YEAR, year)
+                putInt(Constants.KEY_MONTH, month)
+                putInt(Constants.KEY_DAY, 0)
+            }
+            findNavController().navigate(R.id.nav_month, bundle, navOptions)
         }
     }
 }

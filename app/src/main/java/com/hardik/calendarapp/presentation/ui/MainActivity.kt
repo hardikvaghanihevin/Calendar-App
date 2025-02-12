@@ -158,7 +158,6 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        Log.e(TAG, "onNewIntent: ", )
         setIntent(intent) // Update the current intent
         handleNotificationEventOpen(intent) // Handle the new intent
     }
@@ -1087,14 +1086,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedSearch.root.setOnClickListener {
-            navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
+            // todo: navigate to show all events
+            mainViewModel.getAllEvents()
+            navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions)
         }
         //binding.appBarMain.includedAppBarMainCustomToolbar.searchIcon.setOnClickListener {
 
         binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedSearch.root.setOnClickListener {
 
             // todo: navigate to show all events
-            navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions, null)
+            mainViewModel.getAllEvents()
+            navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions,)
 
 //            if (navController.currentDestination?.id == R.id.nav_select_country) {
 //                showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.searchView)
@@ -1201,7 +1203,13 @@ class MainActivity : AppCompatActivity() {
         when (item.id) {
             R.id.nav_year -> { //navController.navigate(R.id.nav_year,)
                 navigateToYearView() }
-            R.id.nav_month -> navController.navigate(R.id.nav_month)
+            R.id.nav_month -> {
+                lifecycleScope.launch{
+                    val resetDate = "${DateUtil.getCurrentYear()}-${DateUtil.getCurrentMonth()}-${0}"
+                    mainViewModel.updateMonthViewDate(monthViewDate = resetDate)
+                    navController.navigate(R.id.nav_month, null, navOptions)
+                }
+            }
             R.id.nav_select_country -> navController.navigate(
                 R.id.nav_select_country,
                 null,
@@ -1550,4 +1558,36 @@ class MainActivity : AppCompatActivity() {
     }
     // endregion
 
+    fun setToolbarTitleAndMenuSpacing(){
+//        binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+//            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+//                setMargins(0, 0, 0, 0)
+//                width = 0//ViewGroup.LayoutParams.WRAP_CONTENT
+//                height = ViewGroup.LayoutParams.MATCH_PARENT
+//            }
+//        }
+//        binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
+//            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+//                setMargins(0, 0, 0, 0)
+//                width = 0
+//                height = ViewGroup.LayoutParams.MATCH_PARENT
+//            }
+//        }
+    }
+    fun resetToolbarTitleAndMenuSpacing(){
+        binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
+            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
+                width = 0
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+        }
+        binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
+            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                setMargins(0, 0, 0, 0)
+                width = 0
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+        }
+    }
 }

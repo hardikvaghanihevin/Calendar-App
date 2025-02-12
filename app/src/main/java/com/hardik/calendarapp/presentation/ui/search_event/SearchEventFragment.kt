@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.FragmentSearchEventBinding
@@ -34,39 +35,49 @@ import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
-class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
+class SearchEventFragment : Fragment() {
     private val TAG = BASE_TAG + SearchEventFragment::class.simpleName
 
-    private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentSearchEventBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels()
-    private val eventAdapter: EventAdapter = EventAdapter()
+    private val eventAdapter by lazy { EventAdapter() }
     private var currentQuery: String? = null // Variable to store the current query for search
 
     var bundle: Bundle? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let { }
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? { return inflater.inflate(R.layout.fragment_search_event, container, false) }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        //return inflater.inflate(R.layout.fragment_search_event, container, false)
+        _binding = FragmentSearchEventBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentSearchEventBinding.bind(view)
 
-        viewModel.getAllEvents()
+        binding.rvEvent.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+            (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+            adapter = eventAdapter
+        }
 
-        setupUI()
+        CoroutineScope(Dispatchers.Main).launch {
+
+            //observeViewModelState()
+            setupUI()
+        }
 
         /** Search view for Event */
         //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.searchView.apply {
@@ -159,20 +170,13 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     private fun setupUI() {
         binding.apply {
             //region Event handlers
-            rvEvent.layoutManager = LinearLayoutManager(requireContext())
-            rvEvent.setHasFixedSize(true)
-            (rvEvent.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
             val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
+            //addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             // Add a custom ItemDecoration to handle padding/margin
             rvEvent.addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
+                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                     val position = parent.getChildAdapterPosition(view)
                     val itemCount = state.itemCount
 
@@ -196,9 +200,7 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
                 }
             })
 
-            rvEvent.adapter = eventAdapter
-
-            collectDataForAdapter()
+            observeViewModelState()
 
             eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event: Event ->
@@ -219,63 +221,69 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun collectDataForAdapter() {
-        lifecycleScope.launch(Dispatchers.Main) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+    private fun observeViewModelState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+                /*launch {
                     viewModel.firstDayOfTheWeek.collectLatest { firstDay->
                         when(firstDay){
                             "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
                             "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
                             "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
                         }
-
                     }
+                }
+
+                launch {
+                    viewModel.allEventsState.collectLatest {dataState ->
+                       handleDataState(dataState)
+                    }
+                }*/
+                combine(viewModel.firstDayOfTheWeek, viewModel.allEventsState) { firstDay, dataState ->
+                    Pair(firstDay, dataState)
+                }.collectLatest { (firstDay, dataState) ->
+                    when (firstDay) {
+                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
+                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
+                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
+                    }
+                    handleDataState(dataState)
                 }
             }
+        }
+    }
 
-            //delay(100)
-            viewModel.allEventsState.collectLatest {dataState ->
-                val safeBinding = _binding // Safely reference the binding
-                if (safeBinding != null) {
-                    if (dataState.isLoading) {
-                        // Show loading indicator
-                        safeBinding.includedProgressLayout.progressBar.visibility = View.VISIBLE
-                        safeBinding.tvNotify.visibility = View.GONE
+    private suspend fun handleDataState(dataState: DataListState<Event>) {
+        if (dataState.isLoading) {
+            // Show loading indicator
+            binding.includedProgressLayout.progressBar.visibility = View.VISIBLE
+            //binding.rvEvent.visibility = View.VISIBLE
+            binding.tvNotify.visibility = View.GONE
 
-                    } else if (dataState.error.isNotEmpty()) {
-                        // Show error message
-                        Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
-                        safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                        safeBinding.tvNotify.apply {
-                            text = dataState.error
-                            visibility = View.VISIBLE
-                        }
+        } else if (dataState.error.isNotEmpty()) {
+            // Show error message
+            Toast.makeText(requireContext(), dataState.error, Toast.LENGTH_SHORT).show()
+            binding.includedProgressLayout.progressBar.visibility = View.GONE
+            binding.tvNotify.apply {
+                text = dataState.error
+                visibility = View.VISIBLE
+            }
 
-                    } else {
-                        // Update UI with the user list
-                        val data = dataState.data
+        } else {
+            // Update UI with the user list
+            val data = dataState.data
 
-                        safeBinding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
-                        safeBinding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+            //binding.rvEvent.visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
+            binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
-                        viewModel.firstEventOfEachWeek.collectLatest {
+            viewModel.firstEventOfEachWeek.collectLatest {
 
-                            eventAdapter.apply {
-                                updateData(data, it)
-                                this.notifyDataSetChanged()
-                            }
-                            viewModel.findPositionOfEvent(data)
-                            // Scroll to position after data is loaded
-                            scrollEventIndexAtCurrentDate()
+                viewModel.findPositionOfEvent(data)
+                eventAdapter.apply { updateData(data, it) }
+                // Scroll to position after data is loaded
+                scrollEventIndexAtCurrentDate()
 
-                            safeBinding.includedProgressLayout.progressBar.visibility = View.GONE
-                        }
-
-                    }
-                }else {
-                    // observeViewModelState: Binding is null, skipping UI update.
-                }
+                binding.includedProgressLayout.progressBar.visibility = View.GONE
             }
         }
     }
@@ -318,7 +326,6 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     override fun onDestroyView() {
         super.onDestroyView()
         resetSearchView()
-        binding.rvEvent.adapter = null
         _binding = null
     }
 
@@ -350,11 +357,13 @@ class SearchEventFragment : Fragment(R.layout.fragment_search_event) {
     // Reach out the current date's/month's event
     @SuppressLint("NotifyDataSetChanged")
     private fun scrollEventIndexAtCurrentDate() {
-        binding.rvEvent.post {
-            val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
-            layoutManager?.scrollToPositionWithOffset(viewModel.currentEventPos.value, 0)
-            eventAdapter.notifyDataSetChanged()
-            //binding.rvEvent.smoothScrollToPosition(viewModel.currentEventPos.value) // note: you want use also "scrollToPosition(pos)"
+        if (view != null) {
+            binding.rvEvent.post {
+                val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
+                layoutManager?.scrollToPositionWithOffset(viewModel.currentEventPos.value, 0)
+                eventAdapter.notifyDataSetChanged()
+                //binding.rvEvent.smoothScrollToPosition(viewModel.currentEventPos.value) // note: you want use also "scrollToPosition(pos)"
+            }
         }
     }
 }

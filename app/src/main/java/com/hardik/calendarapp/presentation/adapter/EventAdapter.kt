@@ -28,6 +28,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -58,64 +59,75 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newData: List<Event>, fEEW: Map<String, Event>) {
+    suspend fun updateData(newData: List<Event>, fEEW: Map<String, Event>) {
         latestData = newData to fEEW
+        Log.e(TAG, "updateData: ${newData.size} , ${fEEW.size}", )
 
-        updateJob?.cancel()
-        updateJob = CoroutineScope(Dispatchers.Main).launch {
-//            updateMutex.withLock { // Ensure sequential processing
-            val (finalNewData, finalFEEW) = latestData ?: return@launch
-            updateFirstEventOfWeek(fEEW = finalFEEW)
+        updateMutex.withLock { // Ensure sequential processing
+            updateJob?.cancel()
+            updateJob = CoroutineScope(Dispatchers.Main).launch {
+                val (finalNewData, finalFEEW) = latestData ?: return@launch
+                updateFirstEventOfWeek(fEEW = finalFEEW)
 
-            // Create copies of the lists *before* starting DiffUtil
-            val oldListCopy = originalList.toList() // Important: Create a copy
-            val newListCopy = finalNewData.toList()     // Important: Create a copy
+                // Create copies of the lists *before* starting DiffUtil
+                val oldListCopy = originalList.toList() // Important: Create a copy
+                val newListCopy = finalNewData.toList()     // Important: Create a copy
 
-            withContext(Dispatchers.Default) {
-                val diffCallback = object : DiffUtil.Callback() {
-                    override fun getOldListSize() = oldListCopy.size // Use the copy
-                    override fun getNewListSize() = newListCopy.size // Use the copy
+                withContext(Dispatchers.Default) {
+                    val diffCallback = object : DiffUtil.Callback() {
+                        override fun getOldListSize() = oldListCopy.size // Use the copy
+                        override fun getNewListSize() = newListCopy.size // Use the copy
 
-                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
-                        return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
+                        override fun areItemsTheSame(
+                            oldItemPosition: Int,
+                            newItemPosition: Int
+                        ): Boolean {
+                            if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
+                            return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id
+                        }
+
+                        override fun areContentsTheSame(
+                            oldItemPosition: Int,
+                            newItemPosition: Int
+                        ): Boolean {
+                            if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
+                            // Compare all properties to check if the contents are the same
+                            return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id &&
+                                    oldListCopy[oldItemPosition].title == newListCopy[newItemPosition].title &&
+                                    oldListCopy[oldItemPosition].startTime == newListCopy[newItemPosition].startTime &&
+                                    oldListCopy[oldItemPosition].endTime == newListCopy[newItemPosition].endTime &&
+                                    oldListCopy[oldItemPosition].startDate == newListCopy[newItemPosition].startDate &&
+                                    oldListCopy[oldItemPosition].endDate == newListCopy[newItemPosition].endDate &&
+                                    oldListCopy[oldItemPosition].year == newListCopy[newItemPosition].year &&
+                                    oldListCopy[oldItemPosition].month == newListCopy[newItemPosition].month &&
+                                    oldListCopy[oldItemPosition].date == newListCopy[newItemPosition].date &&
+                                    oldListCopy[oldItemPosition].isHoliday == newListCopy[newItemPosition].isHoliday &&
+                                    oldListCopy[oldItemPosition].eventType == newListCopy[newItemPosition].eventType &&
+                                    oldListCopy[oldItemPosition].sourceType == newListCopy[newItemPosition].sourceType &&
+                                    oldListCopy[oldItemPosition].description == newListCopy[newItemPosition].description &&
+                                    oldListCopy[oldItemPosition].repeatOption == newListCopy[newItemPosition].repeatOption &&
+                                    oldListCopy[oldItemPosition].alertOffset == newListCopy[newItemPosition].alertOffset &&
+                                    oldListCopy[oldItemPosition].customAlertOffset == newListCopy[newItemPosition].customAlertOffset &&
+                                    oldListCopy[oldItemPosition].triggerTime == newListCopy[newItemPosition].triggerTime
+
+                        }
+
                     }
 
-                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        if (oldItemPosition >= oldListCopy.size || newItemPosition >= newListCopy.size) return false
-                        // Compare all properties to check if the contents are the same
-                        return oldListCopy[oldItemPosition].id == newListCopy[newItemPosition].id &&
-                                oldListCopy[oldItemPosition].title == newListCopy[newItemPosition].title &&
-                                oldListCopy[oldItemPosition].startTime == newListCopy[newItemPosition].startTime &&
-                                oldListCopy[oldItemPosition].endTime == newListCopy[newItemPosition].endTime &&
-                                oldListCopy[oldItemPosition].startDate == newListCopy[newItemPosition].startDate &&
-                                oldListCopy[oldItemPosition].endDate == newListCopy[newItemPosition].endDate &&
-                                oldListCopy[oldItemPosition].year == newListCopy[newItemPosition].year &&
-                                oldListCopy[oldItemPosition].month == newListCopy[newItemPosition].month &&
-                                oldListCopy[oldItemPosition].date == newListCopy[newItemPosition].date &&
-                                oldListCopy[oldItemPosition].isHoliday == newListCopy[newItemPosition].isHoliday &&
-                                oldListCopy[oldItemPosition].eventType == newListCopy[newItemPosition].eventType &&
-                                oldListCopy[oldItemPosition].sourceType == newListCopy[newItemPosition].sourceType &&
-                                oldListCopy[oldItemPosition].description == newListCopy[newItemPosition].description &&
-                                oldListCopy[oldItemPosition].repeatOption == newListCopy[newItemPosition].repeatOption &&
-                                oldListCopy[oldItemPosition].alertOffset == newListCopy[newItemPosition].alertOffset &&
-                                oldListCopy[oldItemPosition].customAlertOffset == newListCopy[newItemPosition].customAlertOffset &&
-                                oldListCopy[oldItemPosition].triggerTime == newListCopy[newItemPosition].triggerTime
+                    val diffResult = DiffUtil.calculateDiff(diffCallback)
 
+                    withContext(Dispatchers.Main) {
+                        originalList = newListCopy.toMutableList() // Update with the *new* list
+                        filteredList = originalList // Update filtered list
+                        notifyDataSetChanged()
+                        diffResult.dispatchUpdatesTo(this@EventAdapter)
                     }
-
                 }
 
-                val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-                withContext(Dispatchers.Main) {
-                    originalList = newListCopy.toMutableList() // Update with the *new* list
-                    filteredList = originalList // Update filtered list
-                    diffResult.dispatchUpdatesTo(this@EventAdapter)
-                }
             }
-//            }
         }
+
+
     }
 
     var weekStart = Calendar.SUNDAY

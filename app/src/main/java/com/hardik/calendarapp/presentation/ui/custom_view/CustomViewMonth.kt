@@ -113,6 +113,8 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
 
     fun weekStart(weekStart: WeekStart){
         this.weekStart = weekStart
+        invalidate()
+        requestLayout()
     }
 
     //endregion

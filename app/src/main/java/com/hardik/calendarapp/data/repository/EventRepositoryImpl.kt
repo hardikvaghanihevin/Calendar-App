@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
@@ -35,7 +34,6 @@ class EventRepositoryImpl @Inject constructor(
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override suspend fun upsertEvent(event: Event) {
-        Log.e(TAG, "upsertEvent: $event", )
         eventDao.upsertEvent(event)
         scheduleAlarm(event)       // Set a new alarm for this event
     }

@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.R
@@ -250,7 +249,7 @@ class NewEventViewModel @Inject constructor(
         )
 
         // Get the latest trigger time value
-        val getTriggerTime = getTriggerTime(alertOffset.value, startTime.value, startDate.value)
+        val getTriggerTime = getTriggerTime(alertOffset.value, startTime.value, startDate.value, isAllDay.value)
         
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
@@ -276,13 +275,12 @@ class NewEventViewModel @Inject constructor(
         return EVENT_INSERT_SUCCESSFULLY.takeIf { id == null } ?: EVENT_UPDATE_SUCCESSFULLY// Event inserted/update successfully
     }
 
-    private fun getTriggerTime(alert: AlertOffset, startTime: Long, startDate: Long): Long {
-        val dateLong = separateDateTime(startDate)
-        val timeLong = separateDateTime(startTime)
+    private fun getTriggerTime(alert: AlertOffset, startTime: Long, startDate: Long, isAllDay: Boolean): Long {
 
-        val triggerTime = mergeDateAndTime(dateLong.first, timeLong.second)
-        Log.w(TAG, "getTriggerTime: $triggerTime", )
-        return triggerTime - (AlertOffsetConverter.toMilliseconds(alert) ?: 0L)
+        val timeStamp = startDate.takeIf { isAllDay } ?: mergeDateAndTime(startDate, separateDateTime(startTime).second)
+        val triggerTime = timeStamp - (AlertOffsetConverter.toMilliseconds(alert) ?: 0L)
+        // TodO: Log.w(TAG, "getTriggerTime: $triggerTime", )
+        return triggerTime
     }
 
     fun resetEventState() {

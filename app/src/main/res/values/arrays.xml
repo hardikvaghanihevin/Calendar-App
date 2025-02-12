@@ -1,5 +1,19 @@
 <resources>
 
+    <string-array name="months">
+        <item name="jan">@string/jan</item>
+        <item name="fab">@string/fab</item>
+        <item name="mar">@string/mar</item>
+        <item name="apr">@string/apr</item>
+        <item name="may">@string/may</item>
+        <item name="jun">@string/jun</item>
+        <item name="jul">@string/jul</item>
+        <item name="aug">@string/aug</item>
+        <item name="sep">@string/sep</item>
+        <item name="oct">@string/oct</item>
+        <item name="nov">@string/nov</item>
+        <item name="dec">@string/dec</item>
+    </string-array>
     <!-- week day full or short -->
     <string-array name="week_1">
         <item>@string/mon</item>
