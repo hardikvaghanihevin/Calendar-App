@@ -1510,6 +1510,7 @@ class MainActivity : AppCompatActivity() {
 
         if (event != null) {
             intent?.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
+            setIntent(Intent()) // Set intent
             navigateToViewEventFrag(event)
         }
     }
