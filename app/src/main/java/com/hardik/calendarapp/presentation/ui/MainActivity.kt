@@ -1435,7 +1435,9 @@ class MainActivity : AppCompatActivity() {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                 } else if (navController.currentDestination?.id == R.id.nav_year) {
                     handleExit()
-                } else if ( navController.currentDestination?.id == R.id.alertOptionFragment ||
+                } else if (
+                    navController.currentDestination?.id == R.id.nav_month ||
+                    navController.currentDestination?.id == R.id.alertOptionFragment ||
                     navController.currentDestination?.id == R.id.repeatOptionFragment ||
                     navController.currentDestination?.id == R.id.newEventFragment ||
                     navController.currentDestination?.id == R.id.viewEventFragment ||
@@ -1454,7 +1456,9 @@ class MainActivity : AppCompatActivity() {
                         binding.drawerLayout.closeDrawer(GravityCompat.START)
                     } else if (navController.currentDestination?.id == R.id.nav_year) {
                         handleExit()
-                    } else if ( navController.currentDestination?.id == R.id.alertOptionFragment ||
+                    } else if (
+                        navController.currentDestination?.id == R.id.nav_month ||
+                        navController.currentDestination?.id == R.id.alertOptionFragment ||
                         navController.currentDestination?.id == R.id.repeatOptionFragment ||
                         navController.currentDestination?.id == R.id.newEventFragment ||
                         navController.currentDestination?.id == R.id.viewEventFragment ||

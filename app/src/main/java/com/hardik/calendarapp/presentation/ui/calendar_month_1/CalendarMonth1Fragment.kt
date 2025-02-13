@@ -161,6 +161,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     override fun onResume() {
         super.onResume()
+        pageAdapter.configureCustomView {
+            val d = it.selectedDate
+            val y = it.currentYear
+            val m = it.currentMonth
+
+            val date = d.takeIf { "2000-0-0" != it } ?: "$y-$m-${0}"
+            viewModel.fetchEventsForMonthView(date)
+        }
         requireActivity().invalidateOptionsMenu()
     }
 
