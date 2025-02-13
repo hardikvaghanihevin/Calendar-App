@@ -3,7 +3,6 @@ package com.hardik.calendarapp.presentation.ui.view_event
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -196,8 +195,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     override fun onDestroy() {
         lifecycleScope.coroutineContext.cancelChildren()
         //region Todo: for reset menu
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-            (this.layoutParams as ViewGroup.MarginLayoutParams).apply { setMargins(0, 0, 0, 0) } }
         DisplayUtil.showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu)
         //endregion
         super.onDestroy()

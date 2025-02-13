@@ -158,6 +158,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        Log.w(TAG, "onNewIntent: ", )
         setIntent(intent) // Update the current intent
         handleNotificationEventOpen(intent) // Handle the new intent
     }
@@ -1483,8 +1484,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
-    private fun handleNotificationEventOpen() {
+    private fun handleNotificationEventOpen(intent: Intent?) {
+        Log.e(TAG, "handleNotificationEventOpen: ", )
         // Handle intent if launched from a notification
+        if (intent == null || intent.extras == null) {
+            return // No intent to handle
+        }
+
         val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
         } else {
@@ -1492,24 +1498,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (event != null) {
-
-            // Clear the intent to prevent handling it again
-            intent.removeExtra(Constants.KEY_EVENT)
-
-            navigateToViewEventFrag(event)
-
-        }
-    }
-    private fun handleNotificationEventOpen(intent: Intent?) {
-        // Handle intent if launched from a notification
-        val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent?.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
-        } else {
-            intent?.getParcelableExtra(Constants.KEY_EVENT)
-        }
-
-        if (event != null) {
-            intent?.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
+            intent.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
             setIntent(Intent()) // Set intent
             navigateToViewEventFrag(event)
         }
@@ -1534,18 +1523,7 @@ class MainActivity : AppCompatActivity() {
             val visibility = if (event.sourceType in listOf(SourceType.CURSOR, SourceType.REMOTE)) View.GONE else View.VISIBLE
             if (visibility == View.GONE) {
                 hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
-                binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
-                    }
-                }
-
             } else {
-                binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        setMargins(0, 0, 0, 0)
-                    }
-                }
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
@@ -1558,37 +1536,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
     // endregion
-
-    fun setToolbarTitleAndMenuSpacing(){
-//        binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-//            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-//                setMargins(0, 0, 0, 0)
-//                width = 0//ViewGroup.LayoutParams.WRAP_CONTENT
-//                height = ViewGroup.LayoutParams.MATCH_PARENT
-//            }
-//        }
-//        binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
-//            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-//                setMargins(0, 0, 0, 0)
-//                width = 0
-//                height = ViewGroup.LayoutParams.MATCH_PARENT
-//            }
-//        }
-    }
-    fun resetToolbarTitleAndMenuSpacing(){
-        binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
-                width = 0
-                height = ViewGroup.LayoutParams.MATCH_PARENT
-            }
-        }
-        binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
-            (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                setMargins(0, 0, 0, 0)
-                width = 0
-                height = ViewGroup.LayoutParams.MATCH_PARENT
-            }
-        }
-    }
 }

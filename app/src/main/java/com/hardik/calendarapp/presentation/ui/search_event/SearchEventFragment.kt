@@ -299,18 +299,7 @@ class SearchEventFragment : Fragment() {
             val visibility = if (event.sourceType in listOf(SourceType.CURSOR, SourceType.REMOTE)) View.GONE else View.VISIBLE
             if (visibility == View.GONE) {
                 hideViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
-                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        setMargins(0, 0, resources.getDimension(R.dimen.menuItemHorizontalSpacing).toInt(), 0)
-                    }
-                }
-
             } else {
-                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.apply {
-                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        setMargins(0, 0, 0, 0)
-                    }
-                }
                 showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
                 showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.root, duration = 0)
                 showViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.manuItemViewEvent, duration = 0)
