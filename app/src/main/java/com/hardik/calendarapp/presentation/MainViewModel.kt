@@ -218,10 +218,14 @@ class MainViewModel @Inject constructor(
                     val endDate = longToString(item.endTime)
                     val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
 
-                    val startTime = DateUtil.stringToLong(startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                    val endTime = DateUtil.stringToLong(endDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                    val startTime = item.startTime
+                    val endTime = item.endTime//takeUnless { it == 0L } ?: DateUtil.stringToLong(endDate, DATE_FORMAT_yyyy_MM_dd)
 
                     //val id = "${item.startTime} | ${item.title}"
+
+                    if (item.title.contains("Google")){
+                        Log.i(TAG, "collectCursorEventsState: $startTime - $endTime - ${item.repeatOption} - ${item.alertOffset}")
+                    }
                     Event(
                         id = item.id,
                         title = item.title,
@@ -235,8 +239,8 @@ class MainViewModel @Inject constructor(
                         endTime = endTime,
                         isHoliday = false,
                         sourceType = SourceType.CURSOR,
-                        repeatOption = RepeatOption.NEVER,
-                        alertOffset = AlertOffset.AT_TIME_OF_EVENT,
+                        repeatOption = item.repeatOption, //RepeatOption.NEVER,
+                        alertOffset = item.alertOffset, //AlertOffset.AT_TIME_OF_EVENT,
                         customAlertOffset = null,
                         triggerTime = startTime,
                     )
@@ -299,8 +303,8 @@ class MainViewModel @Inject constructor(
 
                                                 val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
 
-                                                val startTime = DateUtil.stringToLong(item.start.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
-                                                val endTime = DateUtil.stringToLong(item.end.date, DateUtil.DATE_FORMAT_yyyy_MM_dd)
+                                                val startTime = DateUtil.stringToLong(item.start.date, DATE_FORMAT_yyyy_MM_dd)
+                                                val endTime = DateUtil.stringToLong(item.end.date, DATE_FORMAT_yyyy_MM_dd)
 
                                                 Event(
                                                     id = item.id,
