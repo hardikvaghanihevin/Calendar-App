@@ -1539,8 +1539,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Mange the navigation from the notification object stack of screen
-            val navOptions = NavOptions.Builder().setPopUpTo(navController.graph.startDestinationId, inclusive = true) // Clears entire back stack up to start destination
-                .setLaunchSingleTop(true) // Ensures no duplicate fragment instance
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.viewEventFragment, true) // Remove previous instances of this fragment
+                .setLaunchSingleTop(true) // Avoid duplicate navigation calls
                 .build()
 
             //region Todo : this is for title and menu items for ViewEventsFragment
