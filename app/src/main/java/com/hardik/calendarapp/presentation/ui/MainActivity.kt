@@ -1488,23 +1488,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
-    private fun handleNotificationEventOpen(intent: Intent?) {
+    private fun handleNotificationEventOpen(i: Intent?) {
         Log.e(TAG, "handleNotificationEventOpen: ", )
+
         // Handle intent if launched from a notification
-        if (intent == null || intent.extras == null) {
+        if (i == null || i.extras == null) {
             return // No intent to handle
         }
 
         val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
+            i.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
         } else {
-            intent.getParcelableExtra(Constants.KEY_EVENT)
+            i.getParcelableExtra(Constants.KEY_EVENT)
         }
 
         if (event != null) {
-            intent.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
-            setIntent(Intent()) // Set intent
-            navigateToViewEventFrag(event)
+
+
+            //val eventId = sharedPreferences.getStringSet("notifyEventId", mutableSetOf())
+            val eventTriggerTimeAndId = sharedPreferences.getStringSet("NotifyEventTriggerTimeAndId", mutableSetOf())
+
+            val isComingAgain :Boolean = (eventTriggerTimeAndId?.contains("${event.triggerTime}=>${event.id}") == true)
+
+            if (isComingAgain){
+                Log.e(TAG, "handleNotificationEventOpen: not open$event", )
+
+            }else{
+                Log.e(TAG, "handleNotificationEventOpen: $event", )
+                navigateToViewEventFrag(event)
+            }
+
+            sharedPreferences.edit().apply {
+
+                putStringSet("NotifyEventTriggerTimeAndId", eventTriggerTimeAndId?.toMutableSet()?.apply { add("${event.triggerTime}=>${event.id}") })
+
+                apply()
+            }
+
         }
     }
 

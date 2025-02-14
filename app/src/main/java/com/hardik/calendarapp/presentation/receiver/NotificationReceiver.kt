@@ -75,7 +75,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // Intent to open MainActivity with the event data
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(Constants.KEY_EVENT, event)
         }
 
