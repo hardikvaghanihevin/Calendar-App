@@ -81,6 +81,17 @@ object RepeatOptionConverter {
             RepeatOption.YEARLY -> 365 * 24 * 60 * 60 * 1000L // 1 year (approximation) in milliseconds
         }
     }
+
+    fun parseRepeatRule(rrule: String?): RepeatOption {
+        if (rrule.isNullOrEmpty()) return RepeatOption.NEVER
+        return when {
+            rrule.contains("FREQ=DAILY", ignoreCase = true) -> RepeatOption.DAILY
+            rrule.contains("FREQ=WEEKLY", ignoreCase = true) -> RepeatOption.WEEKLY
+            rrule.contains("FREQ=MONTHLY", ignoreCase = true) -> RepeatOption.MONTHLY
+            rrule.contains("FREQ=YEARLY", ignoreCase = true) -> RepeatOption.YEARLY
+            else -> RepeatOption.NEVER
+        }
+    }
 }
 
 
@@ -140,6 +151,27 @@ object AlertOffsetConverter {
             AlertOffset.BEFORE_1_HOUR -> HOUR_1
             AlertOffset.BEFORE_1_DAY -> DAY_1
             AlertOffset.BEFORE_CUSTOM_TIME -> CUSTOM_TIME
+        }
+    }
+
+
+
+    fun parseAlertOffset(minutesBefore: Int): AlertOffset {
+        return when (minutesBefore) {
+            0 -> AlertOffset.AT_TIME_OF_EVENT
+            5 -> AlertOffset.BEFORE_5_MINUTES
+            10 -> AlertOffset.BEFORE_10_MINUTES
+            15 -> AlertOffset.BEFORE_15_MINUTES
+            30 -> AlertOffset.BEFORE_30_MINUTES
+            60 -> AlertOffset.BEFORE_1_HOUR
+            1440 -> AlertOffset.BEFORE_1_DAY // 1440 minutes = 1 day
+            else -> {
+                if (minutesBefore > 0) {
+                    AlertOffset.BEFORE_CUSTOM_TIME.also { setCustomTime(minutesBefore * 60 * 1000L) }
+                } else {
+                    AlertOffset.NONE
+                }
+            }
         }
     }
 

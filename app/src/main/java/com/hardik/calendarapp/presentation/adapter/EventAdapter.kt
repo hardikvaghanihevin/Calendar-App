@@ -2,7 +2,6 @@ package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -150,7 +149,7 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
             val previousEvent = if (position > 0) filteredList[position - 1] else null
             holder.bind(filteredList[position], previousEvent, position)
         } else {
-            Log.e(TAG, "Invalid position: $position")
+            //Log.e(TAG, "Invalid position: $position")
         }
 
     }

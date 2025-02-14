@@ -214,8 +214,8 @@ class MainViewModel @Inject constructor(
                     val endDate = longToString(item.endTime)
                     val date: Triple<String, String, String> = epochToDateTriple(item.startTime)
 
-                    val startTime = DateUtil.stringToLong(startDate, DATE_FORMAT_yyyy_MM_dd)
-                    val endTime = DateUtil.stringToLong(endDate, DATE_FORMAT_yyyy_MM_dd)
+                    val startTime = item.startTime
+                    val endTime = item.endTime.takeIf { it != 0L } ?: DateUtil.stringToLong(endDate, DATE_FORMAT_yyyy_MM_dd)
 
                     Event(
                         id = item.id,
@@ -230,8 +230,8 @@ class MainViewModel @Inject constructor(
                         endTime = endTime,
                         isHoliday = false,
                         sourceType = SourceType.CURSOR,
-                        repeatOption = RepeatOption.NEVER,
-                        alertOffset = AlertOffset.AT_TIME_OF_EVENT,
+                        repeatOption = item.repeatOption,
+                        alertOffset = item.alertOffset,
                         customAlertOffset = null,
                         triggerTime = startTime,
                     )
@@ -603,7 +603,6 @@ class MainViewModel @Inject constructor(
     private val _monthViewDate = MutableStateFlow<String>("1999-0-0")
     val monthViewDate: StateFlow<String> = _monthViewDate
     fun updateMonthViewDate(monthViewDate: String){//Todo: check here
-        //Log.v(TAG, "updateMonthViewDate: $monthViewDate", )
         viewModelScope.launch {
             _monthViewDate.value = monthViewDate
         }

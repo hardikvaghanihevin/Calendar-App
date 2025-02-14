@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -121,7 +120,6 @@ class NotificationReceiver : BroadcastReceiver() {
             nextTriggerTime = calculatedTriggerTime //- minus
                 ?: event.triggerTime //- minus
 
-            Log.w(TAG, "scheduleRepeatingNotification: $nextTriggerTime", )
             val updatedEvent = event.copy(triggerTime = nextTriggerTime)
             AlarmScheduler.updateAlarm(context, updatedEvent, isComingFromNotificationReceiver = true)
 

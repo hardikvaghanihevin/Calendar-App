@@ -1278,7 +1278,6 @@ class MainActivity : AppCompatActivity() {
                     ){
                     navController.popBackStack()
                 } else {
-                    Log.e(TAG, "handelBackPressed: ", )
                     navigateToYear()
                 }
             }
