@@ -58,7 +58,7 @@
             android:windowSoftInputMode="adjustNothing|stateHidden"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
+            android:excludeFromRecents="false"
             tools:ignore="LockedOrientationActivity"/><!--adjustResize \ adjustNothing-->
         <receiver
             android:name=".presentation.receiver.NotificationReceiver"

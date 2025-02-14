@@ -1331,7 +1331,23 @@ class MainActivity : AppCompatActivity() {
         if (event != null) {
             intent?.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
             setIntent(Intent()) // Set intent
-            navigateToViewEventFrag(event)
+
+            val eventTriggerTimeAndId = sharedPreferences.getStringSet("NotifyEventTriggerTimeAndId", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+            val maxStoredEvents = 100 // Set your preferred limit
+
+            // Limit stored events to `maxStoredEvents`
+            if (eventTriggerTimeAndId.size >= maxStoredEvents) {
+                eventTriggerTimeAndId.remove(eventTriggerTimeAndId.first()) // Remove the oldest entry
+            }
+
+            val isComingAgain :Boolean = (eventTriggerTimeAndId.contains("${event.triggerTime}=>${event.id}"))
+
+            if (isComingAgain){ return }else{ navigateToViewEventFrag(event) }
+
+            sharedPreferences.edit().apply {
+                putStringSet("NotifyEventTriggerTimeAndId", eventTriggerTimeAndId.toMutableSet().apply { add("${event.triggerTime}=>${event.id}") })
+                apply()
+            }
         }
     }
 
@@ -1345,8 +1361,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Mange the navigation from the notification object stack of screen
-            val navOptions = NavOptions.Builder().setPopUpTo(navController.graph.startDestinationId, inclusive = true) // Clears entire back stack up to start destination
-                .setLaunchSingleTop(true) // Ensures no duplicate fragment instance
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.viewEventFragment, true) // Remove previous instances of this fragment
+                .setLaunchSingleTop(true) // Avoid duplicate navigation calls
                 .build()
 
             //region Todo : this is for title and menu items for ViewEventsFragment
