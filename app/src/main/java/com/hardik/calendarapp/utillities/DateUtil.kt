@@ -586,5 +586,19 @@ object DateUtil {
         return Pair(currentTime, endTime)
     }
 
+    /**
+     * Calculates the duration between two timestamps and returns it in HH:mm format.
+     *
+     * @param startTimestamp Start time in milliseconds (e.g., 1739699280000)
+     * @param endTimestamp End time in milliseconds (e.g., 1739799280000)
+     * @return Duration as a formatted string in HH:mm (e.g., "27:46")
+     */
+    fun getDuration(startTimestamp: Long, endTimestamp: Long): String {
+        val durationInMillis = endTimestamp - startTimestamp // Calculate the difference
+        val durationInSeconds = durationInMillis / 1000 // Convert milliseconds to seconds
+        val hours = durationInSeconds / 3600 // Get total hours
+        val minutes = (durationInSeconds % 3600) / 60 // Get remaining minutes
+        return String.format("%02d:%02d", hours, minutes) // Format as HH:mm
+    }
 }
 

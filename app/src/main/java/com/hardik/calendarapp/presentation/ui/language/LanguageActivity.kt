@@ -137,6 +137,7 @@ class LanguageActivity : AppCompatActivity() {
             selectedLanguage?.let {
                 lifecycleScope.launch {
                     saveLanguage(it)
+                    viewModel.getHolidayCalendarData()
                 }
             }
             navigateToMainActivity()

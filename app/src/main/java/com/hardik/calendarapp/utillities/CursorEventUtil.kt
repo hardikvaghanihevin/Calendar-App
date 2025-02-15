@@ -1,7 +1,9 @@
 package com.hardik.calendarapp.utillities
 
 import android.content.Context
+import android.database.ContentObserver
 import android.database.Cursor
+import android.os.Handler
 import android.provider.CalendarContract
 import android.util.Log
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -24,7 +26,8 @@ data class CursorEvent(
     val isAllDay: Boolean = false,
     val timeZone: String = TimeZone.getDefault().id,
     val repeatOption: RepeatOption = RepeatOption.NEVER,
-    val alertOffset: AlertOffset = AlertOffset.AT_TIME_OF_EVENT
+    val alertOffset: AlertOffset = AlertOffset.AT_TIME_OF_EVENT,
+    val customAlertOffset: Long? = null,
 )
 
 suspend fun getAllCursorEvents(context: Context): List<CursorEvent> =
@@ -69,7 +72,15 @@ suspend fun getAllCursorEvents(context: Context): List<CursorEvent> =
                     val repeatOption = RepeatOptionConverter.parseRepeatRule(rrule)
                     // Fetch reminder time separately
                     val reminderMinutesBefore = getReminderMinutes(context, id)
-                    val alertOffset = AlertOffsetConverter.parseAlertOffset(reminderMinutesBefore)
+                    val alertOffset: AlertOffset = AlertOffsetConverter.parseAlertOffset(reminderMinutesBefore)
+
+                    //val customAlertOffset = (reminderMinutesBefore * 60 * 1000L).takeIf { alertOffset == AlertOffset.BEFORE_CUSTOM_TIME}
+                    val customAlertOffset = if( alertOffset == AlertOffset.BEFORE_CUSTOM_TIME ) AlertOffsetConverter.getCustomTime() else null
+
+                    if(startTime > endTime){
+                        // Todo: if startTime is greater than endTime so skip that event - Log.i(BASE_TAG, "getAllCursorEvents: $endTime", )
+                        continue
+                    }
 
                     events.add(
                         CursorEvent(
@@ -82,6 +93,7 @@ suspend fun getAllCursorEvents(context: Context): List<CursorEvent> =
                             location = location,
                             repeatOption = repeatOption,
                             alertOffset = alertOffset,
+                            customAlertOffset = customAlertOffset,
                         )
                     )
                 } catch (e: Exception) {
@@ -126,5 +138,16 @@ private fun Cursor.getStringOrNull(columnName: String): String? =
  */
 private fun Cursor.getLongOrNull(columnName: String): Long? =
     getColumnIndex(columnName).takeIf { it >= 0 }?.let { getLong(it) }
+
+class CalendarContentObserver(
+    private val handler: Handler,
+    private val onChangeCallback: () -> Unit
+) : ContentObserver(handler) {
+
+    override fun onChange(selfChange: Boolean) {
+        super.onChange(selfChange)
+        onChangeCallback()
+    }
+}
 
 

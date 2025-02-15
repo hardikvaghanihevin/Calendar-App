@@ -22,7 +22,7 @@ interface EventDao {
     suspend fun deleteEventsBySourceType(sourceType: SourceType = SourceType.REMOTE) // For deleting all events with a specific source type
 
     @Query("SELECT * FROM events WHERE sourceType = :sourceType")
-    fun getHolidayEvents(sourceType: SourceType = SourceType.REMOTE): Flow<List<Event>> // Todo: 'cancelAllRemoteAlarms' before delete all remote events
+    fun getEventsBySourceType(sourceType: SourceType = SourceType.REMOTE): Flow<List<Event>> // Todo: 'cancelAllRemoteAlarms' before delete all remote events
     //endregion
 
 

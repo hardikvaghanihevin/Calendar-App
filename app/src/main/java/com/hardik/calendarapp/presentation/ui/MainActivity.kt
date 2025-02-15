@@ -1196,6 +1196,7 @@ class MainActivity : AppCompatActivity() {
                 this.requestBatteryOptimizationPermission()
             }
         }else{
+            Log.e(TAG, "initializeViewModelIfNeeded: ", )
             mainViewModel.getHolidayCalendarData()
         }
     }

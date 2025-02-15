@@ -45,9 +45,11 @@ class NotificationReceiver : BroadcastReceiver() {
             }
 
             if (event != null) {
-                scheduleRepeatingNotification(context , event)
+                CoroutineScope(Dispatchers.Default).launch {
+                    scheduleRepeatingNotification(context , event)
 
-                showNotification(context, event)
+                    showNotification(context, event)
+                }
             }
         }
     }
@@ -110,7 +112,7 @@ class NotificationReceiver : BroadcastReceiver() {
         notificationManager.notify(event.id.hashCode(), notification)
     }
 
-    private fun scheduleRepeatingNotification(context: Context, event: Event) {
+    private suspend fun scheduleRepeatingNotification(context: Context, event: Event) {
         if (event.repeatOption != RepeatOption.NEVER && event.alertOffset != AlertOffset.NONE) { // Check if repeat option is not NEVER
 
             val nextTriggerTime: Long

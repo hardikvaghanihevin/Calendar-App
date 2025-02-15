@@ -271,11 +271,12 @@ class NewEventViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    fun cancelAlarm(id: String){
+    fun cancelAlarm(event: Event){
         viewModelScope.launch {
-            eventRepository.cancelAlarm(id = id)// cancel when update single event from newEventFrag
+            eventRepository.cancelAlarm(event = event)// cancel when update single event from newEventFrag
         }
     }
+
     private val insertEventsMutex = Mutex()
     private fun insertEvent(event: Event) {
         viewModelScope.launch {

@@ -295,11 +295,23 @@ class SearchEventFragment : Fragment() {
     private fun showHideBeckToCurrentEventIcon(wantToShow: Boolean) {
         (activity as MainActivity).apply {
             if(wantToShow){
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        width = ViewGroup.LayoutParams.WRAP_CONTENT
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                }
                 showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root, duration = 0)
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }else{
                 hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root, duration = 0)
                 hideViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        width = ViewGroup.LayoutParams.MATCH_PARENT
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                }
             }
         }
     }

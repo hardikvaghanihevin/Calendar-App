@@ -25,6 +25,8 @@ import com.hardik.calendarapp.presentation.adapter.HORIZONTAL
 import com.hardik.calendarapp.presentation.adapter.VERTICAL
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
+import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
+import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -280,11 +282,23 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
     private fun showHideSaveSelectionIcon(wantToShow: Boolean) {
         (activity as MainActivity).apply {
             if(wantToShow){
-                DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
-                DisplayUtil.showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        width = ViewGroup.LayoutParams.WRAP_CONTENT
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                }
+                showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
+                showViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
             }else{
-                DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
-                DisplayUtil.hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
+                hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.includedSelectCountry.includedSaveSelect.root, duration = 0)
+                hideViewWithAnimation(this.binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle, duration = 0)
+                (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu.apply {
+                    (this.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        width = ViewGroup.LayoutParams.MATCH_PARENT
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                }
             }
         }
     }

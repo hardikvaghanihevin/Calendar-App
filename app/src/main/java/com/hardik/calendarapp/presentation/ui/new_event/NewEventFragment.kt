@@ -237,7 +237,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                         val msg: String = viewModel.run {
                             val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
 
-                            if (id != null) { viewModel.cancelAlarm(id) }
+                            if (id != null) { viewModel.cancelAlarm(event = argEvent) }
                             insertCustomEvent(context = requireContext(),id = id)
                         }
 

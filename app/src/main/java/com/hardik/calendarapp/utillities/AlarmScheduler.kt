@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -15,6 +16,8 @@ import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
 import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.REQUEST_CODE_CALENDAR_PERMISSIONS
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 object AlarmScheduler {
     private val TAG = BASE_TAG + AlarmScheduler::class.simpleName
@@ -50,16 +53,20 @@ object AlarmScheduler {
         return false
     }
 
+    private val updateAlarmMutex = Mutex()
     // Rest of the AlarmScheduler code
-    fun updateAlarm( context: Context, event: Event, isComingFromNotificationReceiver: Boolean = false ) {
-        ensureNotificationPermission(context) // Ensure permission before setting an alarm
-        cancelAlarm(context, event)
+    suspend fun updateAlarm( context: Context, event: Event, isComingFromNotificationReceiver: Boolean = false ) {
+        updateAlarmMutex.withLock {
+            Log.e(TAG, "updateAlarm: ", )
+            ensureNotificationPermission(context) // Ensure permission before setting an alarm
+            cancelAlarm(context, event)
 
-        if (event.alertOffset != AlertOffset.NONE){
-            // updateAlarm: alertOffset is valid
-            scheduleExactTime(context, event.triggerTime, event)
-        }else{
-            // do not set any alarm, because updateAlarm: alertOffset is NONE
+            if (event.alertOffset != AlertOffset.NONE){
+                // updateAlarm: alertOffset is valid
+                scheduleExactTime(context, event.triggerTime, event)
+            }else{
+                // do not set any alarm, because updateAlarm: alertOffset is NONE
+            }
         }
     }
 
@@ -67,7 +74,7 @@ object AlarmScheduler {
     // Schedule the notification for a specific time.
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleExactTime(context: Context, triggerTime: Long, event: Event) {
-        // todo: Log.e(TAG, "scheduleExactTime: Tr:$triggerTime, $event", )
+        Log.i(TAG, "scheduleExactTime: Tr:$triggerTime, $event", )
         // AlarmManager is null, cannot schedule notification.
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
 
@@ -75,7 +82,7 @@ object AlarmScheduler {
 
         // Skip scheduling if the time is already in the past
         if (triggerTime <= currentTime) {
-            // Todo: Log.w(TAG, "Cannot schedule past event: ${event.title} at $triggerTime")
+            Log.w(TAG, "Cannot schedule past event: ${event.title} at $triggerTime")
             return
         }
 
@@ -91,7 +98,7 @@ object AlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Todo: Log.i(TAG, "scheduleExactTime: ${event.title} ,trigger: $triggerTime, startTime: ${event.startTime}", )
+        Log.i(TAG, "scheduleExactTime: ${event.title} ,trigger: $triggerTime, startTime: ${event.startTime}", )
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -101,7 +108,8 @@ object AlarmScheduler {
     }
 
     // Cancel the alarm for a specific event.
-    private fun cancelAlarm(context: Context, event: Event) {
+    fun cancelAlarm(context: Context, event: Event) {
+        //Log.e(TAG, "cancelAlarm: ", )
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = "com.hardik.calendarapp.NOTIFY_EVENT"
         val pendingIntent = PendingIntent.getBroadcast(
