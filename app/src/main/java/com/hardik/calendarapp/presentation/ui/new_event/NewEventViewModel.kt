@@ -57,7 +57,7 @@ class NewEventViewModel @Inject constructor(
             _startDate.value = date.first
 
             //This is for current start time set when date change
-            updateStartTime( DateUtil.mergeDateAndTime(dateEpoch =  date.first, timeEpoch = _startTime.value) )
+            updateStartTime( mergeDateAndTime(dateEpoch =  date.first, timeEpoch = _startTime.value) )
         }
     }
 
@@ -70,7 +70,7 @@ class NewEventViewModel @Inject constructor(
             _endDate.value = date.second
 
             //This is for current start time set when date change
-            updateEndTime( DateUtil.mergeDateAndTime(dateEpoch =  date.second, timeEpoch = _endTime.value) )
+            updateEndTime( mergeDateAndTime(dateEpoch =  date.second, timeEpoch = _endTime.value) )
 
         }
     }
@@ -111,14 +111,16 @@ class NewEventViewModel @Inject constructor(
     val endTime: StateFlow<Long> = _endTime
 
     fun updateStartTime(startTime: Long) {
+        val date = DateUtil.getStartAndEndOfDay(startDate.value)//date.second is the endDate
         viewModelScope.launch {
-            _startTime.value = startTime
+            _startTime.value = mergeDateAndTime(dateEpoch =  date.first, timeEpoch = startTime)
         }
     }
 
     fun updateEndTime(endTime: Long) {
+        val date = DateUtil.getStartAndEndOfDay(endDate.value)//date.second is the endDate
         viewModelScope.launch {
-            _endTime.value = endTime
+            _endTime.value = mergeDateAndTime(dateEpoch =  date.second, timeEpoch = endTime)
         }
     }
 
