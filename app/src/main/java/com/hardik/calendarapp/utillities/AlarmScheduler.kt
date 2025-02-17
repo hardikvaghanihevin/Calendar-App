@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -57,7 +56,6 @@ object AlarmScheduler {
     // Rest of the AlarmScheduler code
     suspend fun updateAlarm( context: Context, event: Event, isComingFromNotificationReceiver: Boolean = false ) {
         updateAlarmMutex.withLock {
-            Log.e(TAG, "updateAlarm: ", )
             ensureNotificationPermission(context) // Ensure permission before setting an alarm
             cancelAlarm(context, event)
 
@@ -74,7 +72,6 @@ object AlarmScheduler {
     // Schedule the notification for a specific time.
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleExactTime(context: Context, triggerTime: Long, event: Event) {
-        Log.i(TAG, "scheduleExactTime: Tr:$triggerTime, $event", )
         // AlarmManager is null, cannot schedule notification.
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
 
@@ -82,7 +79,6 @@ object AlarmScheduler {
 
         // Skip scheduling if the time is already in the past
         if (triggerTime <= currentTime) {
-            Log.w(TAG, "Cannot schedule past event: ${event.title} at $triggerTime")
             return
         }
 
@@ -98,8 +94,6 @@ object AlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        Log.i(TAG, "scheduleExactTime: ${event.title} ,trigger: $triggerTime, startTime: ${event.startTime}", )
-
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             triggerTime,
@@ -109,7 +103,6 @@ object AlarmScheduler {
 
     // Cancel the alarm for a specific event.
     fun cancelAlarm(context: Context, event: Event) {
-        //Log.e(TAG, "cancelAlarm: ", )
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = "com.hardik.calendarapp.NOTIFY_EVENT"
         val pendingIntent = PendingIntent.getBroadcast(

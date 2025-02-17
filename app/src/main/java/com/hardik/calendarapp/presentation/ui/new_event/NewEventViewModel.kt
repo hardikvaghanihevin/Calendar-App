@@ -239,7 +239,6 @@ class NewEventViewModel @Inject constructor(
 
         val timeStamp = startDate.takeIf { isAllDay } ?: mergeDateAndTime(startDate, separateDateTime(startTime).second)
         val triggerTime = timeStamp - (AlertOffsetConverter.toMilliseconds(alert) ?: 0L)
-        // TodO: Log.w(TAG, "getTriggerTime: $triggerTime", )
         return triggerTime
     }
 
@@ -290,7 +289,6 @@ class NewEventViewModel @Inject constructor(
 
                                 nextTriggerTime = calculatedTriggerTime ?: event.triggerTime
 
-                                // Todo: Log.v(TAG, "insertEvent: final: $nextTriggerTime = ${event.startTime} - $minus | ctt: $calculatedTriggerTime", )
                                 event.copy(triggerTime = nextTriggerTime)
                             }.await() // Collect all updated events
                     }

@@ -37,6 +37,7 @@ import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -205,7 +206,7 @@ class SearchEventFragment : Fragment() {
     private fun observeViewModelState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
-                combine(viewModel.firstDayOfTheWeek, viewModel.allEventsState) { firstDay, dataState ->
+                combine(viewModel.firstDayOfTheWeek, viewModel.allEventsState.debounce(300)) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
                     when (firstDay) {

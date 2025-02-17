@@ -46,6 +46,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
             if (event != null) {
                 CoroutineScope(Dispatchers.Default).launch {
+
                     scheduleRepeatingNotification(context , event)
 
                     showNotification(context, event)

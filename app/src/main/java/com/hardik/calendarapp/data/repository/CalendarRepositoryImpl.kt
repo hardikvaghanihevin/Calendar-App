@@ -20,7 +20,6 @@ class CalendarRepositoryImpl @Inject constructor(context: Context) : CalendarRep
     private var eventListener: CalendarEventListener? = null
 
     private val calendarObserver = CalendarContentObserver(handler) {
-        //Log.d(TAG, "CalendarObserver - Calendar events changed!")
         eventListener?.onCalendarEventsChanged() // Listener ko notify karein
     }
 

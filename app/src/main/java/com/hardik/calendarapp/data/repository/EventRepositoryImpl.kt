@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
@@ -35,34 +34,12 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun upsertEvent(event: Event) {
         eventDao.upsertEvent(event)
-        scheduleAlarm(event)       // Set a new alarm for this event
+        setAlarm(event)       // Set a new alarm for this event
     }
 
     override suspend fun upsertEvents(events: List<Event>) {
-        Log.e(TAG, "upsertEvents: ", )
         eventDao.upsertEvents(events)
-
-        // Get the current date and the date 365 days later
-
-        val timeSlap: Pair<Long, Long> = DateUtil.getCurrentAndFutureRange(daysInFuture = 30)
-
-        // Use supervisorScope to handle independent coroutines
-        supervisorScope {
-
-            events.forEach { event:Event ->
-            // Launch a coroutine for each event
-                launch(Dispatchers.Default) {
-
-//                    if (event.title.contains("testg")){
-//                        Log.e(TAG, "upsertEvents: ${event.title} - ${event.startTime} - ${event.triggerTime}", ) //upsertEvents: testg - 1739746440000 - 1739746440000
-//                        Log.e(TAG, "upsertEvents: check ${event.triggerTime} = ${timeSlap.first} .. ${timeSlap.second} ", ) // psertEvents: check 1739746440000 = 1739785826140 .. 1742377826140
-//                    }
-                if (event.triggerTime in timeSlap.first..timeSlap.second) {
-                    scheduleAlarm(event) }
-                }
-
-            }//todo : schedule alarm if current year
-        }
+        scheduleAlarms(events)
     }
 
     override suspend fun deleteEvent(event: Event) {
@@ -78,15 +55,10 @@ class EventRepositoryImpl @Inject constructor(
         eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
     }
 
-    override suspend fun deleteEventsCursor(){
-        //Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
-        CoroutineScope(Dispatchers.IO).launch {
-            cancelAllCursorAlarms()
-        }.join()
-        eventDao.deleteEventsBySourceType(sourceType = SourceType.CURSOR)
+
+    override fun getRemoteEvents(): Flow<List<Event>> {
+        return eventDao.getRemoteEvents()
     }
-
-
 
     override fun getAllEvents(): Flow<List<Event>> {
         return eventDao.getAllEvents()
@@ -103,12 +75,30 @@ class EventRepositoryImpl @Inject constructor(
         return eventDao.getEventsByDateOfMonthOfTheYear(year = year, month = month, date = date)
      }
 
+    override suspend fun scheduleAlarms(events: List<Event>) {
+        // Get the current date and the date 365 days later
+
+        val timeSlap: Pair<Long, Long> = DateUtil.getCurrentAndFutureRange(daysInFuture = 30)
+
+        // Use supervisorScope to handle independent coroutines
+        supervisorScope {
+
+            events.forEach { event:Event ->
+                // Launch a coroutine for each event
+                launch(Dispatchers.Default) {
+
+                    if (event.triggerTime in timeSlap.first..timeSlap.second) {
+                        setAlarm(event)
+                    }
+                }
+
+            }//todo : schedule alarm if current year
+        }
+    }
 
     private val alarmScheduleMutex = Mutex()
-    private suspend fun scheduleAlarm(event: Event) {
-        Log.i(TAG, "scheduleAlarm: $event", )
+    private suspend fun setAlarm(event: Event) {
         if (!hasExactAlarmPermission()) {
-            Log.i(TAG, "scheduleAlarm: not permission", )
             // Exact alarm permission missing.
             requestExactAlarmPermission()//todo: here error occur on API 34 when event create( it has not permission to alarm manager)
         } else {
@@ -125,14 +115,6 @@ class EventRepositoryImpl @Inject constructor(
     private suspend fun cancelAllRemoteAlarms() {
         CoroutineScope(Dispatchers.IO).launch {
             eventDao.getEventsBySourceType().collectLatest {
-                it.forEach { event -> cancelAlarm(event) }
-            }
-        }
-    }
-
-    private suspend fun cancelAllCursorAlarms() {
-        CoroutineScope(Dispatchers.IO).launch {
-            eventDao.getEventsBySourceType(sourceType = SourceType.CURSOR).collectLatest {
                 it.forEach { event -> cancelAlarm(event) }
             }
         }

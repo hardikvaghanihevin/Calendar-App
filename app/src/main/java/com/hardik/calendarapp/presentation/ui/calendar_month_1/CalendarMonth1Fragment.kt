@@ -51,6 +51,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.util.Calendar
@@ -259,7 +260,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState) { firstDay, dataState ->
+                combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState.debounce(300)) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
                     when (firstDay) {

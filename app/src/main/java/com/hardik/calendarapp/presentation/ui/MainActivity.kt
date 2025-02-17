@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -1186,6 +1185,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModelIfNeeded() {
+        mainViewModel.getHolidayCalendarData()
         if (areCalendarPermissionsGranted()) {
             mainViewModel.initializeViewModel() // Call your ViewModel initialization function
             if (!isAutostartSet) {
@@ -1195,9 +1195,6 @@ class MainActivity : AppCompatActivity() {
             if (!this.isBatteryOptimizationPermissionGranted()){
                 this.requestBatteryOptimizationPermission()
             }
-        }else{
-            Log.e(TAG, "initializeViewModelIfNeeded: ", )
-            mainViewModel.getHolidayCalendarData()
         }
     }
 

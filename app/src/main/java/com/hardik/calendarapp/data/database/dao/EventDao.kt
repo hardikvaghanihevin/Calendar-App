@@ -27,6 +27,9 @@ interface EventDao {
 
 
     //region Todo: GetEvents for year, month, date
+    @Query("SELECT * FROM events WHERE sourceType = 'REMOTE'")
+    fun getRemoteEvents(): Flow<List<Event>>
+
     @Query("SELECT * FROM events e1 WHERE ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
     fun getAllEvents(): Flow<List<Event>> // Todo: For schedule event list
 

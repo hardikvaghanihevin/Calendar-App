@@ -9,12 +9,13 @@ interface EventRepository {
     suspend fun upsertEvents(events: List<Event>)
     suspend fun deleteEvent(event: Event)
     suspend fun deleteEventsHoliday()
-    suspend fun deleteEventsCursor()
 
+    fun getRemoteEvents(): Flow<List<Event>>
     fun getAllEvents(): Flow<List<Event>>
     fun getEventsBySourceType(sourceType: SourceType): Flow<List<Event>>
     fun getEventsByMonthOfTheYear(year: String, month: String): Flow<List<Event>>
     fun getEventsByDateOfMonthOfTheYear(year: String, month: String, date: String): Flow<List<Event>>
 
+    suspend fun scheduleAlarms(events: List<Event>)
     suspend fun cancelAlarm(event: Event)
 }
