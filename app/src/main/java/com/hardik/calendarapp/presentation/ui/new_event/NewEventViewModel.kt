@@ -281,7 +281,7 @@ class NewEventViewModel @Inject constructor(
 
                                 // Calculate nextTriggerTime if needed
                                 var alertOffsetUse :AlertOffset = event.alertOffset
-                                var minus: Long
+                                val minus: Long
                                 if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
                                     val customTimeStamp = event.customAlertOffset!!
                                     val isCustom = customTimeStamp.toInt() == 0
