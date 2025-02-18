@@ -10,6 +10,7 @@ import com.hardik.calendarapp.common.Constants.EVENT_INSERT_SUCCESSFULLY
 import com.hardik.calendarapp.common.Constants.EVENT_UPDATE_SUCCESSFULLY
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
+import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter.parseAlertOffset
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
@@ -17,6 +18,7 @@ import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
+import com.hardik.calendarapp.utillities.DateUtil.timestampToMinutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -278,7 +280,16 @@ class NewEventViewModel @Inject constructor(
                                 val nextTriggerTime: Long
 
                                 // Calculate nextTriggerTime if needed
-                                val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
+                                var alertOffsetUse :AlertOffset = event.alertOffset
+                                var minus: Long
+                                if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
+                                    val customTimeStamp = event.customAlertOffset!!
+                                    val isCustom = customTimeStamp.toInt() == 0
+                                    alertOffsetUse = AlertOffset.AT_TIME_OF_EVENT.takeIf { isCustom } ?: parseAlertOffset(timestampToMinutes(customTimeStamp))
+                                    minus = AlertOffsetConverter.toMilliseconds(alertOffsetUse) ?: 0L
+                                }else{
+                                    minus = AlertOffsetConverter.toMilliseconds(alertOffsetUse) ?: 0L
+                                }
                                 val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
 
                                 nextTriggerTime = if (calculatedTriggerTime != null) {
