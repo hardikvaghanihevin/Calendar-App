@@ -82,9 +82,12 @@ object AlarmScheduler {
             return
         }
 
+        val eventJson = GsonUtil.toJson(event)
+
         val intent = Intent(context, NotificationReceiver::class.java).apply {
             action = "com.hardik.calendarapp.NOTIFY_EVENT"
-            putExtra("event", event)
+
+            putExtra("eventJson", eventJson)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(

@@ -22,6 +22,7 @@ import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.AlarmScheduler
 import com.hardik.calendarapp.utillities.DateUtil
+import com.hardik.calendarapp.utillities.GsonUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,11 +39,10 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
 
-            val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra("event", Event::class.java)
-            } else {
-                intent.getParcelableExtra("event")
-            }
+            val eventJson = intent.getStringExtra("eventJson")
+            val event: Event? = eventJson?.let {
+                    GsonUtil.fromJson(it, Event::class.java) // Specify Event::class.java
+                }
 
             if (event != null) {
                 CoroutineScope(Dispatchers.Default).launch {

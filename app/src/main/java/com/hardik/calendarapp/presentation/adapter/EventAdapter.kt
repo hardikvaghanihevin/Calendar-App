@@ -243,6 +243,7 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                     val startTime = DateUtil.longToString(event.startTime, TIME_FORMAT_HH_mm)
                     val endTime = DateUtil.longToString(event.endTime, TIME_FORMAT_HH_mm)
                     if (startTime == "00:00" && endTime == "00:00") "-"
+                    else if (startTime == "00:00" && endTime == "23:59") ContextCompat.getString(binding.root.context, R.string.all_day)
                     else "$startTime (${DateUtil.getDuration(startTimestamp = event.startTime, endTimestamp = DateUtil.mergeDateAndTime(DateUtil.stringToLong(event.endDate), event.endTime))})" //- $endTime"
                 }
 
