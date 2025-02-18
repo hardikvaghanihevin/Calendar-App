@@ -386,7 +386,8 @@ object DateUtil {
      */
     fun isAllDay(startTime: Long, endTime: Long): Boolean {
         val durationInMillis = endTime - startTime
-        val result = durationInMillis in (24 * 60 * 60 * 1000L - 1000)..(24 * 60 * 60 * 1000L + 1000)
+        val oneDayMillis = 24 * 60 * 60 * 1000L // 86400000 ms
+        val result = durationInMillis in (oneDayMillis - 500)..(oneDayMillis + 500) // Reduced tolerance
         return result
     }
 

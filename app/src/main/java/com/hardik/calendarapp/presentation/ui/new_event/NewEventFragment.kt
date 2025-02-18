@@ -442,10 +442,17 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
 
+            val endTimeInMillis = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, hour)
+                set(Calendar.MINUTE, minute)
+                set(Calendar.SECOND, 59)
+                set(Calendar.MILLISECOND, 999)
+            }.timeInMillis
+
             if (isStartTime) {
                 viewModel.updateStartTime(selectedTimeInMillis)
             } else {
-                viewModel.updateEndTime(selectedTimeInMillis)
+                viewModel.updateEndTime(endTimeInMillis)
             }
 
 

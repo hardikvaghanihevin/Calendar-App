@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.R
@@ -16,7 +17,6 @@ import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
-import com.hardik.calendarapp.utillities.DateUtil.separateDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -210,9 +210,6 @@ class NewEventViewModel @Inject constructor(
             startDate.value
         )
 
-        // Get the latest trigger time value
-        val getTriggerTime = getTriggerTime(alertOffset.value, startTime.value, startDate.value, isAllDay.value)
-        
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
             title = title.value,
@@ -230,18 +227,11 @@ class NewEventViewModel @Inject constructor(
             repeatOption = repeatOption.value,
             alertOffset = alertOffset.value,
             customAlertOffset = customAlertOffset.value,
-            triggerTime = getTriggerTime, // todo: set triggerTime as start time
+            triggerTime = startTime.value, // todo: set triggerTime as start time
         )
 
         insertEvent(event)
         return EVENT_INSERT_SUCCESSFULLY.takeIf { id == null } ?: EVENT_UPDATE_SUCCESSFULLY// Event inserted/update successfully
-    }
-
-    private fun getTriggerTime(alert: AlertOffset, startTime: Long, startDate: Long, isAllDay: Boolean): Long {
-
-        val timeStamp = startDate.takeIf { isAllDay } ?: mergeDateAndTime(startDate, separateDateTime(startTime).second)
-        val triggerTime = timeStamp - (AlertOffsetConverter.toMilliseconds(alert) ?: 0L)
-        return triggerTime
     }
 
     fun resetEventState() {
@@ -287,10 +277,17 @@ class NewEventViewModel @Inject constructor(
                             async(Dispatchers.Default) {
                                 val nextTriggerTime: Long
 
+                                // Calculate nextTriggerTime if needed
+                                val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
                                 val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
 
-                                nextTriggerTime = calculatedTriggerTime ?: event.triggerTime
+                                nextTriggerTime = if (calculatedTriggerTime != null) {
+                                    calculatedTriggerTime - minus
+                                }else{
+                                    event.startTime - minus
+                                }
 
+                                Log.e(TAG, "insertEvent: TriggerTime: $nextTriggerTime", )
                                 event.copy(triggerTime = nextTriggerTime)
                             }.await() // Collect all updated events
                     }
