@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -116,6 +117,7 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
 
                     withContext(Dispatchers.Main) {
                         originalList = newListCopy.toMutableList() // Update with the *new* list
+                        setFirstEventOfEachWeek(originalList)
                         filteredList = originalList // Update filtered list
                         notifyDataSetChanged()
                         diffResult.dispatchUpdatesTo(this@EventAdapter)
@@ -147,7 +149,8 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
         // Pass the previous event to check if the current one is on the same date
         if (position in filteredList.indices) {
             val previousEvent = if (position > 0) filteredList[position - 1] else null
-            holder.bind(filteredList[position], previousEvent, position)
+            val isMonthView = firstDatesByMonthMap.size == 1
+            holder.bind(filteredList[position], previousEvent, position,isMonthView = isMonthView)
         } else {
             //Log.e(TAG, "Invalid position: $position")
         }
@@ -166,15 +169,17 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
         }
 
         @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
-        fun bind(event: Event, previousEvent: Event?, position: Int) {
+        fun bind(event: Event, previousEvent: Event?, position: Int, isMonthView: Boolean = false) {
             binding.apply {
                 // Check if the current event's month is different from the previous event
                 // ===== Month header code (unchanged) =====
                 val currentMonth = DateUtil.getMonthName(event.startDate, DATE_FORMAT_yyyy_MM_dd)
                 val previousMonth = previousEvent?.let { DateUtil.getMonthName(it.startDate, DATE_FORMAT_yyyy_MM_dd) }
 
-                // Show divider image when the month changes
-                if (previousMonth != null && previousMonth != currentMonth) {
+                    // Show divider image when the month changes
+                if (firstDatesByMonthMap.containsKey(event.startDate) && firstDatesByMonthMap.containsValue(
+                        Pair(event.id, true)
+                    ) && !isMonthView) {
                     cardItemEventImg.visibility = View.VISIBLE // Show the CardView
                     imgItemEventLayMonthTransitionImage.visibility = View.VISIBLE // Show the image
                     tvItemEventMonthName.text = "$currentMonth ${event.year}"
@@ -292,7 +297,52 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
         noDataCallback = callback
     }
 
+    private var firstDatesByMonthMap: MutableMap<String, Pair<String, Boolean>> = mutableMapOf()
+
+    @SuppressLint("NotifyDataSetChanged")
     fun setFirstEventOfEachWeek(newData: List<Event>) {
+        // Clear previous data
+        this.firstDatesByMonthMap.clear()
+
+        val tempMap: Map<String, Pair<String, Boolean>> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val sortedDates = newData.map {
+                // Parse startDate into LocalDate and associate it with the Event ID
+                LocalDate.parse(it.startDate) to it
+            }.sortedBy { it.first }  // Sort by the date (LocalDate)
+
+            sortedDates.groupBy { it.first.year to it.first.month } // Group by Year-Month
+                .map { (_, dates) ->
+                    // Get the first event of each group
+                    val firstEvent = dates.first().second // Access the Event object
+                    firstEvent.startDate to Pair(firstEvent.id, true) // Use Event ID and mark as true
+                }
+                .toMap() // Convert to a Map
+        } else {
+            val dateFormat = SimpleDateFormat(DATE_FORMAT_yyyy_MM_dd, Locale.getDefault())
+            val sortedDates = newData.map {
+                // Parse startDate and associate it with the Event ID
+                dateFormat.parse(it.startDate) to it
+            }.sortedBy { it.first } // Sort by the Date
+
+            sortedDates.groupBy { date ->
+                // Group by Year-Month in the format "yyyy-MM"
+                val calendar = Calendar.getInstance().apply { time = date.first }
+                "${calendar.get(Calendar.YEAR)}-${String.format("%02d", calendar.get(Calendar.MONTH) + 1)}"
+            }
+                .map { (_, dates) ->
+                    // Get the first event of each group
+                    val firstEvent = dates.first().second // Access the Event object
+                    dateFormat.format(firstEvent.startDate) to Pair(firstEvent.id, true) // Use Event ID and mark as true
+                }
+                .toMap() // Convert to a Map
+        }
+
+
+        // Update the mutable map
+        this.firstDatesByMonthMap.putAll(tempMap)
+        notifyDataSetChanged()
+    
+
         val dateFormatter: DateTimeFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
         } else {
