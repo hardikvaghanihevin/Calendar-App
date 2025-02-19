@@ -390,7 +390,8 @@ class MainViewModel @Inject constructor(
     private fun rescheduleAlert() {
         //todo : when notifications are deleted and updated then events are not scheduled so that's way set alert here which event(REMOTE) are stored in DB
         viewModelScope.launch {
-            eventRepository.getRemoteEvents().debounce(2000).distinctUntilChanged().collectLatest {events ->
+            eventRepository.getAllEvents()//.getRemoteEvents()
+                .debounce(2000).distinctUntilChanged().collectLatest {events ->
                 eventRepository.scheduleAlarms(events)
             }
         }

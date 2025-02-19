@@ -188,7 +188,13 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
             }
 
             btnDone.setOnClickListener {
-                val customTime = edtEventCustomAlertMinute.text.toString().toIntOrNull() ?: 0
+                val customTime = edtEventCustomAlertMinute.text.toString().toIntOrNull()
+
+                if (customTime == null) {
+                    Toast.makeText(requireContext(),
+                        getString(R.string.enter_the_minutes), Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
                 if (customTime in 0..59) { // Check if the value is in the valid range
                     // Update the adapter and ViewModel

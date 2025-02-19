@@ -179,5 +179,6 @@
     <string name="schedule_s_image_for_month">Розклад зображення на місяць</string>
     <string name="yearview_scrolling">Прокручування YearView</string>
     <string name="default_selected_1_country">За умовчанням вибрано 1 країну</string>
+    <string name="enter_the_minutes">Введіть хвилини</string>
 
 </resources>

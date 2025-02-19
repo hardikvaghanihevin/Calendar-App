@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -34,6 +37,7 @@ import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
+import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -85,6 +89,17 @@ class SearchEventFragment : Fragment() {
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
 
+                        // hide keyboard when empty searchView and pressed doneAction
+                        val editText = this.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+                        editText.setOnEditorActionListener { _, actionId, _ ->
+                            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                hideKeyboard(requireActivity())
+                                true
+                            } else {
+                                false
+                            }
+                        }
+
                         showHideBeckToCurrentEventIcon(wantToShow = false)
                         // Set active background
                         this.setBackgroundResource(R.drawable.item_background)
@@ -104,6 +119,7 @@ class SearchEventFragment : Fragment() {
                         }
 
                         DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
+                            Log.i(TAG, "onViewCreated: $isVisible")
                             if (isVisible) {
                                 showHideBeckToCurrentEventIcon(wantToShow = false)
                             } else {
@@ -155,6 +171,10 @@ class SearchEventFragment : Fragment() {
 
             val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
+//            rvEvent.setOnScrollChangeListener { _, _, _, _, _ ->
+//                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm.hideSoftInputFromWindow(rvEvent.windowToken, 0)
+//            }
             //addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             // Add a custom ItemDecoration to handle padding/margin
             rvEvent.addItemDecoration(object : RecyclerView.ItemDecoration() {

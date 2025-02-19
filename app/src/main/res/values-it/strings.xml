@@ -179,5 +179,6 @@
     <string name="schedule_s_image_for_month">Immagine della pianificazione per il mese</string>
     <string name="yearview_scrolling">Scorrimento vista anno</string>
     <string name="default_selected_1_country">Per impostazione predefinita è selezionato 1 paese</string>
+    <string name="enter_the_minutes">Inserisci i minuti</string>
 
 </resources>

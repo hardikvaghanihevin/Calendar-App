@@ -4,6 +4,8 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -192,6 +194,17 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 // Ensure it doesn't collapse when focus is lost
                 this.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
+
+                        // hide keyboard when empty searchView and pressed doneAction
+                        val editText = this.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+                        editText.setOnEditorActionListener { _, actionId, _ ->
+                            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                KeyboardUtils.hideKeyboard(requireActivity())
+                                true
+                            } else {
+                                false
+                            }
+                        }
 
                         showHideSaveSelectionIcon(wantToShow = false)
                         // Set active background

@@ -192,7 +192,7 @@ class NewEventViewModel @Inject constructor(
         }
 
         // Validate start and end times (if not an all-day event)
-        if (!isAllDay.value && startTime.value >= endTime.value) {
+        if (!isAllDay.value && startTime.value > endTime.value) {
             return context.resources.getString(R.string.start_time_cannot_be_after_end_time)
         }
 

@@ -13,9 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -101,7 +99,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
         }
 
-
         /** Back to current month */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedBackToDate.root.setOnClickListener {
             lifecycleScope.launch {
@@ -156,6 +153,10 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
             val date = d.takeIf { "2000-0-0" != it } ?: "$y-$m-${0}"
             viewModel.fetchEventsForMonthView(date)
+            it.getDateClickListener { day:String ->
+                viewModel.updateSelectedDate(day)
+                return@getDateClickListener viewModel.selectedDate.value
+            }
         }
         requireActivity().invalidateOptionsMenu()
     }
@@ -259,7 +260,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private fun observeViewModelState1() {
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState.debounce(300)) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
@@ -270,7 +271,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                     handleDataState(dataState)
                 }
-            }
+            //}
         }
     }
 
@@ -308,7 +309,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private fun observeViewModelState() {
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
+            //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
 
                 launch {
                     viewModel.selectedDate.collectLatest { selectedDate = it
@@ -353,6 +354,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
                 launch() {
                     viewModel.yearMonthPairList.collectLatest{
+                        //Log.e(TAG, "observeViewModelState: $it", )
                         yearMonthPairList = it
                     }
                 }
@@ -366,7 +368,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                 }
 
-            }
+            //}
         }
 
     }
@@ -417,7 +419,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 setNextPrevBtnColor()
 
                 // Retrieve year and month directly from yearMonthPairList
-                val (yr, mn) = yearMonthPairList[position]
+               /* val (yr, mn) = yearMonthPairList[position]
 
                 val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
 
@@ -433,9 +435,50 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     } else {
                         viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
                     }
-                } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
+                } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )*/
+
+                updateDataEventsAndMonthTitle(position)
+
             }
         })
+    }
+
+    private fun updateDataEventsAndMonthTitle(position: Int) {
+        viewPager.postDelayed({
+            val recyclerView = viewPager.getChildAt(0) as? RecyclerView
+            val viewHolder = recyclerView?.findViewHolderForAdapterPosition(position) as? CalendarMonthPageAdapter.MonthViewHolder
+
+            if (viewHolder != null) {
+                //Log.d(TAG, "✅ Found ViewHolder for position: $position")
+                viewHolder.binding.also {vh ->
+
+                    val yr = vh.customView.currentYear
+                    val mn = vh.customView.currentMonth
+                    val sdt = vh.customView.selectedDate
+
+                    //Log.e(TAG, "updateDataEventsAndMonthTitle: selectedDate==> $sdt = $selectedDate, ($yr, $mn, $dt)", )
+                    val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
+
+                    viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
+
+                    viewModel.updateSelectedDate(sdt!!)
+
+                    selectedDate?.let {it:String ->
+                        val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
+                        if (yr.toString() == date.first && mn.toString() == date.second){
+                            val findDateDataB1 = "$yr-$mn-${date.third}"
+                            viewModel.fetchEventsForMonthView(findDateDataB1)
+                        } else {
+                            viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
+                        }
+                    } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
+                }
+                // Access and modify views inside the ViewHolder here
+            } else {
+                //Log.e(TAG, "❌ ViewHolder not found for position: $position, will retry.")
+            }
+        }, 200) // Delay of 200ms to allow ViewPager2 to create the ViewHolder
+
     }
 
     //Set button color while reach last and first item of month

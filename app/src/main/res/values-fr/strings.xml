@@ -173,5 +173,6 @@
     <string name="schedule_s_image_for_month">Image du programme pour le mois</string>
     <string name="yearview_scrolling">Défilement de la vue annuelle</string>
     <string name="default_selected_1_country">1 pays sélectionné par défaut</string>
+    <string name="enter_the_minutes">Entrez les minutes</string>
 
 </resources>

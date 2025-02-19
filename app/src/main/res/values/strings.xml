@@ -188,6 +188,7 @@
     <string name="schedule_s_image_for_month">Schedule\'s image for month</string>
     <string name="yearview_scrolling">YearView scrolling</string>
     <string name="default_selected_1_country">Default selected 1 country</string>
+    <string name="enter_the_minutes">Enter the minutes</string>
 
 
 </resources>

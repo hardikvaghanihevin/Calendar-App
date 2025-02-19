@@ -179,6 +179,7 @@
     <string name="schedule_s_image_for_month">Planen Sie das Bild für den Monat</string>
     <string name="yearview_scrolling">Scrollen in der Jahresansicht</string>
     <string name="default_selected_1_country">Standardmäßig ist 1 Land ausgewählt</string>
+    <string name="enter_the_minutes">Geben Sie die Minuten ein</string>
 
 
 </resources>

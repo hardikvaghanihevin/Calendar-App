@@ -24,7 +24,7 @@ class CalendarMonthPageAdapter() :
     // Update year and month list
     @SuppressLint("NotifyDataSetChanged")
     fun updateYearMonthPairList(newYearMonthPairList: List<Pair<Int, Int>>) {
-        yearMonthPairList = newYearMonthPairList
+        this.yearMonthPairList = newYearMonthPairList
         notifyDataSetChanged()
     }
 
@@ -58,6 +58,7 @@ class CalendarMonthPageAdapter() :
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
         val (year, month) = yearMonthPairList[position]
+        //Log.v(TAG, "onBindViewHolder: $year - $month , pos:$position", )
 
         val weekStart = when(firstDayOfTheWeek){
             "Sunday" -> CustomViewMonth.WeekStart.SUNDAY
@@ -75,8 +76,6 @@ class CalendarMonthPageAdapter() :
                 enableTouchEventHandling(enable = true)
                 this.eventDateList = eventsOfDateMap
                 postInvalidate() // Redraw the custom view if needed
-
-                selectedDate
             }
             configureCustomViewCallback?.invoke(cvm) // Optional callback for further customization
         }

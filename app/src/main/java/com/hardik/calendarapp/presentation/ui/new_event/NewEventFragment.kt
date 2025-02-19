@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -40,7 +41,6 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_hh_mm_a
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
-import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -228,10 +228,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             text = resources.getString(R.string.action_save)
             setOnClickListener {
                 if( (activity as MainActivity).areCalendarPermissionsGranted() ){
-                    DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
-                        if (isVisible) {
-                        KeyboardUtils.hideKeyboard(requireActivity(), binding.root)
-                    } }
 
                     lifecycleScope.launch {
                         val msg: String = viewModel.run {
@@ -280,6 +276,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.e(TAG, "onDestroyView: ", )
+        KeyboardUtils.hideKeyboard(requireActivity())
         _binding = null
     }
 

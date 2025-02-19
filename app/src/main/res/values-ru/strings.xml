@@ -179,5 +179,6 @@
     <string name="schedule_s_image_for_month">Расписание изображения на месяц</string>
     <string name="yearview_scrolling">Прокрутка просмотра года</string>
     <string name="default_selected_1_country">По умолчанию выбрана 1 страна</string>
+    <string name="enter_the_minutes">Introduceți minutele</string>
 
 </resources>

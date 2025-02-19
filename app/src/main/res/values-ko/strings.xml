@@ -179,5 +179,6 @@
     <string name="schedule_s_image_for_month">월별 일정의 이미지</string>
     <string name="yearview_scrolling">YearView 스크롤</string>
     <string name="default_selected_1_country">기본적으로 국가 1개가 선택되었습니다.</string>
+    <string name="enter_the_minutes">분을 입력하세요</string>
 
 </resources>

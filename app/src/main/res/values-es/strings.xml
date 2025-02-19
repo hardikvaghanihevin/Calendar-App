@@ -179,5 +179,6 @@
     <string name="schedule_s_image_for_month">Imagen del horario para el mes</string>
     <string name="yearview_scrolling">Desplazamiento de YearView</string>
     <string name="default_selected_1_country">Seleccionado por defecto 1 país</string>
+    <string name="enter_the_minutes">Introduce los minutos</string>
 
 </resources>
