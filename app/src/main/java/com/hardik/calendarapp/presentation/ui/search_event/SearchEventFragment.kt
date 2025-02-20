@@ -36,7 +36,6 @@ import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
-import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.flow.collectLatest
@@ -139,7 +138,7 @@ class SearchEventFragment : Fragment() {
                             currentQuery = query // Save the query
                             eventAdapter.filter.filter(query)
 
-                            KeyboardUtils.hideKeyboard(this@SearchEventFragment.requireActivity())
+                            hideKeyboard(this@SearchEventFragment.requireActivity())
                         }
                         return true
                     }
@@ -171,10 +170,26 @@ class SearchEventFragment : Fragment() {
 
             val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
 
-//            rvEvent.setOnScrollChangeListener { _, _, _, _, _ ->
-//                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//                imm.hideSoftInputFromWindow(rvEvent.windowToken, 0)
-//            }
+            rvEvent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+
+                    when (newState) {
+                        RecyclerView.SCROLL_STATE_IDLE -> {
+                            // RecyclerView is NOT scrolling
+                        }
+                        RecyclerView.SCROLL_STATE_DRAGGING -> {
+                            // User is actively dragging the list
+                            hideKeyboard(requireActivity())
+                        }
+                        RecyclerView.SCROLL_STATE_SETTLING -> {
+                            // RecyclerView is settling after fling
+                            hideKeyboard(requireActivity())
+                        }
+                    }
+                }
+            })
+
             //addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             // Add a custom ItemDecoration to handle padding/margin
             rvEvent.addItemDecoration(object : RecyclerView.ItemDecoration() {

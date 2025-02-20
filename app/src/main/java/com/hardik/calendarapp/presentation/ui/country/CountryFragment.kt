@@ -29,7 +29,7 @@ import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
-import com.hardik.calendarapp.utillities.KeyboardUtils
+import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -92,6 +92,26 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
                 val margin = resources.getDimension(R.dimen.itemCountryVerticalSpacing_dev2).toInt()
+
+                countryRecView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+
+                        when (newState) {
+                            RecyclerView.SCROLL_STATE_IDLE -> {
+                                // RecyclerView is NOT scrolling
+                            }
+                            RecyclerView.SCROLL_STATE_DRAGGING -> {
+                                // User is actively dragging the list
+                                hideKeyboard(requireActivity())
+                            }
+                            RecyclerView.SCROLL_STATE_SETTLING -> {
+                                // RecyclerView is settling after fling
+                                hideKeyboard(requireActivity())
+                            }
+                        }
+                    }
+                })
 
                 addItemDecoration(object: RecyclerView.ItemDecoration() {
                     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
@@ -199,7 +219,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                         val editText = this.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
                         editText.setOnEditorActionListener { _, actionId, _ ->
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                KeyboardUtils.hideKeyboard(requireActivity())
+                                hideKeyboard(requireActivity())
                                 true
                             } else {
                                 false
@@ -245,7 +265,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                             // Perform search or filtering based on the query
                             currentQuery = query // Save the query
 
-                            KeyboardUtils.hideKeyboard(this@CountryFragment.requireActivity())
+                            hideKeyboard(this@CountryFragment.requireActivity())
                         }
                         return true
                     }
