@@ -38,6 +38,7 @@ import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -279,6 +280,7 @@ class SearchEventFragment : Fragment() {
             viewModel.firstEventOfEachWeek.collectLatest {
 
                 viewModel.findPositionOfEvent(data)
+                delay(300)
                 eventAdapter.apply { updateData(data, it) }
                 // Scroll to position after data is loaded
                 scrollEventIndexAtCurrentDate()

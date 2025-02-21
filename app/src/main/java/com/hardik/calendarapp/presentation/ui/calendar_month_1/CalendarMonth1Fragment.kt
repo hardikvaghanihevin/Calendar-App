@@ -318,6 +318,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
             viewModel.firstEventOfEachWeek.collectLatest {
 
+                delay(300)
                 eventAdapter.apply { updateData(data, it) }
 
 

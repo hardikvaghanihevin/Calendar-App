@@ -30,6 +30,7 @@ import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -80,6 +81,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                 }
 
                 val selectedCountryItems = countryItems.filter { it.isSelected } // Filter only selected items
+                delay(300)
                 selectedCountryAdapter.submitFullList(selectedCountryItems) // Use the filtered list
             }
         }
