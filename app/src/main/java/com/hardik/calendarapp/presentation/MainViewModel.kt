@@ -43,6 +43,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -50,6 +51,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -76,7 +79,7 @@ class MainViewModel @Inject constructor(
     private val getAllEventsUseCase : GetAllEventsUseCase,// For getting all events (indicator use)
     private val getEventsByMonthOfYear: GetEventsByMonthOfTheYear,
     private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfTheYear,
-    private val repository: CalendarRepositoryImpl,
+    private val calendarRepository: CalendarRepositoryImpl,
 ) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
@@ -150,10 +153,17 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
+    private val _deletedEvent = MutableStateFlow<Event?>(null)
+    val deletedEvent: Flow<Event> = _deletedEvent.filterNotNull().filter { it.sourceType == SourceType.CURSOR }//only cursor events here
     init {
         generateYearList(2000, 2100, isZeroBased = true)
         getAllEventsDateInMap()
         rescheduleAlert()
+        viewModelScope.launch {
+            eventRepository.deletedEventFlow.collect { deletedEvent ->
+                _deletedEvent.value = deletedEvent
+            }
+        }
     }
 
     private val _yearList = MutableStateFlow<Map<Int, Map<Int, List<Int>>>>(emptyMap())
@@ -207,16 +217,24 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    fun setRegisterContentObserverState(isRegister: Boolean){
+        if (isRegister) {
+            calendarRepository.registerContentObserver()
+        } else {
+            calendarRepository.unregisterContentObserver()
+        }
+    }
 
     /**Observe [holidayApiState] after getting data from API*/
     private fun collectCursorEventsState(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Register observer first
-                repository.registerContentObserver()
-                repository.setListener(object : CalendarEventListener {
+                setRegisterContentObserverState(isRegister = true)
+                calendarRepository.setListener(object : CalendarEventListener {
                     override fun onCalendarEventsChanged() {
                         _isLoading.value = true // while fetching data
+                        setRegisterContentObserverState(isRegister = false)
                         viewModelScope.launch {
                             fetchAndUpdateCursorEvents(context) // 🔥 Separate Function for Clarity
                         }
@@ -240,12 +258,14 @@ class MainViewModel @Inject constructor(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
+                    //eventRepository.deleteEventsCursor()
                     syncCursorEvents(context)
                 } catch (e: Exception) {
                     // Handle exceptions here
                     Log.e(TAG, "Error fetching and updating cursor events", e)
                 } finally {
                     _isLoading.value = false
+                    setRegisterContentObserverState(isRegister = true)
                 }
             }
         }
@@ -253,38 +273,41 @@ class MainViewModel @Inject constructor(
 
     private suspend fun syncCursorEvents(context: Context) {
         val cursorEvents = getUserCustomEvents(context).toEventList() // Fetch device calendar events
+//        insertEvents(cursorEvents, "${SourceType.CURSOR}")
         val storedEvents = eventRepository.getEventsBySourceType(SourceType.CURSOR).first() // Fetch stored events
 
         val cursorEventsMap = cursorEvents.associateBy { it.id }
         val storedEventsMap = storedEvents.associateBy { it.id }
 
-        val updatedEvents = mutableListOf<Event>()
-        val deletedEvents = mutableListOf<Event>()
-        val newEvents = mutableListOf<Event>()
+        val remainingEvents = mutableListOf<Event>() // This will store both updated & new events
+        val deletedEvents = mutableListOf<Event>() // This will store only deleted events
 
-        // Identify Updated & Deleted Events
+        // Identify Deleted Events
         for ((id, storedEvent) in storedEventsMap) {
             val cursorEvent = cursorEventsMap[id]
-            if (cursorEvent != null && cursorEvent != storedEvent) {
-                updatedEvents.add(cursorEvent) // Event exists but is changed
-            }
             if (cursorEvent == null) {
                 deletedEvents.add(storedEvent) // Event is missing in cursor (deleted)
+            } else {
+                remainingEvents.add(cursorEvent) // Add all remaining (new + updated) events
             }
         }
 
-        // Identify New Events
+        // Add new events (which were not stored before)
         for ((id, cursorEvent) in cursorEventsMap) {
             if (!storedEventsMap.containsKey(id)) {
-                newEvents.add(cursorEvent) // New event found
+                remainingEvents.add(cursorEvent) // New event found, add to remainingEvents
             }
         }
 
         // Apply Changes
-        if (deletedEvents.isNotEmpty()) {deletedEvents.forEach { eventRepository.deleteEvent(it) }}
-        if (updatedEvents.isNotEmpty()) insertEvents(updatedEvents)
-        if (newEvents.isNotEmpty()) insertEvents(newEvents)
+        if (deletedEvents.isNotEmpty()) {
+            deletedEvents.forEach { eventRepository.deleteEvent(it) }
+        }
+        if (remainingEvents.isNotEmpty()) {
+            insertEvents(cursorEvents) // Insert both updated and new events together
+        }
     }
+
 
 
 
@@ -343,6 +366,7 @@ class MainViewModel @Inject constructor(
                                                             startTime = startTime,
                                                             endTime = endTime,
                                                             isHoliday = true,
+                                                            isAllDay = true,
                                                             sourceType = SourceType.REMOTE,
                                                             repeatOption = RepeatOption.NEVER,//*
                                                             alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
@@ -401,6 +425,10 @@ class MainViewModel @Inject constructor(
 
     private val insertEventsMutex = Mutex()
     private suspend fun insertEvents(events: List<Event>) {
+        events.forEach {
+            if (it.sourceType == SourceType.CURSOR)
+                Log.e(BASE_TAG, "final list: ${it.repeatOption},- ${it.title},- ${it.startTime},- ${it.isAllDay} ", )
+        }
         _isLoading.value = true
         // Ensure only one coroutine executes this block at a time
         insertEventsMutex.withLock {

@@ -15,7 +15,6 @@ import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
-import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.FragmentViewEventBinding
@@ -85,7 +84,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
-                if (argEvent.eventType != EventType.PERSONAL){
+                if (argEvent.sourceType != SourceType.CURSOR && argEvent.sourceType != SourceType.LOCAL){
                     hideViewWithAnimation(this)
                 }
             }
@@ -93,7 +92,13 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
             text = resources.getString(R.string.action_delete)
             setOnClickListener {
                 lifecycleScope.launch {
-                    viewModel.deleteEvent(argEvent)
+                    val isDelete = viewModel.deleteEvent(argEvent)
+                    if (isDelete == 1) {
+                        if (argEvent.sourceType == SourceType.CURSOR){
+//                            deleteCursorEvent(requireContext(), argEvent.id.toLong())
+                            mainViewModel.setRegisterContentObserverState(isRegister = false)
+                        }
+                    }
                     Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_SHORT).show()
                     viewModel.resetEventState()
 
@@ -111,7 +116,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root.apply {
 
             if (arguments?.containsKey(KEY_EVENT) == true){
-                if (argEvent.eventType != EventType.PERSONAL){
+                if (argEvent.sourceType != SourceType.CURSOR && argEvent.sourceType != SourceType.LOCAL){
                     hideViewWithAnimation(this)
                 }
             }
@@ -128,8 +133,8 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
         // Set the "All Day" status
         binding.switchAllDay.apply {
-            visibility = if (event.sourceType == SourceType.REMOTE || event.sourceType == SourceType.CURSOR) View.INVISIBLE else View.VISIBLE
-            isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime)
+            visibility = if (event.sourceType == SourceType.REMOTE) View.INVISIBLE else View.VISIBLE
+            isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime) || event.isAllDay
         }
 
         // Populate start and end dates

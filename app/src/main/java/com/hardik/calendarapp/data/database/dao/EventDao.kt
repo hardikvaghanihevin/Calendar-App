@@ -15,7 +15,7 @@ interface EventDao {
     suspend fun upsertEvents(event: List<Event>)
 
     @Delete
-    suspend fun deleteEvent(event: Event)
+    suspend fun deleteEvent(event: Event): Int
 
     //region Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms() by using 'getHolidayEvents' and then delete all event where sourceType is 'REMOTE'
     @Query("DELETE FROM events WHERE sourceType = :sourceType")

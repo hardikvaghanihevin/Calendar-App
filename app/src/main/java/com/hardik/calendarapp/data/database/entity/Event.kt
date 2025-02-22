@@ -19,6 +19,8 @@ data class Event(
     val endTime: Long,   // Timestamp
     val startDate: String,
     val endDate: String,
+    val duration: Long = 0L,
+    val isAllDay: Boolean = false,
     val year: String,//2024
     val month: String,// 0 to 11 for january to december
     val date: String,
@@ -82,14 +84,27 @@ object RepeatOptionConverter {
         }
     }
 
-    fun parseRepeatRule(rrule: String?): RepeatOption {
+    suspend fun parseRepeatRule(rrule: String?): RepeatOption {
         if (rrule.isNullOrEmpty()) return RepeatOption.NEVER
-        return when {
-            rrule.contains("FREQ=DAILY", ignoreCase = true) -> RepeatOption.DAILY
-            rrule.contains("FREQ=WEEKLY", ignoreCase = true) -> RepeatOption.WEEKLY
-            rrule.contains("FREQ=MONTHLY", ignoreCase = true) -> RepeatOption.MONTHLY
-            rrule.contains("FREQ=YEARLY", ignoreCase = true) -> RepeatOption.YEARLY
+        val ruleParts = rrule.split(";")
+        val frequency = ruleParts.find { it.startsWith("FREQ=") }?.substringAfter("FREQ=")
+
+        return when (frequency?.uppercase()) {
+            "DAILY" -> RepeatOption.DAILY
+            "WEEKLY" -> RepeatOption.WEEKLY
+            "MONTHLY" -> RepeatOption.MONTHLY
+            "YEARLY" -> RepeatOption.YEARLY
             else -> RepeatOption.NEVER
+        }
+    }
+
+    fun toRepeatRule(repeatOption: RepeatOption): String {
+        return when (repeatOption) {
+            RepeatOption.NEVER -> ""
+            RepeatOption.DAILY -> "FREQ=DAILY"
+            RepeatOption.WEEKLY -> "FREQ=WEEKLY"
+            RepeatOption.MONTHLY -> "FREQ=MONTHLY"
+            RepeatOption.YEARLY -> "FREQ=YEARLY"
         }
     }
 }
@@ -172,6 +187,20 @@ object AlertOffsetConverter {
                     AlertOffset.NONE
                 }
             }
+        }
+    }
+
+    fun toReminderMinutesBefore(alertOffset: AlertOffset): Int {
+        return when (alertOffset) {
+            AlertOffset.AT_TIME_OF_EVENT -> 0
+            AlertOffset.BEFORE_5_MINUTES -> 5
+            AlertOffset.BEFORE_10_MINUTES -> 10
+            AlertOffset.BEFORE_15_MINUTES -> 15
+            AlertOffset.BEFORE_30_MINUTES -> 30
+            AlertOffset.BEFORE_1_HOUR -> 60
+            AlertOffset.BEFORE_1_DAY -> 1440 // 1 day in minutes
+            AlertOffset.BEFORE_CUSTOM_TIME -> (getCustomTime() / (60 * 1000)).toInt()
+            AlertOffset.NONE -> -1 // No reminder
         }
     }
 

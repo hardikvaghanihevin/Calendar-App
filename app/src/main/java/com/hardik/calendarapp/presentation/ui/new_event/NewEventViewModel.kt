@@ -15,10 +15,12 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
+import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
 import com.hardik.calendarapp.utillities.DateUtil.timestampToMinutes
+import com.hardik.calendarapp.utillities.updateCursorEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -35,6 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,// For Database compatibility
+    private val calendarRepository: CalendarRepositoryImpl,
 ): ViewModel() {
     private val TAG = BASE_TAG + NewEventViewModel::class.java.simpleName
 
@@ -146,6 +149,15 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
+    private val _sourceType = MutableStateFlow(SourceType.LOCAL)
+    val sourceType: StateFlow<SourceType> = _sourceType
+
+    fun updateSourceType(sourceType: SourceType){
+        viewModelScope.launch {
+            _sourceType.value = sourceType
+        }
+    }
+
     //todo: Event Repeat (None, Once, Daly, Weekly, Monthly, Yearly)
     private val _repeatOption = MutableStateFlow(RepeatOption.NEVER)//ONCE
     val repeatOption:StateFlow<RepeatOption> = _repeatOption
@@ -199,7 +211,7 @@ class NewEventViewModel @Inject constructor(
         return null // No validation errors
     }
 
-
+    /** Use in NewEventFragment's [Save] button :- for insert/update event */
     suspend fun insertCustomEvent(context: Context, id: String?): String{
         val errorMessage = validateEvent(context = context, eventId = id)
         if (errorMessage != null) {
@@ -225,14 +237,14 @@ class NewEventViewModel @Inject constructor(
             date = date.third,
             eventType = EventType.PERSONAL,
             isHoliday = false,
-            sourceType = SourceType.LOCAL,
+            sourceType = sourceType.value,
             repeatOption = repeatOption.value,
             alertOffset = alertOffset.value,
             customAlertOffset = customAlertOffset.value,
             triggerTime = startTime.value, // todo: set triggerTime as start time
         )
 
-        insertEvent(event)
+        insertEvent(context, event)
         return EVENT_INSERT_SUCCESSFULLY.takeIf { id == null } ?: EVENT_UPDATE_SUCCESSFULLY// Event inserted/update successfully
     }
 
@@ -271,7 +283,7 @@ class NewEventViewModel @Inject constructor(
     }
 
     private val insertEventsMutex = Mutex()
-    private fun insertEvent(event: Event) {
+    private fun insertEvent(context: Context, event: Event) {
         viewModelScope.launch {
             insertEventsMutex.withLock {
                 try {
@@ -303,7 +315,17 @@ class NewEventViewModel @Inject constructor(
                             }.await() // Collect all updated events
                     }
 
-                    withContext(Dispatchers.IO) { eventRepository.upsertEvent(updatedEvent) }
+                    withContext(Dispatchers.IO) {
+                        eventRepository.upsertEvent(updatedEvent)
+
+                        if (updatedEvent.sourceType == SourceType.CURSOR) {
+                            //setRegisterContentObserverState(isRegister = false)
+                            val b = updateCursorEvent(context = context, updatedEvent)
+                            Log.i(TAG, "insertEvent: cursor:- $b", )
+                            //setRegisterContentObserverState(isRegister = true)
+                        }
+
+                    }
 
                 } catch (e: Exception) {
                     // InsertEvents - Error inserting events
@@ -312,10 +334,16 @@ class NewEventViewModel @Inject constructor(
         }
     }
 
-    fun deleteEvent(argEvent: Event) {
-        viewModelScope.launch {
-            eventRepository.deleteEvent(argEvent)
-        }
+    /** Use in ViewEventFragment's [Delete] button :- for delete event */
+    suspend fun deleteEvent(argEvent: Event): Int {
+        return eventRepository.deleteEvent(argEvent)
+    }
 
+    fun setRegisterContentObserverState(isRegister: Boolean){
+        if (isRegister) {
+            calendarRepository.registerContentObserver()
+        } else {
+            calendarRepository.unregisterContentObserver()
+        }
     }
 }

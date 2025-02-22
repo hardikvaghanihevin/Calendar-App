@@ -257,7 +257,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             }
 
             //region Todo : this is for title and menu items for ViewEventsFragment
-            val visibility = if (event.sourceType in listOf(SourceType.CURSOR, SourceType.REMOTE)) View.GONE else View.VISIBLE
+            val visibility = if (event.sourceType in listOf(/*SourceType.CURSOR, */SourceType.REMOTE)) View.GONE else View.VISIBLE
             if (visibility == View.GONE) {
                 hideViewWithAnimation((activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.llToolbarMenu, duration = 0)
 
@@ -328,7 +328,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun observeViewModelState() {
-        Log.e(TAG, "observeViewModelState: ", )
+        //Log.e(TAG, "observeViewModelState: ", )
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
             //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
@@ -484,7 +484,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     
                     val sdt = vh.customView.selectedDate
                     val ymdt = "$year-$month-${0}"
-                    Log.e(TAG, "updateDataEventsAndMonthTitle: $sdt | $ymdt", )
+                    //Log.e(TAG, "updateDataEventsAndMonthTitle: $sdt | $ymdt", )
 
                     val date: Triple<String, String, String> = stringToDateTriple(sdt!!, isZeroBased = false)
                     val finalDate = if (date.first.toInt() == year && date.second.toInt() == month){
@@ -492,7 +492,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }else{
                         ymdt
                     }
-                    Log.e(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate", )
+                    //Log.e(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate", )
                     viewModel.fetchEventsForMonthView(finalDate )
 //                    selectedDate?.let {it:String ->
 //                        val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)

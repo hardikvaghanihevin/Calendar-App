@@ -601,5 +601,62 @@ object DateUtil {
         val minutes = (durationInSeconds % 3600) / 60 // Get remaining minutes
         return String.format("%02d:%02d", hours, minutes) // Format as HH:mm
     }
+
+    /**
+     * Calculates the end time based on a start time and a duration string.
+     *
+     * @param startTime Start time in milliseconds (e.g., 1739699280000)
+     * @param duration Duration in ISO 8601 format (e.g., "PT27H46M")
+     *
+     * @details Conversion of milliseconds to ISO-8601 duration format:
+     *
+     * 5400000L -> "PT1H30M"
+     * 3600000L -> "PT1H"
+     * 60000L   -> "PT1M"
+     * 5000L    -> "PT5S"
+     * 0L       -> "PT0S"
+     *
+     * Where:
+     * P - represents the duration designator (historically called "period")
+     * T - indicates the start of the time component
+     * H - represents hours
+     * M - represents minutes
+     * S - represents seconds
+     */
+    fun calculateEndTimeForCursor(startTime: Long, duration: String): Long {
+        val isoPattern = """PT(\d+H)?(\d+M)?(\d+S)?""".toRegex()
+        val secondsPattern = """P(\d+)S""".toRegex()
+
+        val isoMatch = isoPattern.matchEntire(duration)
+        val secondsMatch = secondsPattern.matchEntire(duration)
+
+        return when {
+            isoMatch != null -> {
+                val hours = isoMatch.groupValues[1].removeSuffix("H").toLongOrNull() ?: 0L
+                val minutes = isoMatch.groupValues[2].removeSuffix("M").toLongOrNull() ?: 0L
+                val seconds = isoMatch.groupValues[3].removeSuffix("S").toLongOrNull() ?: 0L
+                startTime + ((hours * 3600 + minutes * 60 + seconds) * 1000)
+            }
+            secondsMatch != null -> {
+                val seconds = secondsMatch.groupValues[1].toLongOrNull() ?: 0L
+                startTime + (seconds * 1000)
+            }
+            else -> startTime
+        }
+    }
+
+    fun formatDurationForCursor(durationMillis: Long): String {
+        val totalSeconds = durationMillis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+
+        return buildString {
+            append("PT")
+            if (hours > 0) append("${hours}H")
+            if (minutes > 0) append("${minutes}M")
+            if (seconds > 0 || (hours == 0L && minutes == 0L)) append("${seconds}S")
+        }
+    }
 }
 

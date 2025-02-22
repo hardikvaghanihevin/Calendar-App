@@ -17,7 +17,11 @@ import com.hardik.calendarapp.utillities.DateUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
@@ -32,6 +36,8 @@ class EventRepositoryImpl @Inject constructor(
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+    private val _deletedEventFlow = MutableSharedFlow<Event>(extraBufferCapacity = 1)
+    override val deletedEventFlow: SharedFlow<Event> = _deletedEventFlow.asSharedFlow()
     override suspend fun upsertEvent(event: Event) {
         eventDao.upsertEvent(event)
         setAlarm(event)       // Set a new alarm for this event
@@ -42,17 +48,39 @@ class EventRepositoryImpl @Inject constructor(
         scheduleAlarms(events)
     }
 
-    override suspend fun deleteEvent(event: Event) {
+    override suspend fun deleteEvent(event: Event): Int {
         cancelAlarm(event) // before delete
-        eventDao.deleteEvent(event)
+        val rowsAffected = eventDao.deleteEvent(event)
+        if (rowsAffected > 0) {
+            _deletedEventFlow.emit(event) // Notify deletion
+        }
+        return rowsAffected
     }
 
     override suspend fun deleteEventsHoliday(){
         //Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
+       deleteEventsBySourceType(sourceType = SourceType.REMOTE)
+    }
+
+    override suspend fun deleteEventsCursor(){
+        //Todo :here scheduleAlarm(event) is not cancel so keep cancel. cancelAllAlarms()
+        deleteEventsBySourceType(sourceType = SourceType.CURSOR)
+    }
+
+    override suspend fun deleteEventsBySourceType(sourceType: SourceType){
         CoroutineScope(Dispatchers.IO).launch {
-            cancelAllRemoteAlarms()
+            if (sourceType == SourceType.REMOTE){
+                cancelAllRemoteAlarms(sourceType)
+            }
+            if (sourceType == SourceType.CURSOR){
+                cancelAllCursorAlarms(sourceType)
+            }
         }.join()
-        eventDao.deleteEventsBySourceType(sourceType = SourceType.REMOTE)
+        val eventsToDelete = eventDao.getEventsBySourceType(sourceType).firstOrNull() ?: emptyList()
+        eventDao.deleteEventsBySourceType(sourceType = sourceType)
+        eventsToDelete.forEach {
+            _deletedEventFlow.emit(it) // Notify each deleted event
+        }
     }
 
 
@@ -112,13 +140,21 @@ class EventRepositoryImpl @Inject constructor(
     override suspend fun cancelAlarm(event: Event) {
         AlarmScheduler.cancelAlarm(context = context, event = event )
     }
-    private suspend fun cancelAllRemoteAlarms() {
+    private suspend fun cancelAllRemoteAlarms(sourceType: SourceType) {
+        cancelAllAlarmsBySourceType(sourceType)
+    }
+    private suspend fun cancelAllCursorAlarms(sourceType: SourceType) {
+        cancelAllAlarmsBySourceType(sourceType)
+    }
+
+    private suspend fun cancelAllAlarmsBySourceType(sourceType: SourceType) {
         CoroutineScope(Dispatchers.IO).launch {
-            eventDao.getEventsBySourceType().collectLatest {
+            eventDao.getEventsBySourceType(sourceType).collectLatest {
                 it.forEach { event -> cancelAlarm(event) }
             }
         }
     }
+
 
     // Check if the app has the SCHEDULE_EXACT_ALARM permission
     private fun hasExactAlarmPermission(): Boolean {
