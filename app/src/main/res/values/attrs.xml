@@ -28,6 +28,7 @@
         <attr name="background_drawable_day" format="reference" />
         <attr name="background_drawable_date" format="reference" />
         <attr name="background_drawable_date_selection" format="reference" />
+        <attr name="background_drawable_date_today" format="reference" />
 
         <attr name="week_start" format="enum">
             <enum name="sunday" value="0" />
