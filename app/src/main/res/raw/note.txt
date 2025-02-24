@@ -1,0 +1,6 @@
+-Cursor ke data ko insert, update, delete kar sakte he.
+-Jab app open ho tab hi ye work karta he.
+-Es me close app ke douran koy operation nahi kiya gay ki "CURSOR". cursor data me jabbhi kuch apdate kiya jay kisi dusari app se to yaha par bhi update ho jay.
+-ye branch me (dev-003_1) permissions ligayi he.(READ &WRITE).
+-Automatically update (when app closed) working not done yet.
+-Move to (dev-003_2) for only Api data.

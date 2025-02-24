@@ -16,10 +16,10 @@ import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.RepeatOptionConverter
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.utillities.DateUtil.calculateEndTimeForCursor
-import com.hardik.calendarapp.utillities.DateUtil.formatDurationForCursor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 
 data class CursorEvent(
     val id: String = "",
@@ -239,6 +239,31 @@ fun List<CursorEvent>.toEventList(): List<Event> {
             DateUtil.DATE_FORMAT_yyyy_MM_dd
         )
 
+        val nextTriggerTime: Long
+
+        // Calculate nextTriggerTime if needed
+        var alertOffsetUse :AlertOffset = item.alertOffset
+        val minus: Long
+        if (item.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
+            val customTimeStamp = item.customAlertOffset!!
+            val isCustom = customTimeStamp.toInt() == 0
+            alertOffsetUse = AlertOffset.AT_TIME_OF_EVENT.takeIf { isCustom } ?: AlertOffsetConverter.parseAlertOffset(
+                DateUtil.timestampToMinutes(customTimeStamp)
+            )
+            minus = AlertOffsetConverter.toMilliseconds(alertOffsetUse) ?: 0L
+        }else{
+            minus = AlertOffsetConverter.toMilliseconds(alertOffsetUse) ?: 0L
+        }
+        val calculatedTriggerTime = DateUtil.calculateNextOccurrence(item.startTime, item.repeatOption)
+
+        nextTriggerTime = if (calculatedTriggerTime != null) {
+            calculatedTriggerTime - minus
+        }else{
+            item.startTime - minus
+        }
+
+        Log.i(BASE_TAG, "List<CursorEvent>.toEventList(): TriggerTime: $nextTriggerTime", )
+
         Event(
             id = item.id,
             title = item.title,
@@ -257,7 +282,7 @@ fun List<CursorEvent>.toEventList(): List<Event> {
             repeatOption = item.repeatOption,
             alertOffset = item.alertOffset,
             customAlertOffset = item.customAlertOffset,
-            triggerTime = startTime,
+            triggerTime = nextTriggerTime,
         )
     }
 }
@@ -280,19 +305,19 @@ fun Event.toCursorEvent(): CursorEvent {
     )
 }
 
-fun deleteCursorEvent(context: Context, eventId: Long): Boolean {
+fun deleteCursorEventUtil(context: Context, eventId: Long): Boolean {
     return try {
         val deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         val rowsDeleted = context.contentResolver.delete(deleteUri, null, null)
         rowsDeleted > 0
     } catch (e: Exception) {
-        Log.e("CursorEventUtil", "Error deleting event with ID: $eventId", e)
+        Log.e(BASE_TAG,"CursorEventUtil:- Error deleting event with ID: $eventId", e)
         false
     }
 }
 
 
-fun updateCursorEvent(context: Context, event: Event): Boolean {
+suspend fun updateCursorEventUtil(context: Context, event: Event): Boolean {
     return try {
         val cursorEvent = event.toCursorEvent() // Convert event to CursorEvent
         val eventId = cursorEvent.id.toLongOrNull() ?: return false // Ensure ID is valid
@@ -303,7 +328,7 @@ fun updateCursorEvent(context: Context, event: Event): Boolean {
             put(CalendarContract.Events.DESCRIPTION, cursorEvent.description ?: "")
             put(CalendarContract.Events.DTSTART, cursorEvent.startTime)
 
-            Log.e(BASE_TAG, "updateCursorEvent: ${cursorEvent.startTime} - ${cursorEvent.duration}", )
+            Log.e(BASE_TAG, "updateCursorEvent:- ${cursorEvent.startTime} - ${cursorEvent.duration}", )
             /*if (cursorEvent.endTime > 0) {
                 // Use DTEND if endTime is defined
                 put(CalendarContract.Events.DTEND, cursorEvent.endTime)
@@ -312,12 +337,30 @@ fun updateCursorEvent(context: Context, event: Event): Boolean {
                 //put(CalendarContract.Events.DURATION, "P${cursorEvent.duration}S") // ISO 8601 duration format
                 put(CalendarContract.Events.DURATION, formatDurationForCursor(cursorEvent.duration))
             }*/
-            if (cursorEvent.duration > 0) {
+            /*if (cursorEvent.duration > 0) {
                 // Use DURATION if it's defined
                 put(CalendarContract.Events.DURATION, formatDurationForCursor(cursorEvent.duration))
             } else if (cursorEvent.endTime > 0) {
                 // Otherwise, use DTEND
                 put(CalendarContract.Events.DTEND, cursorEvent.endTime)
+            }*/
+
+            // Ensure DTEND and DURATION are not set together
+            if (cursorEvent.isAllDay) {
+                // All-day event: Set DTEND to the next day midnight
+                put(CalendarContract.Events.DTEND, cursorEvent.startTime + TimeUnit.DAYS.toMillis(1)) // 2025-02-27 00:00:00 UTC
+                //put(CalendarContract.Events.DTEND, getEndOfDayTimestamp(cursorEvent.startTime)) // 2025-02-26 23:59:59 UTC
+                remove(CalendarContract.Events.DURATION) // Remove DURATION if present
+            } else {
+                if (cursorEvent.endTime > 0) {
+                    // Use DTEND if a valid endTime is available
+                    put(CalendarContract.Events.DTEND, cursorEvent.endTime)
+                    remove(CalendarContract.Events.DURATION) // Ensure DURATION is removed
+                } else if (cursorEvent.duration > 0) {
+                    // Use DURATION if there's no specific endTime
+                    put(CalendarContract.Events.DURATION, "P${cursorEvent.duration / 1000}S") // Convert millis to seconds
+                    remove(CalendarContract.Events.DTEND) // Ensure DTEND is removed
+                }
             }
 
             put(CalendarContract.Events.ALL_DAY, if (cursorEvent.isAllDay) 1 else 0)
@@ -327,6 +370,13 @@ fun updateCursorEvent(context: Context, event: Event): Boolean {
             put(CalendarContract.Events.RRULE, RepeatOptionConverter.toRepeatRule(cursorEvent.repeatOption))
 
             setEventReminder(context, eventId, cursorEvent.alertOffset)
+        }
+
+        // Only update if the values are different (Avoid unnecessary updates)
+        val existingEvent = getEventFromCursor(context, eventId)
+        if (existingEvent != null && !hasChanges(existingEvent, cursorEvent)) {
+            Log.d(BASE_TAG, "updateCursorEvent: No changes detected, skipping update")
+            return true
         }
 
         val rowsUpdated = context.contentResolver.update(updateUri, values, null, null)
@@ -342,11 +392,20 @@ fun setEventReminder(context: Context, eventId: Long, alertOffset: AlertOffset) 
         val reminderMinutesBefore = AlertOffsetConverter.toReminderMinutesBefore(alertOffset)
 
         if (reminderMinutesBefore < 0) {
-            Log.d("CursorEventUtil", "No valid reminder to set for event ID: $eventId")
+            Log.d(BASE_TAG,"CursorEventUtil:- No valid reminder to set for event ID: $eventId")
             return
         }
 
         val contentResolver = context.contentResolver
+
+        // Step 1: Delete existing reminders for this event
+        val deleteSelection = "${CalendarContract.Reminders.EVENT_ID} = ?"
+        val deleteArgs = arrayOf(eventId.toString())
+        val rowsDeleted = contentResolver.delete(CalendarContract.Reminders.CONTENT_URI, deleteSelection, deleteArgs)
+
+        Log.d(BASE_TAG, "CursorEventUtil:- Deleted $rowsDeleted existing reminders for event ID: $eventId")
+
+        // Step 2: Insert new reminder
         val values = ContentValues().apply {
             put(CalendarContract.Reminders.EVENT_ID, eventId)
             put(CalendarContract.Reminders.MINUTES, reminderMinutesBefore)
@@ -357,11 +416,92 @@ fun setEventReminder(context: Context, eventId: Long, alertOffset: AlertOffset) 
         val uri = contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, values)
 
         if (uri != null) {
-            Log.d("CursorEventUtil", "Reminder set successfully for event ID: $eventId")
+            Log.d(BASE_TAG,"CursorEventUtil:- Reminder set successfully for event ID: $eventId")
         } else {
-            Log.e("CursorEventUtil", "Failed to set reminder for event ID: $eventId")
+            Log.e(BASE_TAG,"CursorEventUtil:- Failed to set reminder for event ID: $eventId")
         }
     } catch (e: Exception) {
-        Log.e("CursorEventUtil", "Error setting reminder for event ID: $eventId", e)
+        Log.e(BASE_TAG,"CursorEventUtil:- Error setting reminder for event ID: $eventId", e)
     }
+}
+
+suspend fun getEventFromCursor(context: Context, eventId: Long): CursorEvent? {
+    val projection = arrayOf(
+        CalendarContract.Events._ID,
+        CalendarContract.Events.TITLE,
+        CalendarContract.Events.DESCRIPTION,
+        CalendarContract.Events.DTSTART,
+        CalendarContract.Events.DTEND,
+        CalendarContract.Events.DURATION,
+        CalendarContract.Events.ALL_DAY,
+        CalendarContract.Events.CALENDAR_ID,
+        CalendarContract.Events.EVENT_LOCATION,
+        CalendarContract.Events.EVENT_TIMEZONE,
+        CalendarContract.Events.RRULE
+    )
+
+    val selection = "${CalendarContract.Events._ID} = ?"
+    val selectionArgs = arrayOf(eventId.toString())
+
+    val cursor = context.contentResolver.query(
+        CalendarContract.Events.CONTENT_URI,
+        projection,
+        selection,
+        selectionArgs,
+        null
+    )
+
+    cursor?.use {
+        if (it.moveToFirst()) {
+            return try {
+                val id = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events._ID))
+                val title = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.TITLE)) ?: "Untitled"
+                val description = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION))
+                val startTime = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.DTSTART))
+                val endTime = it.getLongOrNull(CalendarContract.Events.DTEND) ?: 0L
+                val duration = it.getStringOrNull(CalendarContract.Events.DURATION)
+                val isAllDay = it.getInt(it.getColumnIndexOrThrow(CalendarContract.Events.ALL_DAY)) == 1
+                val calendarId = it.getLong(it.getColumnIndexOrThrow(CalendarContract.Events.CALENDAR_ID))
+                val location = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_LOCATION))
+                val timeZone = it.getString(it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_TIMEZONE)) ?: TimeZone.getDefault().id
+                val rrule = it.getStringOrNull(CalendarContract.Events.RRULE)
+
+                val repeatOption = RepeatOptionConverter.parseRepeatRule(rrule)
+
+                // If duration exists but endTime is 0, calculate endTime
+                val finalEndTime = if (endTime == 0L && duration != null) {
+                    calculateEndTimeForCursor(startTime, duration)
+                } else {
+                    endTime
+                }
+
+                CursorEvent(
+                    id = id.toString(),
+                    title = title,
+                    description = description,
+                    startTime = startTime,
+                    endTime = finalEndTime,
+                    duration = finalEndTime - startTime,
+                    isAllDay = isAllDay,
+                    calendarId = calendarId,
+                    location = location,
+                    timeZone = timeZone,
+                    repeatOption = repeatOption
+                )
+            } catch (e: Exception) {
+                Log.e(BASE_TAG, "getEventFromCursor:- Error fetching event ID: $eventId", e)
+                null
+            }
+        }
+    }
+    return null
+}
+
+private fun hasChanges(existingEvent: CursorEvent, newEvent: CursorEvent): Boolean {
+    return existingEvent.title != newEvent.title ||
+            existingEvent.description != newEvent.description ||
+            existingEvent.startTime != newEvent.startTime ||
+            existingEvent.endTime != newEvent.endTime ||
+            existingEvent.isAllDay != newEvent.isAllDay ||
+            existingEvent.location != newEvent.location
 }

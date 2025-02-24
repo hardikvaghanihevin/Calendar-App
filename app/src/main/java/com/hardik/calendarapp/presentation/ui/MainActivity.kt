@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -68,7 +67,6 @@ import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
-import com.hardik.calendarapp.utillities.deleteCursorEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -141,19 +139,19 @@ class MainActivity : AppCompatActivity() {
                 binding.appBarMain.includedAppBarMainCustomToolbar.toolbarTitle.text = title
             }
         }
-        lifecycleScope.launch {
-            mainViewModel.deletedEvent.collect { deletedEvent ->
-                deletedEvent.let {
-                    Log.d(TAG+"Observer", "Deleted Event: ${it.title}")
-                    // Perform Cursor event deletion here
-                    if (deletedEvent.sourceType == SourceType.CURSOR) {
-                        deleteCursorEvent(this@MainActivity, deletedEvent.id.toLong()) // Delete from Cursor
-                        mainViewModel.setRegisterContentObserverState(isRegister = true)
-                        Log.i(TAG+"Observer", "Deleted Event delay: ${it.title}")
-                    }
-                }
-            }
-        }
+//        lifecycleScope.launch {
+//            mainViewModel.deletedEvent.collect { deletedEvent ->
+//                deletedEvent.let {
+//                    Log.d(TAG+"Observer", "Deleted Event: ${it.title}")
+//                    // Perform Cursor event deletion here
+//                    if (deletedEvent.sourceType == SourceType.CURSOR) {
+//                        //deleteCursorEvent(this@MainActivity, deletedEvent.id.toLong()) // Delete from Cursor
+////                        mainViewModel.setRegisterContentObserverState(isRegister = true)
+//                        Log.i(TAG+"Observer", "Deleted Event delay: ${it.title}")
+//                    }
+//                }
+//            }
+//        }
     }
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)

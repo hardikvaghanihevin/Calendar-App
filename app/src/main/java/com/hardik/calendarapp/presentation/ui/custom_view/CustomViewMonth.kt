@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.content.res.ResourcesCompat
@@ -578,7 +577,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
 
                     // Draw the background using the drawable if available with a selected color
                     if(isSelected){
-                        Log.e(TAG, "drawDateBlocks: isSelected", )
+                        //Log.e(TAG, "drawDateBlocks: isSelected", )
                         val color = resources.getColor(if (isSunday) R.color.error else R.color.text_primary, null)
                         paintDate.color = resources.getColor(if (isSunday) R.color.error else R.color.text_primary, null)
 
@@ -588,7 +587,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                             canvas.drawRect(left + margin, top + margin, right - margin, bottom - margin, paintDate)}//canvas.drawRect(left, top, right, bottom, paint)
                     }
                     else if(isToday){
-                        Log.e(TAG, "drawDateBlocks: isToday", )
+                        //Log.e(TAG, "drawDateBlocks: isToday", )
                         val color = resources.getColor(if (isSunday) R.color.error else R.color.accent_primary, null)
                         paintDate.color =resources.getColor(if (isSunday) R.color.error else R.color.accent_primary, null)
 
@@ -599,7 +598,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
 
                     }
                     else{
-                        Log.e(TAG, "drawDateBlocks: else", )
+                        //Log.e(TAG, "drawDateBlocks: else", )
                         val color = resources.getColor(R.color.background_primary, null)
                         paintDate.color = resources.getColor(R.color.background_primary, null)//Color.LTGRAY
 
@@ -702,7 +701,7 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
         // Modify the color of the drawable
         when (drawable) {
             is GradientDrawable -> { // Ensure the drawable is a GradientDrawable
-                Log.i(TAG, "modifyAndApplyDrawable: GD", )
+                //Log.i(TAG, "modifyAndApplyDrawable: GD", )
                 // Handle manual shape drawable
                 color?.let { drawable.setColor(it) } // Set the desired color
                 drawable.cornerRadius = 10f * context.resources.displayMetrics.density // Example: 10dp corner radius
@@ -712,14 +711,14 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                 )
             }
             is VectorDrawable -> {
-                Log.i(TAG, "modifyAndApplyDrawable: VD", )
+                //Log.i(TAG, "modifyAndApplyDrawable: VD", )
                 // Handle SVG vector drawable
                 color?.let { tint ->
                     drawable.setTint(tint) // Apply tint to the vector drawable
                 }
             }
             else -> {
-                Log.i(TAG, "modifyAndApplyDrawable: else")
+                //Log.i(TAG, "modifyAndApplyDrawable: else")
                 // Unsupported drawable type: ${drawable::class.java}
             }
         }

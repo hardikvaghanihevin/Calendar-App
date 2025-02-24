@@ -1,11 +1,18 @@
 package com.hardik.calendarapp.domain.repository
 
-interface CalendarRepository {
-    fun registerContentObserver()
-    fun unregisterContentObserver()
-    fun setListener(listener: CalendarEventListener)
-}
+import com.hardik.calendarapp.data.database.entity.Event
 
-interface CalendarEventListener {
-    fun onCalendarEventsChanged()
+//interface CalendarRepository {
+//    fun registerContentObserver()
+//    fun unregisterContentObserver()
+//    fun setListener(listener: CalendarEventListener)
+//}
+//
+//interface CalendarEventListener {
+//    fun onCalendarEventsChanged()
+//}
+interface CalendarRepository{
+    suspend fun syncCursorEvents()
+    suspend fun deleteCursorEvent(eventId: Long): Boolean
+    suspend fun updateCursorEvent(event: Event): Boolean
 }

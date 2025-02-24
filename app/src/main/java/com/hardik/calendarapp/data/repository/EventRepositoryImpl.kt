@@ -6,9 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
+import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
@@ -16,6 +18,9 @@ import com.hardik.calendarapp.utillities.AlarmScheduler
 import com.hardik.calendarapp.utillities.DateUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
@@ -38,6 +44,50 @@ class EventRepositoryImpl @Inject constructor(
 
     private val _deletedEventFlow = MutableSharedFlow<Event>(extraBufferCapacity = 1)
     override val deletedEventFlow: SharedFlow<Event> = _deletedEventFlow.asSharedFlow()
+
+    private val insertEventsMutex = Mutex()
+    override suspend fun insertEvents(events: List<Event>) {
+        events.forEach {
+            if (it.sourceType == SourceType.CURSOR)
+                Log.e(BASE_TAG, "final list: ${it.repeatOption},- ${it.title},- ${it.startTime},- ${it.isAllDay} ", )
+        }
+
+        // Ensure only one coroutine executes this block at a time
+        insertEventsMutex.withLock {
+            try {
+                // Update each event's nextTriggerTime
+                val updatedEvents = coroutineScope {
+                    events.map { event ->
+                        async(Dispatchers.Default) {
+                            var nextTriggerTime = event.triggerTime
+
+                            // Calculate nextTriggerTime if needed
+                            val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
+                            val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
+
+                            nextTriggerTime = if (calculatedTriggerTime != null) {
+                                calculatedTriggerTime - minus
+                            }else{
+                                event.startTime - minus
+                            }
+
+                            // Return the updated event
+                            event.copy(triggerTime = nextTriggerTime)
+                        }
+                    }.awaitAll() // Collect all updated events
+                }
+
+                withContext(Dispatchers.IO) {
+                    this@EventRepositoryImpl.upsertEvents(updatedEvents)
+                }
+
+            } catch (e: Exception) {
+                // Handle any errors
+            }finally {
+
+            }
+        }
+    }
     override suspend fun upsertEvent(event: Event) {
         eventDao.upsertEvent(event)
         setAlarm(event)       // Set a new alarm for this event
@@ -55,6 +105,11 @@ class EventRepositoryImpl @Inject constructor(
             _deletedEventFlow.emit(event) // Notify deletion
         }
         return rowsAffected
+    }
+
+    override suspend fun deleteEvents(events: List<Event>): Int {
+        events.forEach { event -> cancelAlarm(event) }// before delete
+        return eventDao.deleteEvents(events)
     }
 
     override suspend fun deleteEventsHoliday(){

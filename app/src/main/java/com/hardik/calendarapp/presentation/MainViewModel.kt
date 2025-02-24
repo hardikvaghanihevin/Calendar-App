@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation
 
+//import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -11,7 +12,6 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.common.Resource
 import com.hardik.calendarapp.data.database.entity.AlertOffset
-import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventValue
@@ -20,14 +20,13 @@ import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.data.database.entity.organizeEvents
-import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
 import com.hardik.calendarapp.domain.model.HolidayApiDetail
-import com.hardik.calendarapp.domain.repository.CalendarEventListener
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.domain.use_case.GetAllEventsUseCase
 import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
+import com.hardik.calendarapp.domain.use_case.SyncCursorEventsUseCase
 import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
@@ -42,8 +41,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -51,8 +48,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -79,7 +74,8 @@ class MainViewModel @Inject constructor(
     private val getAllEventsUseCase : GetAllEventsUseCase,// For getting all events (indicator use)
     private val getEventsByMonthOfYear: GetEventsByMonthOfTheYear,
     private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfTheYear,
-    private val calendarRepository: CalendarRepositoryImpl,
+    private val syncCursorEventsUseCase: SyncCursorEventsUseCase,
+//    private val calendarRepository: CalendarRepositoryImpl,
 ) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
@@ -153,17 +149,17 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    private val _deletedEvent = MutableStateFlow<Event?>(null)
-    val deletedEvent: Flow<Event> = _deletedEvent.filterNotNull().filter { it.sourceType == SourceType.CURSOR }//only cursor events here
+//    private val _deletedEvent = MutableStateFlow<Event?>(null)
+//    val deletedEvent: Flow<Event> = _deletedEvent.filterNotNull().filter { it.sourceType == SourceType.CURSOR }//only cursor events here
     init {
         generateYearList(2000, 2100, isZeroBased = true)
         getAllEventsDateInMap()
         rescheduleAlert()
-        viewModelScope.launch {
-            eventRepository.deletedEventFlow.collect { deletedEvent ->
-                _deletedEvent.value = deletedEvent
-            }
-        }
+//        viewModelScope.launch {
+//            eventRepository.deletedEventFlow.collect { deletedEvent ->
+//                _deletedEvent.value = deletedEvent
+//            }
+//        }
     }
 
     private val _yearList = MutableStateFlow<Map<Int, Map<Int, List<Int>>>>(emptyMap())
@@ -217,32 +213,33 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    fun setRegisterContentObserverState(isRegister: Boolean){
-        if (isRegister) {
-            calendarRepository.registerContentObserver()
-        } else {
-            calendarRepository.unregisterContentObserver()
-        }
-    }
+//    fun setRegisterContentObserverState(isRegister: Boolean){
+//        if (isRegister) {
+//            calendarRepository.registerContentObserver()
+//        } else {
+//            calendarRepository.unregisterContentObserver()
+//        }
+//    }
 
     /**Observe [holidayApiState] after getting data from API*/
     private fun collectCursorEventsState(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Register observer first
-                setRegisterContentObserverState(isRegister = true)
-                calendarRepository.setListener(object : CalendarEventListener {
-                    override fun onCalendarEventsChanged() {
-                        _isLoading.value = true // while fetching data
-                        setRegisterContentObserverState(isRegister = false)
-                        viewModelScope.launch {
-                            fetchAndUpdateCursorEvents(context) // 🔥 Separate Function for Clarity
-                        }
-                    }
-                })
+//                setRegisterContentObserverState(isRegister = true)
+//                calendarRepository.setListener(object : CalendarEventListener {
+//                    override fun onCalendarEventsChanged() {
+//                        _isLoading.value = true // while fetching data
+//                        setRegisterContentObserverState(isRegister = false)
+//                        viewModelScope.launch {
+//                            fetchAndUpdateCursorEvents(context) // 🔥 Separate Function for Clarity
+//                        }
+//                    }
+//                })
 
                 // Fetch Initial Data
-                fetchAndUpdateCursorEvents(context)
+                //fetchAndUpdateCursorEvents(context)
+                syncCursorEventsUseCase.invoke()
 
             } catch (e: Exception) {
                 // Log or handle errors here
@@ -265,7 +262,7 @@ class MainViewModel @Inject constructor(
                     Log.e(TAG, "Error fetching and updating cursor events", e)
                 } finally {
                     _isLoading.value = false
-                    setRegisterContentObserverState(isRegister = true)
+//                    setRegisterContentObserverState(isRegister = true)
                 }
             }
         }
@@ -302,9 +299,10 @@ class MainViewModel @Inject constructor(
         // Apply Changes
         if (deletedEvents.isNotEmpty()) {
             deletedEvents.forEach { eventRepository.deleteEvent(it) }
+
         }
         if (remainingEvents.isNotEmpty()) {
-            insertEvents(cursorEvents) // Insert both updated and new events together
+            //insertEvents(cursorEvents) // Insert both updated and new events together
         }
     }
 
@@ -391,7 +389,7 @@ class MainViewModel @Inject constructor(
                         apiCalls.awaitAll()
 
                         withContext(Dispatchers.IO) {
-                            insertEvents(allEventsOfAPI)
+                            eventRepository.insertEvents(allEventsOfAPI)
                             allEventsOfAPI.clear()
                         }
 
@@ -423,49 +421,7 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-    private val insertEventsMutex = Mutex()
-    private suspend fun insertEvents(events: List<Event>) {
-        events.forEach {
-            if (it.sourceType == SourceType.CURSOR)
-                Log.e(BASE_TAG, "final list: ${it.repeatOption},- ${it.title},- ${it.startTime},- ${it.isAllDay} ", )
-        }
-        _isLoading.value = true
-        // Ensure only one coroutine executes this block at a time
-        insertEventsMutex.withLock {
-            try {
-                // Update each event's nextTriggerTime
-                val updatedEvents = coroutineScope {
-                    events.map { event ->
-                        async(Dispatchers.Default) {
-                            var nextTriggerTime = event.triggerTime
 
-                            // Calculate nextTriggerTime if needed
-                            val minus: Long = AlertOffsetConverter.toMilliseconds(event.alertOffset) ?: 0L
-                            val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.startTime, event.repeatOption)
-
-                            nextTriggerTime = if (calculatedTriggerTime != null) {
-                                calculatedTriggerTime - minus
-                            }else{
-                                event.startTime - minus
-                            }
-
-                            // Return the updated event
-                            event.copy(triggerTime = nextTriggerTime)
-                        }
-                    }.awaitAll() // Collect all updated events
-                }
-
-                withContext(Dispatchers.IO) {
-                    eventRepository.upsertEvents(updatedEvents) 
-                }
-
-            } catch (e: Exception) {
-                // Handle any errors
-            }finally {
-                _isLoading.value = false
-            }
-        }
-    }
 
     //----------------------------------------------------------------//
     // Todo:for event showing below inside month view

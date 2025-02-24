@@ -11,6 +11,7 @@ import java.time.temporal.IsoFields
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object DateUtil {
     private val TAG = BASE_TAG + DateUtil::class.java.simpleName
@@ -387,7 +388,7 @@ object DateUtil {
     fun isAllDay(startTime: Long, endTime: Long): Boolean {
         val durationInMillis = endTime - startTime
         val oneDayMillis = 24 * 60 * 60 * 1000L // 86400000 ms
-        val result = durationInMillis in (oneDayMillis - 500)..(oneDayMillis + 500) // Reduced tolerance
+        val result = durationInMillis in (oneDayMillis - 1001)..(oneDayMillis + 500) // Reduced tolerance
         return result
     }
 
@@ -658,5 +659,27 @@ object DateUtil {
             if (seconds > 0 || (hours == 0L && minutes == 0L)) append("${seconds}S")
         }
     }
+
+    fun getMidnightTimestamp(eventTimeInMillis: Long): Long {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            timeInMillis = eventTimeInMillis // Set event time
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return calendar.timeInMillis
+    }
+    fun getEndOfDayTimestamp(eventTimeInMillis: Long): Long {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            timeInMillis = eventTimeInMillis // Set event time
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+        return calendar.timeInMillis
+    }
+
 }
 

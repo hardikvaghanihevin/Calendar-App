@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.SharedFlow
 interface EventRepository {
 
     val deletedEventFlow: SharedFlow<Event>
+    suspend fun insertEvents(events: List<Event>)
     suspend fun upsertEvent(event: Event)
     suspend fun upsertEvents(events: List<Event>)
     suspend fun deleteEvent(event: Event): Int
+    suspend fun deleteEvents(events: List<Event>): Int
     suspend fun deleteEventsHoliday()
     suspend fun deleteEventsCursor()
     suspend fun deleteEventsBySourceType(sourceType: SourceType)

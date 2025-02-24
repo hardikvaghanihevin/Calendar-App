@@ -60,16 +60,24 @@
             android:clearTaskOnLaunch="true"
             android:excludeFromRecents="false"
             tools:ignore="LockedOrientationActivity"/><!--adjustResize \ adjustNothing-->
+
         <receiver
             android:name=".presentation.receiver.NotificationReceiver"
             android:enabled="true"
             android:exported="true">
-
-            <!-- android:permission="android.permission.BROADCAST_STICKY" -->
             <intent-filter>
                 <action android:name="com.hardik.calendarapp.NOTIFY_EVENT" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".utillities.CalendarChangeReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
