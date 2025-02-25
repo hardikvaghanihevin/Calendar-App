@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
+import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.common.DataListState
@@ -66,6 +67,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private val viewModel: MainViewModel by activityViewModels()
     private val eventAdapter by lazy { EventAdapter() }
     private var yearMonthPairList: List<Pair<Int, Int>> = emptyList()
+    private var currentMonthPosition: Int = 0
     private val pageAdapter by lazy { CalendarMonthPageAdapter() }
 
     var year: Int = Calendar.getInstance().get(Calendar.YEAR)
@@ -75,6 +77,16 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     var bundle: Bundle? = null
 
     private lateinit var viewPager: ViewPager2
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            year = it.getInt(Constants.KEY_YEAR)
+            month = it.getInt(Constants.KEY_MONTH)//0 base month 0-11 (jan-dec0
+            day = it.getInt(Constants.KEY_DAY)
+            selectedDate = if (day == 0) null else "$year-$month-$day"//todo: when not get full date like [2024-0-'0'] set null
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCalendarMonth1Binding.inflate(inflater, container,false)
@@ -95,7 +107,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             day = it.getInt("DAY", Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
             selectedDate = it.getString("SELECTED_DATE")
 
-            //Log.v(TAG, "onViewStateRestored: $year $month $month - $selectedDate", )
+            Log.v(TAG, "onViewStateRestored: $year $month $month - $selectedDate", )
 
             val monthViewDate = "$year-$month-${0}"
             viewModel.updateMonthViewDate(monthViewDate)
@@ -111,7 +123,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             // Observe and update the event list
             observeViewModelState()
 
-            delay(100)
+//            delay(100)
             setupViewPager()
 
             setupEventRecycler()
@@ -328,7 +340,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun observeViewModelState() {
-        //Log.e(TAG, "observeViewModelState: ", )
+        Log.i(TAG, "observeViewModelState: ", )
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
             //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
@@ -336,7 +348,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 launch {
                     viewModel.selectedDate.collectLatest {
                         selectedDate = it
-                        //Log.e(TAG, "observeViewModelState: date-($year-$month) = $it", )
                         pageAdapter.setSelectedDate(selectedDate)
                     }
                 }
@@ -347,6 +358,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         year = date.first.toInt()
                         month = date.second.toInt()
                         day = date.third.toInt()
+
+                        Log.v(TAG, "observeViewModelState: monthViewDate: $year-$month-$day", )
                     }
                 }
 
@@ -391,22 +404,24 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
     private var selectedDate: String? = null
     private suspend fun setupViewPager() {
+        Log.i(TAG, "setupViewPager: ")
+
+        pageAdapter.updateYearMonthPairList(yearMonthPairList)
+        pageAdapter.updateEventsOfDate(_eventsOfDateMap)
+        pageAdapter.setSelectedDate(selectedDate)
 
         lifecycleScope.launch(Dispatchers.Main){
             viewModel.yearMonthPairList.collectLatest {
                 // When swipe happens, update the year in your adapter based on the position
-                val currentMonthPosition = findIndexOfYearMonth(it, targetYear = year, targetMonth = month)
-
-                //Todo: Start in the middle for infinite scrolling and set to the current month
+                val currentMonthPosition = findIndexOfYearMonth(yearMonthPairList, targetYear = year, targetMonth = month)
                 if (::viewPager.isInitialized){
+                    delay(100)
+                    Log.w(TAG, "setupViewPager: pos:$currentMonthPosition , $year-$month", )
                     viewPager.setCurrentItem(currentMonthPosition,false)
                 }
             }
         }
 
-        pageAdapter.updateYearMonthPairList(yearMonthPairList)
-        pageAdapter.updateEventsOfDate(_eventsOfDateMap)
-//        pageAdapter.setSelectedDate(selectedDate)
 
 //        val findDateDataA = viewModel.selectedDate.value.let {it:String ->
 //            val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
@@ -423,6 +438,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 //        viewModel.fetchEventsForMonthView(findDateDataA)
 
         pageAdapter.configureCustomView {customViewMonth ->
+            Log.e(TAG, "setupViewPager: ${customViewMonth.currentMonth}= $month, ${customViewMonth.currentYear}= $year", )
             customViewMonth.getDateClickListener { day:String ->
                 viewModel.updateSelectedDate(day)
                 viewModel.fetchEventsForMonthView(day )
@@ -437,25 +453,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 super.onPageSelected(position)
 
                 setNextPrevBtnColor()
-
-                // Retrieve year and month directly from yearMonthPairList
-               /* val (yr, mn) = yearMonthPairList[position]
-
-                val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
-
-                viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
-
-                viewModel.updateSelectedDate(selectedDate!!)
-
-                selectedDate?.let {it:String ->
-                    val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-                    if (yr.toString() == date.first && mn.toString() == date.second){
-                        val findDateDataB1 = "$yr-$mn-${date.third}"
-                        viewModel.fetchEventsForMonthView(findDateDataB1)
-                    } else {
-                        viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
-                    }
-                } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )*/
 
                 updateDataEventsAndMonthTitle(position)
 
@@ -494,43 +491,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                     //Log.e(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate", )
                     viewModel.fetchEventsForMonthView(finalDate )
-//                    selectedDate?.let {it:String ->
-//                        val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-//                        if (year.toString() == date.first && month.toString() == date.second){
-//                            val findDateDataB1 = "$year-$month-${date.third}"
-//                            viewModel.fetchEventsForMonthView(findDateDataB1)
-//                        } else {
-//                            viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
-//                        }
-//                    } ?: viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
-
-                    /*
-                    val yr = vh.customView.currentYear
-                    val mn = vh.customView.currentMonth
-                    val sdt = vh.customView.selectedDate
-
-                    //Log.e(TAG, "updateDataEventsAndMonthTitle: selectedDate==> $sdt = $selectedDate, ($yr, $mn, $dt)", )
-                    val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
-
-                    viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
-
-                    viewModel.updateSelectedDate(sdt!!)
-
-                    selectedDate?.let {it:String ->
-                        val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-                        if (yr.toString() == date.first && mn.toString() == date.second){
-                            val findDateDataB1 = "$yr-$mn-${date.third}"
-                            viewModel.fetchEventsForMonthView(findDateDataB1)
-                        } else {
-                            viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
-                        }
-                    } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )*/
                 }
                 // Access and modify views inside the ViewHolder here
             } else {
                 //Log.e(TAG, "❌ ViewHolder not found for position: $position, will retry.")
             }
-        }, 200) // Delay of 200ms to allow ViewPager2 to create the ViewHolder
+        }, 0) // Delay of 200ms to allow ViewPager2 to create the ViewHolder
 
     }
 

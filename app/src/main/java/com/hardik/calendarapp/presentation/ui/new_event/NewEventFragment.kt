@@ -228,39 +228,34 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.includedSave.root.apply {
             text = resources.getString(R.string.action_save)
             setOnClickListener {
-                if( (activity as MainActivity).areCalendarPermissionsGranted() ){
+                lifecycleScope.launch {
+                    val msg: String = viewModel.run {
+                        val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
 
-                    lifecycleScope.launch {
-                        val msg: String = viewModel.run {
-                            val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                        if (id != null) { viewModel.cancelAlarm(event = argEvent) }
+                        insertCustomEvent(context = requireContext(),id = id)
+                    }
 
-                            if (id != null) { viewModel.cancelAlarm(event = argEvent) }
-                            insertCustomEvent(context = requireContext(),id = id)
-                        }
+                    // Display a message to the user
+                    val notifyUser = context.resources.getString(R.string.event_insert_successfully)
+                        .takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY } ?: context.resources.getString(R.string.event_update_successfully)
+                        .takeIf { msg == Constants.EVENT_UPDATE_SUCCESSFULLY } ?: msg
+                    Snackbar.make(view, notifyUser, Snackbar.LENGTH_SHORT).show()
 
-                        // Display a message to the user
-                        val notifyUser = context.resources.getString(R.string.event_insert_successfully)
-                            .takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY } ?: context.resources.getString(R.string.event_update_successfully)
-                            .takeIf { msg == Constants.EVENT_UPDATE_SUCCESSFULLY } ?: msg
-                        Snackbar.make(view, notifyUser, Snackbar.LENGTH_SHORT).show()
+                    // Reset the fields after successful insertion
+                    if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
+                        viewModel.resetEventState()
 
-                        // Reset the fields after successful insertion
-                        if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
-                            viewModel.resetEventState()
-
-                            if (mainViewModel.isComingFromNotification.value){
-                                (activity as MainActivity).navigateToYearView()
-                                mainViewModel.setIsComingFromNotification(isComing = false)
-                            }else{
-                                findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg } ?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
-                            }
+                        if (mainViewModel.isComingFromNotification.value){
+                            (activity as MainActivity).navigateToYearView()
+                            mainViewModel.setIsComingFromNotification(isComing = false)
+                        }else{
+                            findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg } ?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
                         }
                     }
                 }
-                else { (activity as MainActivity).checkAndRequestCalendarPermissions() }
             }
         }
-
     }
 
     override fun onResume() {

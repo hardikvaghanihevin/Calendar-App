@@ -88,7 +88,7 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
 
     override fun onResume() {
         super.onResume()
-        viewModel.updateSelectedDate("2000-0-0")//reset selected date for back from monthView
+        viewModel.updateSelectedDate("1999-0-0")//reset selected date for back from monthView
 
         if (::viewPager.isInitialized) { // Code for unselected data.
             adapter.setSelectedDate(null)//"2025-1-5"

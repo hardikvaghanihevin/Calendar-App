@@ -17,8 +17,6 @@ import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.domain.repository.EventRepository
-import com.hardik.calendarapp.domain.use_case.DeleteCursorEventUseCase
-import com.hardik.calendarapp.domain.use_case.UpdateCursorEventUseCase
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
 import com.hardik.calendarapp.utillities.DateUtil.timestampToMinutes
@@ -38,9 +36,6 @@ import javax.inject.Inject
 @HiltViewModel
 class NewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,// For Database compatibility
-//    private val calendarRepository: CalendarRepositoryImpl,
-    private val deleteCursorEventUseCase: DeleteCursorEventUseCase,
-    private val updateCursorEventUseCase: UpdateCursorEventUseCase,
 ): ViewModel() {
     private val TAG = BASE_TAG + NewEventViewModel::class.java.simpleName
 
@@ -320,15 +315,6 @@ class NewEventViewModel @Inject constructor(
 
                     withContext(Dispatchers.IO) {
                         eventRepository.insertEvents(listOf(updatedEvent))
-
-                        if (updatedEvent.sourceType == SourceType.CURSOR) {
-                            updateCursorEventUseCase.invoke(updatedEvent)
-                            //setRegisterContentObserverState(isRegister = false)
-                            //val b = updateCursorEvent(context = context, updatedEvent)
-                            Log.i(TAG, "insertEvent: cursor:- ", )
-                            //setRegisterContentObserverState(isRegister = true)
-                        }
-
                     }
 
                 } catch (e: Exception) {
@@ -340,15 +326,7 @@ class NewEventViewModel @Inject constructor(
 
     /** Use in ViewEventFragment's [Delete] button :- for delete event */
     suspend fun deleteEvent(argEvent: Event): Int {
-        if (argEvent.sourceType == SourceType.CURSOR){ deleteCursorEventUseCase.invoke(argEvent.id.toLong())}
         return eventRepository.deleteEvent(argEvent)
     }
 
-//    fun setRegisterContentObserverState(isRegister: Boolean){
-//        if (isRegister) {
-//            calendarRepository.registerContentObserver()
-//        } else {
-//            calendarRepository.unregisterContentObserver()
-//        }
-//    }
 }

@@ -1,8 +1,6 @@
 package com.hardik.calendarapp.presentation
 
-//import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
 import android.app.Application
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -26,7 +24,6 @@ import com.hardik.calendarapp.domain.use_case.GetAllEventsUseCase
 import com.hardik.calendarapp.domain.use_case.GetEventsByDateOfMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetEventsByMonthOfTheYear
 import com.hardik.calendarapp.domain.use_case.GetHolidayApiUseCase
-import com.hardik.calendarapp.domain.use_case.SyncCursorEventsUseCase
 import com.hardik.calendarapp.presentation.adapter.CountryItem
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
@@ -34,8 +31,6 @@ import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.createYearData
 import com.hardik.calendarapp.utillities.createYearMonthPairs
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
-import com.hardik.calendarapp.utillities.getUserCustomEvents
-import com.hardik.calendarapp.utillities.toEventList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -48,7 +43,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -74,8 +68,6 @@ class MainViewModel @Inject constructor(
     private val getAllEventsUseCase : GetAllEventsUseCase,// For getting all events (indicator use)
     private val getEventsByMonthOfYear: GetEventsByMonthOfTheYear,
     private val getEventsByDateOfMonthOfYear: GetEventsByDateOfMonthOfTheYear,
-    private val syncCursorEventsUseCase: SyncCursorEventsUseCase,
-//    private val calendarRepository: CalendarRepositoryImpl,
 ) : AndroidViewModel(application) {
     private val TAG = BASE_TAG + MainViewModel::class.java.simpleName
 
@@ -149,17 +141,10 @@ class MainViewModel @Inject constructor(
 
     //----------------------------------------------------------------//
 
-//    private val _deletedEvent = MutableStateFlow<Event?>(null)
-//    val deletedEvent: Flow<Event> = _deletedEvent.filterNotNull().filter { it.sourceType == SourceType.CURSOR }//only cursor events here
     init {
         generateYearList(2000, 2100, isZeroBased = true)
         getAllEventsDateInMap()
         rescheduleAlert()
-//        viewModelScope.launch {
-//            eventRepository.deletedEventFlow.collect { deletedEvent ->
-//                _deletedEvent.value = deletedEvent
-//            }
-//        }
     }
 
     private val _yearList = MutableStateFlow<Map<Int, Map<Int, List<Int>>>>(emptyMap())
@@ -203,110 +188,8 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
 
-    fun initializeViewModel() {
-        viewModelScope.launch(Dispatchers.IO) {
-            collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
-        }
-    }
-
-
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
-
-//    fun setRegisterContentObserverState(isRegister: Boolean){
-//        if (isRegister) {
-//            calendarRepository.registerContentObserver()
-//        } else {
-//            calendarRepository.unregisterContentObserver()
-//        }
-//    }
-
-    /**Observe [holidayApiState] after getting data from API*/
-    private fun collectCursorEventsState(context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // Register observer first
-//                setRegisterContentObserverState(isRegister = true)
-//                calendarRepository.setListener(object : CalendarEventListener {
-//                    override fun onCalendarEventsChanged() {
-//                        _isLoading.value = true // while fetching data
-//                        setRegisterContentObserverState(isRegister = false)
-//                        viewModelScope.launch {
-//                            fetchAndUpdateCursorEvents(context) // 🔥 Separate Function for Clarity
-//                        }
-//                    }
-//                })
-
-                // Fetch Initial Data
-                //fetchAndUpdateCursorEvents(context)
-                syncCursorEventsUseCase.invoke()
-
-            } catch (e: Exception) {
-                // Log or handle errors here
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private val updateMutex =  Mutex()
-    private suspend fun fetchAndUpdateCursorEvents(context: Context) {
-        _isLoading.value = true
-        updateMutex.withLock {
-
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    //eventRepository.deleteEventsCursor()
-                    syncCursorEvents(context)
-                } catch (e: Exception) {
-                    // Handle exceptions here
-                    Log.e(TAG, "Error fetching and updating cursor events", e)
-                } finally {
-                    _isLoading.value = false
-//                    setRegisterContentObserverState(isRegister = true)
-                }
-            }
-        }
-    }
-
-    private suspend fun syncCursorEvents(context: Context) {
-        val cursorEvents = getUserCustomEvents(context).toEventList() // Fetch device calendar events
-//        insertEvents(cursorEvents, "${SourceType.CURSOR}")
-        val storedEvents = eventRepository.getEventsBySourceType(SourceType.CURSOR).first() // Fetch stored events
-
-        val cursorEventsMap = cursorEvents.associateBy { it.id }
-        val storedEventsMap = storedEvents.associateBy { it.id }
-
-        val remainingEvents = mutableListOf<Event>() // This will store both updated & new events
-        val deletedEvents = mutableListOf<Event>() // This will store only deleted events
-
-        // Identify Deleted Events
-        for ((id, storedEvent) in storedEventsMap) {
-            val cursorEvent = cursorEventsMap[id]
-            if (cursorEvent == null) {
-                deletedEvents.add(storedEvent) // Event is missing in cursor (deleted)
-            } else {
-                remainingEvents.add(cursorEvent) // Add all remaining (new + updated) events
-            }
-        }
-
-        // Add new events (which were not stored before)
-        for ((id, cursorEvent) in cursorEventsMap) {
-            if (!storedEventsMap.containsKey(id)) {
-                remainingEvents.add(cursorEvent) // New event found, add to remainingEvents
-            }
-        }
-
-        // Apply Changes
-        if (deletedEvents.isNotEmpty()) {
-            deletedEvents.forEach { eventRepository.deleteEvent(it) }
-
-        }
-        if (remainingEvents.isNotEmpty()) {
-            //insertEvents(cursorEvents) // Insert both updated and new events together
-        }
-    }
-
-
 
 
     /**Get holiday list by using API*/
@@ -315,8 +198,6 @@ class MainViewModel @Inject constructor(
     private var holidayMutex = Mutex()
 
     fun getHolidayCalendarData() {
-
-        _isLoading.value = true
         viewModelScope.launch {
             holidayMutex.withLock {
                 currentJob?.cancel()
@@ -400,8 +281,6 @@ class MainViewModel @Inject constructor(
                         // Handle other exceptions
                         Log.e(TAG, "getHolidayCalendarData: ", e )
                     } finally {
-                        _isLoading.value = false
-
                         rescheduleAlert()// because alert is set on event but not get notification
                     }
                 }
@@ -420,10 +299,6 @@ class MainViewModel @Inject constructor(
     }
 
     //----------------------------------------------------------------//
-
-
-
-    //----------------------------------------------------------------//
     // Todo:for event showing below inside month view
 
     private val _monthlyEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
@@ -433,51 +308,39 @@ class MainViewModel @Inject constructor(
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            isLoading.collect{
-                if (it == true){
-                    _monthlyEventsState.value = DataListState(isLoading = true)
-                }else{
-                    try {
-                        getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
-                            // Update state with data
-                            setFirstEventOfEachWeek(events)
-                            _monthlyEventsState.value = DataListState(isLoading = false, data = events)
-                        }
-                    } catch (e: Exception) {
-                        // Handle errors
-                        _monthlyEventsState.value = DataListState(
-                            isLoading = false,
-                            error = e.message ?: "An unknown error occurred"
-                        )
-                    }
+            try {
+                getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
+                    // Update state with data
+                    setFirstEventOfEachWeek(events)
+                    _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                 }
+            } catch (e: Exception) {
+                // Handle errors
+                _monthlyEventsState.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
             }
         }
     }
 
-    fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String) {//todo: use in CalendarMonth1Fragment for onDateClick
+    private fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String) {//todo: use in CalendarMonth1Fragment for onDateClick
         _monthlyEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            isLoading.collect{
-                if (it == true){
-                    _monthlyEventsState.value = DataListState(isLoading = true)
-                }else {
-                    try {
-                        getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date)
-                            .collectLatest { events ->
-                                // Update state with data
-                                setFirstEventOfEachWeek(events)
-                                _monthlyEventsState.value = DataListState(isLoading = false, data = events)
-                            }
-                    } catch (e: Exception) {
-                        // Handle errors
-                        _monthlyEventsState.value = DataListState(
-                            isLoading = false,
-                            error = e.message ?: "An unknown error occurred"
-                        )
+            try {
+                getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date)
+                    .collectLatest { events ->
+                        // Update state with data
+                        setFirstEventOfEachWeek(events)
+                        _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                     }
-                }
+            } catch (e: Exception) {
+                // Handle errors
+                _monthlyEventsState.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
             }
         }
     }
@@ -578,24 +441,18 @@ class MainViewModel @Inject constructor(
         _allEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            isLoading.collect{
-                if (it == true){
-                    _allEventsState.value = DataListState(isLoading = true)
-                }else {
-                    try {
-                        getAllEventsUseCase.invoke().collectLatest { events ->
-                            // Update state with data
-                            setFirstEventOfEachWeek(events)
-                            _allEventsState.value = DataListState(isLoading = false, data = events )
-                        }
-                    } catch (e: Exception) {
-                        // Handle errors
-                        _allEventsState.value = DataListState(
-                            isLoading = false,
-                            error = e.message ?: "An unknown error occurred"
-                        )
-                    }
+            try {
+                getAllEventsUseCase.invoke().collectLatest { events ->
+                    // Update state with data
+                    setFirstEventOfEachWeek(events)
+                    _allEventsState.value = DataListState(isLoading = false, data = events )
                 }
+            } catch (e: Exception) {
+                // Handle errors
+                _allEventsState.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
             }
         }
     }
@@ -634,6 +491,7 @@ class MainViewModel @Inject constructor(
     val monthViewDate: StateFlow<String> = _monthViewDate
     fun updateMonthViewDate(monthViewDate: String){//Todo: check here
         viewModelScope.launch {
+            //Log.e(TAG, "updateMonthViewDate: $monthViewDate", )
             _monthViewDate.value = monthViewDate
         }
     }
