@@ -19,7 +19,6 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_dd_MM_yyyy_1
 import com.hardik.calendarapp.utillities.DateUtil.DATE_FORMAT_yyyy_MM_dd
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
-import com.hardik.calendarapp.utillities.DateUtil.isAllDay
 import com.hardik.calendarapp.utillities.ImageColorUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -237,14 +236,17 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                 eventTitle.text = event.title
 
                 // Set "All day" or time period based on start and end time
-                eventTimePeriod.text = if (isAllDay(startTime = event.startTime, endTime = event.endTime))
+                eventTimePeriod.text = if (event.isAllDay){
                     ContextCompat.getString(binding.root.context, R.string.all_day)
-                else {
-                    val startTime = DateUtil.longToString(event.startTime, TIME_FORMAT_HH_mm)
-                    val endTime = DateUtil.longToString(event.endTime, TIME_FORMAT_HH_mm)
-                    if (startTime == "00:00" && endTime == "00:00") "-"
-                    else if (startTime == "00:00" && endTime == "23:59") ContextCompat.getString(binding.root.context, R.string.all_day)
-                    else "$startTime (${DateUtil.getDuration(startTimestamp = event.startTime, endTimestamp = DateUtil.mergeDateAndTime(DateUtil.stringToLong(event.endDate), event.endTime))})" //- $endTime"
+                } else{
+                    //if (isAllDay(startTime = event.startTime, endTime = event.endTime)) ContextCompat.getString(binding.root.context, R.string.all_day)
+                    //else {
+                        val startTime = DateUtil.longToString(event.startTime, TIME_FORMAT_HH_mm)
+                        val endTime = DateUtil.longToString(event.endTime, TIME_FORMAT_HH_mm)
+                        //if (startTime == "00:00" && endTime == "00:00") "-"
+                        //else if (startTime == "00:00" && endTime == "23:59") ContextCompat.getString(binding.root.context, R.string.all_day)else
+                        "$startTime (${DateUtil.getDuration(startTimestamp = event.startTime, endTimestamp = DateUtil.mergeDateAndTime(DateUtil.stringToLong(event.endDate), event.endTime))})" //- $endTime"
+                    //}
                 }
 
                 // Handle item clicks

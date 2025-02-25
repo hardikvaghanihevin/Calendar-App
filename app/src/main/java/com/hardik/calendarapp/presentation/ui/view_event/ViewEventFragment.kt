@@ -133,7 +133,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         // Set the "All Day" status
         binding.switchAllDay.apply {
             visibility = if (event.sourceType == SourceType.REMOTE) View.INVISIBLE else View.VISIBLE
-            isChecked = DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime) || event.isAllDay
+            isChecked = event.isAllDay //DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime) || event.isAllDay
         }
 
         // Populate start and end dates

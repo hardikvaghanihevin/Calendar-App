@@ -235,6 +235,7 @@ class NewEventViewModel @Inject constructor(
             month = date.second,
             date = date.third,
             eventType = EventType.PERSONAL,
+            isAllDay = isAllDay.value,
             isHoliday = false,
             sourceType = sourceType.value,
             repeatOption = repeatOption.value,
