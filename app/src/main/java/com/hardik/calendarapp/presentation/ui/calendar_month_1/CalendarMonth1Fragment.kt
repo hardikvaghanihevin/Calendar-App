@@ -408,21 +408,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
         pageAdapter.updateYearMonthPairList(yearMonthPairList)
         pageAdapter.updateEventsOfDate(_eventsOfDateMap)
-//        pageAdapter.setSelectedDate(selectedDate)
-
-//        val findDateDataA = viewModel.selectedDate.value.let {it:String ->
-//            val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-//            if (date.first.toInt() == year && date.second.toInt() == month){
-//                if (year.toString() == date.first && month.toString() == date.second){
-//                    "$year-$month-${date.third}"
-//                } else {
-//                    "$year-$month-${0}"
-//                }
-//            }else{
-//                "$year-$month-${0}"
-//            }
-//        }
-//        viewModel.fetchEventsForMonthView(findDateDataA)
 
         pageAdapter.configureCustomView {customViewMonth ->
             customViewMonth.getDateClickListener { day:String ->
@@ -439,26 +424,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 super.onPageSelected(position)
 
                 setNextPrevBtnColor()
-
-                // Retrieve year and month directly from yearMonthPairList
-               /* val (yr, mn) = yearMonthPairList[position]
-
-                val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
-
-                viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
-
-                viewModel.updateSelectedDate(selectedDate!!)
-
-                selectedDate?.let {it:String ->
-                    val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-                    if (yr.toString() == date.first && mn.toString() == date.second){
-                        val findDateDataB1 = "$yr-$mn-${date.third}"
-                        viewModel.fetchEventsForMonthView(findDateDataB1)
-                    } else {
-                        viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
-                    }
-                } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )*/
-
                 updateDataEventsAndMonthTitle(position)
 
             }
@@ -496,37 +461,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     }
                     //Log.e(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate", )
                     viewModel.fetchEventsForMonthView(finalDate )
-//                    selectedDate?.let {it:String ->
-//                        val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-//                        if (year.toString() == date.first && month.toString() == date.second){
-//                            val findDateDataB1 = "$year-$month-${date.third}"
-//                            viewModel.fetchEventsForMonthView(findDateDataB1)
-//                        } else {
-//                            viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
-//                        }
-//                    } ?: viewModel.getEventsByMonthOfYear(year = year.toString(), month = month.toString() )
 
-                    /*
-                    val yr = vh.customView.currentYear
-                    val mn = vh.customView.currentMonth
-                    val sdt = vh.customView.selectedDate
-
-                    //Log.e(TAG, "updateDataEventsAndMonthTitle: selectedDate==> $sdt = $selectedDate, ($yr, $mn, $dt)", )
-                    val tvMonthTitle = resources.getStringArray(R.array.months)[mn]+" " + yr
-
-                    viewModel.updateTvMonthTitle(tvMTitle = tvMonthTitle)
-
-                    viewModel.updateSelectedDate(sdt!!)
-
-                    selectedDate?.let {it:String ->
-                        val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
-                        if (yr.toString() == date.first && mn.toString() == date.second){
-                            val findDateDataB1 = "$yr-$mn-${date.third}"
-                            viewModel.fetchEventsForMonthView(findDateDataB1)
-                        } else {
-                            viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )
-                        }
-                    } ?: viewModel.getEventsByMonthOfYear(year = yr.toString(), month = mn.toString() )*/
                 }
                 // Access and modify views inside the ViewHolder here
             } else {
