@@ -209,7 +209,7 @@ class MainViewModel @Inject constructor(
 
     fun initializeViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
-            collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
+//            collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
         }
     }
 
@@ -236,13 +236,13 @@ class MainViewModel @Inject constructor(
                         _isLoading.value = true // while fetching data
                         setRegisterContentObserverState(isRegister = false)
                         viewModelScope.launch {
-                            fetchAndUpdateCursorEvents(context) // 🔥 Separate Function for Clarity
+//                            fetchAndUpdateCursorEvents(context) // 🔥 Separate Function for Clarity
                         }
                     }
                 })
 
                 // Fetch Initial Data
-                fetchAndUpdateCursorEvents(context)
+//                fetchAndUpdateCursorEvents(context)
 
             } catch (e: Exception) {
                 // Log or handle errors here
@@ -259,7 +259,7 @@ class MainViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 try {
                     //eventRepository.deleteEventsCursor()
-                    syncCursorEvents(context)
+                    //syncCursorEvents(context)
                 } catch (e: Exception) {
                     // Handle exceptions here
                     Log.e(TAG, "Error fetching and updating cursor events", e)
@@ -304,7 +304,7 @@ class MainViewModel @Inject constructor(
             deletedEvents.forEach { eventRepository.deleteEvent(it) }
         }
         if (remainingEvents.isNotEmpty()) {
-            insertEvents(cursorEvents) // Insert both updated and new events together
+            //insertEvents(cursorEvents) // Insert both updated and new events together
         }
     }
 

@@ -1150,12 +1150,6 @@ class MainActivity : AppCompatActivity() {
     // region Call this function to request permissions as needed
     fun checkAndRequestCalendarPermissions() {
         val permissions = mutableListOf<String>()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            permissions.add(Manifest.permission.READ_CALENDAR)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            permissions.add(Manifest.permission.WRITE_CALENDAR)
-        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 permissions.add(Manifest.permission.POST_NOTIFICATIONS)
@@ -1186,23 +1180,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun areCalendarPermissionsGranted(): Boolean {
-        val readPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
-        val writePermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
         val postNotificationPermission =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
             } else {
                 PackageManager.PERMISSION_GRANTED
             }
-        return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED && postNotificationPermission == PackageManager.PERMISSION_GRANTED
+        return postNotificationPermission == PackageManager.PERMISSION_GRANTED
     }
 
     private fun initializeViewModelIfNeeded() {
         mainViewModel.getHolidayCalendarData()
         if (areCalendarPermissionsGranted()) {
-            mainViewModel.initializeViewModel() // Call your ViewModel initialization function
+            //mainViewModel.initializeViewModel() // Call your ViewModel initialization function
             if (!isAutostartSet) {
                 getAutoStartPermission()
                 sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
