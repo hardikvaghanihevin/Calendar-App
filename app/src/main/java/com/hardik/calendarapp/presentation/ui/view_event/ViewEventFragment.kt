@@ -96,7 +96,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
                     if (isDelete == 1) {
                         if (argEvent.sourceType == SourceType.CURSOR){
 //                            deleteCursorEvent(requireContext(), argEvent.id.toLong())
-                            mainViewModel.setRegisterContentObserverState(isRegister = false)
                         }
                     }
                     Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_SHORT).show()

@@ -3,7 +3,6 @@ package com.hardik.calendarapp.di
 import android.content.Context
 import com.hardik.calendarapp.data.database.AppDatabase
 import com.hardik.calendarapp.data.database.dao.EventDao
-import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
 import com.hardik.calendarapp.data.repository.EventRepositoryImpl
 import com.hardik.calendarapp.domain.repository.EventRepository
 import dagger.Module
@@ -33,11 +32,5 @@ object DatabaseModule {
     @Singleton
     fun provideEventRepository(eventDao: EventDao, @ApplicationContext context: Context): EventRepository {
         return EventRepositoryImpl(eventDao, context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideCursorEventRepository(@ApplicationContext context: Context): CalendarRepositoryImpl {
-        return CalendarRepositoryImpl(context)
     }
 }

@@ -15,12 +15,10 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.EventType
 import com.hardik.calendarapp.data.database.entity.RepeatOption
 import com.hardik.calendarapp.data.database.entity.SourceType
-import com.hardik.calendarapp.data.repository.CalendarRepositoryImpl
 import com.hardik.calendarapp.domain.repository.EventRepository
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.mergeDateAndTime
 import com.hardik.calendarapp.utillities.DateUtil.timestampToMinutes
-import com.hardik.calendarapp.utillities.updateCursorEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,7 +35,6 @@ import javax.inject.Inject
 @HiltViewModel
 class NewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,// For Database compatibility
-    private val calendarRepository: CalendarRepositoryImpl,
 ): ViewModel() {
     private val TAG = BASE_TAG + NewEventViewModel::class.java.simpleName
 
@@ -319,10 +316,7 @@ class NewEventViewModel @Inject constructor(
                         eventRepository.upsertEvent(updatedEvent)
 
                         if (updatedEvent.sourceType == SourceType.CURSOR) {
-                            //setRegisterContentObserverState(isRegister = false)
-                            val b = updateCursorEvent(context = context, updatedEvent)
-                            Log.i(TAG, "insertEvent: cursor:- $b", )
-                            //setRegisterContentObserverState(isRegister = true)
+                            Log.i(TAG, "insertEvent: cursor:- ", )
                         }
 
                     }
@@ -337,13 +331,5 @@ class NewEventViewModel @Inject constructor(
     /** Use in ViewEventFragment's [Delete] button :- for delete event */
     suspend fun deleteEvent(argEvent: Event): Int {
         return eventRepository.deleteEvent(argEvent)
-    }
-
-    fun setRegisterContentObserverState(isRegister: Boolean){
-        if (isRegister) {
-            calendarRepository.registerContentObserver()
-        } else {
-            calendarRepository.unregisterContentObserver()
-        }
     }
 }

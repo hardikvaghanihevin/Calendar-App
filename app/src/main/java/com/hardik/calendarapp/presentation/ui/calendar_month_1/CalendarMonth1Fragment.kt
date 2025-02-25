@@ -145,7 +145,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 val d: CharSequence = binding.tvMonthTitle.text
                 if (d.isNotEmpty()) {
                     val (y, m) = reverseYearMonth(d.toString()) ?: Pair(-1, -1)
-                    viewModel.getEventsByMonthOfYear( year = y.toString() , month = m.toString() )
+                    //viewModel.getEventsByMonthOfYear( year = y.toString() , month = m.toString() )
+                    val sDate = "$y-$m-${0}"
+                    viewModel.fetchEventsForMonthView(sDate = sDate)
                 }
             }
         }
@@ -318,7 +320,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
             viewModel.firstEventOfEachWeek.collectLatest {
 
-                delay(300)
+                delay(100)
                 eventAdapter.apply { updateData(data, it) }
 
 
