@@ -248,7 +248,7 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                 }
 
                 // Handle item clicks
-                itemEventLayout.setOnClickListener { configureEventCallBack?.invoke(event) }
+                constLay1ItemEvent.setOnClickListener { configureEventCallBack?.invoke(event) }
 
             }
 
