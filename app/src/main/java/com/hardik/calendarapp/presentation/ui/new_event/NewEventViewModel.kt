@@ -131,8 +131,9 @@ class NewEventViewModel @Inject constructor(
     val title: StateFlow<String> = _title
 
     fun updateTitle(title: String) {
+        val trimmedTitle = title.trim().replace("\\s+".toRegex(), " ") // Remove extra spaces
         viewModelScope.launch {
-            _title.value = title
+            _title.value = trimmedTitle
         }
     }
 
@@ -141,8 +142,9 @@ class NewEventViewModel @Inject constructor(
     val description: StateFlow<String> = _description
 
     fun updateDescription(description: String) {
+        val trimmedDescription = description.trim().replace("\\s+".toRegex(), " ") // Remove extra spaces
         viewModelScope.launch {
-            _description.value = description
+            _description.value = trimmedDescription
         }
     }
 
