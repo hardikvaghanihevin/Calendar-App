@@ -429,8 +429,12 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             }
         })
     }
-
+    private var isDateSetFromJump = false
     private fun updateDataEventsAndMonthTitle(position: Int) {
+        val currentMonthPosition = selectedDate?.let {
+            val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
+            findIndexOfYearMonth(yearMonthPairList, targetYear = date.first.toInt(), targetMonth = date.second.toInt())
+        }
         viewPager.postDelayed({
             val recyclerView = viewPager.getChildAt(0) as? RecyclerView
             val viewHolder = recyclerView?.findViewHolderForAdapterPosition(position) as? CalendarMonthPageAdapter.MonthViewHolder
@@ -442,6 +446,16 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     year = vh.customView.currentYear
                     month = vh.customView.currentMonth
                     selectedDate = vh.customView.selectedDate
+                    //Log.e(TAG, "updateDataEventsAndMonthTitle: $position $currentMonthPosition", )
+                    if (viewModel.isFromJump.value){
+                        if (position == currentMonthPosition){
+                            vh.customView.selectedDate = selectedDate//null
+                        }else{
+                            viewModel.updateSelectedDate("1900-0-0")
+                        }
+                    }else{
+                        viewModel.updateSelectedDate("1900-0-0")
+                    }
 
                     val tvMonthTitle = resources.getStringArray(R.array.months)[month]+" " + year
 
@@ -454,12 +468,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                     //Log.e(TAG, "updateDataEventsAndMonthTitle: $sdt | $ymdt", )
 
                     val date: Triple<String, String, String> = stringToDateTriple(sdt!!, isZeroBased = false)
-                    val finalDate = if (date.first.toInt() == year && date.second.toInt() == month){
-                        sdt
-                    }else{
-                        ymdt
-                    }
-                    //Log.e(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate", )
+                    val finalDate = if (date.first.toInt() == year && date.second.toInt() == month){ sdt }else{ ymdt }
+                    Log.i(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate ------------------>", )
                     viewModel.fetchEventsForMonthView(finalDate )
 
                 }

@@ -584,9 +584,11 @@ class MainViewModel @Inject constructor(
 
     private val _selectedDate = MutableStateFlow<String>("1999-0-0")
     val selectedDate: StateFlow<String> = _selectedDate
-
-    fun updateSelectedDate(selectedDate: String){
+    val isFromJump =  MutableStateFlow<Boolean>(false)
+    fun updateSelectedDate(selectedDate: String, isJumpTDate: Boolean = false){
+        //Log.i(TAG, "updateSelectedDate: $selectedDate - $isJumpTDate")
         viewModelScope.launch {
+            isFromJump.value = isJumpTDate
             _selectedDate.value = selectedDate
         }
     }

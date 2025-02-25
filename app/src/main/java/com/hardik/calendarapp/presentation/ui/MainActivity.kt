@@ -476,7 +476,7 @@ class MainActivity : AppCompatActivity() {
 
                     val jumpDate = "$selectedYear-${selectedMonth - 1}-$selectedDay"
                     mainViewModel.updateMonthViewDate(jumpDate)
-                    mainViewModel.updateSelectedDate(jumpDate)
+                    mainViewModel.updateSelectedDate(jumpDate, isJumpTDate = true)
                     navController.navigate(R.id.nav_month, null, navOptions)
                     resetJumpToDialog()
                 }
@@ -484,7 +484,7 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             btnCancel.setOnClickListener {
-                mainViewModel.updateSelectedDate("2000-0-0")
+                mainViewModel.updateSelectedDate("1999-0-0")
                 resetJumpToDialog()
                 dialog.dismiss()
             }
