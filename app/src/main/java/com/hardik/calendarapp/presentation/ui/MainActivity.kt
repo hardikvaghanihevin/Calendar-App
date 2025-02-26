@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         setupDrawerListener() //setupDrawerListener Function:
         handelBackPressed()
 
-        handleNotificationEventOpen(intent, "default")// when user click on notification event -> it's open 'ViewEventFragment'
+        handleNotificationEventOpen(intent)// when user click on notification event -> it's open 'ViewEventFragment'
 
         // Collecting the StateFlow
         lifecycleScope.launch {
@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent) // Update the current intent
-        handleNotificationEventOpen(intent, "new") // Handle the new intent
+        handleNotificationEventOpen(intent) // Handle the new intent
     }
 
     private fun updateToolbarAndViews(destination: NavDestination) {
@@ -1317,15 +1317,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
-    private fun handleNotificationEventOpen(intent: Intent?, mas: String= "") {
+    private fun handleNotificationEventOpen(intent: Intent?) {
         // Handle intent if launched from a notification
         val eventJson = intent?.getStringExtra(KEY_EVENT_JSON)
 
         eventJson?.let {
             val event: Event =  GsonUtil.fromJson(it, Event::class.java)!!
-            navigateToViewEventFrag(it, event)
-        }
 
+            // region Todo: this is important(while app close (not in recent), open notification, go back until app closed, then open app from recent (that is issue fixed here)
+            this.intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
+            setIntent(Intent()) // Set intent
+            intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
+
+            val eventTriggerTimeAndId = sharedPreferences.getStringSet("NotifyEventTriggerTimeAndId", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+            val maxStoredEvents = 100 // Set your preferred limit
+
+            // Limit stored events to `maxStoredEvents`
+            if (eventTriggerTimeAndId.size >= maxStoredEvents) {
+                eventTriggerTimeAndId.remove(eventTriggerTimeAndId.first()) // Remove the oldest entry
+            }
+
+            val isComingAgain :Boolean = (eventTriggerTimeAndId.contains("${event.triggerTime}=>${event.id}"))
+
+            if (isComingAgain){
+                return }
+            else{
+                navigateToViewEventFrag(eventJson, event) }
+
+            sharedPreferences.edit().apply {
+                putStringSet("NotifyEventTriggerTimeAndId", eventTriggerTimeAndId.toMutableSet().apply { add("${event.triggerTime}=>${event.id}") })
+                apply()
+            }
+            //endregion
+        }
         /*if (event != null) {
             Log.e(TAG, "handleNotificationEventOpen: $mas", )
             //intent.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
