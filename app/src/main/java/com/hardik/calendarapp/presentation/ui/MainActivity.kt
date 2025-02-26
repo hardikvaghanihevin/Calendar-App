@@ -44,8 +44,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
-import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.ActivityMainBinding
@@ -65,6 +65,7 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
+import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
@@ -132,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         setupDrawerListener() //setupDrawerListener Function:
         handelBackPressed()
 
-        handleNotificationEventOpen(intent)// when user click on notification event -> it's open 'ViewEventFragment'
+        handleNotificationEventOpen(intent, "default")// when user click on notification event -> it's open 'ViewEventFragment'
 
         // Collecting the StateFlow
         lifecycleScope.launch {
@@ -152,7 +153,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent) // Update the current intent
-        handleNotificationEventOpen(intent) // Handle the new intent
+        handleNotificationEventOpen(intent, "new") // Handle the new intent
     }
 
     private fun updateToolbarAndViews(destination: NavDestination) {
@@ -1316,17 +1317,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
-    private fun handleNotificationEventOpen(intent: Intent?) {
+    private fun handleNotificationEventOpen(intent: Intent?, mas: String= "") {
         // Handle intent if launched from a notification
-        val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent?.getParcelableExtra(Constants.KEY_EVENT, Event::class.java)
-        } else {
-            intent?.getParcelableExtra(Constants.KEY_EVENT)
+        val eventJson = intent?.getStringExtra(KEY_EVENT_JSON)
+
+        eventJson?.let {
+            val event: Event =  GsonUtil.fromJson(it, Event::class.java)!!
+            navigateToViewEventFrag(it, event)
         }
 
-        if (event != null) {
-            intent?.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
-            setIntent(Intent()) // Set intent
+        /*if (event != null) {
+            Log.e(TAG, "handleNotificationEventOpen: $mas", )
+            //intent.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
+            //setIntent(Intent()) // Set intent
+            intent.removeExtra(Constants.KEY_EVENT_JSON) // Prevent re-handling
 
             val eventTriggerTimeAndId = sharedPreferences.getStringSet("NotifyEventTriggerTimeAndId", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             val maxStoredEvents = 100 // Set your preferred limit
@@ -1338,22 +1342,27 @@ class MainActivity : AppCompatActivity() {
 
             val isComingAgain :Boolean = (eventTriggerTimeAndId.contains("${event.triggerTime}=>${event.id}"))
 
-            if (isComingAgain){ return }else{ navigateToViewEventFrag(event) }
+            if (isComingAgain){
+                Log.i(TAG, "handleNotificationEventOpen: ")
+                return }
+            else{
+                Log.i(TAG, "handleNotificationEventOpen: else")
+                navigateToViewEventFrag(event) }
 
             sharedPreferences.edit().apply {
                 putStringSet("NotifyEventTriggerTimeAndId", eventTriggerTimeAndId.toMutableSet().apply { add("${event.triggerTime}=>${event.id}") })
                 apply()
             }
-        }
+        }*/
     }
 
     //From coming Notification click
-    private fun navigateToViewEventFrag(event: Event) {
+    private fun navigateToViewEventFrag(eventJson: String, event: Event) {
         mainViewModel.setIsComingFromNotification(isComing = true)
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
             bundle = (bundle ?: Bundle()).apply {
-                putParcelable(Constants.KEY_EVENT, event)// Pass the event object
+                putString(KEY_EVENT_JSON, eventJson)// Pass the event object
             }
 
             // Mange the navigation from the notification object stack of screen

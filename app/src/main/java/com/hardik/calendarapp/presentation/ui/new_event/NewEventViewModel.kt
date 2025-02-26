@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.R
@@ -310,7 +309,7 @@ class NewEventViewModel @Inject constructor(
                                     event.startTime - minus
                                 }
 
-                                Log.e(TAG, "insertEvent: TriggerTime: $nextTriggerTime", )
+                                //Log.e(TAG, "insertEvent: TriggerTime: $nextTriggerTime", )
                                 event.copy(triggerTime = nextTriggerTime)
                             }.await() // Collect all updated events
                     }
@@ -319,7 +318,7 @@ class NewEventViewModel @Inject constructor(
                         eventRepository.upsertEvent(updatedEvent)
 
                         if (updatedEvent.sourceType == SourceType.CURSOR) {
-                            Log.i(TAG, "insertEvent: cursor:- ", )
+                            //Log.i(TAG, "insertEvent: cursor:- ", )
                         }
 
                     }

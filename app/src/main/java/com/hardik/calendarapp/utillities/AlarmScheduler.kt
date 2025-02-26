@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
@@ -87,7 +88,7 @@ object AlarmScheduler {
         val intent = Intent(context, NotificationReceiver::class.java).apply {
             action = "com.hardik.calendarapp.NOTIFY_EVENT"
 
-            putExtra("eventJson", eventJson)
+            putExtra(KEY_EVENT_JSON, eventJson)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(

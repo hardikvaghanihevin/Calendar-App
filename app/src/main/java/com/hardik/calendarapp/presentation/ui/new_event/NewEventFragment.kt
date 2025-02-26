@@ -24,8 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.common.Constants.KEY_EVENT
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_ALERT
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_REPEAT
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
@@ -41,6 +41,7 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_hh_mm_a
 import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
+import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,17 +66,22 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(KEY_EVENT, Event::class.java)
-                    ?: throw IllegalArgumentException("Event is missing")
-            } else {
-                @Suppress("DEPRECATION")
-                it.getParcelable(KEY_EVENT)
-                    ?: throw IllegalArgumentException("Event is missing")
+            val eventJson = it.getString(KEY_EVENT_JSON)
+            eventJson?.let {
+                argEvent = GsonUtil.fromJson(eventJson, Event::class.java)!!
             }
+
+//            argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                it.getParcelable(KEY_EVENT, Event::class.java)
+//                    ?: throw IllegalArgumentException("Event is missing")
+//            } else {
+//                @Suppress("DEPRECATION")
+//                it.getParcelable(KEY_EVENT)
+//                    ?: throw IllegalArgumentException("Event is missing")
+//            }
         }
 
-        if (arguments?.containsKey(KEY_EVENT) == true){
+        if (arguments?.containsKey(KEY_EVENT_JSON) == true){
             populateEventData(event = argEvent)
             updateToolbarTitle(resources.getString(R.string.update_event))
         }else{
@@ -232,7 +238,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
                     lifecycleScope.launch {
                         val msg: String = viewModel.run {
-                            val id = if (arguments?.containsKey(KEY_EVENT) == true) argEvent.id else null
+                            val id = if (arguments?.containsKey(KEY_EVENT_JSON) == true) argEvent.id else null
 
                             if (id != null) { viewModel.cancelAlarm(event = argEvent) }
                             insertCustomEvent(context = requireContext(),id = id)

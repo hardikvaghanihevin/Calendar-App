@@ -13,8 +13,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.hardik.calendarapp.R
-import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.RepeatOption
@@ -39,17 +39,15 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
 
-            val eventJson = intent.getStringExtra("eventJson")
-            val event: Event? = eventJson?.let {
-                    GsonUtil.fromJson(it, Event::class.java) // Specify Event::class.java
-                }
+            val eventJson = intent.getStringExtra(KEY_EVENT_JSON)
+            val event: Event? = eventJson?.let { GsonUtil.fromJson(it, Event::class.java) }
 
             if (event != null) {
                 CoroutineScope(Dispatchers.Default).launch {
 
                     scheduleRepeatingNotification(context , event)
 
-                    showNotification(context, event)
+                    showNotification(context, event, eventJson)
                 }
             }
         }
@@ -57,7 +55,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
 
 
-    private fun showNotification(context: Context, event: Event) {
+    private fun showNotification(context: Context, event: Event, eventJson: String) {
         val notificationManager = NotificationManagerCompat.from(context)
 
         // Create the notification channel for devices with API level 26 and above
@@ -74,8 +72,9 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // Intent to open MainActivity with the event data
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra(Constants.KEY_EVENT, event)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK// or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            //putExtra(Constants.KEY_EVENT, event)
+            putExtra(KEY_EVENT_JSON, eventJson)
         }
 
         val pendingIntent = PendingIntent.getActivity(

@@ -1,6 +1,5 @@
 package com.hardik.calendarapp.presentation.ui.view_event
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -11,7 +10,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.common.Constants.KEY_EVENT
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
@@ -25,6 +24,7 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.TIME_FORMAT_HH_mm
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
+import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -47,11 +47,9 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(KEY_EVENT, Event::class.java) ?: throw IllegalArgumentException("Event is missing")
-            } else {
-                @Suppress("DEPRECATION")
-                it.getParcelable(KEY_EVENT) ?: throw IllegalArgumentException("Event is missing")
+            val eventJson = it.getString(KEY_EVENT_JSON)
+            eventJson?.let {
+            argEvent = GsonUtil.fromJson(eventJson, Event::class.java)!!
             }
         }
     }
@@ -59,14 +57,14 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     override fun onResume() {
         super.onResume()
         arguments?.let {
-            val event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(KEY_EVENT, Event::class.java)
-            } else {
-                it.getParcelable(KEY_EVENT)
-            }
-            event?.let {
-                lifecycleScope.launch(Dispatchers.Main) {
-                   populateEventData(it)
+            val eventJson = it.getString(KEY_EVENT_JSON)
+            eventJson?.let {
+                argEvent = GsonUtil.fromJson(eventJson, Event::class.java)!!
+
+                argEvent.let {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        populateEventData(it)
+                    }
                 }
             }
         }
@@ -83,7 +81,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         /** Delete Event  */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedDelete.root.apply {
 
-            if (arguments?.containsKey(KEY_EVENT) == true){
+            if (arguments?.containsKey(KEY_EVENT_JSON) == true){
                 if (argEvent.sourceType != SourceType.CURSOR && argEvent.sourceType != SourceType.LOCAL){
                     hideViewWithAnimation(this)
                 }
@@ -114,7 +112,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         /** Edit Event  */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedViewEvent.includedSave.root.apply {
 
-            if (arguments?.containsKey(KEY_EVENT) == true){
+            if (arguments?.containsKey(KEY_EVENT_JSON) == true){
                 if (argEvent.sourceType != SourceType.CURSOR && argEvent.sourceType != SourceType.LOCAL){
                     hideViewWithAnimation(this)
                 }
@@ -186,8 +184,10 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     private fun navigateToNewEventFragForEdit(event: Event) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
+            //val bundle = Bundle().apply { putParcelable(KEY_EVENT, event)// Pass the event object }
+            val eventJson = GsonUtil.toJson(event)
             val bundle = Bundle().apply {
-                putParcelable(KEY_EVENT, event)// Pass the event object
+                putString(KEY_EVENT_JSON, eventJson)// Pass the event object
             }
             findNavController().navigate(R.id.newEventFragment, bundle, navOptions)
         }

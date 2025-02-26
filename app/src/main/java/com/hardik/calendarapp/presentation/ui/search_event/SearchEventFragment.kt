@@ -27,8 +27,8 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
-import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
@@ -39,6 +39,7 @@ import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
+import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
 import kotlinx.coroutines.flow.collectLatest
@@ -318,8 +319,9 @@ class SearchEventFragment : Fragment() {
     private fun navigateToViewEventFrag(event: Event) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
+            val eventJson = GsonUtil.toJson(event)
             bundle = (bundle ?: Bundle()).apply {
-                putParcelable(Constants.KEY_EVENT, event)// Pass the event object
+                putString(KEY_EVENT_JSON, eventJson)// Pass the event object
             }
 
             //region Todo : this is for title and menu items for ViewEventsFragment

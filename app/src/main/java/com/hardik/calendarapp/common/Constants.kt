@@ -11,6 +11,7 @@ object Constants {
     const val KEY_MONTH = "key_month"
     const val KEY_DAY = "key_day"
     const val KEY_EVENT = "key_event"
+    const val KEY_EVENT_JSON = "key_event_json"
     const val KEY_EVENT_REPEAT = "key_event_repeat"
     const val KEY_EVENT_ALERT = "key_event_alert"
 

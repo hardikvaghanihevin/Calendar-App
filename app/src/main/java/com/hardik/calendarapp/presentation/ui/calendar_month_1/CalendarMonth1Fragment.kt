@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.viewpager2.widget.ViewPager2
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
-import com.hardik.calendarapp.common.Constants.KEY_EVENT
+import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.data.database.entity.DayKey
 import com.hardik.calendarapp.data.database.entity.Event
@@ -41,6 +41,7 @@ import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import com.hardik.calendarapp.utillities.DisplayUtil.dpToPx
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
+import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
@@ -262,8 +263,9 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private fun navigateToViewEventFrag(event: Event) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
+            val eventJson = GsonUtil.toJson(event)
             bundle = (bundle ?: Bundle()).apply {
-                putParcelable(KEY_EVENT, event)// Pass the event object
+                putString(KEY_EVENT_JSON, eventJson)// Pass the event object
             }
 
             //region Todo : this is for title and menu items for ViewEventsFragment
@@ -345,7 +347,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 launch {
                     viewModel.selectedDate.collectLatest {
                         selectedDate = it
-                        Log.e(TAG, "observeViewModelState: date-($year-$month) = $it", )
+                        //Log.e(TAG, "observeViewModelState: date-($year-$month) = $it", )
                         pageAdapter.setSelectedDate(selectedDate)
                     }
                 }
@@ -476,7 +478,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
                     val date: Triple<String, String, String> = stringToDateTriple(sdt!!, isZeroBased = false)
                     val finalDate = if (date.first.toInt() == year && date.second.toInt() == month){ sdt }else{ ymdt }
-                    Log.i(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate ------------------>", )
+                    //Log.i(TAG, "updateDataEventsAndMonthTitle:fNL: $finalDate ------------------>", )
                     viewModel.fetchEventsForMonthView(finalDate )
 
                 }
