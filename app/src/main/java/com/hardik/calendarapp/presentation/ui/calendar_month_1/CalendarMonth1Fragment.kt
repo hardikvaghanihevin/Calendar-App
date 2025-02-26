@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -330,11 +329,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 delay(100)
                 eventAdapter.apply {
                     updateData(data, it)
-
-                    val visible = if (data.isEmpty()) View.VISIBLE else View.GONE
-                    binding.includedProgressLayout.progressBar.visibility = visible
-                    val visible1 = binding.includedProgressLayout.progressBar.isVisible
-                    binding.tvNotify.visibility = visible.takeIf { (!visible1 && visible == View.VISIBLE) } ?: View.GONE
+                    binding.includedProgressLayout.progressBar.visibility = View.GONE
+                    binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -349,7 +345,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 launch {
                     viewModel.selectedDate.collectLatest {
                         selectedDate = it
-                        //Log.e(TAG, "observeViewModelState: date-($year-$month) = $it", )
+                        Log.e(TAG, "observeViewModelState: date-($year-$month) = $it", )
                         pageAdapter.setSelectedDate(selectedDate)
                     }
                 }
@@ -462,10 +458,10 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                         if (position == currentMonthPosition){
                             vh.customView.selectedDate = selectedDate//null
                         }else{
-                            viewModel.updateSelectedDate("1900-0-0")
+                            viewModel.updateSelectedDate("1999-0-0")
                         }
                     }else{
-                        viewModel.updateSelectedDate("1900-0-0")
+                        viewModel.updateSelectedDate("1999-0-0")
                     }
 
                     val tvMonthTitle = resources.getStringArray(R.array.months)[month]+" " + year

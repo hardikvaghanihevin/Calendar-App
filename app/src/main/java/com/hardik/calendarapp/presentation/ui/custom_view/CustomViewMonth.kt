@@ -22,6 +22,7 @@ import com.hardik.calendarapp.data.database.entity.EventValue
 import com.hardik.calendarapp.data.database.entity.MonthKey
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.utillities.DateUtil.getFormattedDate
+import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -289,12 +290,17 @@ class CustomViewMonth(context: Context, attributeSet: AttributeSet) : FrameLayou
                         if (rect.contains(x.toInt(), y.toInt())) {
                             // Update selected date asynchronously
 
+                            val currentMonthDate = "$currentYear-$currentMonth-${0}"
+                            val d = stringToDateTriple(currentMonthDate)
                             // Get the clicked date from the Triple
                             val clickedDate = triple.third
-                            // Update selected date
-                            _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
-                            // Trigger the listener and redraw the view
-                            _selectedDate = onDateClickListener?.invoke(selectedDate.takeIf { it != null } ?: "$currentYear-$currentMonth-${0}")
+                            val d1 = stringToDateTriple(clickedDate)
+                            if (d.second == d1.second){//Todo for none selected previous/next month's date in current month
+                                // Update selected date
+                                _selectedDate = if (_selectedDate == clickedDate) null else clickedDate
+                                // Trigger the listener and redraw the view
+                                _selectedDate = onDateClickListener?.invoke(selectedDate.takeIf { it != null } ?: currentMonthDate)
+                            }
 
                             postInvalidate()
                             return@launch
