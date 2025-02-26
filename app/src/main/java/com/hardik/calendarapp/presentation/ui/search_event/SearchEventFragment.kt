@@ -8,12 +8,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -21,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
@@ -38,7 +41,6 @@ import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -55,6 +57,7 @@ class SearchEventFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private val eventAdapter by lazy { EventAdapter() }
     private var currentQuery: String? = null // Variable to store the current query for search
+    private var isFirstTimeFlag = true
 
     var bundle: Bundle? = null
 
@@ -162,10 +165,15 @@ class SearchEventFragment : Fragment() {
         }
 
         /** Back to current Event */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root.setOnClickListener { scrollEventIndexAtCurrentDate() }
+        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedBackToDate.root.setOnClickListener {
+            isFirstTimeFlag = true
+            val position = viewModel.currentEventPos.value
+            scrollEventIndexAtJumpToCurrentDate(position = position)
+        }
     }
 
     private fun setupUI() {
+        Log.i(TAG, "setupUI: ", )
         binding.apply {
             //region Event handlers
 
@@ -220,6 +228,14 @@ class SearchEventFragment : Fragment() {
 
             observeViewModelState()
 
+            val itemCount = binding.rvEvent.adapter?.itemCount ?: 0
+            if(itemCount != 0){
+                // show RecyclerView
+                rvEvent.visibility = View.VISIBLE
+                tvNotify.visibility = View.GONE
+                includedProgressLayout.progressBar.visibility = View.GONE
+            }
+
             eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event: Event ->
                 // got event update
@@ -257,6 +273,7 @@ class SearchEventFragment : Fragment() {
     }
 
     private suspend fun handleDataState(dataState: DataListState<Event>) {
+
         if (dataState.isLoading) {
             // Show loading indicator
             binding.includedProgressLayout.progressBar.visibility = View.VISIBLE
@@ -274,18 +291,26 @@ class SearchEventFragment : Fragment() {
         } else {
             // Update UI with the user list
             val data = dataState.data
+            viewModel.findPositionOfEvent(data)
 
-            binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
 
             viewModel.firstEventOfEachWeek.collectLatest {
 
-                viewModel.findPositionOfEvent(data)
-                delay(300)
-                eventAdapter.apply { updateData(data, it) }
+                //delay(300)
+                //eventAdapter.apply { updateData(data, it) }
                 // Scroll to position after data is loaded
-                scrollEventIndexAtCurrentDate()
+                //scrollEventIndexAtCurrentDate()
+                eventAdapter.apply {
+                    updateData(data, it)
 
-                binding.includedProgressLayout.progressBar.visibility = View.GONE
+                    scrollEventIndexAtCurrentDate()
+
+                    val visible = if (data.isEmpty()) View.VISIBLE else View.GONE
+                    binding.includedProgressLayout.progressBar.visibility = visible
+                    val visible1 = binding.includedProgressLayout.progressBar.isVisible
+                    binding.tvNotify.visibility = visible.takeIf { (!visible1 && visible == View.VISIBLE) } ?: View.GONE
+                }
+
             }
         }
     }
@@ -357,11 +382,46 @@ class SearchEventFragment : Fragment() {
     // Reach out the current date's/month's event
     @SuppressLint("NotifyDataSetChanged")
     private fun scrollEventIndexAtCurrentDate() {
-        if (view != null) {
-            binding.rvEvent.post {
-                val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
-                layoutManager?.scrollToPositionWithOffset(viewModel.currentEventPos.value, 0)
-                eventAdapter.notifyDataSetChanged()
+        viewModel.currentEventPos.value.let { position ->
+            if (isFirstTimeFlag){
+                isFirstTimeFlag = false
+                (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                binding.rvEvent.post {
+
+                    /*//binding.rvEvent.layoutManager?.scrollToPosition(position)
+                    (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                    binding.rvEvent.post {
+                        binding.rvEvent.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                                binding.rvEvent.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                            }
+                        })
+                    }//TODO OR */
+
+                    //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                    binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                        override fun onPreDraw(): Boolean {
+                            binding.rvEvent.viewTreeObserver.removeOnPreDrawListener(this)
+                            (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                            return true
+                        }
+                    })
+                }
+            }
+        }
+    }
+    private fun scrollEventIndexAtJumpToCurrentDate(position: Int = -1) {
+        binding.rvEvent.post {
+            val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
+            if (position != -1) {
+                val smoothScroller = object : LinearSmoothScroller(binding.rvEvent.context) {
+                    override fun getVerticalSnapPreference(): Int {
+                        return SNAP_TO_START
+                    }
+                }
+                smoothScroller.targetPosition = position
+                layoutManager?.startSmoothScroll(smoothScroller)
             }
         }
     }

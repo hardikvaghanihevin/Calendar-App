@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -244,6 +245,14 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
             observeViewModelState1()
 
+            val itemCount = binding.rvEvent.adapter?.itemCount ?: 0
+            if(itemCount != 0){
+                // show RecyclerView
+                rvEvent.visibility = View.VISIBLE
+                tvNotify.visibility = View.GONE
+                includedProgressLayout.progressBar.visibility = View.GONE
+            }
+
             eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event:Event->
                 // got event update
@@ -316,15 +325,17 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             // Update UI with the user list
             val data = dataState.data
 
-            binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-
             viewModel.firstEventOfEachWeek.collectLatest {
 
                 delay(100)
-                eventAdapter.apply { updateData(data, it) }
+                eventAdapter.apply {
+                    updateData(data, it)
 
-
-                binding.includedProgressLayout.progressBar.visibility = View.GONE
+                    val visible = if (data.isEmpty()) View.VISIBLE else View.GONE
+                    binding.includedProgressLayout.progressBar.visibility = visible
+                    val visible1 = binding.includedProgressLayout.progressBar.isVisible
+                    binding.tvNotify.visibility = visible.takeIf { (!visible1 && visible == View.VISIBLE) } ?: View.GONE
+                }
             }
         }
     }
