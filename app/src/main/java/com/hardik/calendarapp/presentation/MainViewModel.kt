@@ -159,17 +159,22 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _yearList = MutableStateFlow<Map<Int, Map<Int, List<Int>>>>(emptyMap())
+    private val _yearList = MutableStateFlow(emptyMap<Int, Map<Int, List<Int>>>())
     val yearList: StateFlow<Map<Int, Map<Int, List<Int>>>> = _yearList
 
     /** The yearList and perform the data generation in a coroutine.*/
     private fun generateYearList(startYear: Int, endYear: Int, isZeroBased: Boolean) {
         viewModelScope.launch {
-            val data = withContext(Dispatchers.Default) {
-                createYearData(startYear, endYear, isZeroBased)
+            try {
+                val data = withContext(Dispatchers.Default) {
+                    createYearData(startYear, endYear, isZeroBased)
+                }
+                generateYearMonthPairs(startYear, endYear, isZeroBased)
+                _yearList.value = data ?: emptyMap() // ✅ Ensures non-null value
+            } catch (e: Exception) {
+                _yearList.value = emptyMap() // ✅ Fallback to empty state
+                //Log.e("MainViewModel", "Error generating year list", e)
             }
-            generateYearMonthPairs(startYear,endYear,isZeroBased)
-            _yearList.value = data
         }
     }
 
