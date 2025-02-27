@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private var drawerMenuAdapter = DrawerMenuAdapter()
 
-    var bundle: Bundle? = null
+//    var bundle: Bundle? = null
 
     companion object {
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
@@ -133,7 +133,9 @@ class MainActivity : AppCompatActivity() {
         setupDrawerListener() //setupDrawerListener Function:
         handelBackPressed()
 
-        handleNotificationEventOpen(intent)// when user click on notification event -> it's open 'ViewEventFragment'
+        if (intent?.hasExtra(KEY_EVENT_JSON) == true) {
+            handleNotificationEventOpen(intent)// when user click on notification event -> it's open 'ViewEventFragment'
+        }
 
         // Collecting the StateFlow
         lifecycleScope.launch {
@@ -152,8 +154,11 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        setIntent(intent) // Update the current intent
-        handleNotificationEventOpen(intent) // Handle the new intent
+//        setIntent(intent) // Update the current intent
+//        handleNotificationEventOpen(intent) // Handle the new intent
+        if (intent?.hasExtra(KEY_EVENT_JSON) == true) {
+            handleNotificationEventOpen(intent)
+        }
     }
 
     private fun updateToolbarAndViews(destination: NavDestination) {
@@ -1256,17 +1261,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         val handleExit: () -> Unit = {
-            finishAffinity() //  moveTaskToBack(true) Consistent app exit for both APIs
-
+            //finishAndRemoveTask()
+            //finishAffinity() //  moveTaskToBack(true) Consistent app exit for both APIs
+            val intent = Intent(applicationContext, SplashActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            startActivity(intent)
+            moveTaskToBack(true)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
                 if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                } else if (navController.currentDestination?.id == R.id.nav_year) {
-                    handleExit()
-                } else if (
+                }
+                else if (navController.currentDestination?.id == R.id.nav_year) { handleExit() }
+                else if (
                     navController.currentDestination?.id == R.id.nav_month ||
                     navController.currentDestination?.id == R.id.alertOptionFragment ||
                     navController.currentDestination?.id == R.id.repeatOptionFragment ||
@@ -1284,9 +1294,9 @@ class MainActivity : AppCompatActivity() {
                 override fun handleOnBackPressed() {
                     if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                         binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    } else if (navController.currentDestination?.id == R.id.nav_year) {
-                        handleExit()
-                    } else if (
+                    }
+                    else if (navController.currentDestination?.id == R.id.nav_year) { handleExit() }
+                    else if (
                         navController.currentDestination?.id == R.id.nav_month ||
                         navController.currentDestination?.id == R.id.alertOptionFragment ||
                         navController.currentDestination?.id == R.id.repeatOptionFragment ||
@@ -1322,31 +1332,18 @@ class MainActivity : AppCompatActivity() {
         val eventJson = intent?.getStringExtra(KEY_EVENT_JSON)
 
         eventJson?.let {
-            val event: Event =  GsonUtil.fromJson(it, Event::class.java)!!
+            if (isTaskRoot){
+                val event: Event =  GsonUtil.fromJson(it, Event::class.java)!!
 
-            // region Todo: this is important(while app close (not in recent), open notification, go back until app closed, then open app from recent (that is issue fixed here)
-            this.intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
-            setIntent(Intent()) // Set intent
-            intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
+                // region Todo: this is important(while app close (not in recent), open notification, go back until app closed, then open app from recent (that is issue fixed here)
+                //this.intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
+                //setIntent(Intent()) // Set intent
+                //intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
 
-            val eventTriggerTimeAndId = sharedPreferences.getStringSet("NotifyEventTriggerTimeAndId", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-            val maxStoredEvents = 100 // Set your preferred limit
+                this.intent.replaceExtras(Bundle())
+                this.intent.action = null
 
-            // Limit stored events to `maxStoredEvents`
-            if (eventTriggerTimeAndId.size >= maxStoredEvents) {
-                eventTriggerTimeAndId.remove(eventTriggerTimeAndId.first()) // Remove the oldest entry
-            }
-
-            val isComingAgain :Boolean = (eventTriggerTimeAndId.contains("${event.triggerTime}=>${event.id}"))
-
-            if (isComingAgain){
-                return }
-            else{
-                navigateToViewEventFrag(eventJson, event) }
-
-            sharedPreferences.edit().apply {
-                putStringSet("NotifyEventTriggerTimeAndId", eventTriggerTimeAndId.toMutableSet().apply { add("${event.triggerTime}=>${event.id}") })
-                apply()
+                navigateToViewEventFrag(eventJson, event)
             }
             //endregion
         }
@@ -1385,9 +1382,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.setIsComingFromNotification(isComing = true)
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            bundle = (bundle ?: Bundle()).apply {
-                putString(KEY_EVENT_JSON, eventJson)// Pass the event object
-            }
+            val bundle = Bundle().apply { putString(KEY_EVENT_JSON, eventJson) }
 
             // Mange the navigation from the notification object stack of screen
             val navOptions = NavOptions.Builder()
