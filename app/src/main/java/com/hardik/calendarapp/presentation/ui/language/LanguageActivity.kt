@@ -74,7 +74,7 @@ class LanguageActivity : AppCompatActivity() {
         val iconDrawableBackArrow = getDrawableFromAttribute(this, R.drawable.back_arrow_icon)
         binding.includedLanguageActivityCustomToolbar.sivNavigationIcon.apply {
             setImageDrawable(iconDrawableBackArrow)
-            setOnClickListener { navigateToMainActivity() }
+            setOnClickListener { handleBackAction() }
         }
 
         lifecycleScope.launch {
@@ -228,7 +228,8 @@ class LanguageActivity : AppCompatActivity() {
         if (isFirstLaunch) {
             finish() // This is sufficient; no need for onBackPressedDispatcher here
         } else {
-            navigateToMainActivity()
+            //navigateToMainActivity()
+            finish()
         }
     }
 }

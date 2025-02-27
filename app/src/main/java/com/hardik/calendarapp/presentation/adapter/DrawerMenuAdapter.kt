@@ -135,7 +135,8 @@ class DrawerMenuAdapter() : RecyclerView.Adapter<DrawerMenuAdapter.ViewHolder>()
             onClick?.invoke(item, position)
 
             // Check if the item title is "Jump to Date", or "First Day of the Week"
-            if ( item.title == ContextCompat.getString(it.context,R.string.jump_to_date)
+            if (item.title == ContextCompat.getString(it.context,R.string.select_language)
+                || item.title == ContextCompat.getString(it.context,R.string.jump_to_date)
                 || item.title == ContextCompat.getString(it.context,R.string.first_day_of_the_week)
                 || item.title == ContextCompat.getString(it.context, R.string.privacy_policy)) {
                 // If title matches, unselect the item (clear selection)

@@ -1078,7 +1078,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_select_language -> {
                 val intent = Intent(this@MainActivity, LanguageActivity::class.java)
                 startActivity(intent)
-                finish()
+                //finish()
             }
 
             R.id.nav_first_day_of_week -> showFirstDayOfTheWeek()

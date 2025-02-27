@@ -72,7 +72,7 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.constLayItemSetting.setOnClickListener {
                         val intent = Intent(requireActivity(), LanguageActivity::class.java)
                         startActivity(intent)
-                        requireActivity().finish()
+                        //requireActivity().finish()
                     }
                 }
                 includedItemFirstDayOfTheWeek.apply {
