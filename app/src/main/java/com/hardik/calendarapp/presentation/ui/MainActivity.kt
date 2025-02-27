@@ -50,6 +50,8 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.ActivityMainBinding
 import com.hardik.calendarapp.databinding.DialogAppThemeBinding
+import com.hardik.calendarapp.databinding.DialogAutoStartPermissionBinding
+import com.hardik.calendarapp.databinding.DialogBatteryOptimizationBinding
 import com.hardik.calendarapp.databinding.DialogDeviceInformationBinding
 import com.hardik.calendarapp.databinding.DialogFirstDayOfTheWeekBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
@@ -1164,21 +1166,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private var autoStartPermissionHelper: AutoStartPermissionHelper? = null
-    private fun getAutoStartPermission() {//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
-        autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
-
-        // Check if the auto-start permission is available on the device
-        val isAutoStartPermissionAvailable: Boolean =
-            autoStartPermissionHelper!!.isAutoStartPermissionAvailable(this, false)
-
-        // If the permission is available, request it
-        if (isAutoStartPermissionAvailable) {
-            val granted: Boolean = autoStartPermissionHelper!!.getAutoStartPermission(this, true, false)
-        }
-
-    }
-
     fun areCalendarPermissionsGranted(): Boolean {
         val postNotificationPermission =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -1193,23 +1180,17 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.getHolidayCalendarData()
         if (areCalendarPermissionsGranted()) {
             //mainViewModel.initializeViewModel() // Call your ViewModel initialization function
-            if (!isAutostartSet) {
-                getAutoStartPermission()
-                sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
-            }
-            if (!this.isBatteryOptimizationPermissionGranted()){
-                this.requestBatteryOptimizationPermission()
+            if (!this.isBatteryOptimizationPermissionGranted()) {
+                // Pehle Battery Optimization dialog show karein
+                showBatteryOptimizationDialog {
+                    // Jab Battery Optimization dismiss ho jaye, tab AutoStart check karein
+                    checkAutoStartPermission()
+                }
+            } else {
+                // Agar Battery Optimization already enabled hai, to sidha AutoStart check karein
+                checkAutoStartPermission()
             }
         }
-    }
-
-    fun Context.requestBatteryOptimizationPermission(){
-        startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${packageName}")))
-    }
-    fun Context.isBatteryOptimizationPermissionGranted(): Boolean{
-        val pkg = packageName;
-        val pm = getSystemService(PowerManager::class.java)
-        return pm.isIgnoringBatteryOptimizations(pkg)
     }
 
     // Handle the result of permission requests
@@ -1408,4 +1389,123 @@ class MainActivity : AppCompatActivity() {
         }
     }
     // endregion
+
+    // region Todo permission for Battery optimization
+    private fun Context.requestBatteryOptimizationPermission(){
+        startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${packageName}")))
+    }
+    private fun Context.isBatteryOptimizationPermissionGranted(): Boolean{
+        val pkg = packageName;
+        val pm = getSystemService(PowerManager::class.java)
+        return pm.isIgnoringBatteryOptimizations(pkg)
+    }
+
+    private var dialogBatteryOptimizationBinding: DialogBatteryOptimizationBinding? = null
+    private fun showBatteryOptimizationDialog(onDismiss: () -> Unit) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_battery_optimization, null)
+        dialogBatteryOptimizationBinding = DialogBatteryOptimizationBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+        dialog.setCancelable(false)
+        dialog.show()
+
+        dialogBatteryOptimizationBinding?.apply {
+
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+                onDismiss()
+            }
+
+            btnGoToNext.setOnClickListener {
+                if (!this@MainActivity.isBatteryOptimizationPermissionGranted()){
+                    this@MainActivity.requestBatteryOptimizationPermission()
+                    dialog.dismiss()
+                    onDismiss()
+                }
+            }
+        }
+    }
+    // endregion
+
+    // region Todo permission for AutoStart
+    private fun checkAutoStartPermission() {
+        if (!isAutostartSet) {
+            val isAutoStartPermissionAvailable: Boolean = AutoStartPermissionHelper.getInstance()
+                .isAutoStartPermissionAvailable(this, false)
+
+            if (isAutoStartPermissionAvailable) {
+                showAutoStartPermissionDialog { Log.e(TAG, "AutoStart permission dialog show.") }
+            }
+        }
+    }
+
+    private fun getAutoStartPermission() {//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
+        val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
+
+        // Check if the auto-start permission is available on the device
+        val isAutoStartPermissionAvailable: Boolean =
+            autoStartPermissionHelper.isAutoStartPermissionAvailable(this, false)
+
+        // If the permission is available, request it
+        if (isAutoStartPermissionAvailable) {
+            val granted: Boolean = autoStartPermissionHelper.getAutoStartPermission(this, true, false)
+        }
+    }
+
+    private var dialogAutoStartPermissionBinding: DialogAutoStartPermissionBinding? = null
+    private fun showAutoStartPermissionDialog(onDismiss: () -> Unit) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_auto_start_permission, null)
+        dialogAutoStartPermissionBinding = DialogAutoStartPermissionBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+           .setView(dialogView)
+           .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+        dialog.setCancelable(false)
+        dialog.show()
+
+        dialogAutoStartPermissionBinding?.apply {
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+                onDismiss()
+            }
+
+            btnGoToNext.setOnClickListener {
+                if (!isAutostartSet){
+                    getAutoStartPermission()
+                    sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+                    dialog.dismiss()
+                    onDismiss()
+                }
+            }
+        }
+    }
+    // endregion
 }
+//Auto Start Permissions : "Please enable AutoStart permission to ensure event reminders and notifications work properly, even when the app is closed or removed from the background."
+//Battery Optimization : "Enable this setting to allow the app to send notifications for scheduled events on time. If disabled, notifications may not appear, and reminders may fail to trigger."

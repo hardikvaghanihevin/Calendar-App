@@ -180,6 +180,10 @@
     <string name="yearview_scrolling">Scrollen in der Jahresansicht</string>
     <string name="default_selected_1_country">Standardmäßig ist 1 Land ausgewählt</string>
     <string name="enter_the_minutes">Geben Sie die Minuten ein</string>
+    <string name="auto_start_permissions">Autostart-Berechtigungen</string>
+    <string name="battery_optimization">Batterieoptimierung</string>
+    <string name="battery_optimization_message">Aktivieren Sie diese Einstellung, damit die App Benachrichtigungen für geplante Ereignisse rechtzeitig senden kann. Wenn die Funktion deaktiviert ist, werden Benachrichtigungen möglicherweise nicht angezeigt und Erinnerungen werden möglicherweise nicht ausgelöst.</string>
+    <string name="auto_start_permissions_message">Bitte aktivieren Sie die AutoStart-Berechtigung, um sicherzustellen, dass Ereigniserinnerungen und Benachrichtigungen ordnungsgemäß funktionieren, auch wenn die App geschlossen oder aus dem Hintergrund entfernt wird.</string>
 
 
 </resources>

@@ -180,5 +180,9 @@
     <string name="yearview_scrolling">Desplazamiento de YearView</string>
     <string name="default_selected_1_country">Seleccionado por defecto 1 país</string>
     <string name="enter_the_minutes">Introduce los minutos</string>
+    <string name="auto_start_permissions">Permisos de inicio automático</string>
+    <string name="battery_optimization">Optimización de la batería</string>
+    <string name="battery_optimization_message">Habilite esta configuración para permitir que la aplicación envíe notificaciones de eventos programados a tiempo. Si está deshabilitado, es posible que las notificaciones no aparezcan y que los recordatorios no se activen.</string>
+    <string name="auto_start_permissions_message">Habilite el permiso de inicio automático para garantizar que los recordatorios y notificaciones de eventos funcionen correctamente, incluso cuando la aplicación esté cerrada o eliminada del fondo.</string>
 
 </resources>

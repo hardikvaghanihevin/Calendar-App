@@ -174,5 +174,9 @@
     <string name="yearview_scrolling">Défilement de la vue annuelle</string>
     <string name="default_selected_1_country">1 pays sélectionné par défaut</string>
     <string name="enter_the_minutes">Entrez les minutes</string>
+    <string name="auto_start_permissions">Autorisations de démarrage automatique</string>
+    <string name="battery_optimization">Optimisation de la batterie</string>
+    <string name="battery_optimization_message">Activez ce paramètre pour permettre à l\'application d\'envoyer des notifications pour les événements programmés à temps. Si cette option est désactivée, les notifications peuvent ne pas apparaître et les rappels peuvent ne pas se déclencher.</string>
+    <string name="auto_start_permissions_message">Veuillez activer l\'autorisation AutoStart pour garantir le bon fonctionnement des rappels d\'événements et des notifications, même lorsque l\'application est fermée ou supprimée de l\'arrière-plan.</string>
 
 </resources>

@@ -189,6 +189,10 @@
     <string name="yearview_scrolling">YearView scrolling</string>
     <string name="default_selected_1_country">Default selected 1 country</string>
     <string name="enter_the_minutes">Enter the minutes</string>
+    <string name="auto_start_permissions">Auto Start Permissions</string>
+    <string name="battery_optimization">Battery Optimization</string>
+    <string name="battery_optimization_message">Enable this setting to allow the app to send notifications for scheduled events on time. If disabled, notifications may not appear, and reminders may fail to trigger.</string>
+    <string name="auto_start_permissions_message">Please enable AutoStart permission to ensure event reminders and notifications work properly, even when the app is closed or removed from the background.</string>
 
 
 </resources>

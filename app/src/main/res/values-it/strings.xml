@@ -180,5 +180,9 @@
     <string name="yearview_scrolling">Scorrimento vista anno</string>
     <string name="default_selected_1_country">Per impostazione predefinita è selezionato 1 paese</string>
     <string name="enter_the_minutes">Inserisci i minuti</string>
+    <string name="auto_start_permissions">Autorizzazioni di avvio automatico</string>
+    <string name="battery_optimization">Ottimizzazione della batteria</string>
+    <string name="battery_optimization_message">Abilita questa impostazione per consentire all\'app di inviare notifiche per gli eventi programmati in tempo. Se disabilitato, le notifiche potrebbero non essere visualizzate e i promemoria potrebbero non attivarsi.</string>
+    <string name="auto_start_permissions_message">Abilita l\'autorizzazione di avvio automatico per garantire che i promemoria e le notifiche degli eventi funzionino correttamente, anche quando l\'app è chiusa o rimossa dallo sfondo.</string>
 
 </resources>

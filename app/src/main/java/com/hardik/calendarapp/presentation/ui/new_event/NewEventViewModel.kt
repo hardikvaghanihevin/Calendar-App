@@ -130,9 +130,8 @@ class NewEventViewModel @Inject constructor(
     val title: StateFlow<String> = _title
 
     fun updateTitle(title: String) {
-        val trimmedTitle = title.trim().replace("\\s+".toRegex(), " ") // Remove extra spaces
         viewModelScope.launch {
-            _title.value = trimmedTitle
+            _title.value = title
         }
     }
 
@@ -141,9 +140,8 @@ class NewEventViewModel @Inject constructor(
     val description: StateFlow<String> = _description
 
     fun updateDescription(description: String) {
-        val trimmedDescription = description.trim().replace("\\s+".toRegex(), " ") // Remove extra spaces
         viewModelScope.launch {
-            _description.value = trimmedDescription
+            _description.value = description
         }
     }
 
@@ -224,8 +222,8 @@ class NewEventViewModel @Inject constructor(
 
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
-            title = title.value,
-            description = description.value,
+            title = title.value.trim().replace("\\s+".toRegex(), " "), // Remove extra spaces,
+            description = description.value.trim().replace("\\s+".toRegex(), " "), // Remove extra spaces,
             startDate = DateUtil.longToString(startDate.value, DateUtil.DATE_FORMAT_yyyy_MM_dd),
             endDate = DateUtil.longToString(endDate.value, DateUtil.DATE_FORMAT_yyyy_MM_dd),
             startTime = startDate.value.takeIf { isAllDay.value } ?: startTime.value,//hh:mm a

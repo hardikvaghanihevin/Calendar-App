@@ -180,5 +180,9 @@
     <string name="yearview_scrolling">Прокручування YearView</string>
     <string name="default_selected_1_country">За умовчанням вибрано 1 країну</string>
     <string name="enter_the_minutes">Введіть хвилини</string>
+    <string name="auto_start_permissions">Дозволи автоматичного запуску</string>
+    <string name="battery_optimization">Оптимізація батареї</string>
+    <string name="battery_optimization_message">Увімкніть це налаштування, щоб дозволити програмі надсилати сповіщення про заплановані події вчасно. Якщо вимкнено, сповіщення можуть не з’являтися, а нагадування можуть не активуватися.</string>
+    <string name="auto_start_permissions_message">Увімкніть дозвіл AutoStart, щоб нагадування про події та сповіщення працювали належним чином, навіть якщо програму закрито або вилучено з фону.</string>
 
 </resources>
