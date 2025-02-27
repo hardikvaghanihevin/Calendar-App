@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
@@ -54,7 +55,6 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
 
-
     private fun showNotification(context: Context, event: Event, eventJson: String) {
         val notificationManager = NotificationManagerCompat.from(context)
 
@@ -73,20 +73,30 @@ class NotificationReceiver : BroadcastReceiver() {
         // Intent to open MainActivity with the event data
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK// or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            //putExtra(Constants.KEY_EVENT, event)
             putExtra(KEY_EVENT_JSON, eventJson)
         }
 
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            event.id.hashCode(), // Unique request code
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE//FLAG_UPDATE_CURRENT , FLAG_CANCEL_CURRENT
+        val stackBuilder = TaskStackBuilder.create(context).apply {
+            addNextIntentWithParentStack(Intent(context, MainActivity::class.java))
+            addNextIntent(intent)
+        }
+
+        val pendingIntent = stackBuilder.getPendingIntent(
+            event.id.hashCode(),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+//        val pendingIntent = PendingIntent.getActivity(
+//            context,
+//            event.id.hashCode(), // Unique request code
+//            intent,
+//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE//FLAG_UPDATE_CURRENT , FLAG_CANCEL_CURRENT
+//        )
 
         // If the channel is not null, create the channel (only on devices with API level 26 and above)
         channel?.let { notificationManager.createNotificationChannel(it) }
 
+        //val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         // Build notification with default
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.notification_app_logo) // Fallback for small icon
@@ -95,6 +105,8 @@ class NotificationReceiver : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            //.setSound(soundUri)  // Add notification sound
+            .setDefaults(NotificationCompat.DEFAULT_ALL) // Enable sound, vibration, and lights
             .build()
 
         // Show the notification

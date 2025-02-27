@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         handelBackPressed()
 
         if (intent?.hasExtra(KEY_EVENT_JSON) == true) {
-            handleNotificationEventOpen(intent)// when user click on notification event -> it's open 'ViewEventFragment'
+            handleNotificationEventOpen(intent, "old")// when user click on notification event -> it's open 'ViewEventFragment'
         }
 
         // Collecting the StateFlow
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 //        setIntent(intent) // Update the current intent
 //        handleNotificationEventOpen(intent) // Handle the new intent
         if (intent?.hasExtra(KEY_EVENT_JSON) == true) {
-            handleNotificationEventOpen(intent)
+            handleNotificationEventOpen(intent,"new")
         }
     }
 
@@ -1243,12 +1243,10 @@ class MainActivity : AppCompatActivity() {
 
         val handleExit: () -> Unit = {
             //finishAndRemoveTask()
-            //finishAffinity() //  moveTaskToBack(true) Consistent app exit for both APIs
-            val intent = Intent(applicationContext, SplashActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            startActivity(intent)
-            moveTaskToBack(true)
+            finishAffinity() //  moveTaskToBack(true) Consistent app exit for both APIs
+//            val intent = Intent(applicationContext, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK }
+//            startActivity(intent)
+//            moveTaskToBack(true)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -1308,18 +1306,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region When user click on notification event -> it's open 'ViewEventFragment'
-    private fun handleNotificationEventOpen(intent: Intent?) {
+    private fun handleNotificationEventOpen(intent: Intent?, msg: String) {
+        Log.e(TAG, "handleNotificationEventOpen: $msg", )
         // Handle intent if launched from a notification
         val eventJson = intent?.getStringExtra(KEY_EVENT_JSON)
 
         eventJson?.let {
+            // region Todo: this is important(while app close (not in recent), open notification, go back until app closed, then open app from recent (that is issue fixed here)
             if (isTaskRoot){
                 val event: Event =  GsonUtil.fromJson(it, Event::class.java)!!
-
-                // region Todo: this is important(while app close (not in recent), open notification, go back until app closed, then open app from recent (that is issue fixed here)
-                //this.intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
-                //setIntent(Intent()) // Set intent
-                //intent.removeExtra(KEY_EVENT_JSON) // Prevent re-handling
 
                 this.intent.replaceExtras(Bundle())
                 this.intent.action = null
@@ -1507,5 +1502,3 @@ class MainActivity : AppCompatActivity() {
     }
     // endregion
 }
-//Auto Start Permissions : "Please enable AutoStart permission to ensure event reminders and notifications work properly, even when the app is closed or removed from the background."
-//Battery Optimization : "Enable this setting to allow the app to send notifications for scheduled events on time. If disabled, notifications may not appear, and reminders may fail to trigger."
