@@ -307,18 +307,12 @@ class NewEventViewModel @Inject constructor(
                                     event.startTime - minus
                                 }
 
-                                //Log.e(TAG, "insertEvent: TriggerTime: $nextTriggerTime", )
                                 event.copy(triggerTime = nextTriggerTime)
                             }.await() // Collect all updated events
                     }
 
                     withContext(Dispatchers.IO) {
                         eventRepository.upsertEvent(updatedEvent)
-
-                        if (updatedEvent.sourceType == SourceType.CURSOR) {
-                            //Log.i(TAG, "insertEvent: cursor:- ", )
-                        }
-
                     }
 
                 } catch (e: Exception) {

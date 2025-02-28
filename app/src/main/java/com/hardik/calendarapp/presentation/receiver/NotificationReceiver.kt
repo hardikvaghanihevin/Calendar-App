@@ -86,13 +86,6 @@ class NotificationReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-//        val pendingIntent = PendingIntent.getActivity(
-//            context,
-//            event.id.hashCode(), // Unique request code
-//            intent,
-//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE//FLAG_UPDATE_CURRENT , FLAG_CANCEL_CURRENT
-//        )
-
         // If the channel is not null, create the channel (only on devices with API level 26 and above)
         channel?.let { notificationManager.createNotificationChannel(it) }
 

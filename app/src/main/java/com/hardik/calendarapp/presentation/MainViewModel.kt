@@ -151,7 +151,7 @@ class MainViewModel @Inject constructor(
     init {
         generateYearList(2000, 2100, isZeroBased = true)
         getAllEventsDateInMap()
-        rescheduleAlert()
+        //rescheduleAlert()
         viewModelScope.launch {
             eventRepository.deletedEventFlow.collect { deletedEvent ->
                 _deletedEvent.value = deletedEvent
@@ -173,7 +173,7 @@ class MainViewModel @Inject constructor(
                 _yearList.value = data ?: emptyMap() // ✅ Ensures non-null value
             } catch (e: Exception) {
                 _yearList.value = emptyMap() // ✅ Fallback to empty state
-                //Log.e("MainViewModel", "Error generating year list", e)
+                Log.e(TAG, "Error generating year list", e)
             }
         }
     }
@@ -310,7 +310,7 @@ class MainViewModel @Inject constructor(
                     } finally {
                         _isLoading.value = false
 
-                        rescheduleAlert()// because alert is set on event but not get notification
+                        //rescheduleAlert()// because alert is set on event but not get notification
                     }
                 }
             }
@@ -591,7 +591,7 @@ class MainViewModel @Inject constructor(
     val selectedDate: StateFlow<String> = _selectedDate
     val isFromJump =  MutableStateFlow<Boolean>(false)
     fun updateSelectedDate(selectedDate: String, isJumpTDate: Boolean = false){
-        //Log.i(TAG, "updateSelectedDate: $selectedDate - $isJumpTDate")
+
         viewModelScope.launch {
             isFromJump.value = isJumpTDate
             _selectedDate.value = selectedDate

@@ -58,7 +58,6 @@ class CalendarMonthPageAdapter() :
 
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
         val (year, month) = yearMonthPairList[position]
-        //Log.v(TAG, "onBindViewHolder: $year - $month , pos:$position", )
 
         val weekStart = when(firstDayOfTheWeek){
             "Sunday" -> CustomViewMonth.WeekStart.SUNDAY

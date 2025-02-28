@@ -123,7 +123,6 @@ class SearchEventFragment : Fragment() {
                         }
 
                         DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
-                            Log.i(TAG, "onViewCreated: $isVisible")
                             if (isVisible) {
                                 showHideBeckToCurrentEventIcon(wantToShow = false)
                             } else {
@@ -174,7 +173,6 @@ class SearchEventFragment : Fragment() {
     }
 
     private fun setupUI() {
-        Log.i(TAG, "setupUI: ", )
         binding.apply {
             //region Event handlers
 

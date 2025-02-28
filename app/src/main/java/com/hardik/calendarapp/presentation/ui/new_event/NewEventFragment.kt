@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -70,15 +69,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
             eventJson?.let {
                 argEvent = GsonUtil.fromJson(eventJson, Event::class.java)!!
             }
-
-//            argEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                it.getParcelable(KEY_EVENT, Event::class.java)
-//                    ?: throw IllegalArgumentException("Event is missing")
-//            } else {
-//                @Suppress("DEPRECATION")
-//                it.getParcelable(KEY_EVENT)
-//                    ?: throw IllegalArgumentException("Event is missing")
-//            }
         }
 
         if (arguments?.containsKey(KEY_EVENT_JSON) == true){
@@ -283,7 +273,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e(TAG, "onDestroyView: ", )
         KeyboardUtils.hideKeyboard(requireActivity())
         _binding = null
     }
@@ -327,15 +316,8 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         datePicker?.init(currentYear, currentMonth, currentDay) { _, year, month, day -> }
 
         // Programmatically set a date (e.g., January 1, 2025) datePicker.updateDate(2025,0,1)
-//        if (arguments?.containsKey(KEY_EVENT) == true){
-//            Log.e(TAG, "showDatePickerDialog: yes", )
-//            val data = DateUtil.stringToDateTriple(argEvent.startDate.takeIf { isStartDate } ?: argEvent.endDate,)
-//            datePicker?.updateDate(data.first.toInt(), data.second.toInt(), data.third.toInt())
-//        }else{
-//            Log.e(TAG, "showDatePickerDialog: ex", )
-//        }
-            val data = DateUtil.stringToDateTriple(DateUtil.longToString(viewModel.startDate.value).takeIf { isStartDate } ?: DateUtil.longToString(viewModel.endDate.value),)
-            datePicker?.updateDate(data.first.toInt(), data.second.toInt(), data.third.toInt())
+        val data = DateUtil.stringToDateTriple(DateUtil.longToString(viewModel.startDate.value).takeIf { isStartDate } ?: DateUtil.longToString(viewModel.endDate.value),)
+        datePicker?.updateDate(data.first.toInt(), data.second.toInt(), data.third.toInt())
 
         // Create and display the dialog
         val dialog = AlertDialog.Builder(requireContext())
@@ -401,42 +383,23 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         timePicker?.apply {
             setIs24HourView(is24HourFormat) // Use 12-hour format
             // Programmatically set a time (e.g., 0:12)
-//            if (arguments?.containsKey(KEY_EVENT) == true){
-//                val data = DateUtil.longToString(timestamp = argEvent.startTime.takeIf { isStartTime } ?: argEvent.endTime,pattern = DateUtil.TIME_FORMAT_hh_mm_a)
-//
-//                // Split the time string into hour, minute, and AM/PM
-//                val time = splitTimeString(data)
-//                val hour = time.first.toInt()
-//                val minute = time.second.toInt()
-//                val amPm = time.third
-//
-//                // Set the hour and minute
-//                this.hour = if (amPm == "PM" && hour != 12) {
-//                    hour + 12 // Convert PM hours (except 12 PM) to 24-hour format
-//                } else if (amPm == "AM" && hour == 12) {
-//                    0 // Convert 12 AM to 0 hours (midnight)
-//                } else {
-//                    hour
-//                }
-//                this.minute = minute
-//            }else{}
-                val data = DateUtil.longToString(timestamp = viewModel.startTime.value.takeIf { isStartTime } ?: viewModel.endTime.value,pattern = DateUtil.TIME_FORMAT_hh_mm_a)
+            val data = DateUtil.longToString(timestamp = viewModel.startTime.value.takeIf { isStartTime } ?: viewModel.endTime.value,pattern = DateUtil.TIME_FORMAT_hh_mm_a)
 
-                // Split the time string into hour, minute, and AM/PM
-                val time = splitTimeString(data)
-                val hour = time.first.toInt()
-                val minute = time.second.toInt()
-                val amPm = time.third
+            // Split the time string into hour, minute, and AM/PM
+            val time = splitTimeString(data)
+            val hour = time.first.toInt()
+            val minute = time.second.toInt()
+            val amPm = time.third
 
-                // Set the hour and minute
-                this.hour = if (amPm == "PM" && hour != 12) {
-                    hour + 12 // Convert PM hours (except 12 PM) to 24-hour format
-                } else if (amPm == "AM" && hour == 12) {
-                    0 // Convert 12 AM to 0 hours (midnight)
-                } else {
-                    hour
-                }
-                this.minute = minute
+            // Set the hour and minute
+            this.hour = if (amPm == "PM" && hour != 12) {
+                hour + 12 // Convert PM hours (except 12 PM) to 24-hour format
+            } else if (amPm == "AM" && hour == 12) {
+                0 // Convert 12 AM to 0 hours (midnight)
+            } else {
+                hour
+            }
+            this.minute = minute
 
         }
 
