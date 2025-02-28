@@ -3,18 +3,13 @@ agp = "8.1.2"#"8.7.2"
 kotlin = "1.9.24"#"2.0.21"#kotlin = "1.9.24"
 coreKtx = "1.15.0"
 appcompat = "1.7.0"
-material = "1.12.0"
 constraintlayout = "2.2.0"
-legacy-support-v4 = "1.0.0"
 preference = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version = "1.7.6" }
-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacy-support-v4" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 
 [plugins]

@@ -86,10 +86,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.ui.graphics.android)
-    implementation(libs.legacy.support.v4)
     implementation(libs.preference)
 
     // Hilt DI
@@ -147,7 +144,7 @@ dependencies {
     implementation ("androidx.fragment:fragment-ktx:1.6.1")
 
     // Material Design Components
-    implementation ("com.google.android.material:material:1.9.0")
+    implementation ("com.google.android.material:material:1.12.0")//1.9.0
 
     // Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
