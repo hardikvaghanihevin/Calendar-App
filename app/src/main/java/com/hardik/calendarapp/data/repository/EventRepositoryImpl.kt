@@ -121,7 +121,9 @@ class EventRepositoryImpl @Inject constructor(
                 launch(Dispatchers.Default) {
 
                     if (event.triggerTime in timeSlap.first..timeSlap.second) {
-                        setAlarm(event)
+                        if(event.sourceType != SourceType.REMOTE){
+                            setAlarm(event)
+                        }
                     }
                 }
 
