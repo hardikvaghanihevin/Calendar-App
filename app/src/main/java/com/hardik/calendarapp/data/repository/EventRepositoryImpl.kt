@@ -38,6 +38,11 @@ class EventRepositoryImpl @Inject constructor(
 
     private val _deletedEventFlow = MutableSharedFlow<Event>(extraBufferCapacity = 1)
     override val deletedEventFlow: SharedFlow<Event> = _deletedEventFlow.asSharedFlow()
+
+    override suspend fun getRowCountBySourceType(sourceType: SourceType): Boolean{
+        return eventDao.getRowCountBySourceType(sourceType) == 0
+    }
+
     override suspend fun upsertEvent(event: Event) {
         eventDao.upsertEvent(event)
         setAlarm(event)       // Set a new alarm for this event

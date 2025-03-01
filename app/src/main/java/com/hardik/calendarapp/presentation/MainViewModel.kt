@@ -215,8 +215,6 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-
-
     /**Get holiday list by using API*/
     val allEventsOfAPI : MutableList<Event> = mutableListOf()
     private var currentJob: Job? = null
@@ -224,95 +222,109 @@ class MainViewModel @Inject constructor(
 
     fun getHolidayCalendarData() {
 
-        _isLoading.value = true
         viewModelScope.launch {
             holidayMutex.withLock {
                 currentJob?.cancel()
-                currentJob = viewModelScope.launch (Dispatchers.IO) {
 
-                    try {
-                        //todo: delete all event which already in DB from 'REMOTE'
-                        withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
+                val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+                val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
 
-                        allEventsOfAPI.clear()
+                val countryString = "$languageCode,${countryCodes.joinToString(",")}"
+                val oldCountryString = sharedPreferences.getString("countryString","")
 
-                        val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-                        val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+                val emptyRecord = async (Dispatchers.IO) { eventRepository.getRowCountBySourceType(SourceType.REMOTE) }.await()
+                if (countryString!= oldCountryString || emptyRecord) {
 
-                        // Create a list of deferred results for API calls
-                        val apiCalls = countryCodes.map { countryCode ->
-                            async(Dispatchers.IO) {
-                                // Call the API for each country and collect results
-                                getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
-                                    when (result) {
-                                        is Resource.Success -> {
+                    sharedPreferences.edit().putString("countryString", countryString).apply()
 
-                                            if (result.data != null) {
-                                                // Handle success case (trigger actions like logging, analytics, etc.)
-                                                val calendarDetails = result.data
+                    _isLoading.value = true
+                    currentJob = viewModelScope.launch (Dispatchers.IO) {
 
-                                                // Process events
-                                                val events: List<Event> = calendarDetails.items
-                                                    .map { item ->
+                        try {
+                            //todo: delete all event which already in DB from 'REMOTE'
+                            withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
 
-                                                        val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
+                            allEventsOfAPI.clear()
 
-                                                        val startTime = DateUtil.stringToLong(item.start.date, DATE_FORMAT_yyyy_MM_dd)
-                                                        val endTime = DateUtil.stringToLong(item.end.date, DATE_FORMAT_yyyy_MM_dd)
+//                        val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
+//                        val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
 
-                                                        Event(
-                                                            id = item.id,
-                                                            title = item.summary,
-                                                            description = item.description,
-                                                            startDate = item.start.date,
-                                                            endDate = item.end.date,
-                                                            year = date.first,
-                                                            month = date.second,
-                                                            date = date.third,
-                                                            startTime = startTime,
-                                                            endTime = endTime,
-                                                            isHoliday = true,
-                                                            isAllDay = true,
-                                                            sourceType = SourceType.REMOTE,
-                                                            repeatOption = RepeatOption.NEVER,//*
-                                                            alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
-                                                            customAlertOffset = null,//*
-                                                            triggerTime = startTime, // todo: set triggerTime as start time
-                                                        )
+                            // Create a list of deferred results for API calls
+                            val apiCalls = countryCodes.map { countryCode ->
+                                async(Dispatchers.IO) {
+                                    // Call the API for each country and collect results
+                                    getHolidayApiUseCase.invoke(countryCode = countryCode, languageCode = languageCode).collect { result: Resource<HolidayApiDetail> ->
+                                        when (result) {
+                                            is Resource.Success -> {
 
-                                                    }
-                                                allEventsOfAPI.addAll(events)
+                                                if (result.data != null) {
+                                                    // Handle success case (trigger actions like logging, analytics, etc.)
+                                                    val calendarDetails = result.data
+
+                                                    // Process events
+                                                    val events: List<Event> = calendarDetails.items
+                                                        .map { item ->
+
+                                                            val date: Triple<String, String, String> = stringToDateTriple(item.start.date)
+
+                                                            val startTime = DateUtil.stringToLong(item.start.date, DATE_FORMAT_yyyy_MM_dd)
+                                                            val endTime = DateUtil.stringToLong(item.end.date, DATE_FORMAT_yyyy_MM_dd)
+
+                                                            Event(
+                                                                id = item.id,
+                                                                title = item.summary,
+                                                                description = item.description,
+                                                                startDate = item.start.date,
+                                                                endDate = item.end.date,
+                                                                year = date.first,
+                                                                month = date.second,
+                                                                date = date.third,
+                                                                startTime = startTime,
+                                                                endTime = endTime,
+                                                                isHoliday = true,
+                                                                isAllDay = true,
+                                                                sourceType = SourceType.REMOTE,
+                                                                repeatOption = RepeatOption.NEVER,//*
+                                                                alertOffset = AlertOffset.AT_TIME_OF_EVENT,//*
+                                                                customAlertOffset = null,//*
+                                                                triggerTime = startTime, // todo: set triggerTime as start time
+                                                            )
+
+                                                        }
+                                                    allEventsOfAPI.addAll(events)
+                                                }
                                             }
+
+                                            is Resource.Error -> { _isLoading.value = false }
+
+                                            is Resource.Loading -> { _isLoading.value = false }
                                         }
-
-                                        is Resource.Error -> { _isLoading.value = false }
-
-                                        is Resource.Loading -> { _isLoading.value = false }
                                     }
                                 }
                             }
+
+                            // Await all API calls to finish
+                            apiCalls.awaitAll()
+
+                            withContext(Dispatchers.IO) {
+                                insertEvents(allEventsOfAPI)
+                                allEventsOfAPI.clear()
+                            }
+
+                        }catch (e: CancellationException) {
+                            // Handle coroutine cancellation cleanly if needed
+                            Log.e(TAG, "getHolidayCalendarData: ", e)
+                        } catch (e: Exception) {
+                            // Handle other exceptions
+                            Log.e(TAG, "getHolidayCalendarData: ", e )
+                        } finally {
+                            _isLoading.value = false
+
+                            //rescheduleAlert()// because alert is set on event but not get notification
                         }
-
-                        // Await all API calls to finish
-                        apiCalls.awaitAll()
-
-                        withContext(Dispatchers.IO) {
-                            insertEvents(allEventsOfAPI)
-                            allEventsOfAPI.clear()
-                        }
-
-                    }catch (e: CancellationException) {
-                        // Handle coroutine cancellation cleanly if needed
-                        Log.e(TAG, "getHolidayCalendarData: ", e)
-                    } catch (e: Exception) {
-                        // Handle other exceptions
-                        Log.e(TAG, "getHolidayCalendarData: ", e )
-                    } finally {
-                        _isLoading.value = false
-
-                        //rescheduleAlert()// because alert is set on event but not get notification
                     }
                 }
+
             }
         }
     }
@@ -525,10 +537,8 @@ class MainViewModel @Inject constructor(
         _allEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-            isLoading.collect{
-                if (it == true){
-                    _allEventsState.value = DataListState(isLoading = true)
-                }else {
+//            isLoading.collect{
+//                if (it == true){ _allEventsState.value = DataListState(isLoading = true) }else {
                     try {
                         getAllEventsUseCase.invoke().collectLatest { events ->
                             // Update state with data
@@ -542,8 +552,8 @@ class MainViewModel @Inject constructor(
                             error = e.message ?: "An unknown error occurred"
                         )
                     }
-                }
-            }
+//                }
+//            }
         }
     }
 

@@ -126,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        mainViewModel.getHolidayCalendarData()
         checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
 
         setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
@@ -1159,7 +1160,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (permissions.isNotEmpty()) {
-            mainViewModel.getHolidayCalendarData()
             ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
         } else { // Permissions already granted
             initializeViewModelIfNeeded()
@@ -1177,7 +1177,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModelIfNeeded() {
-        mainViewModel.getHolidayCalendarData()
         if (areCalendarPermissionsGranted()) {
             //mainViewModel.initializeViewModel() // Call your ViewModel initialization function
             if (!this.isBatteryOptimizationPermissionGranted()) {

@@ -160,8 +160,6 @@ class LanguageActivity : AppCompatActivity() {
         sharedPreferences.edit().putString("language", languageCode).apply()
 
         setAppLanguage(languageCode)
-
-        viewModel.updateLanguageCode(languageCode)
     }
 
     private fun setAppLanguage(languageCode: String) {

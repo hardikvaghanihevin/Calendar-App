@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -304,10 +302,8 @@ class SearchEventFragment : Fragment() {
 
                     scrollEventIndexAtCurrentDate()
 
-                    val visible = if (data.isEmpty()) View.VISIBLE else View.GONE
-                    binding.includedProgressLayout.progressBar.visibility = visible
-                    val visible1 = binding.includedProgressLayout.progressBar.isVisible
-                    binding.tvNotify.visibility = visible.takeIf { (!visible1 && visible == View.VISIBLE) } ?: View.GONE
+                    binding.includedProgressLayout.progressBar.visibility = View.GONE
+                    binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
                 }
 
             }

@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EventDao {
 
+    @Query("SELECT COUNT(*) FROM events WHERE sourceType = :sourceType")
+    fun getRowCountBySourceType(sourceType: SourceType): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertEvent(event: Event)
 

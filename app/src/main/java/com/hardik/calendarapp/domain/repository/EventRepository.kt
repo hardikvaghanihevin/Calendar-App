@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharedFlow
 interface EventRepository {
 
     val deletedEventFlow: SharedFlow<Event>
+    suspend fun getRowCountBySourceType(sourceType: SourceType): Boolean
     suspend fun upsertEvent(event: Event)
     suspend fun upsertEvents(events: List<Event>)
     suspend fun deleteEvent(event: Event): Int
