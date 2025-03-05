@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="16dp"
-        tools:listitem="@layout/item_country_selection"
+        tools:listitem="@layout/item_language_selection"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
         android:background="@android:color/transparent"

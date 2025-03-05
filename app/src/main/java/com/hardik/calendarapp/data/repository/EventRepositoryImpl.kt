@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
@@ -121,7 +122,7 @@ class EventRepositoryImpl @Inject constructor(
                 launch(Dispatchers.Default) {
 
                     if (event.triggerTime in timeSlap.first..timeSlap.second) {
-                        if(event.sourceType != SourceType.REMOTE){
+                        if(event.sourceType != SourceType.REMOTE){//Do not schedule event which is 'REMOTE'
                             setAlarm(event)
                         }
                     }
@@ -174,7 +175,7 @@ class EventRepositoryImpl @Inject constructor(
     private fun requestExactAlarmPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !hasExactAlarmPermission()) {
             // Direct the user to the settings page for the app's exact alarm permission
-            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.parse("package:${context.packageName}") }
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.parse("package:${context.packageName}") ; flags = Intent.FLAG_ACTIVITY_NEW_TASK }
             context.startActivity(intent)
             //Toast.makeText(context, "Please allow exact alarm permission.", Toast.LENGTH_LONG).show()
         }

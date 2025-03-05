@@ -151,7 +151,7 @@ class MainViewModel @Inject constructor(
     init {
         generateYearList(2000, 2100, isZeroBased = true)
         getAllEventsDateInMap()
-        //rescheduleAlert()
+        rescheduleAlert()
         viewModelScope.launch {
             eventRepository.deletedEventFlow.collect { deletedEvent ->
                 _deletedEvent.value = deletedEvent
@@ -332,7 +332,7 @@ class MainViewModel @Inject constructor(
     private fun rescheduleAlert() {
         //todo : when notifications are deleted and updated then events are not scheduled so that's way set alert here which event(REMOTE) are stored in DB
         viewModelScope.launch {
-            eventRepository.getAllEvents()//.getRemoteEvents()
+            eventRepository.getEventsBySourceType(sourceType = SourceType.LOCAL)//getAllEvents()//.getRemoteEvents()
                 .debounce(2000).distinctUntilChanged().collectLatest {events ->
                 eventRepository.scheduleAlarms(events)
             }

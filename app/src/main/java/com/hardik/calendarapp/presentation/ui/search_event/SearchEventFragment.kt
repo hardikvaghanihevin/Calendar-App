@@ -40,6 +40,7 @@ import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -251,6 +252,7 @@ class SearchEventFragment : Fragment() {
         }
     }
 
+    @OptIn(FlowPreview::class)
     @SuppressLint("NotifyDataSetChanged")
     private fun observeViewModelState() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -381,8 +383,9 @@ class SearchEventFragment : Fragment() {
         viewModel.currentEventPos.value.let { position ->
             if (isFirstTimeFlag){
                 isFirstTimeFlag = false
-                (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
                 binding.rvEvent.post {
+                    (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
 
                     /*//binding.rvEvent.layoutManager?.scrollToPosition(position)
                     (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
@@ -396,16 +399,24 @@ class SearchEventFragment : Fragment() {
                     }//TODO OR */
 
                     //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-                    binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                    /*binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                         override fun onPreDraw(): Boolean {
                             binding.rvEvent.viewTreeObserver.removeOnPreDrawListener(this)
                             (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
                             return true
                         }
-                    })
+                    })*/
                 }
+                binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        binding.rvEvent.viewTreeObserver.removeOnPreDrawListener(this)
+                        (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                        return true
+                    }
+                })
             }
         }
+        binding.rvEvent.visibility = View.VISIBLE
     }
     private fun scrollEventIndexAtJumpToCurrentDate(position: Int = -1) {
         binding.rvEvent.post {

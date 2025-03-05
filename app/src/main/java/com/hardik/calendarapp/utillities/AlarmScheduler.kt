@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
@@ -25,6 +26,7 @@ object AlarmScheduler {
     // Method to check and request POST_NOTIFICATIONS permission
     private fun ensureNotificationPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Log.i(TAG, "ensureNotificationPermission: okay")
             val permissionStatus = ContextCompat.checkSelfPermission(
                 context,
                 android.Manifest.permission.POST_NOTIFICATIONS
@@ -39,9 +41,16 @@ object AlarmScheduler {
                         REQUEST_CODE_CALENDAR_PERMISSIONS
                     )
                 } else {
-                    // PermissionError: Context is not an Activity. Cannot request permissions.
+                    Log.e(TAG, "ensureNotificationPermission: Context is not an Activity. Cannot request permissions.")
+                    // Handle the error appropriately, e.g., show a message or disable notification functionality.
+                    // You might want to use a callback or a different approach if you need to request permissions from a non-Activity context.
                 }
+            }else {
+                Log.i(TAG,"ensureNotificationPermission: Permission already granted")
             }
+        }else{
+            Log.i(TAG, "ensureNotificationPermission: Android version below 13 (Tiramisu). Notifications are implicitly granted.")
+            // No permission check is needed for older Android versions.
         }
     }
 
@@ -98,11 +107,43 @@ object AlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
-        )
+        //alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)//AlarmClockInfo()
+//        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
+//        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12+
+                if (alarmManager.canScheduleExactAlarms()) {
+                    Log.w(TAG,"Alarm: Exact alarms allowed. Using setExactAndAllowWhileIdle alarm.")
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                } else {
+                    Log.w(TAG,"Alarm: Exact alarms not allowed. Using inexact alarm.")
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+
+                }
+            } else { // Android 7+ (API 24-30)
+                    Log.w(TAG,"Alarm: Exact alarms allowed. Using setExactAndAllowWhileIdle alarm.")
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+            }
+        } catch (e: SecurityException) {
+            Log.e(TAG,"Alarm: SecurityException: ${e.message}")
+        }
+
+        /*// krunal sir
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            if (alarmManager.canScheduleExactAlarms()){
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+            }else{
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.parse("package:${context.packageName}") }
+                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
+
+        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+
+        }else{
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+        }*/
     }
 
     // Cancel the alarm for a specific event.
