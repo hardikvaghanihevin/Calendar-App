@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.calendar_month_1
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Rect
@@ -132,9 +133,24 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
         }
 
         /** Go to newEvent */
-        (activity as MainActivity).binding.appBarMain.fab.setOnClickListener { view ->
+        (activity as MainActivity).run {
+            this.binding.appBarMain.fab.setOnClickListener { view ->
+                val navigateNewEvent = { findNavController().navigate(R.id.newEventFragment, null, navOptions) }
 
-            findNavController().navigate(R.id.newEventFragment, null, navOptions)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+                    if (this.permissionManager.checkPermission(permissionNotification)) {
+                        navigateNewEvent()
+                    } else {
+                        this.showNotificationPermissionDialog{
+                            if (this.permissionManager.checkPermission(permissionNotification))
+                                navigateNewEvent()
+                        }
+                    }
+                }else{
+                    navigateNewEvent()
+                }
+            }
         }
 
         /** Click on month title */

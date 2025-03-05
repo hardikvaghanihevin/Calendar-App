@@ -1,7 +1,9 @@
 package com.hardik.calendarapp.presentation.ui.calendar_year_1
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -81,8 +83,24 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         }
 
         /** Go to newEvent */
-        (activity as MainActivity).binding.appBarMain.fab.setOnClickListener { view ->
-            findNavController().navigate(R.id.newEventFragment, null, navOptions)
+        (activity as MainActivity).run {
+            this.binding.appBarMain.fab.setOnClickListener { view ->
+                val navigateNewEvent = { findNavController().navigate(R.id.newEventFragment, null, navOptions) }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+                    if (this.permissionManager.checkPermission(permissionNotification)) {
+                        navigateNewEvent()
+                    } else {
+                        this.showNotificationPermissionDialog{
+                            if (this.permissionManager.checkPermission(permissionNotification))
+                            navigateNewEvent()
+                        }
+                    }
+                }else{
+                    navigateNewEvent()
+                }
+            }
         }
     }
 

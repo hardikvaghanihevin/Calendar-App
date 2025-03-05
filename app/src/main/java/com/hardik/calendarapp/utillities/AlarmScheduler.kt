@@ -55,12 +55,12 @@ object AlarmScheduler {
     }
 
     // Handle the result of the permission request
-    fun handlePermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
-        if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
-            return grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-        }
-        return false
-    }
+//    fun handlePermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
+//        if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
+//            return grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+//        }
+//        return false
+//    }
 
     private val updateAlarmMutex = Mutex()
     // Rest of the AlarmScheduler code
@@ -110,7 +110,7 @@ object AlarmScheduler {
         //alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)//AlarmClockInfo()
 //        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
 //        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
-
+        Log.e(TAG, "scheduleExactTime: $triggerTime", )
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12+
                 if (alarmManager.canScheduleExactAlarms()) {
@@ -122,7 +122,7 @@ object AlarmScheduler {
 
                 }
             } else { // Android 7+ (API 24-30)
-                    Log.w(TAG,"Alarm: Exact alarms allowed. Using setExactAndAllowWhileIdle alarm.")
+                Log.w(TAG,"Alarm: Exact alarms allowed. Using setExactAndAllowWhileIdle alarm.(API 24-30)")
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
             }
         } catch (e: SecurityException) {

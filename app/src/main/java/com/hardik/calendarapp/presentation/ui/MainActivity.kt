@@ -14,7 +14,8 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -24,10 +25,10 @@ import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
@@ -55,13 +56,13 @@ import com.hardik.calendarapp.databinding.DialogBatteryOptimizationBinding
 import com.hardik.calendarapp.databinding.DialogDeviceInformationBinding
 import com.hardik.calendarapp.databinding.DialogFirstDayOfTheWeekBinding
 import com.hardik.calendarapp.databinding.DialogJumpToDateBinding
+import com.hardik.calendarapp.databinding.DialogNotificationPermissionBinding
 import com.hardik.calendarapp.databinding.DialogTimeFormatBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuAdapter
 import com.hardik.calendarapp.presentation.adapter.DrawerMenuItem
 import com.hardik.calendarapp.presentation.adapter.getDrawableFromAttribute
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
-import com.hardik.calendarapp.utillities.AlarmScheduler
 import com.hardik.calendarapp.utillities.AutoStartPermissionHelper
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DisplayUtil
@@ -71,6 +72,9 @@ import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
+import com.hardik.calendarapp.utillities.PermissionManager
+import com.hardik.calendarapp.utillities.isBatteryOptimizationPermissionGranted
+import com.hardik.calendarapp.utillities.requestBatteryOptimizationPermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -85,6 +89,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
     private var isAutostartSet by Delegates.notNull<Boolean>()
+    lateinit var permissionManager: PermissionManager
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
@@ -126,8 +131,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //permissionManager = PermissionManager.with(this)
+        permissionManager = PermissionManager(this)
+
         mainViewModel.getHolidayCalendarData()
-        checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
+//        checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
+        checkAndRequestPermissions()
 
         setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
         setupToolbar() //setupNavigation Function: Centralized navigation setup, including AppBarConfiguration.
@@ -155,6 +164,100 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun checkAndRequestPermissions() {
+        checkNotificationPermission {
+            checkBatteryOptimizationPermission {
+                checkAutoStartPermission {
+                    Log.d("PERMISSION_FLOW", "All required permissions checked.")
+                }
+            }
+        }
+    }
+    /** 🔄 Utility Function: Delay Execution by 1 Second */
+    private fun delayExecution(action: () -> Unit) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            action()
+        }, 500) // 1000ms = 1 second
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.fromParts("package", packageName, null)
+        startActivity(intent)
+    }
+
+    /** 🔄 Request Notification Permission */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission(onResult: (Boolean) -> Unit) {
+        permissionManager.requestPermission( Manifest.permission.POST_NOTIFICATIONS) { isGranted ->
+            onResult(isGranted)
+        }
+    }
+
+    /** 1️⃣ Step 1: Check Notification Permission */
+    private fun checkNotificationPermission(onComplete: () -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+            if (!permissionManager.checkPermission(permissionNotification)) {
+                requestNotificationPermission { isGranted ->
+                    onComplete()
+                }
+            } else {
+                Log.d("PERMISSION_FLOW", "Notification Permission Already Granted")
+                //onComplete()
+                delayExecution(onComplete)
+            }
+        } else {
+            //onComplete() // Skip if Android version < 13
+            delayExecution(onComplete)
+        }
+    }
+
+    /** 2️⃣ Step 2: Check Battery Optimization Permission */
+    private fun checkBatteryOptimizationPermission(onComplete: () -> Unit) {
+        if (!isBatteryOptimizationPermissionGranted()) {
+            showBatteryOptimizationDialog {
+                if (isBatteryOptimizationPermissionGranted()) {
+                    Log.d("PERMISSION_FLOW", "Battery Optimization Granted")
+                } else {
+                    Log.d("PERMISSION_FLOW", "Battery Optimization Denied")
+
+                }
+                //onComplete() // Move to next permission check
+                delayExecution(onComplete)
+            }
+        } else {
+            Log.d("PERMISSION_FLOW", "Battery Optimization Already Granted")
+            //onComplete()
+            delayExecution(onComplete)
+        }
+    }
+
+    /** 3️⃣ Step 3: Check AutoStart Permission */
+    private fun checkAutoStartPermission(onComplete: () -> Unit) {
+        val isAutoStartPermissionAvailable = AutoStartPermissionHelper.getInstance()
+            .isAutoStartPermissionAvailable(this, false)
+
+        isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
+        if (isAutoStartPermissionAvailable && !isAutostartSet) {
+            sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+            showAutoStartPermissionDialog {
+                if (isAutostartSet) {
+                    Log.d("PERMISSION_FLOW", "AutoStart Permission Granted")
+                } else {
+                    Log.d("PERMISSION_FLOW", "AutoStart Permission Denied")
+                }
+                //onComplete()
+                delayExecution(onComplete)
+            }
+        } else {
+            Log.d("PERMISSION_FLOW", "AutoStart Permission Already Granted or Not Required")
+            //onComplete()
+            delayExecution(onComplete)
+        }
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 //        setIntent(intent) // Update the current intent
@@ -1151,65 +1254,76 @@ class MainActivity : AppCompatActivity() {
     }
 
     // region Call this function to request permissions as needed
-    fun checkAndRequestCalendarPermissions() {
-        val permissions = mutableListOf<String>()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
+//    fun checkAndRequestCalendarPermissions() {
+//        val permissions = mutableListOf<String>()
+//        if (permissionManager.checkPermission(Manifest.permission.POST_NOTIFICATIONS)) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+//            }
+//            Log.e(TAG, "checkAndRequestCalendarPermissions: ", )
+//        }
+//
+//        if (permissions.isNotEmpty()) {
+//            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
+//        } else { // Permissions already granted
+//        }
+//    }
 
-        if (permissions.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
-        } else { // Permissions already granted
-            initializeViewModelIfNeeded()
-        }
-    }
+//    fun areCalendarPermissionsGranted(permissionString: String): Boolean {
+//        val postNotificationPermission =
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                ContextCompat.checkSelfPermission(this, permissionString)
+//            } else {
+//                PackageManager.PERMISSION_GRANTED
+//            }
+//        return postNotificationPermission == PackageManager.PERMISSION_GRANTED
+//    }
 
-    fun areCalendarPermissionsGranted(): Boolean {
-        val postNotificationPermission =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                PackageManager.PERMISSION_GRANTED
-            }
-        return postNotificationPermission == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun initializeViewModelIfNeeded() {
-        if (areCalendarPermissionsGranted()) {
-            //mainViewModel.initializeViewModel() // Call your ViewModel initialization function
-            if (!this.isBatteryOptimizationPermissionGranted()) {
-                // Pehle Battery Optimization dialog show karein
-                showBatteryOptimizationDialog {
-                    // Jab Battery Optimization dismiss ho jaye, tab AutoStart check karein
-                    checkAutoStartPermission()
-                }
-            } else {
-                // Agar Battery Optimization already enabled hai, to sidha AutoStart check karein
-                checkAutoStartPermission()
-            }
-        }
-    }
+//    fun checkAndRequestCalendarPermissions() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+//            val isGranted = permissionManager.checkPermission(permissionNotification)
+//            if (!isGranted) { permissionManager.requestPermission(permissionNotification) {} }
+//        }
+//
+//        otherPermission()
+//
+//    }
+//    private fun otherPermission(){
+//        if (!this.isBatteryOptimizationPermissionGranted()) {
+//            // Pehle Battery Optimization dialog show karein
+//            showBatteryOptimizationDialog {
+//                // Jab Battery Optimization dismiss ho jaye, tab AutoStart check karein
+//                checkAutoStartPermission()
+//            }
+//        } else {
+//            // Agar Battery Optimization already enabled hai, to sidha AutoStart check karein
+//            checkAutoStartPermission()
+//        }
+//    }
 
     // Handle the result of permission requests
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
-            if (areCalendarPermissionsGranted()) {
-                initializeViewModelIfNeeded()
-            } else {
-                // Permission denied, show a message to the user
-                Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_calendar), Snackbar.LENGTH_SHORT).setAction(getString(R.string.setting)) {
-                    // Open app settings
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", packageName, null)
-                    }
-                    startActivity(intent)
-                }.show()
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+                val isGranted = permissionManager.checkPermission(permissionNotification)
+                if (!isGranted) {
+                    // Permission denied, show a message to the user
+                    Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_calendar), Snackbar.LENGTH_SHORT).setAction(getString(R.string.setting)) {
+                        // Open app settings
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", packageName, null)
+                        }
+                        startActivity(intent)
+                    }.show()
+                }
             }
         }
-        if (AlarmScheduler.handlePermissionResult(requestCode = requestCode, permissions = permissions, grantResults = grantResults)) {
+
+        //while using in event insert and alert set
+        /*if (AlarmScheduler.handlePermissionResult(requestCode = requestCode, permissions = permissions, grantResults = grantResults)) {
             for (i in permissions.indices) {
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     //onRequestPermissionsResult: Permission granted, schedule the alarm"
@@ -1224,9 +1338,8 @@ class MainActivity : AppCompatActivity() {
                     }.show()
                 }
             }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
+        } else {        }*/
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
     //endregion
 
@@ -1384,15 +1497,50 @@ class MainActivity : AppCompatActivity() {
     }
     // endregion
 
+    // region Todo permission for Notification
+
+    private var dialogNotificationPermissionBinding: DialogNotificationPermissionBinding? = null
+    fun showNotificationPermissionDialog(onDismiss: () -> Unit) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_notification_permission, null)
+        dialogNotificationPermissionBinding = DialogNotificationPermissionBinding.bind(dialogView)
+
+        // Create and display the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Set background to transparent if needed
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        // Ensure the dialog's size wraps the content
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
+            )
+        }
+        dialog.setCancelable(false)
+        dialog.show()
+
+        dialogNotificationPermissionBinding?.apply {
+
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+                onDismiss()
+            }
+
+            btnGoToNext.setOnClickListener {
+                dialog.dismiss()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    openAppSettings()
+                    onDismiss()
+                }, 300)
+            }
+        }
+    }
+    //endregion
+
     // region Todo permission for Battery optimization
-    private fun Context.requestBatteryOptimizationPermission(){
-        startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${packageName}")))
-    }
-    private fun Context.isBatteryOptimizationPermissionGranted(): Boolean{
-        val pkg = packageName;
-        val pm = getSystemService(PowerManager::class.java)
-        return pm.isIgnoringBatteryOptimizations(pkg)
-    }
 
     private var dialogBatteryOptimizationBinding: DialogBatteryOptimizationBinding? = null
     private fun showBatteryOptimizationDialog(onDismiss: () -> Unit) {
@@ -1490,12 +1638,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             btnGoToNext.setOnClickListener {
-                if (!isAutostartSet){
+//                if (!isAutostartSet){
+//                    sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
                     getAutoStartPermission()
-                    sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
                     dialog.dismiss()
                     onDismiss()
-                }
+//                }
             }
         }
     }

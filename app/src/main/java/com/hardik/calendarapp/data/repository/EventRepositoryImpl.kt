@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.data.database.dao.EventDao
@@ -46,7 +45,7 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun upsertEvent(event: Event) {
         eventDao.upsertEvent(event)
-        setAlarm(event)       // Set a new alarm for this event
+        setAlarm(event) // Set a new alarm for this event
     }
 
     override suspend fun upsertEvents(events: List<Event>) {
@@ -123,7 +122,7 @@ class EventRepositoryImpl @Inject constructor(
 
                     if (event.triggerTime in timeSlap.first..timeSlap.second) {
                         if(event.sourceType != SourceType.REMOTE){//Do not schedule event which is 'REMOTE'
-                            setAlarm(event)
+                            setAlarm(event) // for list of events
                         }
                     }
                 }
