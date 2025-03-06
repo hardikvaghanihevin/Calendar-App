@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
     private var isAutostartSet by Delegates.notNull<Boolean>()
+    private var isBatteryOptimization by Delegates.notNull<Boolean>()
     lateinit var permissionManager: PermissionManager
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity() {
         // Step 1: Retrieve saved language preference
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
+        //isBatteryOptimization = sharedPreferences.getBoolean("key_permission_granted_battery", false)
         val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
         val languageCode = sharedPreferences.getString("language", "en") ?: "en"
 
@@ -153,8 +155,7 @@ class MainActivity : AppCompatActivity() {
 
         if(intent?.hasExtra(KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG) == true) {
             val whereToComing = PreferenceManager.getDefaultSharedPreferences(this).getString(KEY_WHERE_TO_COMING,"drawer")
-            if(whereToComing == "setting")
-            handleSettingFragmentOpen()
+            if(whereToComing == "setting") { handleSettingFragmentOpen() }
         }
 
         // Collecting the StateFlow
@@ -183,11 +184,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAndRequestPermissions() {
         checkNotificationPermission {
-            checkBatteryOptimizationPermission {
-                checkAutoStartPermission {
-                    Log.d("PERMISSION_FLOW", "All required permissions checked.")
+            Handler(Looper.getMainLooper()).postDelayed({
+                checkBatteryOptimizationPermission {
+
+                    checkAutoStartPermission {
+                        Log.d("PERMISSION_FLOW", "All required permissions checked.")
+                    }
+                    //Handler(Looper.getMainLooper()).postDelayed({}, 1000) // Adjust delay as needed
                 }
-            }
+            }, 1000) // Adjust delay as needed
         }
     }
     /** 🔄 Utility Function: Delay Execution by 1 Second */
@@ -232,46 +237,54 @@ class MainActivity : AppCompatActivity() {
 
     /** 2️⃣ Step 2: Check Battery Optimization Permission */
     private fun checkBatteryOptimizationPermission(onComplete: () -> Unit) {
-        if (!isBatteryOptimizationPermissionGranted()) {
-            showBatteryOptimizationDialog {
-                if (isBatteryOptimizationPermissionGranted()) {
-                    Log.d("PERMISSION_FLOW", "Battery Optimization Granted")
-                } else {
-                    Log.d("PERMISSION_FLOW", "Battery Optimization Denied")
+        Log.e(TAG, "checkBatteryOptimizationPermission: ", )
+//        Handler(Looper.getMainLooper()).postDelayed({
+            if (!this.isBatteryOptimizationPermissionGranted()) {
+                Log.e(TAG, "checkBatteryOptimizationPermission: if not grant", )
+                showBatteryOptimizationDialog {
+                    if (this.isBatteryOptimizationPermissionGranted()) {
+                        Log.d("PERMISSION_FLOW", "Battery Optimization Granted")
+                    } else {
+                        Log.d("PERMISSION_FLOW", "Battery Optimization Denied")
 
+                    }
+                    //onComplete() // Move to next permission check
+                    delayExecution { onComplete() }
                 }
-                //onComplete() // Move to next permission check
-                delayExecution(onComplete)
+            } else {
+                Log.d("PERMISSION_FLOW", "Battery Optimization Already Granted")
+                //onComplete()
+                onComplete()
             }
-        } else {
-            Log.d("PERMISSION_FLOW", "Battery Optimization Already Granted")
-            //onComplete()
-            delayExecution(onComplete)
-        }
+//        }, 1000) // Adjust delay as needed
+
     }
 
     /** 3️⃣ Step 3: Check AutoStart Permission */
     private fun checkAutoStartPermission(onComplete: () -> Unit) {
-        val isAutoStartPermissionAvailable = AutoStartPermissionHelper.getInstance()
-            .isAutoStartPermissionAvailable(this, false)
+//        Handler(Looper.getMainLooper()).postDelayed({
+            val isAutoStartPermissionAvailable = AutoStartPermissionHelper.getInstance()
+                .isAutoStartPermissionAvailable(this, false)
 
-        isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
-        if (isAutoStartPermissionAvailable && !isAutostartSet) {
-            sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
-            showAutoStartPermissionDialog {
-                if (isAutostartSet) {
-                    Log.d("PERMISSION_FLOW", "AutoStart Permission Granted")
-                } else {
-                    Log.d("PERMISSION_FLOW", "AutoStart Permission Denied")
+            isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
+            if (isAutoStartPermissionAvailable && !isAutostartSet) {
+                sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+                showAutoStartPermissionDialog {
+                    if (isAutostartSet) {
+                        Log.d("PERMISSION_FLOW", "AutoStart Permission Granted")
+                    } else {
+                        Log.d("PERMISSION_FLOW", "AutoStart Permission Denied")
+                    }
+                    onComplete()
+                    //delayExecution(onComplete)
                 }
-                //onComplete()
-                delayExecution(onComplete)
+            } else {
+                Log.d("PERMISSION_FLOW", "AutoStart Permission Already Granted or Not Required")
+                onComplete()
+                //delayExecution(onComplete)
             }
-        } else {
-            Log.d("PERMISSION_FLOW", "AutoStart Permission Already Granted or Not Required")
-            //onComplete()
-            delayExecution(onComplete)
-        }
+
+//        }, 1000) // Adjust delay as needed
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -1591,7 +1604,12 @@ class MainActivity : AppCompatActivity() {
 
             btnGoToNext.setOnClickListener {
                 if (!this@MainActivity.isBatteryOptimizationPermissionGranted()){
-                    this@MainActivity.requestBatteryOptimizationPermission()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        this@MainActivity.requestBatteryOptimizationPermission()
+                    }, 300) // Adjust delay as needed
+                    dialog.dismiss()
+                    onDismiss()
+                }else{
                     dialog.dismiss()
                     onDismiss()
                 }
@@ -1650,13 +1668,14 @@ class MainActivity : AppCompatActivity() {
 
         dialogAutoStartPermissionBinding?.apply {
             btnCancel.setOnClickListener {
+                sharedPreferences.edit().putBoolean("key_permission_granted", false).apply()
                 dialog.dismiss()
                 onDismiss()
             }
 
             btnGoToNext.setOnClickListener {
 //                if (!isAutostartSet){
-//                    sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+                    sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
                     getAutoStartPermission()
                     dialog.dismiss()
                     onDismiss()
