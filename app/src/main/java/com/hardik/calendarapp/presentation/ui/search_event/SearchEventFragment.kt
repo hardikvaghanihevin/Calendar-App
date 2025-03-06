@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,6 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.FragmentSearchEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
-import com.hardik.calendarapp.presentation.adapter.EventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 
 class SearchEventFragment : Fragment() {
@@ -55,7 +54,7 @@ class SearchEventFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels()
-    private val eventAdapter by lazy { EventAdapter() }
+    private val eventAdapter by lazy { SearchEventAdapter(requireContext()) }
     private var currentQuery: String? = null // Variable to store the current query for search
     private var isFirstTimeFlag = true
 
@@ -139,7 +138,8 @@ class SearchEventFragment : Fragment() {
                         if (!query.isNullOrBlank()) {
                             // Perform search or filtering based on the query
                             currentQuery = query // Save the query
-                            eventAdapter.filter.filter(query)
+                            viewModel.getAllEvents(query)
+                            //eventAdapter.filter.filter(query)
 
                             hideKeyboard(this@SearchEventFragment.requireActivity())
                         }
@@ -149,7 +149,8 @@ class SearchEventFragment : Fragment() {
                     override fun onQueryTextChange(newText: String?): Boolean {
                         // Handle query text changes
                         currentQuery = newText // Save the query
-                        eventAdapter.filter.filter(newText ?: "")
+                        viewModel.getAllEvents(newText)
+                        //eventAdapter.filter.filter(newText ?: "")
                         return true
                     }
                 })
@@ -169,6 +170,11 @@ class SearchEventFragment : Fragment() {
             val position = viewModel.currentEventPos.value
             scrollEventIndexAtJumpToCurrentDate(position = position)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "onResume: $currentQuery", )
     }
 
     private fun setupUI() {
@@ -234,20 +240,20 @@ class SearchEventFragment : Fragment() {
                 includedProgressLayout.progressBar.visibility = View.GONE
             }
 
-            eventAdapter.updateFirstDayOfWeek()
+            //eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event: Event ->
                 // got event update
                 navigateToViewEventFrag(event = event)
             }
 
-            eventAdapter.setNoDataCallback {hasData ->
-                rvEvent.visibility = View.GONE.takeUnless { hasData } ?: View.VISIBLE
-                tvNotify.apply {
-                    text = resources.getString(R.string.no_data)
-                    visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
-                }
-                includedProgressLayout.progressBar.visibility = View.GONE
-            }
+//            eventAdapter.setNoDataCallback {hasData ->
+//                rvEvent.visibility = View.GONE.takeUnless { hasData } ?: View.VISIBLE
+//                tvNotify.apply {
+//                    text = resources.getString(R.string.no_data)
+//                    visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
+//                }
+//                includedProgressLayout.progressBar.visibility = View.GONE
+//            }
             //endregion
         }
     }
@@ -260,11 +266,11 @@ class SearchEventFragment : Fragment() {
                 combine(viewModel.firstDayOfTheWeek, viewModel.allEventsState.debounce(300)) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
-                    when (firstDay) {
-                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-                    }
+//                    when (firstDay) {
+//                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
+//                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
+//                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
+//                    }
                     handleDataState(dataState)
                 }
             }
@@ -300,7 +306,8 @@ class SearchEventFragment : Fragment() {
                 // Scroll to position after data is loaded
                 //scrollEventIndexAtCurrentDate()
                 eventAdapter.apply {
-                    updateData(data, it)
+                   //updateData(data, it)
+                    submitList(data)
 
                     scrollEventIndexAtCurrentDate()
 
@@ -340,13 +347,20 @@ class SearchEventFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        resetSearchView()
+        Log.e(TAG, "onDestroyView: ", )
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        resetSearchView()
+        Log.e(TAG, "onDestroy: ", )
     }
 
     private fun resetSearchView() {
         currentQuery = null // Clear the query
-        eventAdapter.filter.filter("") // Reset the filter
+        viewModel.getAllEvents(null)
+        //eventAdapter.filter.filter("") // Reset the filter
         val searchView = (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedSearchView.root
         (activity as MainActivity).resetSearchView(searchView)
         showHideBeckToCurrentEventIcon(wantToShow = true)
@@ -381,11 +395,12 @@ class SearchEventFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun scrollEventIndexAtCurrentDate() {
         viewModel.currentEventPos.value.let { position ->
+            //Log.e(TAG, "scrollEventIndexAtCurrentDate: $position", )
             if (isFirstTimeFlag){
                 isFirstTimeFlag = false
                 //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
                 binding.rvEvent.post {
-                    (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
+                    //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
 
                     /*//binding.rvEvent.layoutManager?.scrollToPosition(position)
                     (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
@@ -419,6 +434,7 @@ class SearchEventFragment : Fragment() {
         binding.rvEvent.visibility = View.VISIBLE
     }
     private fun scrollEventIndexAtJumpToCurrentDate(position: Int = -1) {
+        isFirstTimeFlag = false
         binding.rvEvent.post {
             val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
             if (position != -1) {

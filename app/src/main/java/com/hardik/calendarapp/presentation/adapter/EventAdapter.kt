@@ -2,6 +2,7 @@ package com.hardik.calendarapp.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -213,8 +214,10 @@ class EventAdapter(): RecyclerView.Adapter<EventAdapter.ViewHolder>(), Filterabl
                     it.lowercase(Locale.getDefault()).contains("${event.year}-${event.month}")
                 }
                 if (isEventPresent(event) && isMatchFound) {
+                    Log.e(TAG, "bind: show ", )
                     llItemEvent.visibility = View.VISIBLE
                 } else {
+                    Log.i(TAG, "bind: hide ", )
                     llItemEvent.visibility = View.GONE
                 }
                 // ===== End Week header logic =====

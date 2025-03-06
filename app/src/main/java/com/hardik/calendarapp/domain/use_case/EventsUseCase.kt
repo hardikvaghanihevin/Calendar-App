@@ -17,5 +17,5 @@ class GetEventsByDateOfMonthOfTheYear @Inject constructor(private val repository
 }
 
 class GetAllEventsUseCase @Inject constructor(private val repository: EventRepository) {
-    operator fun invoke(): Flow<List<Event>> = repository.getAllEvents()
+    operator fun invoke(eventsQuery: String?): Flow<List<Event>> = repository.getAllEvents(eventsQuery = eventsQuery)
 }

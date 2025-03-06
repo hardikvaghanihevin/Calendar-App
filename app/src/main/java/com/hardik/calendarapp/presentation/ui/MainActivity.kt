@@ -237,7 +237,6 @@ class MainActivity : AppCompatActivity() {
 
     /** 2️⃣ Step 2: Check Battery Optimization Permission */
     private fun checkBatteryOptimizationPermission(onComplete: () -> Unit) {
-        Log.e(TAG, "checkBatteryOptimizationPermission: ", )
 //        Handler(Looper.getMainLooper()).postDelayed({
             if (!this.isBatteryOptimizationPermissionGranted()) {
                 Log.e(TAG, "checkBatteryOptimizationPermission: if not grant", )
@@ -1124,14 +1123,14 @@ class MainActivity : AppCompatActivity() {
 
         binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.includedSearch.root.setOnClickListener {
             // todo: navigate to show all events
-            mainViewModel.getAllEvents()
+            mainViewModel.getAllEvents(null)
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions)
         }
 
         binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedSearch.root.setOnClickListener {
 
             // todo: navigate to show all events
-            mainViewModel.getAllEvents()
+            mainViewModel.getAllEvents(null)
             navController.navigate(R.id.searchEventFragment, null, navOptions = navOptions,)
         }
 

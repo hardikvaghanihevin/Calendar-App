@@ -17,7 +17,7 @@ interface EventRepository {
     suspend fun deleteEventsBySourceType(sourceType: SourceType)
 
     fun getRemoteEvents(): Flow<List<Event>>
-    fun getAllEvents(): Flow<List<Event>>
+    fun getAllEvents(eventsQuery: String?): Flow<List<Event>>
     fun getEventsBySourceType(sourceType: SourceType): Flow<List<Event>>
     fun getEventsByMonthOfTheYear(year: String, month: String): Flow<List<Event>>
     fun getEventsByDateOfMonthOfTheYear(year: String, month: String, date: String): Flow<List<Event>>

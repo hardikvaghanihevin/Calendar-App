@@ -93,8 +93,8 @@ class EventRepositoryImpl @Inject constructor(
         return eventDao.getRemoteEvents()
     }
 
-    override fun getAllEvents(): Flow<List<Event>> {
-        return eventDao.getAllEvents()
+    override fun getAllEvents(eventsQuery: String?): Flow<List<Event>> {
+        return eventDao.getAllEvents(eventTitle = eventsQuery)
     }
 
     override fun getEventsBySourceType(sourceType: SourceType): Flow<List<Event>> {

@@ -532,7 +532,7 @@ class MainViewModel @Inject constructor(
 
     private val _allEventsState = MutableStateFlow<DataListState<Event>>(DataListState(isLoading = true))
     val allEventsState: StateFlow<DataListState<Event>> get() = _allEventsState
-    fun getAllEvents() {//todo: use in CalendarMonthFragment for onMonthSwipe
+    fun getAllEvents(eventsQuery: String?) {//todo: use in CalendarMonthFragment for onMonthSwipe
         // Set initial loading state
         _allEventsState.value = DataListState(isLoading = true)
 
@@ -540,7 +540,7 @@ class MainViewModel @Inject constructor(
 //            isLoading.collect{
 //                if (it == true){ _allEventsState.value = DataListState(isLoading = true) }else {
                     try {
-                        getAllEventsUseCase.invoke().collectLatest { events ->
+                        getAllEventsUseCase.invoke(eventsQuery).collectLatest { events ->
                             // Update state with data
                             setFirstEventOfEachWeek(events)
                             _allEventsState.value = DataListState(isLoading = false, data = events )
@@ -566,7 +566,7 @@ class MainViewModel @Inject constructor(
     private fun getAllEventsDateInMap(){
         viewModelScope.launch {
             try {
-                getAllEventsUseCase.invoke().collectLatest{ events: List<Event> ->
+                getAllEventsUseCase.invoke(null).collectLatest{ events: List<Event> ->
                     val organizedEvents = organizeEvents(events)
                     _allEventsDateInMapState.emit(organizedEvents)
                 }
