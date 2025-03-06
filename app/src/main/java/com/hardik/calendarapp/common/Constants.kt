@@ -15,6 +15,11 @@ object Constants {
     const val KEY_EVENT_REPEAT = "key_event_repeat"
     const val KEY_EVENT_ALERT = "key_event_alert"
 
+    const val KEY_WHERE_TO_COMING = "Where to coming"
+
+    const val KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG = "Change language go to setting fragment"
+    const val KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY = "Is first time launch application, show language activity."
+
     const val EVENT_INSERT_SUCCESSFULLY = "Event insert successfully"
     const val EVENT_UPDATE_SUCCESSFULLY = "Event update successfully"
 }

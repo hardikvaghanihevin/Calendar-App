@@ -9,6 +9,7 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants
+import com.hardik.calendarapp.common.Constants.KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY
 import com.hardik.calendarapp.databinding.ActivitySplashBinding
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
 import com.hardik.calendarapp.utillities.DateUtil
@@ -59,7 +60,7 @@ class SplashActivity : AppCompatActivity() {
         withContext(Dispatchers.IO) {
             // Check if it's the first launch using SharedPreferences
             val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this@SplashActivity)
-            val isFirstLaunch = sharedPrefs.getBoolean("isFirstLaunch", true)
+            val isFirstLaunch = sharedPrefs.getBoolean(KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY, true)
 
             val nextActivity = if (isFirstLaunch) {
                 LanguageActivity::class.java

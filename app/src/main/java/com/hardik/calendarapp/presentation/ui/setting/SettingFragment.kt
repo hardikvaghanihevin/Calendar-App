@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
 import com.hardik.calendarapp.databinding.FragmentSettingBinding
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
@@ -70,6 +71,9 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                     this.tvSettingItemTitle.apply { text = getString(R.string.app_language) }
                     this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
                     this.constLayItemSetting.setOnClickListener {
+
+                        PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putString(KEY_WHERE_TO_COMING, "setting").apply()
+
                         val intent = Intent(requireActivity(), LanguageActivity::class.java)
                         startActivity(intent)
                         //requireActivity().finish()

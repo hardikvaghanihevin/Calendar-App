@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
+import com.hardik.calendarapp.common.Constants.KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY
+import com.hardik.calendarapp.common.Constants.KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG
+import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
 import com.hardik.calendarapp.databinding.ActivityLanguageBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.LanguageAdapter
@@ -49,7 +53,7 @@ class LanguageActivity : AppCompatActivity() {
         binding = ActivityLanguageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        isFirstLaunch = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("isFirstLaunch", true)
+        isFirstLaunch = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY, true)
 
         // If it's the first launch, update the SharedPreferences
         if (isFirstLaunch) {
@@ -133,7 +137,7 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun setupSaveButton() {
         binding.includedLanguageActivityCustomToolbar.includedSelectLanguage.includedSaveSelect.root.setOnClickListener {
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isFirstLaunch", false).apply()
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY, false).apply()
             selectedLanguage?.let {
                 lifecycleScope.launch {
                     saveLanguage(it)
@@ -145,8 +149,19 @@ class LanguageActivity : AppCompatActivity() {
 
     // Back to main screen, escape coming from splash screen
     private fun navigateToMainActivity() {
+        val whereToComing = PreferenceManager.getDefaultSharedPreferences(this).getString(KEY_WHERE_TO_COMING,"drawer")
+
         val i = Intent(this@LanguageActivity, MainActivity::class.java)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        Log.e(TAG, "navigateToMainActivity: $whereToComing", )
+
+        if (whereToComing == "setting"){
+            i.putExtra(KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG, true)
+        }else{
+            i.putExtra(KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG, false)
+        }
+
         startActivity(i)
     }
 

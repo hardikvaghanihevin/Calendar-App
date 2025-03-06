@@ -47,6 +47,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
+import com.hardik.calendarapp.common.Constants.KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG
+import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.ActivityMainBinding
@@ -149,6 +151,12 @@ class MainActivity : AppCompatActivity() {
             handleNotificationEventOpen(intent, "old")// when user click on notification event -> it's open 'ViewEventFragment'
         }
 
+        if(intent?.hasExtra(KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG) == true) {
+            val whereToComing = PreferenceManager.getDefaultSharedPreferences(this).getString(KEY_WHERE_TO_COMING,"drawer")
+            if(whereToComing == "setting")
+            handleSettingFragmentOpen()
+        }
+
         // Collecting the StateFlow
         lifecycleScope.launch {
             mainViewModel.toolbarTitle.collectLatest { title ->
@@ -163,6 +171,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun handleSettingFragmentOpen() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.nav_setting, true) // Remove previous instances of this fragment
+            .setLaunchSingleTop(true) // Avoid duplicate navigation calls
+            .build()
+        navController.navigate(R.id.nav_setting, null, navOptions)
     }
 
     private fun checkAndRequestPermissions() {
@@ -1182,6 +1198,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             R.id.nav_select_language -> {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putString(KEY_WHERE_TO_COMING, "drawer").apply()
                 val intent = Intent(this@MainActivity, LanguageActivity::class.java)
                 startActivity(intent)
                 //finish()
