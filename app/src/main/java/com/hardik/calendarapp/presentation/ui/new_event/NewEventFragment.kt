@@ -48,7 +48,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.DateFormatSymbols
 import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class NewEventFragment : Fragment(R.layout.fragment_new_event) {
@@ -390,22 +392,42 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         timePicker?.apply {
             setIs24HourView(is24HourFormat) // Use 12-hour format
             // Programmatically set a time (e.g., 0:12)
-            val data = DateUtil.longToString(timestamp = viewModel.startTime.value.takeIf { isStartTime } ?: viewModel.endTime.value,pattern = DateUtil.TIME_FORMAT_hh_mm_a)
+            val timeStamp = viewModel.startTime.value.takeIf { isStartTime } ?: viewModel.endTime.value
+            val data = DateUtil.longToString(timestamp = timeStamp, pattern = TIME_FORMAT_hh_mm_a)
 
             // Split the time string into hour, minute, and AM/PM
             val time = splitTimeString(data)
             val hour = time.first.toInt()
             val minute = time.second.toInt()
-            val amPm = time.third
+            val amPm = time.third.trim()
 
-            // Set the hour and minute
-            this.hour = if (amPm == "PM" && hour != 12) {
-                hour + 12 // Convert PM hours (except 12 PM) to 24-hour format
-            } else if (amPm == "AM" && hour == 12) {
-                0 // Convert 12 AM to 0 hours (midnight)
-            } else {
-                hour
+
+            // Get localized AM/PM strings
+            val symbols = DateFormatSymbols(Locale.getDefault())
+            val amPmSystem = symbols.amPmStrings // ["AM", "PM"]
+            val amString = amPmSystem[0] // Localized "AM"
+            val pmString = amPmSystem[1] // Localized "PM"
+
+            // Determine correct hour format
+            val hourToSet = when {
+                is24HourFormat -> { // Convert 12-hour to 24-hour if needed
+                    when {
+                        amPm == pmString && hour != 12 -> hour + 12 // PM but not 12 PM
+                        amPm == amString && hour == 12 -> 0 // 12 AM -> 00:00
+                        else -> hour
+                    }
+                }
+                else -> { // Keep it in 12-hour format
+                    when {
+                        amPm == pmString && hour != 12 -> hour + 12 // PM but not 12 PM
+                        amPm == amString && hour == 12 -> 0 // 12 AM -> 00:00
+                        else -> hour
+                    }
+                }
             }
+            //Log.e(TAG, "showTimePickerDialog: time: $time | hour: $hour | minute: $minute | amPm: $amPm | Converted Hour: $hourToSet")
+            // Set the values in TimePicker
+            this.hour = hourToSet
             this.minute = minute
 
         }
