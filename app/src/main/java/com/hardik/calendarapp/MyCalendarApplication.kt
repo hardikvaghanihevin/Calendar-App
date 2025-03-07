@@ -10,6 +10,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.PREF_KEY_APP_THEME
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
 import com.hardik.calendarapp.utillities.LocaleHelper
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -37,8 +39,8 @@ class MyCalendarApplication: Application(), DefaultLifecycleObserver {
     /** Load preferences, apply the theme, and configure locale */
     private suspend fun loadPreferencesAndInitializeApp() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
-        val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
+        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
+        val appTheme = sharedPreferences.getString(PREF_KEY_APP_THEME, "system") ?: "system"
 
         applyTheme(appTheme)
         // Update locale

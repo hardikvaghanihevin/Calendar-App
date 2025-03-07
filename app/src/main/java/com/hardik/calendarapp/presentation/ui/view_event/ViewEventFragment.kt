@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
+import com.hardik.calendarapp.common.Constants.PREF_KEY_TIME_FORMAT
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
@@ -75,7 +76,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         _binding = FragmentViewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        is24HourFormat = sharedPreferences.getBoolean("time_format", false)
+        is24HourFormat = sharedPreferences.getBoolean(PREF_KEY_TIME_FORMAT, false)
 
 
         /** Delete Event  */

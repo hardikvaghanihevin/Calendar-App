@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
@@ -20,6 +19,7 @@ import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.KEY_IS_FIRST_TIME_LAUNCH_SHOW_LANGUAGE_ACTIVITY
 import com.hardik.calendarapp.common.Constants.KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG
 import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
 import com.hardik.calendarapp.databinding.ActivityLanguageBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.LanguageAdapter
@@ -154,7 +154,7 @@ class LanguageActivity : AppCompatActivity() {
         val i = Intent(this@LanguageActivity, MainActivity::class.java)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-        Log.e(TAG, "navigateToMainActivity: $whereToComing", )
+        //Log.e(TAG, "navigateToMainActivity: $whereToComing", )
 
         if (whereToComing == "setting"){
             i.putExtra(KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG, true)
@@ -167,12 +167,12 @@ class LanguageActivity : AppCompatActivity() {
 
     private fun getCurrentLanguage(): String? {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        return sharedPreferences.getString("language", Locale.getDefault().language)
+        return sharedPreferences.getString(PREF_KEY_LANGUAGE, Locale.getDefault().language)
     }
 
     private fun saveLanguage(languageCode: String) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        sharedPreferences.edit().putString("language", languageCode).apply()
+        sharedPreferences.edit().putString(PREF_KEY_LANGUAGE, languageCode).apply()
 
         setAppLanguage(languageCode)
     }

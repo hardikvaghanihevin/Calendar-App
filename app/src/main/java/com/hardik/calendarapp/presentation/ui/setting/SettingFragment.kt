@@ -14,6 +14,8 @@ import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
+import com.hardik.calendarapp.common.Constants.PREF_KEY_APP_THEME
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
 import com.hardik.calendarapp.databinding.FragmentSettingBinding
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
@@ -41,8 +43,8 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
     private fun applyThemeAndLocale() {
         // Step 1: Retrieve saved language preference
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
-        val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
+        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
+        val appTheme = sharedPreferences.getString(PREF_KEY_APP_THEME, "system") ?: "system"
 
         // Step 2: Set the theme before locale
         when (appTheme) {

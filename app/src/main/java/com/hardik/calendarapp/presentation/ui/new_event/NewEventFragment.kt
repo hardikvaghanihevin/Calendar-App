@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
@@ -27,6 +28,7 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_ALERT
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_REPEAT
+import com.hardik.calendarapp.common.Constants.PREF_KEY_TIME_FORMAT
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.AlertOffsetConverter
 import com.hardik.calendarapp.data.database.entity.Event
@@ -90,7 +92,7 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         _binding = FragmentNewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        is24HourFormat = sharedPreferences.getBoolean("time_format", false)
+        is24HourFormat = sharedPreferences.getBoolean(PREF_KEY_TIME_FORMAT, false)
 
 
         lifecycleScope.launch {
@@ -224,44 +226,74 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
 
         /** Save Event  */
-        (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.includedSave.root.apply {
-            text = resources.getString(R.string.action_save)
-            setOnClickListener {
-                try {
-                    val mainActivity = requireActivity() as MainActivity
+        (activity as MainActivity).run {
 
-                    lifecycleScope.launch {
-                        val msg: String = viewModel.run {
-                            val id = if (arguments?.containsKey(KEY_EVENT_JSON) == true) argEvent.id else null
+            this.binding.appBarMain.includedAppBarMainCustomToolbar.includedNewEvent.includedSave.root.apply {
+                text = resources.getString(R.string.action_save)
 
-                            if (id != null) { viewModel.cancelAlarm(event = argEvent) }
-                            insertCustomEvent(context = requireContext(),id = id)
-                        }
+                val sClick = {
+                    try {
+                        val mainActivity = requireActivity() as MainActivity
 
-                        // Display a message to the user
-                        val notifyUser = context.resources.getString(R.string.event_insert_successfully)
-                            .takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY } ?: context.resources.getString(R.string.event_update_successfully)
-                            .takeIf { msg == Constants.EVENT_UPDATE_SUCCESSFULLY } ?: msg
+                        lifecycleScope.launch {
+                            val msg: String = viewModel.run {
+                                val id =
+                                    if (arguments?.containsKey(KEY_EVENT_JSON) == true) argEvent.id else null
 
-                        if (isAdded){// Ensure fragment is attached before accessing view
-                            Snackbar.make(view, notifyUser, Snackbar.LENGTH_SHORT).show()
-                        }
+                                if (id != null) {
+                                    viewModel.cancelAlarm(event = argEvent)
+                                }
+                                insertCustomEvent(context = requireContext(), id = id)
+                            }
 
-                        // Reset the fields after successful insertion
-                        if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
-                            viewModel.resetEventState()
+                            // Display a message to the user
+                            val notifyUser =
+                                context.resources.getString(R.string.event_insert_successfully)
+                                    .takeIf { msg == Constants.EVENT_INSERT_SUCCESSFULLY }
+                                    ?: context.resources.getString(R.string.event_update_successfully)
+                                        .takeIf { msg == Constants.EVENT_UPDATE_SUCCESSFULLY }
+                                    ?: msg
 
-                            if (mainViewModel.isComingFromNotification.value){
-                                mainActivity.navigateToYearView()
-                                mainViewModel.setIsComingFromNotification(isComing = false)
-                            }else{
-                                findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg } ?: R.id.viewEventFragment, inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                            if (isAdded) {// Ensure fragment is attached before accessing view
+                                Snackbar.make(view, notifyUser, Snackbar.LENGTH_SHORT).show()
+                            }
+
+                            // Reset the fields after successful insertion
+                            if (msg == Constants.EVENT_INSERT_SUCCESSFULLY || msg == Constants.EVENT_UPDATE_SUCCESSFULLY) {
+                                viewModel.resetEventState()
+
+                                if (mainViewModel.isComingFromNotification.value) {
+                                    mainActivity.navigateToYearView()
+                                    mainViewModel.setIsComingFromNotification(isComing = false)
+                                } else {
+                                    findNavController().popBackStack(R.id.newEventFragment.takeIf { Constants.EVENT_INSERT_SUCCESSFULLY == msg }
+                                        ?: R.id.viewEventFragment,
+                                        inclusive = true)// Pop back two fragments by specifying the fragment ID you want to retain
+                                }
                             }
                         }
-                    }
 
-                }catch (e: IllegalStateException) {
-                    Log.e(TAG,"NewEventFragment: save event: Activity is not attached", e)
+                    } catch (e: IllegalStateException) {
+                        Log.e(TAG, "NewEventFragment: save event: Activity is not attached", e)
+                    }
+                }
+
+                // Always set the click listener
+                setOnClickListener {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+                        if (this@run.permissionManager.checkPermission(permissionNotification)) {
+                            sClick()
+                        } else {
+                            this@run.showNotificationPermissionDialog {
+                                if (this@run.permissionManager.checkPermission(permissionNotification))
+                                    sClick() // Call `sClick()` only after permission is granted, on next click
+                            }
+                        }
+                    } else {
+                        sClick()
+                    }
                 }
             }
         }

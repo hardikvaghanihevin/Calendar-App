@@ -21,12 +21,12 @@ object LocaleHelper {
         context.createConfigurationContext(config) // Important for API 25+
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        sharedPreferences.edit().putString("language", languageCode).apply()
+        sharedPreferences.edit().putString(PREF_KEY_LANGUAGE, languageCode).apply()
     }
 
     fun getLocale(context: Context): Locale {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
+        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
         return Locale(languageCode)
     }*/
 }

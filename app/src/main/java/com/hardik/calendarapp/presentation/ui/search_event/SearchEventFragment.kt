@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +32,7 @@ import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.FragmentSearchEventBinding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.presentation.adapter.SearchEventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
@@ -78,7 +78,7 @@ class SearchEventFragment : Fragment() {
             adapter = eventAdapter
         }
 
-        setupUI()
+        setupEventRecycler()
 
         /** Search view for Event */
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedSearchView.root.apply {
@@ -172,12 +172,7 @@ class SearchEventFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.e(TAG, "onResume: $currentQuery", )
-    }
-
-    private fun setupUI() {
+    private fun setupEventRecycler() {
         binding.apply {
             //region Event handlers
 
@@ -277,7 +272,7 @@ class SearchEventFragment : Fragment() {
         }
     }
 
-    private suspend fun handleDataState(dataState: DataListState<Event>) {
+    private fun handleDataState(dataState: DataListState<Event>) {
 
         if (dataState.isLoading) {
             // Show loading indicator
@@ -299,7 +294,7 @@ class SearchEventFragment : Fragment() {
             viewModel.findPositionOfEvent(data)
 
 
-            viewModel.firstEventOfEachWeek.collectLatest {
+            //viewModel.firstEventOfEachWeek.collectLatest {
 
                 //delay(300)
                 //eventAdapter.apply { updateData(data, it) }
@@ -315,7 +310,7 @@ class SearchEventFragment : Fragment() {
                     binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
                 }
 
-            }
+            //}
         }
     }
 
@@ -347,14 +342,12 @@ class SearchEventFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e(TAG, "onDestroyView: ", )
         _binding = null
     }
 
     override fun onDestroy() {
         super.onDestroy()
         resetSearchView()
-        Log.e(TAG, "onDestroy: ", )
     }
 
     private fun resetSearchView() {

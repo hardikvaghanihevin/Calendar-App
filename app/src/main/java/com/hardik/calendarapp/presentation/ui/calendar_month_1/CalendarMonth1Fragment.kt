@@ -32,7 +32,7 @@ import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
-import com.hardik.calendarapp.presentation.adapter.EventAdapter
+import com.hardik.calendarapp.presentation.adapter.MonthEventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
 import com.hardik.calendarapp.utillities.DateUtil
@@ -65,7 +65,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels()
-    private val eventAdapter by lazy { EventAdapter() }
+    private val eventAdapter by lazy { MonthEventAdapter(requireContext()) }
     private var yearMonthPairList: List<Pair<Int, Int>> = emptyList()
     private val pageAdapter by lazy { CalendarMonthPageAdapter() }
 
@@ -253,7 +253,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 includedProgressLayout.progressBar.visibility = View.GONE
             }
 
-            eventAdapter.updateFirstDayOfWeek()
+            //eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event:Event->
                 // got event update
                 navigateToViewEventFrag(event = event)
@@ -296,18 +296,18 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState.debounce(300)) { firstDay, dataState ->
                     Pair(firstDay, dataState)
                 }.collectLatest { (firstDay, dataState) ->
-                    when (firstDay) {
-                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-                    }
+//                    when (firstDay) {
+//                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
+//                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
+//                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
+//                    }
                     handleDataState(dataState)
                 }
             //}
         }
     }
 
-    private suspend fun handleDataState(dataState: DataListState<Event>) {
+    private fun handleDataState(dataState: DataListState<Event>) {
         if (dataState.isLoading) {
             // Show loading indicator
             binding.includedProgressLayout.progressBar.visibility = View.VISIBLE
@@ -326,15 +326,16 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             // Update UI with the user list
             val data = dataState.data
 
-            viewModel.firstEventOfEachWeek.collectLatest {
+            //viewModel.firstEventOfEachWeek.collectLatest {
 
-                delay(100)
+                //delay(100)
                 eventAdapter.apply {
-                    updateData(data, it)
+                    //updateData(data, it)
+                    submitList(data)
                     binding.includedProgressLayout.progressBar.visibility = View.GONE
                     binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
                 }
-            }
+            //}
         }
     }
     @SuppressLint("NotifyDataSetChanged")
@@ -367,11 +368,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             launch() {
                 viewModel.firstDayOfTheWeek.collectLatest { firstDay->
                     pageAdapter.updateFirstDayOfTheWeek(firstDay)
-                    when(firstDay){
-                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-                    }
+//                    when(firstDay){
+//                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
+//                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
+//                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
+//                    }
                 }
             }
 

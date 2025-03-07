@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants
+import com.hardik.calendarapp.common.Constants.PREF_KEY_COUNTRIES
 import com.hardik.calendarapp.databinding.FragmentCountryBinding
 import com.hardik.calendarapp.presentation.MainViewModel
 import com.hardik.calendarapp.presentation.adapter.CountryAdapter
@@ -63,7 +64,7 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
 
         // Step 1: Retrieve saved countries from SharedPreferences
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val savedCountries = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+        val savedCountries = sharedPreferences.getStringSet(PREF_KEY_COUNTRIES, setOf("indian")) ?: setOf("indian")
 
 
         // Step 3: Get country names and country codes from resources

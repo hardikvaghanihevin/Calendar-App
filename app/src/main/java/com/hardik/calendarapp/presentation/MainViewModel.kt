@@ -7,6 +7,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.common.Constants.PREF_KEY_COUNTRIES
+import com.hardik.calendarapp.common.Constants.PREF_KEY_FIRST_DAY_OF_THE_WEEK
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE_AND_COUNTRIES
 import com.hardik.calendarapp.common.DataListState
 import com.hardik.calendarapp.common.Resource
 import com.hardik.calendarapp.data.database.entity.AlertOffset
@@ -88,7 +92,7 @@ class MainViewModel @Inject constructor(
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
 
-    private val _languageCode = MutableStateFlow<String>(sharedPreferences.getString("language", "en") ?: "en")
+    private val _languageCode = MutableStateFlow<String>(sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en")
     val languageCode: StateFlow<String> = _languageCode // Public read-only StateFlow
 
     fun updateLanguageCode(languageCode: String){
@@ -140,7 +144,7 @@ class MainViewModel @Inject constructor(
     // Save selected countries
     fun saveSelectedCountries(selectedCountries: Set<String>) {
         sharedPreferences.edit()
-            .putStringSet("countries", selectedCountries)
+            .putStringSet(PREF_KEY_COUNTRIES, selectedCountries)
             .apply()
     }
 
@@ -226,16 +230,16 @@ class MainViewModel @Inject constructor(
             holidayMutex.withLock {
                 currentJob?.cancel()
 
-                val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-                val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+                val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en" // Default to "en"
+                val countryCodes: Set<String> = sharedPreferences.getStringSet(PREF_KEY_COUNTRIES, setOf("indian")) ?: setOf("indian")
 
                 val countryString = "$languageCode,${countryCodes.joinToString(",")}"
-                val oldCountryString = sharedPreferences.getString("countryString","")
+                val oldCountryString = sharedPreferences.getString(PREF_KEY_LANGUAGE_AND_COUNTRIES,"")
 
                 val emptyRecord = async (Dispatchers.IO) { eventRepository.getRowCountBySourceType(SourceType.REMOTE) }.await()
                 if (countryString!= oldCountryString || emptyRecord) {
 
-                    sharedPreferences.edit().putString("countryString", countryString).apply()
+                    sharedPreferences.edit().putString(PREF_KEY_LANGUAGE_AND_COUNTRIES, countryString).apply()
 
                     _isLoading.value = true
                     currentJob = viewModelScope.launch (Dispatchers.IO) {
@@ -246,8 +250,8 @@ class MainViewModel @Inject constructor(
 
                             allEventsOfAPI.clear()
 
-//                        val languageCode = sharedPreferences.getString("language", "en") ?: "en" // Default to "en"
-//                        val countryCodes: Set<String> = sharedPreferences.getStringSet("countries", setOf("indian")) ?: setOf("indian")
+//                        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en" // Default to "en"
+//                        val countryCodes: Set<String> = sharedPreferences.getStringSet(PREF_KEY_COUNTRIES, setOf("indian")) ?: setOf("indian")
 
                             // Create a list of deferred results for API calls
                             val apiCalls = countryCodes.map { countryCode ->
@@ -455,7 +459,7 @@ class MainViewModel @Inject constructor(
     }//Use this for both combo base on date it-selves call
 
     //----------------------------------------------------------------//
-
+    //region Todo not used now [remove]
     private val _firstEventOfEachWeek = MutableStateFlow<Map<String, Event>>(emptyMap())
     val firstEventOfEachWeek: StateFlow<Map<String, Event>> = _firstEventOfEachWeek
 
@@ -500,6 +504,7 @@ class MainViewModel @Inject constructor(
             _firstEventOfEachWeek.update { firstEvents.mapKeys { it.key } }
         }
     }
+    //endregion
 
     //----------------------------------------------------------------//
 
@@ -611,7 +616,7 @@ class MainViewModel @Inject constructor(
     //----------------------------------------------------------------//
 
     //Todo: First day of the week
-    private val defaultFirstDayOfWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday")?: "Sunday"// Default to Sunday
+    private val defaultFirstDayOfWeek = sharedPreferences.getString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, "Sunday")?: "Sunday"// Default to Sunday
     private val _firstDayOfTheWeek = MutableStateFlow<String>(defaultFirstDayOfWeek)
     val firstDayOfTheWeek: StateFlow<String> = _firstDayOfTheWeek
 

@@ -49,6 +49,11 @@ import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.common.Constants.KEY_LANGUAGE_CHANGE_GO_TO_SETTING_FRAG
 import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
+import com.hardik.calendarapp.common.Constants.PREF_KEY_APP_THEME
+import com.hardik.calendarapp.common.Constants.PREF_KEY_AUTO_START_PERMISSION
+import com.hardik.calendarapp.common.Constants.PREF_KEY_FIRST_DAY_OF_THE_WEEK
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
+import com.hardik.calendarapp.common.Constants.PREF_KEY_TIME_FORMAT
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.databinding.ActivityMainBinding
@@ -91,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
     private var isAutostartSet by Delegates.notNull<Boolean>()
-    private var isBatteryOptimization by Delegates.notNull<Boolean>()
+    //private var isBatteryOptimization by Delegates.notNull<Boolean>()
     lateinit var permissionManager: PermissionManager
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -111,13 +116,14 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.e(TAG, "onCreate: ", )
 
         // Step 1: Retrieve saved language preference
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
+        isAutostartSet = sharedPreferences.getBoolean(PREF_KEY_AUTO_START_PERMISSION, false)
         //isBatteryOptimization = sharedPreferences.getBoolean("key_permission_granted_battery", false)
-        val appTheme = sharedPreferences.getString("app_theme", "system") ?: "system"
-        val languageCode = sharedPreferences.getString("language", "en") ?: "en"
+        val appTheme = sharedPreferences.getString(PREF_KEY_APP_THEME, "system") ?: "system"
+        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
 
         // Step 2: Set the theme before locale
         when (appTheme) {
@@ -167,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             mainViewModel.deletedEvent.collect { deletedEvent ->
                 deletedEvent.let {
-                    Log.d(TAG+"Observer", "Deleted Event: ${it.title}")
+                    //Log.d(TAG+"Observer", "Deleted Event: ${it.title}")
                     // Perform Cursor event deletion here
                 }
             }
@@ -184,22 +190,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAndRequestPermissions() {
         checkNotificationPermission {
-            Handler(Looper.getMainLooper()).postDelayed({
-                checkBatteryOptimizationPermission {
-
-                    checkAutoStartPermission {
-                        Log.d("PERMISSION_FLOW", "All required permissions checked.")
-                    }
-                    //Handler(Looper.getMainLooper()).postDelayed({}, 1000) // Adjust delay as needed
+            checkBatteryOptimizationPermission {
+                checkAutoStartPermission {
+                    //Log.d("PERMISSION_FLOW", "All required permissions checked.")
                 }
-            }, 1000) // Adjust delay as needed
+            }
         }
-    }
-    /** 🔄 Utility Function: Delay Execution by 1 Second */
-    private fun delayExecution(action: () -> Unit) {
-        Handler(Looper.getMainLooper()).postDelayed({
-            action()
-        }, 500) // 1000ms = 1 second
     }
 
     private fun openAppSettings() {
@@ -225,65 +221,48 @@ class MainActivity : AppCompatActivity() {
                     onComplete()
                 }
             } else {
-                Log.d("PERMISSION_FLOW", "Notification Permission Already Granted")
-                //onComplete()
-                delayExecution(onComplete)
+                //Log.d("PERMISSION_FLOW", "Notification Permission Already Granted")
+                onComplete()
             }
         } else {
-            //onComplete() // Skip if Android version < 13
-            delayExecution(onComplete)
+            onComplete() // Skip if Android version < 13
         }
     }
 
     /** 2️⃣ Step 2: Check Battery Optimization Permission */
     private fun checkBatteryOptimizationPermission(onComplete: () -> Unit) {
-//        Handler(Looper.getMainLooper()).postDelayed({
-            if (!this.isBatteryOptimizationPermissionGranted()) {
-                Log.e(TAG, "checkBatteryOptimizationPermission: if not grant", )
+        Handler(mainLooper).postDelayed({
+            if (!this@MainActivity.isBatteryOptimizationPermissionGranted()) {
+                //Log.e(TAG, "checkBatteryOptimizationPermission: if not grant", )
                 showBatteryOptimizationDialog {
-                    if (this.isBatteryOptimizationPermissionGranted()) {
-                        Log.d("PERMISSION_FLOW", "Battery Optimization Granted")
-                    } else {
-                        Log.d("PERMISSION_FLOW", "Battery Optimization Denied")
-
-                    }
-                    //onComplete() // Move to next permission check
-                    delayExecution { onComplete() }
+                    onComplete() // Move to next permission check
                 }
             } else {
-                Log.d("PERMISSION_FLOW", "Battery Optimization Already Granted")
-                //onComplete()
+                //Log.d("PERMISSION_FLOW", "Battery Optimization Already Granted")
                 onComplete()
             }
-//        }, 1000) // Adjust delay as needed
+        },1000)
 
     }
 
     /** 3️⃣ Step 3: Check AutoStart Permission */
     private fun checkAutoStartPermission(onComplete: () -> Unit) {
-//        Handler(Looper.getMainLooper()).postDelayed({
+        Handler(mainLooper).postDelayed({
             val isAutoStartPermissionAvailable = AutoStartPermissionHelper.getInstance()
                 .isAutoStartPermissionAvailable(this, false)
 
-            isAutostartSet = sharedPreferences.getBoolean("key_permission_granted", false)
+            isAutostartSet = sharedPreferences.getBoolean(PREF_KEY_AUTO_START_PERMISSION, false)
             if (isAutoStartPermissionAvailable && !isAutostartSet) {
-                sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+                //Log.d("PERMISSION_FLOW", "AutoStart Permission not Granted or Required")
+                sharedPreferences.edit().putBoolean(PREF_KEY_AUTO_START_PERMISSION, true).apply()
                 showAutoStartPermissionDialog {
-                    if (isAutostartSet) {
-                        Log.d("PERMISSION_FLOW", "AutoStart Permission Granted")
-                    } else {
-                        Log.d("PERMISSION_FLOW", "AutoStart Permission Denied")
-                    }
                     onComplete()
-                    //delayExecution(onComplete)
                 }
             } else {
-                Log.d("PERMISSION_FLOW", "AutoStart Permission Already Granted or Not Required")
+                //Log.d("PERMISSION_FLOW", "AutoStart Permission Already Granted or Not Required")
                 onComplete()
-                //delayExecution(onComplete)
             }
-
-//        }, 1000) // Adjust delay as needed
+        },500)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -417,7 +396,7 @@ class MainActivity : AppCompatActivity() {
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
             val firstDayOfTheWeek =
-                sharedPreferences.getString("firstDayOfWeek", "Sunday")// Default to Sunday
+                sharedPreferences.getString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, "Sunday")// Default to Sunday
 
             when (firstDayOfTheWeek) {
                 "Sunday" -> {
@@ -468,7 +447,7 @@ class MainActivity : AppCompatActivity() {
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
-                sharedPreferences.edit().putString("firstDayOfWeek", "Sunday").apply()
+                sharedPreferences.edit().putString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, "Sunday").apply()
             }
 
             // Handle Monday click
@@ -485,7 +464,7 @@ class MainActivity : AppCompatActivity() {
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
-                sharedPreferences.edit().putString("firstDayOfWeek", "Monday").apply()
+                sharedPreferences.edit().putString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, "Monday").apply()
             }
 
             // Handle Saturday click
@@ -502,14 +481,14 @@ class MainActivity : AppCompatActivity() {
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
-                sharedPreferences.edit().putString("firstDayOfWeek", "Saturday").apply()
+                sharedPreferences.edit().putString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, "Saturday").apply()
             }
 
             btnDone.setOnClickListener {
                 lifecycleScope.launch {
                     // Make sure the navigation happens on the main thread
                     PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-                        .getString("firstDayOfWeek", "Sunday")
+                        .getString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, "Sunday")
                         ?.let { it1 -> mainViewModel.updateFirstDayOfTheWeek(refresh = it1) }
                 }
                 dialog.dismiss()
@@ -517,7 +496,7 @@ class MainActivity : AppCompatActivity() {
 
             btnCancel.setOnClickListener {
                 // Save selection to SharedPreferences when user can 'cancel'
-                sharedPreferences.edit().putString("firstDayOfWeek", firstDayOfTheWeek).apply()
+                sharedPreferences.edit().putString(PREF_KEY_FIRST_DAY_OF_THE_WEEK, firstDayOfTheWeek).apply()
                 dialog.dismiss()
             }
         }
@@ -690,7 +669,7 @@ class MainActivity : AppCompatActivity() {
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
             val appTheme =
-                sharedPreferences.getString("app_theme", "system")// Default to system theme
+                sharedPreferences.getString(PREF_KEY_APP_THEME, "system")// Default to system theme
 
             when (appTheme) {
                 "dark" -> {
@@ -741,7 +720,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 // Save selection to SharedPreferences
-                sharedPreferences.edit().putString("app_theme", "dark").apply()
+                sharedPreferences.edit().putString(PREF_KEY_APP_THEME, "dark").apply()
 
             }
 
@@ -755,7 +734,7 @@ class MainActivity : AppCompatActivity() {
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
-                sharedPreferences.edit().putString("app_theme", "light").apply()
+                sharedPreferences.edit().putString(PREF_KEY_APP_THEME, "light").apply()
 
             }
 
@@ -769,13 +748,13 @@ class MainActivity : AppCompatActivity() {
                     ResourcesCompat.getFont(this@MainActivity, R.font.post_nord_sans_medium)
 
                 // Save selection to SharedPreferences
-                sharedPreferences.edit().putString("app_theme", "system").apply()
+                sharedPreferences.edit().putString(PREF_KEY_APP_THEME, "system").apply()
 
             }
 
             btnDone.setOnClickListener {
                 val selectedTheme =
-                    sharedPreferences.getString("app_theme", "system") // Get saved preference
+                    sharedPreferences.getString(PREF_KEY_APP_THEME, "system") // Get saved preference
 
                 // Apply the selected theme
                 when (selectedTheme) {
@@ -839,7 +818,7 @@ class MainActivity : AppCompatActivity() {
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
             var is24HourFormat = sharedPreferences.getBoolean(
-                "time_format",
+                PREF_KEY_TIME_FORMAT,
                 false
             )  // Default to false (12-hour format)
 
@@ -883,7 +862,7 @@ class MainActivity : AppCompatActivity() {
             btnDone.setOnClickListener {
 
                 // Apply/Save the selected time format (true for 24-hour format, false for 12-hour format)
-                sharedPreferences.edit().putBoolean("time_format", is24HourFormat).apply()
+                sharedPreferences.edit().putBoolean(PREF_KEY_TIME_FORMAT, is24HourFormat).apply()
 
                 dialog.dismiss()
             }
@@ -1592,28 +1571,32 @@ class MainActivity : AppCompatActivity() {
             )
         }
         dialog.setCancelable(false)
-        dialog.show()
 
-        dialogBatteryOptimizationBinding?.apply {
+        if(!this@MainActivity.isBatteryOptimizationPermissionGranted()){
+            dialog.show()
 
-            btnCancel.setOnClickListener {
-                dialog.dismiss()
-                onDismiss()
-            }
+            dialogBatteryOptimizationBinding?.apply {
 
-            btnGoToNext.setOnClickListener {
-                if (!this@MainActivity.isBatteryOptimizationPermissionGranted()){
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        this@MainActivity.requestBatteryOptimizationPermission()
-                    }, 300) // Adjust delay as needed
-                    dialog.dismiss()
-                    onDismiss()
-                }else{
+                btnCancel.setOnClickListener {
                     dialog.dismiss()
                     onDismiss()
                 }
+
+                btnGoToNext.setOnClickListener {
+                    if (!this@MainActivity.isBatteryOptimizationPermissionGranted()){
+                        this@MainActivity.requestBatteryOptimizationPermission()
+                        dialog.dismiss()
+                        onDismiss()
+                    }else{
+                        dialog.dismiss()
+                        onDismiss()
+                    }
+                }
             }
+        }else{
+            onDismiss()
         }
+
     }
     // endregion
 
@@ -1667,14 +1650,14 @@ class MainActivity : AppCompatActivity() {
 
         dialogAutoStartPermissionBinding?.apply {
             btnCancel.setOnClickListener {
-                sharedPreferences.edit().putBoolean("key_permission_granted", false).apply()
+                sharedPreferences.edit().putBoolean(PREF_KEY_AUTO_START_PERMISSION, false).apply()
                 dialog.dismiss()
                 onDismiss()
             }
 
             btnGoToNext.setOnClickListener {
 //                if (!isAutostartSet){
-                    sharedPreferences.edit().putBoolean("key_permission_granted", true).apply()
+                    sharedPreferences.edit().putBoolean(PREF_KEY_AUTO_START_PERMISSION, true).apply()
                     getAutoStartPermission()
                     dialog.dismiss()
                     onDismiss()
