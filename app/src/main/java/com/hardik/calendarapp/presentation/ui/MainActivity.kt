@@ -96,15 +96,12 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
     private var isAutostartSet by Delegates.notNull<Boolean>()
-    //private var isBatteryOptimization by Delegates.notNull<Boolean>()
     lateinit var permissionManager: PermissionManager
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private var drawerMenuAdapter = DrawerMenuAdapter()
-
-//    var bundle: Bundle? = null
 
     companion object {
         const val REQUEST_CODE_CALENDAR_PERMISSIONS = 1
@@ -116,7 +113,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.e(TAG, "onCreate: ", )
 
         // Step 1: Retrieve saved language preference
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -248,8 +244,7 @@ class MainActivity : AppCompatActivity() {
     /** 3️⃣ Step 3: Check AutoStart Permission */
     private fun checkAutoStartPermission(onComplete: () -> Unit) {
         Handler(mainLooper).postDelayed({
-            val isAutoStartPermissionAvailable = AutoStartPermissionHelper.getInstance()
-                .isAutoStartPermissionAvailable(this, false)
+            val isAutoStartPermissionAvailable = checkAutoStartPermission()
 
             isAutostartSet = sharedPreferences.getBoolean(PREF_KEY_AUTO_START_PERMISSION, false)
             if (isAutoStartPermissionAvailable && !isAutostartSet) {
@@ -267,8 +262,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-//        setIntent(intent) // Update the current intent
-//        handleNotificationEventOpen(intent) // Handle the new intent
         if (intent?.hasExtra(KEY_EVENT_JSON) == true) {
             handleNotificationEventOpen(intent,"new")
         }
@@ -294,14 +287,11 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_year -> {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.root, duration = 0)
                 showViewWithAnimation(binding.appBarMain.fab, duration = 0)
-
             }
 
             R.id.nav_month -> {
-
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedMonthView.root, duration = 0)
                 showViewWithAnimation(binding.appBarMain.fab, duration = 0)
-
             }
 
             R.id.nav_select_country -> {
@@ -314,7 +304,6 @@ class MainActivity : AppCompatActivity() {
 
             R.id.repeatOptionFragment -> {
                 showViewWithAnimation(binding.appBarMain.includedAppBarMainCustomToolbar.includedRepeatOption.root, duration = 0)
-
             }
 
             R.id.alertOptionFragment -> {
@@ -532,7 +521,6 @@ class MainActivity : AppCompatActivity() {
             yearPicker.apply {
                 minValue = 2000
                 maxValue = 2100
-                //value = Calendar.getInstance().get(Calendar.YEAR)//2025
 
                 lifecycleScope.launch {
                     mainViewModel.yearJTD.collectLatest {
@@ -668,8 +656,7 @@ class MainActivity : AppCompatActivity() {
 
             // Set the initial selection based on the saved preference
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-            val appTheme =
-                sharedPreferences.getString(PREF_KEY_APP_THEME, "system")// Default to system theme
+            val appTheme = sharedPreferences.getString(PREF_KEY_APP_THEME, "system")// Default to system theme
 
             when (appTheme) {
                 "dark" -> {
@@ -1261,55 +1248,6 @@ class MainActivity : AppCompatActivity() {
         viewList.forEach { hideViewWithAnimation(it) }
     }
 
-    // region Call this function to request permissions as needed
-//    fun checkAndRequestCalendarPermissions() {
-//        val permissions = mutableListOf<String>()
-//        if (permissionManager.checkPermission(Manifest.permission.POST_NOTIFICATIONS)) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
-//            }
-//            Log.e(TAG, "checkAndRequestCalendarPermissions: ", )
-//        }
-//
-//        if (permissions.isNotEmpty()) {
-//            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_CODE_CALENDAR_PERMISSIONS)
-//        } else { // Permissions already granted
-//        }
-//    }
-
-//    fun areCalendarPermissionsGranted(permissionString: String): Boolean {
-//        val postNotificationPermission =
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                ContextCompat.checkSelfPermission(this, permissionString)
-//            } else {
-//                PackageManager.PERMISSION_GRANTED
-//            }
-//        return postNotificationPermission == PackageManager.PERMISSION_GRANTED
-//    }
-
-//    fun checkAndRequestCalendarPermissions() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
-//            val isGranted = permissionManager.checkPermission(permissionNotification)
-//            if (!isGranted) { permissionManager.requestPermission(permissionNotification) {} }
-//        }
-//
-//        otherPermission()
-//
-//    }
-//    private fun otherPermission(){
-//        if (!this.isBatteryOptimizationPermissionGranted()) {
-//            // Pehle Battery Optimization dialog show karein
-//            showBatteryOptimizationDialog {
-//                // Jab Battery Optimization dismiss ho jaye, tab AutoStart check karein
-//                checkAutoStartPermission()
-//            }
-//        } else {
-//            // Agar Battery Optimization already enabled hai, to sidha AutoStart check karein
-//            checkAutoStartPermission()
-//        }
-//    }
-
     // Handle the result of permission requests
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -1329,24 +1267,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        //while using in event insert and alert set
-        /*if (AlarmScheduler.handlePermissionResult(requestCode = requestCode, permissions = permissions, grantResults = grantResults)) {
-            for (i in permissions.indices) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    //onRequestPermissionsResult: Permission granted, schedule the alarm"
-                } else {
-                    // Permission denied, show a message to the user
-                    Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_notification), Snackbar.LENGTH_SHORT).setAction(getString(R.string.setting)) {
-                        // Open app settings
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", packageName, null)
-                        }
-                        startActivity(intent)
-                    }.show()
-                }
-            }
-        } else {        }*/
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
     //endregion
@@ -1361,13 +1281,7 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.nav_year, null, navOptions)
         }
 
-        val handleExit: () -> Unit = {
-            //finishAndRemoveTask()
-            finishAffinity() //  moveTaskToBack(true) Consistent app exit for both APIs
-//            val intent = Intent(applicationContext, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK }
-//            startActivity(intent)
-//            moveTaskToBack(true)
-        }
+        val handleExit: () -> Unit = { finishAffinity() }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
@@ -1443,34 +1357,6 @@ class MainActivity : AppCompatActivity() {
             }
             //endregion
         }
-        /*if (event != null) {
-            Log.e(TAG, "handleNotificationEventOpen: $mas", )
-            //intent.removeExtra(Constants.KEY_EVENT) // Prevent re-handling
-            //setIntent(Intent()) // Set intent
-            intent.removeExtra(Constants.KEY_EVENT_JSON) // Prevent re-handling
-
-            val eventTriggerTimeAndId = sharedPreferences.getStringSet("NotifyEventTriggerTimeAndId", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-            val maxStoredEvents = 100 // Set your preferred limit
-
-            // Limit stored events to `maxStoredEvents`
-            if (eventTriggerTimeAndId.size >= maxStoredEvents) {
-                eventTriggerTimeAndId.remove(eventTriggerTimeAndId.first()) // Remove the oldest entry
-            }
-
-            val isComingAgain :Boolean = (eventTriggerTimeAndId.contains("${event.triggerTime}=>${event.id}"))
-
-            if (isComingAgain){
-                Log.i(TAG, "handleNotificationEventOpen: ")
-                return }
-            else{
-                Log.i(TAG, "handleNotificationEventOpen: else")
-                navigateToViewEventFrag(event) }
-
-            sharedPreferences.edit().apply {
-                putStringSet("NotifyEventTriggerTimeAndId", eventTriggerTimeAndId.toMutableSet().apply { add("${event.triggerTime}=>${event.id}") })
-                apply()
-            }
-        }*/
     }
 
     //From coming Notification click
@@ -1601,29 +1487,7 @@ class MainActivity : AppCompatActivity() {
     // endregion
 
     // region Todo permission for AutoStart
-    private fun checkAutoStartPermission() {
-        if (!isAutostartSet) {
-            val isAutoStartPermissionAvailable: Boolean = AutoStartPermissionHelper.getInstance()
-                .isAutoStartPermissionAvailable(this, false)
-
-            if (isAutoStartPermissionAvailable) {
-                showAutoStartPermissionDialog { Log.e(TAG, "AutoStart permission dialog show.") }
-            }
-        }
-    }
-
-    private fun getAutoStartPermission() {//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
-        val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
-
-        // Check if the auto-start permission is available on the device
-        val isAutoStartPermissionAvailable: Boolean =
-            autoStartPermissionHelper.isAutoStartPermissionAvailable(this, false)
-
-        // If the permission is available, request it
-        if (isAutoStartPermissionAvailable) {
-            val granted: Boolean = autoStartPermissionHelper.getAutoStartPermission(this, true, false)
-        }
-    }
+    private fun checkAutoStartPermission() = AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this, false)
 
     private var dialogAutoStartPermissionBinding: DialogAutoStartPermissionBinding? = null
     private fun showAutoStartPermissionDialog(onDismiss: () -> Unit) {
@@ -1663,6 +1527,19 @@ class MainActivity : AppCompatActivity() {
                     onDismiss()
 //                }
             }
+        }
+    }
+
+    private fun getAutoStartPermission() {//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
+        val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
+
+        // Check if the auto-start permission is available on the device
+        val isAutoStartPermissionAvailable: Boolean =
+            autoStartPermissionHelper.isAutoStartPermissionAvailable(this, false)
+
+        // If the permission is available, request it
+        if (isAutoStartPermissionAvailable) {
+            val granted: Boolean = autoStartPermissionHelper.getAutoStartPermission(this, true, false)
         }
     }
     // endregion

@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,6 +21,7 @@ import com.hardik.calendarapp.common.Constants
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.databinding.FragmentCalendarYear1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.presentation.adapter.CalendarYearPageAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
@@ -33,13 +36,13 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
+class CalendarYear1Fragment : Fragment() {
     private val TAG = BASE_TAG + CalendarYear1Fragment::class.java.simpleName
 
     private val binding get() = _binding ?: throw IllegalStateException("Binding is only valid between onCreateView and onDestroyView")
     private var _binding: FragmentCalendarYear1Binding? = null
     private val viewModel: MainViewModel by activityViewModels()
-    val adapter = CalendarYearPageAdapter()
+    val adapter:CalendarYearPageAdapter by lazy { CalendarYearPageAdapter() }
 
     private lateinit var viewPager: ViewPager2
 
@@ -47,11 +50,14 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         super.onCreate(savedInstanceState)
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentCalendarYear1Binding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        _binding = FragmentCalendarYear1Binding.bind(view)
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
@@ -70,7 +76,6 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
         }
 
         /** Back to current year */
-        //(activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.backToDateIcon.setOnClickListener {
         (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedYearView.includedBackToDate.root.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
                 viewModel.findYearViewPos.collect{
@@ -93,8 +98,8 @@ class CalendarYear1Fragment : Fragment(R.layout.fragment_calendar_year1) {
                         navigateNewEvent()
                     } else {
                         this.showNotificationPermissionDialog{
-                            if (this.permissionManager.checkPermission(permissionNotification))
-                            navigateNewEvent()
+                            if (this.permissionManager.checkPermission(permissionNotification)){
+                                navigateNewEvent()}
                         }
                     }
                 }else{

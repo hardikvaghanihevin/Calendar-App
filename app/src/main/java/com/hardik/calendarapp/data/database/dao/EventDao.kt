@@ -33,8 +33,6 @@ interface EventDao {
     @Query("SELECT * FROM events WHERE sourceType = 'REMOTE'")
     fun getRemoteEvents(): Flow<List<Event>>
 
-    //@Query("SELECT * FROM events e1 WHERE ( e1.sourceType = 'LOCAL' OR e1.sourceType = 'CURSOR' OR ( e1.sourceType = 'REMOTE' AND NOT EXISTS ( SELECT 1 FROM events e2 WHERE e2.year = e1.year AND e2.month = e1.month AND e2.title = e1.title AND e2.sourceType = 'CURSOR' ) ) ) ORDER BY e1.startTime ASC, e1.endTime ASC, e1.title ASC")
-    //fun getAllEvents(): Flow<List<Event>> // Todo: For schedule event list
     @Query("SELECT * FROM events WHERE (:eventTitle IS NULL OR :eventTitle = '' OR LOWER(REPLACE(title, ' ', '')) LIKE '%' || LOWER(REPLACE(:eventTitle, ' ', '')) || '%') ORDER BY startTime ASC, endTime ASC, title ASC")
     fun getAllEvents(eventTitle: String?): Flow<List<Event>> // Todo: For schedule event list
 

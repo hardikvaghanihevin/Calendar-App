@@ -40,13 +40,13 @@ import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
 import com.hardik.calendarapp.utillities.MyNavigation
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class SearchEventFragment : Fragment() {
     private val TAG = BASE_TAG + SearchEventFragment::class.simpleName
 
@@ -61,7 +61,6 @@ class SearchEventFragment : Fragment() {
     var bundle: Bundle? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //return inflater.inflate(R.layout.fragment_search_event, container, false)
         _binding = FragmentSearchEventBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -139,7 +138,6 @@ class SearchEventFragment : Fragment() {
                             // Perform search or filtering based on the query
                             currentQuery = query // Save the query
                             viewModel.getAllEvents(query)
-                            //eventAdapter.filter.filter(query)
 
                             hideKeyboard(this@SearchEventFragment.requireActivity())
                         }
@@ -150,13 +148,11 @@ class SearchEventFragment : Fragment() {
                         // Handle query text changes
                         currentQuery = newText // Save the query
                         viewModel.getAllEvents(newText)
-                        //eventAdapter.filter.filter(newText ?: "")
                         return true
                     }
                 })
 
                 // Handle the close action of SearchView
-                //this.setOnCloseListener {}
                 val closeButton = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
                 closeButton?.setOnClickListener {
                     resetSearchView()
@@ -235,20 +231,11 @@ class SearchEventFragment : Fragment() {
                 includedProgressLayout.progressBar.visibility = View.GONE
             }
 
-            //eventAdapter.updateFirstDayOfWeek()
             eventAdapter.setConfigureEventCallback {event: Event ->
                 // got event update
                 navigateToViewEventFrag(event = event)
             }
 
-//            eventAdapter.setNoDataCallback {hasData ->
-//                rvEvent.visibility = View.GONE.takeUnless { hasData } ?: View.VISIBLE
-//                tvNotify.apply {
-//                    text = resources.getString(R.string.no_data)
-//                    visibility = View.GONE.takeIf { hasData } ?: View.VISIBLE
-//                }
-//                includedProgressLayout.progressBar.visibility = View.GONE
-//            }
             //endregion
         }
     }
@@ -258,16 +245,8 @@ class SearchEventFragment : Fragment() {
     private fun observeViewModelState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED){
-                combine(viewModel.firstDayOfTheWeek, viewModel.allEventsState.debounce(300)) { firstDay, dataState ->
-                    Pair(firstDay, dataState)
-                }.collectLatest { (firstDay, dataState) ->
-//                    when (firstDay) {
-//                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-//                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-//                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-//                    }
-                    handleDataState(dataState)
-                }
+                //combine(viewModel.allEventsState.debounce(300)) { dataState: Array<DataListState<Event>> -> dataState.get(0) }
+                viewModel.allEventsState.debounce(300).collectLatest { dataState -> handleDataState(dataState) }
             }
         }
     }
@@ -293,24 +272,16 @@ class SearchEventFragment : Fragment() {
             val data = dataState.data
             viewModel.findPositionOfEvent(data)
 
+            // Scroll to position after data is loaded
+            eventAdapter.apply {
+               //updateData(data, it)
+                submitList(data)
 
-            //viewModel.firstEventOfEachWeek.collectLatest {
+                scrollEventIndexAtCurrentDate()
 
-                //delay(300)
-                //eventAdapter.apply { updateData(data, it) }
-                // Scroll to position after data is loaded
-                //scrollEventIndexAtCurrentDate()
-                eventAdapter.apply {
-                   //updateData(data, it)
-                    submitList(data)
-
-                    scrollEventIndexAtCurrentDate()
-
-                    binding.includedProgressLayout.progressBar.visibility = View.GONE
-                    binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-                }
-
-            //}
+                binding.includedProgressLayout.progressBar.visibility = View.GONE
+                binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
     }
 
@@ -353,7 +324,6 @@ class SearchEventFragment : Fragment() {
     private fun resetSearchView() {
         currentQuery = null // Clear the query
         viewModel.getAllEvents(null)
-        //eventAdapter.filter.filter("") // Reset the filter
         val searchView = (activity as MainActivity).binding.appBarMain.includedAppBarMainCustomToolbar.includedSchedule.includedSearchView.root
         (activity as MainActivity).resetSearchView(searchView)
         showHideBeckToCurrentEventIcon(wantToShow = true)
@@ -391,30 +361,6 @@ class SearchEventFragment : Fragment() {
             //Log.e(TAG, "scrollEventIndexAtCurrentDate: $position", )
             if (isFirstTimeFlag){
                 isFirstTimeFlag = false
-                //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-                binding.rvEvent.post {
-                    //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-
-                    /*//binding.rvEvent.layoutManager?.scrollToPosition(position)
-                    (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-                    binding.rvEvent.post {
-                        binding.rvEvent.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                            override fun onGlobalLayout() {
-                                (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-                                binding.rvEvent.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                            }
-                        })
-                    }//TODO OR */
-
-                    //(binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-                    /*binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                        override fun onPreDraw(): Boolean {
-                            binding.rvEvent.viewTreeObserver.removeOnPreDrawListener(this)
-                            (binding.rvEvent.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(position, 0)
-                            return true
-                        }
-                    })*/
-                }
                 binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                     override fun onPreDraw(): Boolean {
                         binding.rvEvent.viewTreeObserver.removeOnPreDrawListener(this)

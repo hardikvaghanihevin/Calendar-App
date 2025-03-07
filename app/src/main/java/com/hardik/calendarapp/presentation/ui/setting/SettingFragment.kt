@@ -8,54 +8,35 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_WHERE_TO_COMING
-import com.hardik.calendarapp.common.Constants.PREF_KEY_APP_THEME
-import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
 import com.hardik.calendarapp.databinding.FragmentSettingBinding
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.language.LanguageActivity
-import com.hardik.calendarapp.utillities.LocaleHelper
+import dagger.hilt.android.AndroidEntryPoint
 
 
-class SettingFragment : Fragment(R.layout.fragment_setting) {
+@AndroidEntryPoint
+class SettingFragment : Fragment() {
     private val TAG = BASE_TAG + SettingFragment::class.java.simpleName
 
     private var _binding: FragmentSettingBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        applyThemeAndLocale()
-        return inflater.inflate(R.layout.fragment_setting, container, false)
+        _binding = FragmentSettingBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentSettingBinding.bind(view)
 
         setupSettingsUI()
     }
 
-    private fun applyThemeAndLocale() {
-        // Step 1: Retrieve saved language preference
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
-        val appTheme = sharedPreferences.getString(PREF_KEY_APP_THEME, "system") ?: "system"
-
-        // Step 2: Set the theme before locale
-        when (appTheme) {
-            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-
-        // Step 3: Update the locale after setting the theme and before inflating the UI
-        LocaleHelper.setLocale(requireContext(), languageCode)
-    }
     @SuppressLint("SetTextI18n")
     private fun setupSettingsUI() {
         binding.apply {
@@ -78,7 +59,6 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
 
                         val intent = Intent(requireActivity(), LanguageActivity::class.java)
                         startActivity(intent)
-                        //requireActivity().finish()
                     }
                 }
                 includedItemFirstDayOfTheWeek.apply {

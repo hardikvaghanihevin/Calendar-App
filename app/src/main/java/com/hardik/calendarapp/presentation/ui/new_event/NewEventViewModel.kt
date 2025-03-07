@@ -1,6 +1,7 @@
 package com.hardik.calendarapp.presentation.ui.new_event
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hardik.calendarapp.R
@@ -36,16 +37,6 @@ class NewEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,// For Database compatibility
 ): ViewModel() {
     private val TAG = BASE_TAG + NewEventViewModel::class.java.simpleName
-
-
-    private val _yearState = MutableStateFlow<Int>(Calendar.getInstance().get(Calendar.YEAR))
-    val yearState: StateFlow<Int> = _yearState
-
-    fun updateYear(year: Int) {
-        viewModelScope.launch {
-            _yearState.value = year
-        }
-    }
 
     //----------------------------------------------------------------//
     val date: Pair<Long, Long> = DateUtil.getStartAndEndOfDay(Calendar.getInstance().timeInMillis)
@@ -188,7 +179,7 @@ class NewEventViewModel @Inject constructor(
     }
 
 
-    private suspend fun validateEvent(context: Context, eventId: String? = null): String? {
+    private fun validateEvent(context: Context): String? {
         // Validate event title
         if (title.value.isBlank()) {
             return context.resources.getString(R.string.event_title_cannot_empty)
@@ -208,17 +199,15 @@ class NewEventViewModel @Inject constructor(
     }
 
     /** Use in NewEventFragment's [Save] button :- for insert/update event */
-    suspend fun insertCustomEvent(context: Context, id: String?): String{
-        val errorMessage = validateEvent(context = context, eventId = id)
+    fun insertCustomEvent(context: Context, id: String?): String{
+        val errorMessage = validateEvent(context = context)
         if (errorMessage != null) {
             return errorMessage
         }
 
         val currentEpochTime = System.currentTimeMillis()
 
-        val date: Triple<String, String, String> = DateUtil.epochToDateTriple(
-            startDate.value
-        )
+        val date: Triple<String, String, String> = DateUtil.epochToDateTriple(startDate.value)
 
         val event = Event(
             id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
@@ -317,6 +306,7 @@ class NewEventViewModel @Inject constructor(
 
                 } catch (e: Exception) {
                     // InsertEvents - Error inserting events
+                    Log.e(TAG, "insertEvent: ", e)
                 }
             }
         }

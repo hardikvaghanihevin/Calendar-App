@@ -1,7 +1,9 @@
 package com.hardik.calendarapp.presentation.ui.view_event
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -33,7 +35,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
+class ViewEventFragment : Fragment() {
     private val TAG = BASE_TAG + ViewEventFragment::class.java.simpleName
 
     private val viewModel: NewEventViewModel by activityViewModels()
@@ -55,6 +57,11 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         }
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentViewEventBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onResume() {
         super.onResume()
         arguments?.let {
@@ -73,7 +80,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentViewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         is24HourFormat = sharedPreferences.getBoolean(PREF_KEY_TIME_FORMAT, false)
@@ -93,9 +99,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
                 lifecycleScope.launch {
                     val isDelete = viewModel.deleteEvent(argEvent)
                     if (isDelete == 1) {
-                        if (argEvent.sourceType == SourceType.CURSOR){
-//                            deleteCursorEvent(requireContext(), argEvent.id.toLong())
-                        }
+                        if (argEvent.sourceType == SourceType.CURSOR){ }//deleteEvent here call back
                     }
                     Snackbar.make(view, resources.getString(R.string.event_deleted), Snackbar.LENGTH_SHORT).show()
                     viewModel.resetEventState()
@@ -132,7 +136,7 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         // Set the "All Day" status
         binding.switchAllDay.apply {
             visibility = if (event.sourceType == SourceType.REMOTE) View.INVISIBLE else View.VISIBLE
-            isChecked = event.isAllDay //DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime) || event.isAllDay
+            isChecked = event.isAllDay
         }
 
         // Populate start and end dates
@@ -185,7 +189,6 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
     private fun navigateToNewEventFragForEdit(event: Event) {
         lifecycleScope.launch {
             // Make sure the navigation happens on the main thread
-            //val bundle = Bundle().apply { putParcelable(KEY_EVENT, event)// Pass the event object }
             val eventJson = GsonUtil.toJson(event)
             val bundle = Bundle().apply {
                 putString(KEY_EVENT_JSON, eventJson)// Pass the event object
@@ -205,6 +208,4 @@ class ViewEventFragment : Fragment(R.layout.fragment_view_event) {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

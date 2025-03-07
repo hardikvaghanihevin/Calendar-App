@@ -1,7 +1,6 @@
 package com.hardik.calendarapp.presentation
 
 import android.app.Application
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -54,16 +53,11 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.WeekFields
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -209,13 +203,6 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
 
-    fun initializeViewModel() {
-        viewModelScope.launch(Dispatchers.IO) {
-//            collectCursorEventsState(application.applicationContext)// fetched all cursor events (from cursor)
-        }
-    }
-
-
     private val _isLoading = MutableStateFlow<Boolean>(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -249,9 +236,6 @@ class MainViewModel @Inject constructor(
                             withContext(Dispatchers.IO) { eventRepository.deleteEventsHoliday() }
 
                             allEventsOfAPI.clear()
-
-//                        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en" // Default to "en"
-//                        val countryCodes: Set<String> = sharedPreferences.getStringSet(PREF_KEY_COUNTRIES, setOf("indian")) ?: setOf("indian")
 
                             // Create a list of deferred results for API calls
                             val apiCalls = countryCodes.map { countryCode ->
@@ -392,55 +376,31 @@ class MainViewModel @Inject constructor(
     val monthlyEventsState: StateFlow<DataListState<Event>> get() = _monthlyEventsState
 
     private fun getEventsByMonthOfYear(year: String, month: String){//todo: use in CalendarMonth1Fragment for onMonthSwipe or onMonthClick
-//        _monthlyEventsState.value = DataListState(isLoading = true)
-
         viewModelScope.launch {
-//            isLoading.collect{
-//                if (it == true){
-//                    _monthlyEventsState.value = DataListState(isLoading = true)
-//                }else{
-                    try {
-                        getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
-                            // Update state with data
-                            setFirstEventOfEachWeek(events)
-                            _monthlyEventsState.value = DataListState(isLoading = false, data = events)
-                        }
-                    } catch (e: Exception) {
-                        // Handle errors
-                        _monthlyEventsState.value = DataListState(
-                            isLoading = false,
-                            error = e.message ?: "An unknown error occurred"
-                        )
-                    }
-//                }
-//            }
+            try {
+                getEventsByMonthOfYear.invoke(year = year, month = month).collectLatest { events ->
+                    // Update state with data
+                    _monthlyEventsState.value = DataListState(isLoading = false, data = events)
+                }
+            } catch (e: Exception) {
+                // Handle errors
+                _monthlyEventsState.value = DataListState(isLoading = false, error = e.message ?: "An unknown error occurred")
+            }
         }
     }
 
     private fun getEventsByDateOfMonthOfYear(year: String, month: String, date: String) {//todo: use in CalendarMonth1Fragment for onDateClick
-//        _monthlyEventsState.value = DataListState(isLoading = true)
-
         viewModelScope.launch {
-//            isLoading.collect{
-//                if (it == true){
-//                    _monthlyEventsState.value = DataListState(isLoading = true)
-//                }else {
-                    try {
-                        getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date)
-                            .collectLatest { events ->
-                                // Update state with data
-                                setFirstEventOfEachWeek(events)
-                                _monthlyEventsState.value = DataListState(isLoading = false, data = events)
-                            }
-                    } catch (e: Exception) {
-                        // Handle errors
-                        _monthlyEventsState.value = DataListState(
-                            isLoading = false,
-                            error = e.message ?: "An unknown error occurred"
-                        )
+            try {
+                getEventsByDateOfMonthOfYear.invoke(year = year, month = month, date = date)
+                    .collectLatest { events ->
+                        // Update state with data
+                        _monthlyEventsState.value = DataListState(isLoading = false, data = events)
                     }
-//                }
-//            }
+            } catch (e: Exception) {
+                // Handle errors
+                _monthlyEventsState.value = DataListState(isLoading = false, error = e.message ?: "An unknown error occurred")
+            }
         }
     }
 
@@ -457,54 +417,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }//Use this for both combo base on date it-selves call
-
-    //----------------------------------------------------------------//
-    //region Todo not used now [remove]
-    private val _firstEventOfEachWeek = MutableStateFlow<Map<String, Event>>(emptyMap())
-    val firstEventOfEachWeek: StateFlow<Map<String, Event>> = _firstEventOfEachWeek
-
-    // Function to update events grouped by week
-    private var firstEventOfEachWeekJob: Job? = null
-    private fun setFirstEventOfEachWeek(newData: List<Event>) {
-        firstEventOfEachWeekJob?.cancel()
-
-        firstEventOfEachWeekJob = viewModelScope.launch {
-            val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                DateTimeFormatter.ofPattern(DATE_FORMAT_yyyy_MM_dd)
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
-
-            val firstDayOfWeek = when (_firstDayOfTheWeek.value) {
-                "Monday" -> DayOfWeek.MONDAY
-                "Saturday" -> DayOfWeek.SATURDAY
-                else -> DayOfWeek.SUNDAY
-            }
-            val minimalDays = when (firstDayOfWeek) {
-                DayOfWeek.MONDAY -> 4 // Monday week typically requires 4 days for the first week
-                DayOfWeek.SATURDAY -> 1 // More lenient for Saturday-based weeks
-                DayOfWeek.SUNDAY -> 1 // Common for Sunday-based weeks
-                else -> 1
-            }
-
-            val groupedByYearWeek = newData.groupBy { event ->
-                val localDate = LocalDate.parse(event.startDate, dateFormatter)
-                val weekField = WeekFields.of(firstDayOfWeek, minimalDays).weekOfWeekBasedYear()
-                val year = localDate.getYear()
-                val month = localDate.monthValue - 1  // Convert to 0-based month
-                val week = localDate.get(weekField)
-                "$year-$month-$week"  // Unique key for year-week combination
-            }
-
-            val firstEvents = groupedByYearWeek.mapValues { (key, events) ->
-                events.minByOrNull { LocalDate.parse(it.startDate, dateFormatter) }!!
-            }
-
-            // Update StateFlow with new values
-            _firstEventOfEachWeek.update { firstEvents.mapKeys { it.key } }
-        }
-    }
-    //endregion
 
     //----------------------------------------------------------------//
 
@@ -542,23 +454,18 @@ class MainViewModel @Inject constructor(
         _allEventsState.value = DataListState(isLoading = true)
 
         viewModelScope.launch {
-//            isLoading.collect{
-//                if (it == true){ _allEventsState.value = DataListState(isLoading = true) }else {
-                    try {
-                        getAllEventsUseCase.invoke(eventsQuery).collectLatest { events ->
-                            // Update state with data
-                            setFirstEventOfEachWeek(events)
-                            _allEventsState.value = DataListState(isLoading = false, data = events )
-                        }
-                    } catch (e: Exception) {
-                        // Handle errors
-                        _allEventsState.value = DataListState(
-                            isLoading = false,
-                            error = e.message ?: "An unknown error occurred"
-                        )
-                    }
-//                }
-//            }
+            try {
+                getAllEventsUseCase.invoke(eventsQuery).collectLatest { events ->
+                    // Update state with data
+                    _allEventsState.value = DataListState(isLoading = false, data = events )
+                }
+            } catch (e: Exception) {
+                // Handle errors
+                _allEventsState.value = DataListState(
+                    isLoading = false,
+                    error = e.message ?: "An unknown error occurred"
+                )
+            }
         }
     }
 

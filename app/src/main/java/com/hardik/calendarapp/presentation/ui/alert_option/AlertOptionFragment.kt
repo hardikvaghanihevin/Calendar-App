@@ -32,11 +32,12 @@ import com.hardik.calendarapp.presentation.adapter.AlertOptionItem
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
 import com.hardik.calendarapp.utillities.DateUtil
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
-class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
+@AndroidEntryPoint
+class AlertOptionFragment : Fragment() {
     private val TAG = Constants.BASE_TAG + AlertOptionFragment::class.java.simpleName
 
     private val viewModel: NewEventViewModel by activityViewModels()
@@ -57,13 +58,15 @@ class AlertOptionFragment : Fragment(R.layout.fragment_alert_option) {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? { return inflater.inflate(R.layout.fragment_alert_option, container, false) }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentAlertOptionBinding.inflate(inflater,container, false)
+        return binding.root
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentAlertOptionBinding.bind(view)
 
         // Load string arrays
         alertOffsetValues = resources.getStringArray(R.array.alert_offset_options)

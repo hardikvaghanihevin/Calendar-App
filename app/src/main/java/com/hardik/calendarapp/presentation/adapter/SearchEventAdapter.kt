@@ -1,5 +1,6 @@
 package com.hardik.calendarapp.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +20,8 @@ import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.EventListHelper
 import com.hardik.calendarapp.utillities.ImageColorUtil
 import java.util.Calendar
-import java.util.Locale
 
-class SearchEventAdapter(private val context: Context) : ListAdapter<Event, SearchEventAdapter.ViewHolder>(
-    EventDiffCallback()
-) {
+class SearchEventAdapter(private val context: Context) : ListAdapter<Event, SearchEventAdapter.ViewHolder>(EventDiffCallback()) {
     private val TAG = BASE_TAG + SearchEventAdapter::class.java.simpleName
     private var configureEventCallback: ((event: Event) -> Unit)? = null
 
@@ -48,24 +46,17 @@ class SearchEventAdapter(private val context: Context) : ListAdapter<Event, Sear
         }
     }
 
-    //fun isEventPresent(event: Event): Boolean { return firstEventOfEachWeek.containsValue(event) }
-
-
     fun setConfigureEventCallback(callback: (event: Event) -> Unit) {
         configureEventCallback = callback
     }
 
     inner class ViewHolder(private val binding: ItemEventLayout1Binding) : RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(event: Event, previousEvent: Event?, position: Int, isMonthView: Boolean = false) {
             binding.apply {
                 // Check if the current event's month is different from the previous event
                 // ===== Month header code (unchanged) =====
-                val currentMonth = DateUtil.getMonthName(event.startDate,
-                    DateUtil.DATE_FORMAT_yyyy_MM_dd
-                )
-                val previousMonth = previousEvent?.let { DateUtil.getMonthName(it.startDate,
-                    DateUtil.DATE_FORMAT_yyyy_MM_dd
-                ) }
+                val currentMonth = DateUtil.getMonthName(event.startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
 
                 var isImageShown = false
                 // Show divider image when the month changes
@@ -98,14 +89,7 @@ class SearchEventAdapter(private val context: Context) : ListAdapter<Event, Sear
                     outputPattern = DateUtil.DATE_FORMAT_dd_MM_yyyy_1
                 )
                 val weekRange = DateUtil.getWeekRange(dateForWeek, weekStart)
-                val weekStart = weekRange.second
-                val weekEnd = weekRange.third
                 eventFullWeekDate.text = weekRange.first
-
-                // Show week header (llItemEvent) only for the first event of a week
-                val isMatchFound = firstEventOfEachWeek.keys.any {
-                    it.lowercase(Locale.getDefault()).contains("${event.year}-${event.month}")
-                }
 
                 val isEventPresent = firstEventOfEachWeek.containsValue(event)
 
@@ -115,8 +99,6 @@ class SearchEventAdapter(private val context: Context) : ListAdapter<Event, Sear
                     llItemEvent.visibility = View.GONE
                 }
                 // ===== End Week header logic =====
-
-
 
 
                 // ===== Date header logic for individual dates =====
@@ -136,16 +118,10 @@ class SearchEventAdapter(private val context: Context) : ListAdapter<Event, Sear
                 eventTimePeriod.text = if (event.isAllDay){
                     ContextCompat.getString(binding.root.context, R.string.all_day)
                 } else{
-                    //if (isAllDay(startTime = event.startTime, endTime = event.endTime)) ContextCompat.getString(binding.root.context, R.string.all_day)
-                    //else {
                     val startTime = DateUtil.longToString(event.startTime,
                         DateUtil.TIME_FORMAT_HH_mm
                     )
-                    val endTime = DateUtil.longToString(event.endTime, DateUtil.TIME_FORMAT_HH_mm)
-                    //if (startTime == "00:00" && endTime == "00:00") "-"
-                    //else if (startTime == "00:00" && endTime == "23:59") ContextCompat.getString(binding.root.context, R.string.all_day)else
                     "$startTime (${DateUtil.getDuration(startTimestamp = event.startTime, endTimestamp = DateUtil.mergeDateAndTime(DateUtil.stringToLong(event.endDate), event.endTime))})" //- $endTime"
-                    //}
                 }
 
                 // Handle item clicks

@@ -1,72 +1,27 @@
 package com.hardik.calendarapp.utillities
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.hardik.calendarapp.common.Constants.BASE_TAG
 import com.hardik.calendarapp.common.Constants.KEY_EVENT_JSON
 import com.hardik.calendarapp.data.database.entity.AlertOffset
 import com.hardik.calendarapp.data.database.entity.Event
 import com.hardik.calendarapp.presentation.receiver.NotificationReceiver
-import com.hardik.calendarapp.presentation.ui.MainActivity.Companion.REQUEST_CODE_CALENDAR_PERMISSIONS
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 object AlarmScheduler {
     private val TAG = BASE_TAG + AlarmScheduler::class.simpleName
 
-    // Method to check and request POST_NOTIFICATIONS permission
-    private fun ensureNotificationPermission(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Log.i(TAG, "ensureNotificationPermission: okay")
-            val permissionStatus = ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.POST_NOTIFICATIONS
-            )
-
-            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                // Request the permission from the user & Ensure context is an instance of Activity
-                if (context is Activity) {
-                    ActivityCompat.requestPermissions(
-                        context,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                        REQUEST_CODE_CALENDAR_PERMISSIONS
-                    )
-                } else {
-                    Log.e(TAG, "ensureNotificationPermission: Context is not an Activity. Cannot request permissions.")
-                    // Handle the error appropriately, e.g., show a message or disable notification functionality.
-                    // You might want to use a callback or a different approach if you need to request permissions from a non-Activity context.
-                }
-            }else {
-                Log.i(TAG,"ensureNotificationPermission: Permission already granted")
-            }
-        }else{
-            Log.i(TAG, "ensureNotificationPermission: Android version below 13 (Tiramisu). Notifications are implicitly granted.")
-            // No permission check is needed for older Android versions.
-        }
-    }
-
-    // Handle the result of the permission request
-//    fun handlePermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
-//        if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
-//            return grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-//        }
-//        return false
-//    }
-
     private val updateAlarmMutex = Mutex()
     // Rest of the AlarmScheduler code
     suspend fun updateAlarm( context: Context, event: Event, isComingFromNotificationReceiver: Boolean = false ) {
         updateAlarmMutex.withLock {
-            ensureNotificationPermission(context) // Ensure permission before setting an alarm
             cancelAlarm(context, event)
 
             if (event.alertOffset != AlertOffset.NONE){
@@ -108,8 +63,8 @@ object AlarmScheduler {
         )
 
         //alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)//AlarmClockInfo()
-//        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
-//        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+        //alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(triggerTime, pendingIntent), pendingIntent)
+
         Log.e(TAG, "scheduleExactTime: $triggerTime", )
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12+
@@ -128,22 +83,6 @@ object AlarmScheduler {
         } catch (e: SecurityException) {
             Log.e(TAG,"Alarm: SecurityException: ${e.message}")
         }
-
-        /*// krunal sir
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            if (alarmManager.canScheduleExactAlarms()){
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-            }else{
-                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply { data = Uri.parse("package:${context.packageName}") }
-                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }
-
-        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-
-        }else{
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-        }*/
     }
 
     // Cancel the alarm for a specific event.

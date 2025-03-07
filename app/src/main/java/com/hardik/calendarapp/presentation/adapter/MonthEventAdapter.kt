@@ -18,11 +18,8 @@ import com.hardik.calendarapp.presentation.adapter.diff_util.EventDiffCallback
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.EventListHelper
 import java.util.Calendar
-import java.util.Locale
 
-class MonthEventAdapter(private val context: Context) : ListAdapter<Event, MonthEventAdapter.ViewHolder>(
-    EventDiffCallback()
-) {
+class MonthEventAdapter(private val context: Context) : ListAdapter<Event, MonthEventAdapter.ViewHolder>(EventDiffCallback()) {
     private val TAG = BASE_TAG + MonthEventAdapter::class.java.simpleName
     private var configureEventCallback: ((event: Event) -> Unit)? = null
 
@@ -56,7 +53,6 @@ class MonthEventAdapter(private val context: Context) : ListAdapter<Event, Month
         fun bind(event: Event, previousEvent: Event?, position: Int, isMonthView: Boolean = false) {
             binding.apply {
                 // Check if the current event's month is different from the previous event
-                val currentMonth = DateUtil.getMonthName(event.startDate, DateUtil.DATE_FORMAT_yyyy_MM_dd)
 
                 // ===== Week header logic =====
                 val dateForWeek = DateUtil.stringToString( dateString = event.startDate,
@@ -64,14 +60,7 @@ class MonthEventAdapter(private val context: Context) : ListAdapter<Event, Month
                     outputPattern = DateUtil.DATE_FORMAT_dd_MM_yyyy_1
                 )
                 val weekRange = DateUtil.getWeekRange(dateForWeek, weekStart)
-                val weekStart = weekRange.second
-                val weekEnd = weekRange.third
                 eventFullWeekDate.text = weekRange.first
-
-                // Show week header (llItemEvent) only for the first event of a week
-                val isMatchFound = firstEventOfEachWeek.keys.any {
-                    it.lowercase(Locale.getDefault()).contains("${event.year}-${event.month}")
-                }
 
                 val isEventPresent = firstEventOfEachWeek.containsValue(event)
 
@@ -81,8 +70,6 @@ class MonthEventAdapter(private val context: Context) : ListAdapter<Event, Month
                     llItemEvent.visibility = View.GONE
                 }
                 // ===== End Week header logic =====
-
-
 
 
                 // ===== Date header logic for individual dates =====

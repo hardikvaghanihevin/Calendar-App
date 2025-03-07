@@ -26,11 +26,12 @@ import com.hardik.calendarapp.presentation.adapter.RepeatOptionAdapter
 import com.hardik.calendarapp.presentation.adapter.RepeatOptionItem
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.presentation.ui.new_event.NewEventViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
-class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
+@AndroidEntryPoint
+class RepeatOptionFragment : Fragment() {
     private val TAG = Constants.BASE_TAG + RepeatOptionFragment::class.java.simpleName
 
     private val viewModel: NewEventViewModel by activityViewModels()
@@ -51,13 +52,15 @@ class RepeatOptionFragment : Fragment(R.layout.fragment_repeat_option) {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? { return inflater.inflate(R.layout.fragment_repeat_option, container, false) }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentRepeatOptionBinding.inflate(inflater,container, false)
+        return binding.root
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentRepeatOptionBinding.bind(view)
 
         // Load string arrays
         repeatOptionValues = resources.getStringArray(R.array.repeat_options)

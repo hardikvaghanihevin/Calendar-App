@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -55,7 +56,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @AndroidEntryPoint
-class NewEventFragment : Fragment(R.layout.fragment_new_event) {
+class NewEventFragment : Fragment() {
     private val TAG = BASE_TAG + NewEventFragment::class.java.simpleName
 
     private val viewModel: NewEventViewModel  by activityViewModels()
@@ -85,11 +86,15 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         }
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentNewEventBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentNewEventBinding.bind(view)
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         is24HourFormat = sharedPreferences.getBoolean(PREF_KEY_TIME_FORMAT, false)
@@ -97,9 +102,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
 
         lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.yearState.collectLatest { year -> }
-                }
                 launch {
                     viewModel.startDate.collectLatest { startDate ->
                         binding.tvStartDatePicker.text = DateUtil.longToString(
@@ -326,7 +328,6 @@ class NewEventFragment : Fragment(R.layout.fragment_new_event) {
         viewModel.updateEndDate(DateUtil.stringToLong(event.endDate))
         viewModel.updateStartTime(event.startTime)
         viewModel.updateEndTime(event.endTime)
-        //viewModel.updateAllDayStatus(DateUtil.isAllDay(startTime = event.startTime, endTime = event.endTime) || event.isAllDay)
         viewModel.updateAllDayStatus(event.isAllDay)
         viewModel.updateSourceType(event.sourceType)
         viewModel.updateRepeatOption(event.repeatOption)

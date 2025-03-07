@@ -2,6 +2,7 @@ package com.hardik.calendarapp.presentation.ui.country
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -31,11 +32,13 @@ import com.hardik.calendarapp.utillities.DisplayUtil
 import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.KeyboardUtils.hideKeyboard
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class CountryFragment : Fragment(R.layout.fragment_country) {
+@AndroidEntryPoint
+class CountryFragment : Fragment() {
     private final val TAG = Constants.BASE_TAG + CountryFragment::class.java.simpleName
 
     private val binding get() = _binding!!
@@ -58,9 +61,13 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
         arguments?.let { }
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentCountryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentCountryBinding.bind(view)
 
         // Step 1: Retrieve saved countries from SharedPreferences
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -245,11 +252,8 @@ class CountryFragment : Fragment(R.layout.fragment_country) {
                             height = ViewGroup.LayoutParams.WRAP_CONTENT
                         }
 
-//                        if (!this.isIconified) { this.isIconified = true } // Collapses SearchView
-
                         DisplayUtil.isKeyboardVisible(requireContext()) { isVisible ->
                             if (isVisible) {
-                                //this.isIconified = false  // Keep SearchView expanded
                                 showHideSaveSelectionIcon(wantToShow = false)
                             } else {
                                 showHideSaveSelectionIcon(wantToShow = true)

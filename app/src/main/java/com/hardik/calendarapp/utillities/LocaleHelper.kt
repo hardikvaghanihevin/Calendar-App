@@ -1,6 +1,8 @@
 package com.hardik.calendarapp.utillities
 import android.content.Context
 import android.content.res.Configuration
+import androidx.preference.PreferenceManager
+import com.hardik.calendarapp.common.Constants.PREF_KEY_LANGUAGE
 import java.util.Locale
 
 object LocaleHelper {
@@ -12,6 +14,11 @@ object LocaleHelper {
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 
+    fun getLocale(context: Context): Locale {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
+        return Locale(languageCode)
+    }
 /*    fun setLocale(context: Context, languageCode: String) {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)

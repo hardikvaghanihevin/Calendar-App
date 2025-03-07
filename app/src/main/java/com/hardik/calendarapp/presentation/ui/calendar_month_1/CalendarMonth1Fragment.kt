@@ -32,9 +32,10 @@ import com.hardik.calendarapp.data.database.entity.SourceType
 import com.hardik.calendarapp.data.database.entity.YearKey
 import com.hardik.calendarapp.databinding.FragmentCalendarMonth1Binding
 import com.hardik.calendarapp.presentation.MainViewModel
+import com.hardik.calendarapp.presentation.adapter.CalendarMonthPageAdapter
 import com.hardik.calendarapp.presentation.adapter.MonthEventAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
-import com.hardik.calendarapp.presentation.ui.calendar_month_1.adapter.*
+import com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
 import com.hardik.calendarapp.utillities.DateUtil
 import com.hardik.calendarapp.utillities.DateUtil.reverseYearMonth
 import com.hardik.calendarapp.utillities.DateUtil.stringToDateTriple
@@ -50,7 +51,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
@@ -58,7 +58,7 @@ import java.util.Calendar
 
 
 @AndroidEntryPoint
-class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
+class CalendarMonth1Fragment : Fragment() {
     private val TAG = BASE_TAG + CalendarMonth1Fragment::class.simpleName
 
     private var _binding: FragmentCalendarMonth1Binding? = null
@@ -76,6 +76,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     var bundle: Bundle? = null
 
     private lateinit var viewPager: ViewPager2
+    private lateinit var cvm: CustomViewMonth
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCalendarMonth1Binding.inflate(inflater, container,false)
@@ -159,9 +160,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
                 val d: CharSequence = binding.tvMonthTitle.text
                 if (d.isNotEmpty()) {
                     val (y, m) = reverseYearMonth(d.toString()) ?: Pair(-1, -1)
-                    //viewModel.getEventsByMonthOfYear( year = y.toString() , month = m.toString() )
                     val sDate = "$y-$m-${0}"
                     viewModel.fetchEventsForMonthView(sDate = sDate)
+
+                    //cvm.selectedDate = "1999-0-0" //todo in future
+                    //Log.e(TAG, "onViewCreated: ${viewModel.selectedDate.value}", )
                 }
             }
         }
@@ -292,18 +295,8 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
     private fun observeViewModelState1() {
         // Collecting the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
-            //viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState.debounce(300)) { firstDay, dataState ->
-                    Pair(firstDay, dataState)
-                }.collectLatest { (firstDay, dataState) ->
-//                    when (firstDay) {
-//                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-//                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-//                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-//                    }
-                    handleDataState(dataState)
-                }
-            //}
+            //combine(viewModel.firstDayOfTheWeek, viewModel.monthlyEventsState.debounce(300)) { firstDay, dataState -> dataState }
+            viewModel.monthlyEventsState.debounce(300).collectLatest { dataState -> handleDataState(dataState) }
         }
     }
 
@@ -326,16 +319,11 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             // Update UI with the user list
             val data = dataState.data
 
-            //viewModel.firstEventOfEachWeek.collectLatest {
-
-                //delay(100)
-                eventAdapter.apply {
-                    //updateData(data, it)
-                    submitList(data)
-                    binding.includedProgressLayout.progressBar.visibility = View.GONE
-                    binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
-                }
-            //}
+            eventAdapter.apply {
+                submitList(data)
+                binding.includedProgressLayout.progressBar.visibility = View.GONE
+                binding.tvNotify.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
     }
     @SuppressLint("NotifyDataSetChanged")
@@ -368,11 +356,6 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             launch() {
                 viewModel.firstDayOfTheWeek.collectLatest { firstDay->
                     pageAdapter.updateFirstDayOfTheWeek(firstDay)
-//                    when(firstDay){
-//                        "Sunday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SUNDAY)
-//                        "Monday" -> eventAdapter.updateFirstDayOfWeek(Calendar.MONDAY)
-//                        "Saturday" -> eventAdapter.updateFirstDayOfWeek(Calendar.SATURDAY)
-//                    }
                 }
             }
 
@@ -434,7 +417,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
             }
         })
     }
-    private var isDateSetFromJump = false
+
     private fun updateDataEventsAndMonthTitle(position: Int) {
         val currentMonthPosition = selectedDate?.let {
             val date: Triple<String, String, String> = stringToDateTriple(it, isZeroBased = false)
@@ -446,6 +429,7 @@ class CalendarMonth1Fragment : Fragment(R.layout.fragment_calendar_month1) {
 
             if (viewHolder != null) {
                 viewHolder.binding.also {vh ->
+                    cvm = vh.customView
 
                     year = vh.customView.currentYear
                     month = vh.customView.currentMonth

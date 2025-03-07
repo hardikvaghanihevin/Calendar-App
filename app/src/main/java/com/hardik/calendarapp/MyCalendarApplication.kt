@@ -37,7 +37,7 @@ class MyCalendarApplication: Application(), DefaultLifecycleObserver {
     }
 
     /** Load preferences, apply the theme, and configure locale */
-    private suspend fun loadPreferencesAndInitializeApp() {
+    private fun loadPreferencesAndInitializeApp() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val languageCode = sharedPreferences.getString(PREF_KEY_LANGUAGE, "en") ?: "en"
         val appTheme = sharedPreferences.getString(PREF_KEY_APP_THEME, "system") ?: "system"
