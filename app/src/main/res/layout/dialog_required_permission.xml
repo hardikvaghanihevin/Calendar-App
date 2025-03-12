@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/dialogHorizontalSpacing"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_background"
+        android:orientation="vertical"
+        android:padding="@dimen/dialog_padding"
+        android:theme="@style/ThemeOverlay.AppCompat.Dialog.Alert"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            style="@style/TextViewStyle.medium"
+            android:text="@string/required_permission"
+            android:textSize="@dimen/dialog_TextSize_1" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenTitleContent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextViewStyle.message"
+                android:gravity="center_vertical"
+                android:text="@string/deny_permission_msg"
+                android:textSize="@dimen/dialog_TextSize_3" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialogVerticalSpacingBetweenContentFooter"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextViewStyle.medium"
+                android:textColor="@color/text_secondary"
+                android:text="@string/cancel"
+                android:visibility="gone"
+                android:textSize="@dimen/dialog_TextSize_2" />
+
+            <Space
+                android:layout_width="@dimen/dialogHorizontalBetweenBtnSpacing"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/btn_goToNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextViewStyle.medium"
+                android:textSize="@dimen/dialog_TextSize_2"
+                android:text="@string/okay"
+                android:textColor="@color/error"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

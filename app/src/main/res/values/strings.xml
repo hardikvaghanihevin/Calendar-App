@@ -194,6 +194,8 @@
     <string name="battery_optimization">Battery Optimization</string>
     <string name="battery_optimization_message">Enable this setting to allow the app to send notifications for scheduled events on time. If disabled, notifications may not appear, and reminders may fail to trigger.</string>
     <string name="auto_start_permissions_message">Please enable AutoStart permission to ensure event reminders and notifications work properly, even when the app is closed or removed from the background.</string>
+    <string name="required_permission">Required permission</string>
+    <string name="deny_permission_msg">Permissions are required, go to application settings and then allow it.</string>
 
 
 </resources>

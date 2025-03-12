@@ -7,18 +7,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.view.ViewGroup
+import android.view.Window
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hardik.calendarapp.R
 import com.hardik.calendarapp.common.Constants.BASE_TAG
+import com.hardik.calendarapp.databinding.DialogAutoStartPermissionBinding
+import com.hardik.calendarapp.databinding.DialogBatteryOptimizationBinding
+import com.hardik.calendarapp.databinding.DialogRequiredPermissionBinding
 import java.util.Arrays
 import java.util.Locale
 
@@ -75,15 +83,6 @@ object PermissionHandler {
     private fun requestEssentialPermissions(activity: AppCompatActivity) {
         val permissionsToRequest = mutableListOf<String>()
 
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.SEND_SMS)
-        }
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.READ_CONTACTS)
-        }
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.READ_PHONE_STATE)
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -100,28 +99,59 @@ object PermissionHandler {
     @SuppressLint("BatteryLife")
     private fun checkBatteryOptimization(activity: AppCompatActivity, permissionResults: MutableMap<String, Boolean>) {
         if (!activity.isBatteryOptimizationPermissionGranted()) {
-            showAlertDialogBatteryOptimizationPermission(activity, permissionResults)
+            val isXiaomiDevice = AutoStartPermissionHelper.getInstance().isXiaomiDevice()
+            //Log.e(TAG, "checkBatteryOptimization: $isXiaomiDevice", )
+            if (isXiaomiDevice) {
+                showAlertDialogBatteryOptimizationPermission(activity, permissionResults)
+            }else{
+                val intent = activity.requestBatteryOptimizationPermission()
+                batteryOptimizationLauncher.launch(intent)
+            }
         } else {
             checkAutoStart(activity, permissionResults)
         }
     }
 
     private fun showAlertDialogBatteryOptimizationPermission(activity: AppCompatActivity, permissionResults: MutableMap<String, Boolean>) {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle("Battery-Optimization")
-            .setMessage("System want to proceed, Request 'Battery-Optimization' permission")
-            .setPositiveButton("Allow") { dialog, which ->
+        activity.run {
+            // Inflate the custom layout
+            val dialogView = layoutInflater.inflate(R.layout.dialog_battery_optimization, null)
+            val dialogBinding = DialogBatteryOptimizationBinding.bind(dialogView)
+
+            val dialog = AlertDialog.Builder(this)
+                .setView(dialogView) // Set custom view
+                .setCancelable(false) // Prevent dismissing outside
+                .create()
+
+            // Set background to transparent if needed
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // Set background to transparent
+
+            // Set width & height to wrap content when shown
+            dialog.setOnShowListener {
+                dialog.window?.setLayout(
+                    (activity.resources.displayMetrics.widthPixels * 0.85).toInt(), // 85% of screen width // ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            // Show the dialog
+            dialog.show()
+
+            // Handle button clicks inside the custom dialog
+            dialogBinding.btnGoToNext.setOnClickListener {
                 val intent = activity.requestBatteryOptimizationPermission()
                 batteryOptimizationLauncher.launch(intent)
                 dialog.dismiss()
             }
-            .setNegativeButton("Deny") { dialog, which ->
+
+            dialogBinding.btnCancel.setOnClickListener {
                 // Set BatteryOptimization to false directly
                 permissionResults["BatteryOptimization"] = false
                 checkAutoStart(activity, permissionResults)
                 dialog.dismiss()
             }
-            .show()
+        }
     }
 
     private fun checkAutoStart(activity: AppCompatActivity, permissionResults: MutableMap<String, Boolean>) {
@@ -136,40 +166,85 @@ object PermissionHandler {
     }
 
     private fun showAlertDialogAutoStartPermission(activity: AppCompatActivity, permissionResults: MutableMap<String, Boolean>) {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle("Auto Start Permission")
-            .setMessage("System want to proceed, Request 'Auto Start' permission")
-            .setPositiveButton("Allow") { dialog, which ->
+        activity.run {
+            // Inflate custom layout
+            val dialogView = layoutInflater.inflate(R.layout.dialog_auto_start_permission, null)
+            val binding = DialogAutoStartPermissionBinding.bind(dialogView)
+
+            // Create Material AlertDialog
+            val dialog = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false) // Prevent dismissing outside
+                .create()
+
+            // Set background to transparent if needed
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            // Make background transparent
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            // Adjust size on show
+            dialog.setOnShowListener {
+                dialog.window?.setLayout(
+                    (activity.resources.displayMetrics.widthPixels * 0.85).toInt(), // 85% of screen width // ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            // Show the dialog
+            dialog.show()
+
+            // Handle button clicks
+            binding.btnGoToNext.setOnClickListener {
                 sharedPreferences.edit().putBoolean("PREF_KEY_AUTO_START_PERMISSION", true).apply()
                 val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
                 val intent = autoStartPermissionHelper.getAutoStartIntent(activity)
                 settingsLauncher.launch(intent)
                 dialog.dismiss()
             }
-            .setNegativeButton("Deny") { dialog, which ->
-                //Toast.makeText(activity, "Enable Auto Start for background message handling", Toast.LENGTH_SHORT).show()
+
+            binding.btnCancel.setOnClickListener {
                 permissionResults["AutoStart"] = false
                 permissionCallback?.invoke(permissionResults, false)
                 dialog.dismiss()
             }
-            .show()
+        }
     }
 
     fun showAppSettingsDialog(activity: AppCompatActivity) {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle("Permission Required")
-            .setMessage("Please allow the necessary permissions in the app settings.")
-            .setPositiveButton("Open Settings") { dialog, which ->
+        activity.run {
+            // Inflate the custom layout
+            val dialogView = layoutInflater.inflate(R.layout.dialog_required_permission, null)
+            val dialogBinding = DialogRequiredPermissionBinding.bind(dialogView)
+
+            val dialog = AlertDialog.Builder(this)
+                .setView(dialogView) // Set custom view
+                .setCancelable(false) // Prevent dismissing outside
+                .create()
+
+            // Set background to transparent if needed
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // Set background to transparent
+
+            // Set width & height to wrap content when shown
+            dialog.setOnShowListener {
+                dialog.window?.setLayout(
+                    (activity.resources.displayMetrics.widthPixels * 0.85).toInt(), // 85% of screen width // ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            // Show the dialog
+            dialog.show()
+
+            // Handle button clicks inside the custom dialog
+            dialogBinding.btnGoToNext.setOnClickListener {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", activity.packageName, null)
                 }
                 activity.startActivity(intent)
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, which ->
-                dialog.dismiss()
-            }
-            .show()
+        }
     }
 
     //----------------------------------------------------------------todo:BatteryOptimization
@@ -481,7 +556,7 @@ object PermissionHandler {
         }
 
         fun getAutoStartIntent(context: Context): Intent {
-            val manufacturer = android.os.Build.MANUFACTURER.lowercase()
+            val manufacturer = android.os.Build.MANUFACTURER.lowercase(Locale.ROOT) // android.os.Build.MANUFACTURER.lowercase()
             val intent = when (manufacturer) {
                 "xiaomi" -> Intent().setComponent(
                     ComponentName(
@@ -554,6 +629,18 @@ object PermissionHandler {
                     .setData(Uri.parse("package:${context.packageName}"))
         }
 
+        private fun getDeviceBrand(): String { return android.os.Build.BRAND.lowercase(Locale.ROOT) }
+
+        private fun getManufacturer(): String{ return Build.MANUFACTURER.lowercase(Locale.ROOT) }
+        fun isXiaomiDevice(): Boolean {
+            val brand = getDeviceBrand()
+            return brand == "xiaomi" || brand == "poco" || brand == "redmi"
+        }
+
+        fun isXiaomiManufacturer(): Boolean {
+            val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
+            return manufacturer == "xiaomi" || manufacturer == "poco" || manufacturer == "redmi"
+        }
 
     }
 }
