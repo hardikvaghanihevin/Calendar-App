@@ -37,7 +37,7 @@
         android:layout_margin="@dimen/_4sdp"
         style="@style/TextViewStyle.regular"
         android:textSize="@dimen/dialog_TextSize_4"
-        android:text="Data not found!"
+        android:text="@string/no_data"
         android:textAlignment="center"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

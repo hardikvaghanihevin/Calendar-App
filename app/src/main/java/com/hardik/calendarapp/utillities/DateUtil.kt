@@ -334,26 +334,36 @@ object DateUtil {
      *
      * Example:
      * ```kotlin
-     * val timeString = "01:30 PM"
-     * val timeTriple = splitTimeString(timeString)
+     * val timeLong = 1741766400000L as "01:30 PM"
+     * val timeTriple = splitTimeString(timeLong)
      * println(timeTriple)  // Output: (01, 30, PM)
      * ```
      *
-     * @param timeString The time string to be split, expected in the format "hh:mm a".
+     * @param timeStamp The time Long to be split, expected in the format "hh:mm a".
      * @return A `Triple` where:
      *  - `first` is the hour (e.g., "01").
      *  - `second` is the minute (e.g., "30").
      *  - `third` is the AM/PM part (e.g., "PM").
      * @throws IllegalArgumentException if the input time string is not in the expected format ("hh:mm a").
      */
-    fun splitTimeString(timeString: String): Triple<String, String, String> {
+    fun splitTimeString(timeStamp: Long): Triple<String, String, String> {
+        /*//val timeParts = timeString.split(Regex("[:\\s]+")) // Splits on ":" and any whitespace
         val timeParts = timeString.split(":", " ") // Split the string by ":" and space
-        if (timeParts.size != 3) {
-            throw IllegalArgumentException("Invalid time format. Expected format: hh:mm a")
-        }
-        return Triple(timeParts[0], timeParts[1], timeParts[2])
-    }
+        if (timeParts.size != 3) { throw IllegalArgumentException("Invalid time format. Expected format: hh:mm a") }
+        return Triple(timeParts[0], timeParts[1], timeParts[2])*/
+        
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timeStamp
+        val hour = String.format("%02d", calendar.get(Calendar.HOUR))
+        val minute = String.format("%02d", calendar.get(Calendar.MINUTE))
 
+        val symbols = DateFormatSymbols(Locale.getDefault())
+        val amPmSystem = symbols.amPmStrings // ["AM", "PM"]
+        val amString = amPmSystem[0] // Localized "AM"
+        val pmString = amPmSystem[1] // Localized "PM"
+        val amPm = if (calendar.get(Calendar.AM_PM) == Calendar.AM) amString else pmString
+        return Triple(hour, minute, amPm)
+    }
     /**
      * Checks if the given time range is exactly 24 hours (all-day event).
      *

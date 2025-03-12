@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -156,6 +157,10 @@ class SearchEventFragment : Fragment() {
                 val closeButton = this.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
                 closeButton?.setOnClickListener {
                     resetSearchView()
+                    isFirstTimeFlag = true
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewModel.currentEventPos.collect { position -> scrollEventIndexAtJumpToCurrentDate(position) }
+                    }
                 }
             }
         }
@@ -358,7 +363,7 @@ class SearchEventFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun scrollEventIndexAtCurrentDate() {
         viewModel.currentEventPos.value.let { position ->
-            //Log.e(TAG, "scrollEventIndexAtCurrentDate: $position", )
+            Log.e(TAG, "scrollEventIndexAtCurrentDate: $position", )
             if (isFirstTimeFlag){
                 isFirstTimeFlag = false
                 binding.rvEvent.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {

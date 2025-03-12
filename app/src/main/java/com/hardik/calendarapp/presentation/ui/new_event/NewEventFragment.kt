@@ -426,10 +426,10 @@ class NewEventFragment : Fragment() {
             setIs24HourView(is24HourFormat) // Use 12-hour format
             // Programmatically set a time (e.g., 0:12)
             val timeStamp = viewModel.startTime.value.takeIf { isStartTime } ?: viewModel.endTime.value
-            val data = DateUtil.longToString(timestamp = timeStamp, pattern = TIME_FORMAT_hh_mm_a)
+            //val data = DateUtil.longToString(timestamp = timeStamp, pattern = TIME_FORMAT_hh_mm_a)
 
             // Split the time string into hour, minute, and AM/PM
-            val time = splitTimeString(data)
+            val time = splitTimeString(timeStamp)
             val hour = time.first.toInt()
             val minute = time.second.toInt()
             val amPm = time.third.trim()

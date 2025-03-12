@@ -443,6 +443,8 @@ class MainViewModel @Inject constructor(
 
         // Assign the result; fallback to 0 if no future event
         _currentEventPos.value = nextFutureIndex ?: 0
+
+        Log.i(TAG, "findPositionOfEvent: ${currentEventPos.value}", )
     }
 
     //----------------------------------------------------------------//
