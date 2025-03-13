@@ -15,7 +15,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +74,7 @@ import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
 import com.hardik.calendarapp.utillities.MyNavigation.navOptionsForYear
 import com.hardik.calendarapp.utillities.PermissionHandler
-import com.hardik.calendarapp.utillities.PermissionManager
+import com.hardik.calendarapp.utillities.PermissionHandler.openAppSettings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -90,7 +89,6 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
     private var isAutostartSet by Delegates.notNull<Boolean>()
-    lateinit var permissionManager: PermissionManager
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
@@ -131,12 +129,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //permissionManager = PermissionManager.with(this)
-        //permissionManager = PermissionManager(this)
-
         mainViewModel.getHolidayCalendarData()
-//        checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get
-        checkAndRequestPermissions()
+        checkAndRequestPermissions() //todo: 1 get calendar permission and set locale calendar data before API data get
 
         setupNavigation() //setupToolbar Function: Modularized toolbar configuration and listeners.
         setupToolbar() //setupNavigation Function: Centralized navigation setup, including AppBarConfiguration.
@@ -1166,29 +1160,6 @@ class MainActivity : AppCompatActivity() {
         viewList.forEach { hideViewWithAnimation(it) }
     }
 
-    // Handle the result of permission requests
-    /*override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_CALENDAR_PERMISSIONS) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-                val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
-                val isGranted = permissionManager.checkPermission(permissionNotification)
-                if (!isGranted) {
-                    // Permission denied, show a message to the user
-                    Snackbar.make(findViewById(android.R.id.content), getString(R.string.deny_permission_msg_calendar), Snackbar.LENGTH_SHORT).setAction(getString(R.string.setting)) {
-                        // Open app settings
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", packageName, null)
-                        }
-                        startActivity(intent)
-                    }.show()
-                }
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }*/
-    //endregion
-
     private fun handelBackPressed() {
         KeyboardUtils.hideKeyboard(this@MainActivity, binding.root)
 
@@ -1344,7 +1315,7 @@ class MainActivity : AppCompatActivity() {
             btnGoToNext.setOnClickListener {
                 dialog.dismiss()
                 Handler(Looper.getMainLooper()).postDelayed({
-                    openAppSettings()
+                    this@MainActivity.openAppSettings()
                     onDismiss()
                 }, 300)
             }
@@ -1353,13 +1324,6 @@ class MainActivity : AppCompatActivity() {
     //endregion
 
     private fun checkAndRequestPermissions() {
-        /*checkNotificationPermission {
-            checkBatteryOptimizationPermission {
-                checkAutoStartPermission {
-                    //Log.d("PERMISSION_FLOW", "All required permissions checked.")
-                }
-            }
-        }*/
         // Register the launchers here, in onCreate
         PermissionHandler.setupPermissionLaunchers(this)
 
@@ -1383,182 +1347,4 @@ class MainActivity : AppCompatActivity() {
             }*/
         }
     }
-
-    private fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.fromParts("package", packageName, null)
-        startActivity(intent)
-    }
-    //region Todo: for permissions
-    /*
-        *//** 🔄 Request Notification Permission *//*
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun requestNotificationPermission(onResult: (Boolean) -> Unit) {
-        permissionManager.requestPermission( Manifest.permission.POST_NOTIFICATIONS) { isGranted ->
-            onResult(isGranted)
-        }
-    }
-
-    *//** 1️⃣ Step 1: Check Notification Permission *//*
-    private fun checkNotificationPermission(onComplete: () -> Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
-            if (!permissionManager.checkPermission(permissionNotification)) {
-                requestNotificationPermission { isGranted ->
-                    onComplete()
-                }
-            } else {
-                //Log.d("PERMISSION_FLOW", "Notification Permission Already Granted")
-                onComplete()
-            }
-        } else {
-            onComplete() // Skip if Android version < 13
-        }
-    }
-
-    *//** 2️⃣ Step 2: Check Battery Optimization Permission *//*
-    private fun checkBatteryOptimizationPermission(onComplete: () -> Unit) {
-        Handler(mainLooper).postDelayed({
-            if (!this@MainActivity.isBatteryOptimizationPermissionGranted()) {
-                //Log.e(TAG, "checkBatteryOptimizationPermission: if not grant", )
-                showBatteryOptimizationDialog {
-                    onComplete() // Move to next permission check
-                }
-            } else {
-                //Log.d("PERMISSION_FLOW", "Battery Optimization Already Granted")
-                onComplete()
-            }
-        },1000)
-
-    }
-
-    *//** 3️⃣ Step 3: Check AutoStart Permission *//*
-    private fun checkAutoStartPermission(onComplete: () -> Unit) {
-        Handler(mainLooper).postDelayed({
-            val isAutoStartPermissionAvailable = checkAutoStartPermission()
-
-            isAutostartSet = sharedPreferences.getBoolean(PREF_KEY_AUTO_START_PERMISSION, false)
-            if (isAutoStartPermissionAvailable && !isAutostartSet) {
-                //Log.d("PERMISSION_FLOW", "AutoStart Permission not Granted or Required")
-                sharedPreferences.edit().putBoolean(PREF_KEY_AUTO_START_PERMISSION, true).apply()
-                showAutoStartPermissionDialog {
-                    onComplete()
-                }
-            } else {
-                //Log.d("PERMISSION_FLOW", "AutoStart Permission Already Granted or Not Required")
-                onComplete()
-            }
-        },500)
-    }*/
-    //endregion
-
-    // region Todo permission for Battery optimization
-
-    /*private var dialogBatteryOptimizationBinding: DialogBatteryOptimizationBinding? = null
-    private fun showBatteryOptimizationDialog(onDismiss: () -> Unit) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_battery_optimization, null)
-        dialogBatteryOptimizationBinding = DialogBatteryOptimizationBinding.bind(dialogView)
-
-        // Create and display the dialog
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        // Set background to transparent if needed
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        // Ensure the dialog's size wraps the content
-        dialog.setOnShowListener {
-            dialog.window?.setLayout(
-                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
-                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
-            )
-        }
-        dialog.setCancelable(false)
-
-        if(!this@MainActivity.isBatteryOptimizationPermissionGranted()){
-            dialog.show()
-
-            dialogBatteryOptimizationBinding?.apply {
-
-                btnCancel.setOnClickListener {
-                    dialog.dismiss()
-                    onDismiss()
-                }
-
-                btnGoToNext.setOnClickListener {
-                    if (!this@MainActivity.isBatteryOptimizationPermissionGranted()){
-                        this@MainActivity.requestBatteryOptimizationPermission()
-                        dialog.dismiss()
-                        onDismiss()
-                    }else{
-                        dialog.dismiss()
-                        onDismiss()
-                    }
-                }
-            }
-        }else{
-            onDismiss()
-        }
-
-    }*/
-    // endregion
-
-    // region Todo permission for AutoStart
-    /*private fun checkAutoStartPermission() = AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this, false)
-
-    private var dialogAutoStartPermissionBinding: DialogAutoStartPermissionBinding? = null
-    private fun showAutoStartPermissionDialog(onDismiss: () -> Unit) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_auto_start_permission, null)
-        dialogAutoStartPermissionBinding = DialogAutoStartPermissionBinding.bind(dialogView)
-
-        // Create and display the dialog
-        val dialog = AlertDialog.Builder(this)
-           .setView(dialogView)
-           .create()
-
-        // Set background to transparent if needed
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        // Ensure the dialog's size wraps the content
-        dialog.setOnShowListener {
-            dialog.window?.setLayout(
-                ViewGroup.LayoutParams.WRAP_CONTENT, // Width
-                ViewGroup.LayoutParams.WRAP_CONTENT  // Height
-            )
-        }
-        dialog.setCancelable(false)
-        dialog.show()
-
-        dialogAutoStartPermissionBinding?.apply {
-            btnCancel.setOnClickListener {
-                sharedPreferences.edit().putBoolean(PREF_KEY_AUTO_START_PERMISSION, false).apply()
-                dialog.dismiss()
-                onDismiss()
-            }
-
-            btnGoToNext.setOnClickListener {
-//                if (!isAutostartSet){
-                    sharedPreferences.edit().putBoolean(PREF_KEY_AUTO_START_PERMISSION, true).apply()
-                    getAutoStartPermission()
-                    dialog.dismiss()
-                    onDismiss()
-//                }
-            }
-        }
-    }
-
-    private fun getAutoStartPermission() {//todo: background service for 'Xiaomi, Huawei, Oppo, and Vivo'
-        val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
-
-        // Check if the auto-start permission is available on the device
-        val isAutoStartPermissionAvailable: Boolean =
-            autoStartPermissionHelper.isAutoStartPermissionAvailable(this, false)
-
-        // If the permission is available, request it
-        if (isAutoStartPermissionAvailable) {
-            val granted: Boolean = autoStartPermissionHelper.getAutoStartPermission(this, true, false)
-        }
-    }*/
-    // endregion
 }

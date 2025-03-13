@@ -252,10 +252,7 @@ object PermissionHandler {
 
             // Handle button clicks inside the custom dialog
             dialogBinding.btnGoToNext.setOnClickListener {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", activity.packageName, null)
-                }
-                activity.startActivity(intent)
+                activity.openAppSettings()
                 dialog.dismiss()
             }
         }
@@ -271,6 +268,15 @@ object PermissionHandler {
         val pkg = packageName
         val pm = getSystemService(PowerManager::class.java)
         return pm.isIgnoringBatteryOptimizations(pkg)
+    }
+
+    //----------------------------------------------------------------todo:AutoStart
+
+    fun Activity.openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", packageName, null)
+        }
+        startActivity(intent)
     }
 
     //----------------------------------------------------------------todo:AutoStart
