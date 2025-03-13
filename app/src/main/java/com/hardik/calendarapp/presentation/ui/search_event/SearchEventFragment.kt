@@ -22,7 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hardik.calendarapp.R
@@ -382,13 +381,15 @@ class SearchEventFragment : Fragment() {
         binding.rvEvent.post {
             val layoutManager = binding.rvEvent.layoutManager as? LinearLayoutManager
             if (position != -1) {
-                val smoothScroller = object : LinearSmoothScroller(binding.rvEvent.context) {
+                /*val smoothScroller = object : LinearSmoothScroller(binding.rvEvent.context) {
                     override fun getVerticalSnapPreference(): Int {
                         return SNAP_TO_START
                     }
                 }
                 smoothScroller.targetPosition = position
-                layoutManager?.startSmoothScroll(smoothScroller)
+                layoutManager?.startSmoothScroll(smoothScroller)*/
+                //layoutManager?.scrollToPosition(position)
+                layoutManager?.scrollToPositionWithOffset(position,0)
             }
         }
     }

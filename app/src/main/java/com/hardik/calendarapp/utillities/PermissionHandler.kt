@@ -16,6 +16,7 @@ import android.os.Handler
 import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.util.Log
 import android.view.ViewGroup
 import android.view.Window
 import androidx.activity.result.ActivityResultLauncher
@@ -36,7 +37,7 @@ object PermissionHandler {
 
     private lateinit var multiplePermissionsLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var batteryOptimizationLauncher: ActivityResultLauncher<Intent>
-    private lateinit var settingsLauncher: ActivityResultLauncher<Intent>
+    private lateinit var autoStartLauncher: ActivityResultLauncher<String>
 
     private lateinit var sharedPreferences: SharedPreferences
     private var isAutostartSet: Boolean = false
@@ -71,12 +72,12 @@ object PermissionHandler {
                 },1000)
             }
 
-        settingsLauncher = activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        autoStartLauncher = activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 //sharedPreferences.edit().putBoolean("PREF_KEY_AUTO_START_PERMISSION", true).apply()
                 val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
                 val isAutoStartPermissionAvailable = autoStartPermissionHelper.isAutoStartPermissionAvailable(activity, false)
                 permissionResults["AutoStart"] = isAutoStartPermissionAvailable && sharedPreferences.getBoolean("PREF_KEY_AUTO_START_PERMISSION", false)
-            
+
                 permissionCallback?.invoke(permissionResults, true)
             }
     }
@@ -84,10 +85,9 @@ object PermissionHandler {
     private fun requestEssentialPermissions(activity: AppCompatActivity) {
         val permissionsToRequest = mutableListOf<String>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !checkPermission(activity, Manifest.permission.POST_NOTIFICATIONS))
             //ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-            !checkPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
-        ) {
+        {
             permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
         }
 
@@ -211,8 +211,14 @@ object PermissionHandler {
             binding.btnGoToNext.setOnClickListener {
                 sharedPreferences.edit().putBoolean("PREF_KEY_AUTO_START_PERMISSION", true).apply()
                 val autoStartPermissionHelper = AutoStartPermissionHelper.getInstance()
-                val intent = autoStartPermissionHelper.getAutoStartIntent(activity)
-                settingsLauncher.launch(intent)
+                val isGranted = autoStartPermissionHelper.getAutoStartPermission(activity, true,false)
+                // Launch the intent safely
+                try {
+                    Log.e(TAG, "showAlertDialogAutoStartPermission: $isGranted", )
+                    autoStartLauncher.launch("y".takeIf { isGranted } ?: "n")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to launch settings: ${e.message}")
+                }
                 dialog.dismiss()
             }
 
@@ -286,8 +292,14 @@ object PermissionHandler {
      * @author koshurboii (telegram/Instagram/github : @koshurboii)
      */
     class AutoStartPermissionHelper private constructor() {
+
+        fun getAutoStartIntent(intent: Intent): Intent {
+            val autoStartIntent = intent.apply {  }
+            return autoStartIntent
+        }
+
         fun getAutoStartPermission(context: Context, open: Boolean, newTask: Boolean): Boolean {
-            return when (Build.BRAND.lowercase(Locale.getDefault())) {
+            val isGranted =  when (Build.BRAND.lowercase(Locale.getDefault())) {
                 BRAND_ASUS -> autoStartAsus(context, open, newTask)
                 BRAND_XIAOMI, BRAND_XIAOMI_POCO, BRAND_XIAOMI_REDMI -> autoStartXiaomi(context, open, newTask)
                 BRAND_LETV -> autoStartLetv(context, open, newTask)
@@ -300,6 +312,7 @@ object PermissionHandler {
                 BRAND_ONE_PLUS -> autoStartOnePlus(context, open, newTask)
                 else -> false
             }
+            return isGranted
         }
 
         fun isAutoStartPermissionAvailable(context: Context, onlyIfSupported: Boolean): Boolean {
@@ -415,19 +428,8 @@ object PermissionHandler {
         }
 
         private fun autoStartOnePlus(context: Context, open: Boolean, newTask: Boolean): Boolean {
-            return (autoStart(
-                context,
-                Arrays.asList(PACKAGE_ONE_PLUS_MAIN),
-                Arrays.asList(getIntent(PACKAGE_ONE_PLUS_MAIN, PACKAGE_ONE_PLUS_COMPONENT, newTask)),
-                open
-            )
-                    || autoStartFromAction(
-                context, Arrays.asList(
-                    getIntentFromAction(
-                        PACKAGE_ONE_PLUS_ACTION, newTask
-                    )
-                ), open
-            ))
+            return (autoStart(context, Arrays.asList(PACKAGE_ONE_PLUS_MAIN), Arrays.asList(getIntent(PACKAGE_ONE_PLUS_MAIN, PACKAGE_ONE_PLUS_COMPONENT, newTask)), open)
+                    || autoStartFromAction(context, Arrays.asList(getIntentFromAction(PACKAGE_ONE_PLUS_ACTION, newTask)), open))
         }
 
         @Throws(Exception::class)
@@ -576,78 +578,57 @@ object PermissionHandler {
         }
 
         fun getAutoStartIntent(context: Context): Intent {
-            val manufacturer = android.os.Build.MANUFACTURER.lowercase(Locale.ROOT) // android.os.Build.MANUFACTURER.lowercase()
-            val intent = when (manufacturer) {
-                "xiaomi" -> Intent().setComponent(
-                    ComponentName(
-                        "com.miui.securitycenter",
-                        "com.miui.permcenter.autostart.AutoStartManagementActivity"
-                    )
+            val manufacturer = android.os.Build.BRAND.lowercase(Locale.ROOT) // android.os.Build.MANUFACTURER.lowercase()
+
+            val intentList = when (manufacturer) {
+                "xiaomi" -> listOf(
+                    Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"))
                 )
-                "asus" -> Intent().setComponent(
-                    ComponentName(
-                        "com.asus.mobilemanager",
-                        "com.asus.mobilemanager.entry.FunctionActivity"
-                        //"com.asus.mobilemanager.powersaver.PowerSaverSettings"//if above its not working so use it instead
-                        //"com.asus.mobilemanager.autostart.AutoStartActivity"//if above its not working so use it instead
-                    )
+                "asus" -> listOf(
+                    Intent().setComponent(ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity"))
                 )
-                "letv" -> Intent().setComponent(
-                    ComponentName(
-                        "com.letv.android.letvsafe",
-                        "com.letv.android.letvsafe.AutobootManageActivity"
-                    )
+                "letv" -> listOf(
+                    Intent().setComponent(ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity"))
                 )
-                "honor" -> Intent().setComponent(
-                    ComponentName(
-                        "com.huawei.systemmanager",
-                        "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"
-                    )
+                "honor", "huawei" -> listOf(
+                    Intent().setComponent(ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"))
                 )
-                "huawei" -> Intent().setComponent(
-                    ComponentName(
-                        "com.huawei.systemmanager",
-                        "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"
-                    )
+                "oppo" -> listOf(
+                    Intent().setComponent(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity"))
                 )
-                "oppo" -> Intent().setComponent(
-                    ComponentName(
-                        "com.coloros.safecenter",
-                        "com.coloros.safecenter.permission.startup.StartupAppListActivity"
-                    )
+                "vivo" -> listOf(
+                    Intent().setComponent(ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"))
                 )
-                "vivo" -> Intent().setComponent(
-                    ComponentName(
-                        "com.vivo.permissionmanager",
-                        "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"
-                    )
+                "nokia" -> listOf(
+                    Intent().setComponent(ComponentName("com.evenwell.powersaving.g3", "com.evenwell.powersaving.g3.exception.PowerSaverExceptionActivity"))
                 )
-                "nokia" -> Intent().setComponent(
-                    ComponentName(
-                        "com.evenwell.powersaving.g3",
-                        "com.evenwell.powersaving.g3.exception.PowerSaverExceptionActivity"
-                    )
+                "samsung" -> listOf(
+                    Intent().setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+                    Intent().setComponent(ComponentName("com.samsung.android.sm", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+                    Intent().setComponent(ComponentName("com.samsung.android.sm_cn", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+                    Intent().setComponent(ComponentName("com.samsung.android.sm", "com.samsung.android.sm.ui.main.SmartManagerDashBoardActivity"))
                 )
-                "samsung" -> Intent().setComponent(
-                    ComponentName(
-                        "com.samsung.android.lool",
-                        "com.samsung.android.sm.ui.battery.BatteryActivity"
-                    )
+                "oneplus" -> listOf(
+                    Intent().setComponent(ComponentName("com.oneplus.security", "com.oneplus.security.chainlaunch.view.ChainLaunchAppListActivity"))
                 )
-                "oneplus" -> Intent().setComponent(
-                    ComponentName(
-                        "com.oneplus.security",
-                        "com.oneplus.security.chainlaunch.view.ChainLaunchAppListActivity"
-                    )
-                )
-                else -> null
+                else -> emptyList()
+            }
+
+            // Check if any of the intents resolve to an activity
+            for (intent in intentList) {
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    return intent
+                }
             }
 
             // Check if the intent is resolvable
-            return intent?.takeIf { it.resolveActivity(context.packageManager) != null }
-                ?: Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    .setData(Uri.parse("package:${context.packageName}"))
+            return Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:${context.packageName}")
+            }
+            //return Intent(Settings.ACTION_SETTINGS) // Fallback: Open general settings if specific auto-start page is unavailable
+
         }
+
 
         private fun getDeviceBrand(): String { return android.os.Build.BRAND.lowercase(Locale.ROOT) }
 
