@@ -1,6 +1,5 @@
 package com.hardik.calendarapp.presentation.ui
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
@@ -74,6 +73,7 @@ import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.LocaleHelper
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
+import com.hardik.calendarapp.utillities.MyNavigation.navOptionsForYear
 import com.hardik.calendarapp.utillities.PermissionHandler
 import com.hardik.calendarapp.utillities.PermissionManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -502,7 +502,7 @@ class MainActivity : AppCompatActivity() {
                     val jumpDate = "$selectedYear-${selectedMonth - 1}-$selectedDay"
                     mainViewModel.updateMonthViewDate(jumpDate)
                     mainViewModel.updateSelectedDate(jumpDate, isJumpTDate = true)
-                    navController.navigate(R.id.nav_month, null, navOptions)
+                    navController.navigate(R.id.nav_month, null, navOptionsForYear)
                     resetJumpToDialog()
                 }
 
@@ -1371,7 +1371,7 @@ class MainActivity : AppCompatActivity() {
                 //Toast.makeText(this, "Permissions denied or partially granted", Toast.LENGTH_SHORT).show()
             }
 
-            if (permissionResults.isEmpty()) {
+            /*if (permissionResults.isEmpty()) {
                 Log.e(TAG, "PermissionHandler Permission results map is empty.")
             } else {
                 permissionResults.forEach { (permission, granted) ->
@@ -1380,7 +1380,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Post notifications permission granted", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
+            }*/
         }
     }
 
