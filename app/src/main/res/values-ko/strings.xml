@@ -181,10 +181,6 @@
     <string name="default_selected_1_country">기본적으로 국가 1개가 선택되었습니다.</string>
     <string name="enter_the_minutes">분을 입력하세요</string>
     <string name="notification_permission">알림 권한</string>
-    <string name="auto_start_permissions">자동 시작 권한</string>
-    <string name="battery_optimization">배터리 최적화</string>
-    <string name="battery_optimization_message">앱이 예정된 이벤트에 대한 알림을 정시에 보낼 수 있도록 하려면 이 설정을 활성화합니다. 비활성화하면 알림이 표시되지 않고 미리 알림이 실행되지 않을 수 있습니다.</string>
-    <string name="auto_start_permissions_message">앱이 닫히거나 백그라운드에서 제거된 경우에도 이벤트 알림 및 알림이 제대로 작동하도록 하려면 자동 시작 권한을 활성화하세요.</string>
     <string name="required_permission">필수 권한</string>
     <string name="deny_permission_msg">권한이 필요합니다. 애플리케이션 설정으로 이동한 후 허용하세요.</string>
 

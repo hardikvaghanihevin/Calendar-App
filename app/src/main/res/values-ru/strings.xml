@@ -181,10 +181,6 @@
     <string name="default_selected_1_country">По умолчанию выбрана 1 страна</string>
     <string name="enter_the_minutes">Introduceți minutele</string>
     <string name="notification_permission">Разрешение на уведомление</string>
-    <string name="auto_start_permissions">Разрешения на автоматический запуск</string>
-    <string name="battery_optimization">Оптимизация батареи</string>
-    <string name="battery_optimization_message">Включите этот параметр, чтобы приложение могло вовремя отправлять уведомления о запланированных событиях. Если этот параметр отключен, уведомления могут не отображаться, а напоминания могут не сработать.</string>
-    <string name="auto_start_permissions_message">Включите разрешение автозапуска, чтобы напоминания о событиях и уведомления работали правильно, даже когда приложение закрыто или удалено из фонового режима.</string>
     <string name="required_permission">Требуемое разрешение</string>
     <string name="deny_permission_msg">Требуются разрешения, зайдите в настройки приложения и разрешите его.</string>
 

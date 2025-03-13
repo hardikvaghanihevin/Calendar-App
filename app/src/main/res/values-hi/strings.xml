@@ -180,10 +180,6 @@
     <string name="default_selected_1_country">डिफ़ॉल्ट रूप से 1 देश चयनित</string>
     <string name="enter_the_minutes">मिनट दर्ज करें</string>
     <string name="notification_permission">अधिसूचना अनुमति</string>
-    <string name="auto_start_permissions">ऑटो स्टार्ट अनुमतियाँ</string>
-    <string name="battery_optimization">बैटरी अनुकूलन</string>
-    <string name="battery_optimization_message">ऐप को निर्धारित ईवेंट के लिए समय पर सूचनाएं भेजने की अनुमति देने के लिए इस सेटिंग को सक्षम करें। यदि अक्षम किया गया है, तो सूचनाएं प्रकट नहीं हो सकती हैं, और अनुस्मारक ट्रिगर होने में विफल हो सकते हैं।</string>
-    <string name="auto_start_permissions_message">कृपया यह सुनिश्चित करने के लिए ऑटोस्टार्ट अनुमति सक्षम करें कि इवेंट अनुस्मारक और सूचनाएं ठीक से काम करें, भले ही ऐप बंद हो या पृष्ठभूमि से हटा दिया गया हो।</string>
     <string name="required_permission">आवश्यक अनुमति</string>
     <string name="deny_permission_msg">अनुमतियों की आवश्यकता है, एप्लिकेशन सेटिंग्स पर जाएं और फिर इसे अनुमति दें।</string>
 
