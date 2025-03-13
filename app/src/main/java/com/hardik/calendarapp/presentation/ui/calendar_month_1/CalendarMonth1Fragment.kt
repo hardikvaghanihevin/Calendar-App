@@ -44,6 +44,7 @@ import com.hardik.calendarapp.utillities.DisplayUtil.hideViewWithAnimation
 import com.hardik.calendarapp.utillities.DisplayUtil.showViewWithAnimation
 import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
+import com.hardik.calendarapp.utillities.PermissionHandler
 import com.hardik.calendarapp.utillities.findIndexOfYearMonth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -140,11 +141,11 @@ class CalendarMonth1Fragment : Fragment() {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                     val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
-                    if (this.permissionManager.checkPermission(permissionNotification)) {
+                    if (PermissionHandler.checkPermission(requireActivity(),permissionNotification)) {
                         navigateNewEvent()
                     } else {
                         this.showNotificationPermissionDialog{
-                            if (this.permissionManager.checkPermission(permissionNotification))
+                            if (PermissionHandler.checkPermission(requireActivity(), permissionNotification))
                                 navigateNewEvent()
                         }
                     }

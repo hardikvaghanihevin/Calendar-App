@@ -47,6 +47,7 @@ import com.hardik.calendarapp.utillities.DateUtil.splitTimeString
 import com.hardik.calendarapp.utillities.GsonUtil
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation
+import com.hardik.calendarapp.utillities.PermissionHandler
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -285,11 +286,11 @@ class NewEventFragment : Fragment() {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
-                        if (this@run.permissionManager.checkPermission(permissionNotification)) {
+                        if (PermissionHandler.checkPermission(requireActivity(),permissionNotification)) {
                             sClick()
                         } else {
                             this@run.showNotificationPermissionDialog {
-                                if (this@run.permissionManager.checkPermission(permissionNotification))
+                                if (PermissionHandler.checkPermission(requireActivity(), permissionNotification))
                                     sClick() // Call `sClick()` only after permission is granted, on next click
                             }
                         }

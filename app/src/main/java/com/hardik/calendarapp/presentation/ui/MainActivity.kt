@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //permissionManager = PermissionManager.with(this)
-        permissionManager = PermissionManager(this)
+        //permissionManager = PermissionManager(this)
 
         mainViewModel.getHolidayCalendarData()
 //        checkAndRequestCalendarPermissions()//todo: 1 get calendar permission and set locale calendar data before API data get

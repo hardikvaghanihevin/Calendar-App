@@ -2,6 +2,7 @@ package com.hardik.calendarapp.utillities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -84,7 +85,8 @@ object PermissionHandler {
         val permissionsToRequest = mutableListOf<String>()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            //ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            !checkPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
         ) {
             permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -94,6 +96,18 @@ object PermissionHandler {
         } else {
             checkBatteryOptimization(activity, mutableMapOf())
         }
+    }
+
+    /**
+     * Checks if the given permission is granted.
+     * @param permission The permission to check.
+     * @return True if the permission is granted, false otherwise.
+     */
+    fun checkPermission(activity: AppCompatActivity, permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
+    }
+    fun checkPermission(activity: Activity, permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
     }
 
     @SuppressLint("BatteryLife")

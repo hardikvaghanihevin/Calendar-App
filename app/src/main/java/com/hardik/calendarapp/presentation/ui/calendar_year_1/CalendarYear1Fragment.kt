@@ -25,6 +25,7 @@ import com.hardik.calendarapp.presentation.adapter.CalendarYearPageAdapter
 import com.hardik.calendarapp.presentation.ui.MainActivity
 import com.hardik.calendarapp.utillities.KeyboardUtils
 import com.hardik.calendarapp.utillities.MyNavigation.navOptions
+import com.hardik.calendarapp.utillities.PermissionHandler
 import com.hardik.calendarapp.utillities.getCurrentYearPosition
 import com.hardik.calendarapp.utillities.getYearKeyAtPosition
 import dagger.hilt.android.AndroidEntryPoint
@@ -94,11 +95,11 @@ class CalendarYear1Fragment : Fragment() {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                     val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
-                    if (this.permissionManager.checkPermission(permissionNotification)) {
+                    if (PermissionHandler.checkPermission(requireActivity(), permissionNotification)) {
                         navigateNewEvent()
                     } else {
                         this.showNotificationPermissionDialog{
-                            if (this.permissionManager.checkPermission(permissionNotification)){
+                            if (PermissionHandler.checkPermission(requireActivity(), permissionNotification)){
                                 navigateNewEvent()}
                         }
                     }
