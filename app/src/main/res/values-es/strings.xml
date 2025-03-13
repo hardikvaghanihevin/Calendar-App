@@ -185,5 +185,7 @@
     <string name="battery_optimization">Optimización de la batería</string>
     <string name="battery_optimization_message">Habilite esta configuración para permitir que la aplicación envíe notificaciones de eventos programados a tiempo. Si está deshabilitado, es posible que las notificaciones no aparezcan y que los recordatorios no se activen.</string>
     <string name="auto_start_permissions_message">Habilite el permiso de inicio automático para garantizar que los recordatorios y notificaciones de eventos funcionen correctamente, incluso cuando la aplicación esté cerrada o eliminada del fondo.</string>
+    <string name="required_permission">Permiso requerido</string>
+    <string name="deny_permission_msg">Se requieren permisos, vaya a la configuración de la aplicación y luego permítalo.</string>
 
 </resources>

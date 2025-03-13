@@ -185,6 +185,7 @@
     <string name="battery_optimization">Batterieoptimierung</string>
     <string name="battery_optimization_message">Aktivieren Sie diese Einstellung, damit die App Benachrichtigungen für geplante Ereignisse rechtzeitig senden kann. Wenn die Funktion deaktiviert ist, werden Benachrichtigungen möglicherweise nicht angezeigt und Erinnerungen werden möglicherweise nicht ausgelöst.</string>
     <string name="auto_start_permissions_message">Bitte aktivieren Sie die AutoStart-Berechtigung, um sicherzustellen, dass Ereigniserinnerungen und Benachrichtigungen ordnungsgemäß funktionieren, auch wenn die App geschlossen oder aus dem Hintergrund entfernt wird.</string>
-
+    <string name="required_permission">Erforderliche Erlaubnis</string>
+    <string name="deny_permission_msg">Berechtigungen sind erforderlich. Gehen Sie zu den Anwendungseinstellungen und erlauben Sie sie.</string>
 
 </resources>

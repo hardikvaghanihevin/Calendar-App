@@ -185,5 +185,7 @@
     <string name="battery_optimization">Ottimizzazione della batteria</string>
     <string name="battery_optimization_message">Abilita questa impostazione per consentire all\'app di inviare notifiche per gli eventi programmati in tempo. Se disabilitato, le notifiche potrebbero non essere visualizzate e i promemoria potrebbero non attivarsi.</string>
     <string name="auto_start_permissions_message">Abilita l\'autorizzazione di avvio automatico per garantire che i promemoria e le notifiche degli eventi funzionino correttamente, anche quando l\'app è chiusa o rimossa dallo sfondo.</string>
+    <string name="required_permission">Autorizzazione richiesta</string>
+    <string name="deny_permission_msg">Sono necessarie le autorizzazioni, vai alle impostazioni dell\'applicazione e quindi consentirle.</string>
 
 </resources>

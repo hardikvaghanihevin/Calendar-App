@@ -197,5 +197,4 @@
     <string name="required_permission">Required permission</string>
     <string name="deny_permission_msg">Permissions are required, go to application settings and then allow it.</string>
 
-
 </resources>

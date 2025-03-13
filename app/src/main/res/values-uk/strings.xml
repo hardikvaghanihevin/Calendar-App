@@ -185,5 +185,7 @@
     <string name="battery_optimization">Оптимізація батареї</string>
     <string name="battery_optimization_message">Увімкніть це налаштування, щоб дозволити програмі надсилати сповіщення про заплановані події вчасно. Якщо вимкнено, сповіщення можуть не з’являтися, а нагадування можуть не активуватися.</string>
     <string name="auto_start_permissions_message">Увімкніть дозвіл AutoStart, щоб нагадування про події та сповіщення працювали належним чином, навіть якщо програму закрито або вилучено з фону.</string>
+    <string name="required_permission">Потрібен дозвіл</string>
+    <string name="deny_permission_msg">Потрібні дозволи, перейдіть до налаштувань програми та дозвольте.</string>
 
 </resources>

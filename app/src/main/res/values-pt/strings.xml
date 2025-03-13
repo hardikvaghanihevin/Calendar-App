@@ -185,5 +185,7 @@
     <string name="battery_optimization">Otimização da bateria</string>
     <string name="battery_optimization_message">Habilite esta configuração para permitir que o aplicativo envie notificações para eventos agendados na hora certa. Se desativado, as notificações podem não aparecer e os lembretes podem não ser acionados.</string>
     <string name="auto_start_permissions_message">Ative a permissão AutoStart para garantir que os lembretes e notificações de eventos funcionem corretamente, mesmo quando o aplicativo for fechado ou removido do plano de fundo.</string>
+    <string name="required_permission">Permissão necessária</string>
+    <string name="deny_permission_msg">As permissões são necessárias, vá para as configurações do aplicativo e permita-o.</string>
 
 </resources>
