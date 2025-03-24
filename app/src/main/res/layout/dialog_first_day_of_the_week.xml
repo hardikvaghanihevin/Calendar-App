@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             style="@style/TextViewStyle.medium"
-            android:text="@string/first_date_of_the_week"
+            android:text="@string/first_day_of_the_week"
             android:textSize="@dimen/dialog_TextSize_1" />
 
         <Space

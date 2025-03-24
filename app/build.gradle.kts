@@ -9,24 +9,24 @@ plugins {
 }
 
 android {
-    namespace = "com.hardik.calendarapp"
+    namespace = "calendar.schedule.task.todo.event.reminder"
     compileSdk = 35
 
-    signingConfigs {
-        create("release") {
-            storeFile = file("/Users/dreamworld/Desktop/Projects/Hardik/CalendarApp/app/com_hardik_calendarapp.jks")
-            storePassword = "com_hardik_calendarapp"
-            keyAlias = "com_hardik_calendarapp"
-            keyPassword = "com_hardik_calendarapp"
-        }
-    }
+//    signingConfigs {
+//        create("release") {
+//            storeFile = file("/Users/dreamworld/Desktop/Projects/Hardik/CalendarApp/app/calendar_schedule_task_todo_event_reminder.jks")
+//            storePassword = "calendar_schedule_task_todo_event_reminder"
+//            keyAlias = "calendar_schedule_task_todo_event_reminder"
+//            keyPassword = "calendar_schedule_task_todo_event_reminder"
+//        }
+//    }
 
     defaultConfig {
-        applicationId = "com.hardik.calendarapp"
+        applicationId = "calendar.schedule.task.todo.event.reminder"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "0.0.2"
+        versionName = "0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -49,7 +49,7 @@ android {
             isDebuggable = false
             isShrinkResources = true
             isMinifyEnabled = true//false
-            signingConfig = signingConfigs.getByName("release")
+//            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

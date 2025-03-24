@@ -64,7 +64,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.hardik.calendarapp.NOTIFY_EVENT" />
+                <action android:name="calendar.schedule.task.todo.event.reminder.NOTIFY_EVENT" />
             </intent-filter>
         </receiver>
     </application>

@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_1"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -59,7 +59,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_2"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -95,7 +95,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_3"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -131,7 +131,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_4"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -167,7 +167,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_5"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -203,7 +203,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_6"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -239,7 +239,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_7"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -275,7 +275,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_8"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -311,7 +311,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_9"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -347,7 +347,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_10"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -383,7 +383,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_11"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"
@@ -419,7 +419,7 @@
                 app:text_font_date="@font/post_nord_sans_medium"
                 app:week_start="monday" />
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
                 android:id="@+id/customViewMonth_12"
                 android:layout_width="@dimen/_135sdp"
                 android:layout_height="@dimen/_150sdp"

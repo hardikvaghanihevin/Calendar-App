@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "261214230287",
-    "project_id": "calendar-app-133b2",
-    "storage_bucket": "calendar-app-133b2.firebasestorage.app"
+    "project_number": "543921199671",
+    "project_id": "calendar-canada",
+    "storage_bucket": "calendar-canada.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:261214230287:android:c35e942044ebb40a84d07a",
+        "mobilesdk_app_id": "1:543921199671:android:167ab864f80f8013f63db2",
         "android_client_info": {
-          "package_name": "com.hardik.calendarapp"
+          "package_name": "calendar.schedule.task.todo.event.reminder"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAnpkcptqzOEen2LnQDneyM3yxjghtXheU"
+          "current_key": "AIzaSyBbDBGNlMqVnUoaGEDAUZ4B9tDeO1qqTw8"
         }
       ],
       "services": {

@@ -9,7 +9,7 @@
     android:paddingHorizontal="16dp"
     android:padding="0.5dp">
 
-    <com.hardik.calendarapp.presentation.ui.custom_view.CustomViewMonth
+    <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.CustomViewMonth
         android:id="@+id/customView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_200sdp"

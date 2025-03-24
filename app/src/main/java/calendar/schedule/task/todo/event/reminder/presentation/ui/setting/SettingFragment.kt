@@ -1,0 +1,138 @@
+package calendar.schedule.task.todo.event.reminder.presentation.ui.setting
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
+import calendar.schedule.task.todo.event.reminder.R
+import calendar.schedule.task.todo.event.reminder.common.Constants.BASE_TAG
+import calendar.schedule.task.todo.event.reminder.common.Constants.KEY_WHERE_TO_COMING
+import calendar.schedule.task.todo.event.reminder.databinding.FragmentSettingBinding
+import calendar.schedule.task.todo.event.reminder.presentation.ui.MainActivity
+import calendar.schedule.task.todo.event.reminder.presentation.ui.language.LanguageActivity
+import dagger.hilt.android.AndroidEntryPoint
+
+
+@AndroidEntryPoint
+class SettingFragment : Fragment() {
+    private val TAG = BASE_TAG + SettingFragment::class.java.simpleName
+
+    private var _binding: FragmentSettingBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentSettingBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupSettingsUI()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setupSettingsUI() {
+        binding.apply {
+            if (isAdded){
+
+                //todo: personalization:
+                includedItemAppTheme.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_app_theme_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.app_theme) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener {  (activity as MainActivity).showAppThemeDialog()  }
+                }
+                includedItemAppLanguage.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_app_language_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.app_language) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener {
+
+                        PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putString(KEY_WHERE_TO_COMING, "setting").apply()
+
+                        val intent = Intent(requireActivity(), LanguageActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+                includedItemFirstDayOfTheWeek.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_first_day_of_the_week_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.first_day_of_the_week) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener {   (activity as MainActivity).showFirstDayOfTheWeek() }
+                }
+                includedItemJumpToDate.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_jump_to_date_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.jump_to_date) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener {(activity as MainActivity).showJumpToDateDialog() }
+                }
+                includedItemTimeFormat.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_time_format_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.time_format) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).showTimeFormatDialog() }
+                }
+
+                //todo: About:
+                includedItemPrivacyPolicy.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_privacy_policy_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.privacy_policy) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).privacyPolicy() }
+                }
+                includedItemRateOnGooglePlay.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_rate_on_google_play_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.rate_on_google_play) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).rateApp() }
+                }
+                includedItemShareApp.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_share_app_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.share_app) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).shareApp() }
+                }
+                includedItemFeedBack.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_feedback_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.feedback) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).feedback() }
+                }
+                includedItemDeviceInfo.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_device_info_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.device_info) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon) }
+                    this.constLayItemSetting.setOnClickListener { (activity as MainActivity).showDeviceInfoDialog() }
+                }
+                includedItemVersion.apply {
+                    this.imgSettingIcon.apply { setImageResource(R.drawable.setting_version_icon) }
+                    this.tvSettingItemTitle.apply { text = getString(R.string.version) }
+                    this.imgSettingMoveArrowIcon.apply { setImageResource(R.drawable.setting_move_arrow_icon); visibility = View.GONE }
+                    this.constLayItemSetting.setOnClickListener {  }
+                    this.tvSettingItemDesc.apply {
+                        visibility = View.VISIBLE
+                        val appVersion = try {
+                            val packageInfo: PackageInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
+                            packageInfo.versionName // App version name
+                        } catch (e: PackageManager.NameNotFoundException) {
+                            "Unknown Version"
+                        }
+                        text = "V$appVersion"
+                    }
+                }
+            }
+        }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+}

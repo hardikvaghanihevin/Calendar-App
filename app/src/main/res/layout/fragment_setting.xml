@@ -155,12 +155,14 @@
                 android:layout_height="wrap_content"/>
 
             <include
+                android:visibility="gone"
                 android:id="@+id/included_item_feedBack"
                 layout="@layout/item_setting_lay"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/fragmentSetting_includedItemHeight" />
 
             <include
+                android:visibility="gone"
                 layout="@layout/item_divider_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

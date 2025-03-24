@@ -37,8 +37,8 @@
 #-dontwarn okhttp3.**
 #-dontwarn okio.**
 #
-#-keep class com.hardik.calendarapp.data.database.entity.Event.* { *; }
-#-keep class com.hardik.calendarapp.domain.model.* { *; }
+#-keep class calendar.schedule.task.todo.event.reminder.data.database.entity.Event.* { *; }
+#-keep class calendar.schedule.task.todo.event.reminder.domain.model.* { *; }
 
 # General ProGuard settings
 -keepattributes Signature, Exceptions, LineNumberTable, SourceFile
@@ -61,9 +61,9 @@
 -keepattributes *Annotation*
 
 # Application-specific classes
--keep class com.hardik.calendarapp.data.remote.dto.HolidayApiDto { *; }
--keep class com.hardik.calendarapp.data.database.entity.Event { *; }
--keep class com.hardik.calendarapp.domain.model.** { *; }
+-keep class calendar.schedule.task.todo.event.reminder.data.remote.dto.HolidayApiDto { *; }
+-keep class calendar.schedule.task.todo.event.reminder.data.database.entity.Event { *; }
+-keep class calendar.schedule.task.todo.event.reminder.domain.model.** { *; }
 
 # Kotlin Coroutines
 -keep class kotlinx.coroutines.** { *; }

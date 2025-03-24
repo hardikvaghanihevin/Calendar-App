@@ -1,0 +1,319 @@
+package calendar.schedule.task.todo.event.reminder.presentation.ui.new_event
+
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import calendar.schedule.task.todo.event.reminder.R
+import calendar.schedule.task.todo.event.reminder.common.Constants.BASE_TAG
+import calendar.schedule.task.todo.event.reminder.common.Constants.EVENT_INSERT_SUCCESSFULLY
+import calendar.schedule.task.todo.event.reminder.common.Constants.EVENT_UPDATE_SUCCESSFULLY
+import calendar.schedule.task.todo.event.reminder.data.database.entity.AlertOffset
+import calendar.schedule.task.todo.event.reminder.data.database.entity.AlertOffsetConverter
+import calendar.schedule.task.todo.event.reminder.data.database.entity.AlertOffsetConverter.parseAlertOffset
+import calendar.schedule.task.todo.event.reminder.data.database.entity.Event
+import calendar.schedule.task.todo.event.reminder.data.database.entity.EventType
+import calendar.schedule.task.todo.event.reminder.data.database.entity.RepeatOption
+import calendar.schedule.task.todo.event.reminder.data.database.entity.SourceType
+import calendar.schedule.task.todo.event.reminder.domain.repository.EventRepository
+import calendar.schedule.task.todo.event.reminder.utillities.DateUtil
+import calendar.schedule.task.todo.event.reminder.utillities.DateUtil.mergeDateAndTime
+import calendar.schedule.task.todo.event.reminder.utillities.DateUtil.timestampToMinutes
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import java.util.Calendar
+import javax.inject.Inject
+
+@HiltViewModel
+class NewEventViewModel @Inject constructor(
+    private val eventRepository: EventRepository,// For Database compatibility
+): ViewModel() {
+    private val TAG = BASE_TAG + NewEventViewModel::class.java.simpleName
+
+    //----------------------------------------------------------------//
+    val date: Pair<Long, Long> = DateUtil.getStartAndEndOfDay(Calendar.getInstance().timeInMillis)
+    //Todo: Event start date
+    private val _startDate= MutableStateFlow<Long>(date.first)//date.first is the statDate
+    val startDate: StateFlow<Long> = _startDate
+    fun updateStartDate(startDate: Long) {
+        val date = DateUtil.getStartAndEndOfDay(startDate)////date.first is the statDate
+        viewModelScope.launch {
+            _startDate.value = date.first
+
+            //This is for current start time set when date change
+            updateStartTime( mergeDateAndTime(dateEpoch =  date.first, timeEpoch = _startTime.value) )
+        }
+    }
+
+    //todo: Event end date
+    private val _endDate= MutableStateFlow<Long>(date.second)//date.second is the endDate
+    val endDate: StateFlow<Long> = _endDate
+    fun updateEndDate(endDate: Long) {
+        val date = DateUtil.getStartAndEndOfDay(endDate)//date.second is the endDate
+        viewModelScope.launch {
+            _endDate.value = date.second
+
+            //This is for current start time set when date change
+            updateEndTime( mergeDateAndTime(dateEpoch =  date.second, timeEpoch = _endTime.value) )
+
+        }
+    }
+
+    //----------------------------------------------------------------//
+
+    //todo: Event All-Day
+    private val _isAllDay = MutableStateFlow(false) // Default to false (not all day)
+    val isAllDay: StateFlow<Boolean> = _isAllDay
+
+    fun updateAllDayStatus(isAllDay: Boolean) {
+        viewModelScope.launch {
+            _isAllDay.value = isAllDay
+        }
+    }
+
+    //----------------------------------------------------------------//
+
+    private val calendar = Calendar.getInstance()
+
+    // Set default start time to current time (hour and minute) hh:mm a
+    private val defaultStartTime = calendar.apply {
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
+    // Set default end time to one hour ahead (hour and minute) hh:mm a
+    private val defaultEndTime = calendar.apply {
+        add(Calendar.HOUR_OF_DAY, 1)
+    }.timeInMillis
+
+    //todo: Event start time
+    private val _startTime= MutableStateFlow<Long>(defaultStartTime)
+    val startTime: StateFlow<Long> = _startTime
+
+    //todo: Event end time
+    private val _endTime= MutableStateFlow<Long>(defaultEndTime)
+    val endTime: StateFlow<Long> = _endTime
+
+    fun updateStartTime(startTime: Long) {
+        val date = DateUtil.getStartAndEndOfDay(startDate.value)//date.second is the endDate
+        viewModelScope.launch {
+            _startTime.value = mergeDateAndTime(dateEpoch =  date.first, timeEpoch = startTime)
+        }
+    }
+
+    fun updateEndTime(endTime: Long) {
+        val date = DateUtil.getStartAndEndOfDay(endDate.value)//date.second is the endDate
+        viewModelScope.launch {
+            _endTime.value = mergeDateAndTime(dateEpoch =  date.second, timeEpoch = endTime)
+        }
+    }
+
+    //todo: Event title
+    private val _title= MutableStateFlow("")
+    val title: StateFlow<String> = _title
+
+    fun updateTitle(title: String) {
+        viewModelScope.launch {
+            _title.value = title
+        }
+    }
+
+    //todo: Event description
+    private val _description= MutableStateFlow("")
+    val description: StateFlow<String> = _description
+
+    fun updateDescription(description: String) {
+        viewModelScope.launch {
+            _description.value = description
+        }
+    }
+
+    private val _sourceType = MutableStateFlow(SourceType.LOCAL)
+    val sourceType: StateFlow<SourceType> = _sourceType
+
+    fun updateSourceType(sourceType: SourceType){
+        viewModelScope.launch {
+            _sourceType.value = sourceType
+        }
+    }
+
+    //todo: Event Repeat (None, Once, Daly, Weekly, Monthly, Yearly)
+    private val _repeatOption = MutableStateFlow(RepeatOption.NEVER)//ONCE
+    val repeatOption:StateFlow<RepeatOption> = _repeatOption
+
+    fun updateRepeatOption(repeatOption: RepeatOption){
+        viewModelScope.launch {
+            _repeatOption.value = repeatOption
+        }
+    }
+
+    //todo: Event Alert (Before 5 min,10 min, 15 min, 1 hour, 1 day...)
+    private val _alertOffset = MutableStateFlow(AlertOffset.AT_TIME_OF_EVENT)
+    val alertOffset: StateFlow<AlertOffset> = _alertOffset
+
+    fun updateAlertOffset(alertOffset: AlertOffset){
+        viewModelScope.launch {
+            if(alertOffset != AlertOffset.BEFORE_CUSTOM_TIME) updateCustomAlertOffset()
+            _alertOffset.value = alertOffset
+        }
+    }
+
+    private val _customAlertOffset = MutableStateFlow<Long?>(null)
+    val customAlertOffset: StateFlow<Long?> = _customAlertOffset
+
+    fun updateCustomAlertOffset(customAlertOffset: Long? = null) {
+        viewModelScope.launch {
+            if (customAlertOffset != null) {
+                updateAlertOffset(AlertOffset.BEFORE_CUSTOM_TIME)
+            }
+            _customAlertOffset.value = customAlertOffset
+        }
+    }
+
+
+    private fun validateEvent(context: Context): String? {
+        // Validate event title
+        if (title.value.isBlank()) {
+            return context.resources.getString(R.string.event_title_cannot_empty)
+        }
+
+        // Validate start and end dates
+        if (startDate.value > endDate.value) {
+            return context.resources.getString(R.string.start_date_cannot_be_after_end_date)
+        }
+
+        // Validate start and end times (if not an all-day event)
+        if (!isAllDay.value && startTime.value > endTime.value) {
+            return context.resources.getString(R.string.start_time_cannot_be_after_end_time)
+        }
+
+        return null // No validation errors
+    }
+
+    /** Use in NewEventFragment's [Save] button :- for insert/update event */
+    fun insertCustomEvent(context: Context, id: String?): String{
+        val errorMessage = validateEvent(context = context)
+        if (errorMessage != null) {
+            return errorMessage
+        }
+
+        val currentEpochTime = System.currentTimeMillis()
+
+        val date: Triple<String, String, String> = DateUtil.epochToDateTriple(startDate.value)
+
+        val event = Event(
+            id = id.takeIf { id != null }?: "$currentEpochTime | ${title.value}",
+            title = title.value.trim().replace("\\s+".toRegex(), " "), // Remove extra spaces,
+            description = description.value.trim().replace("\\s+".toRegex(), " "), // Remove extra spaces,
+            startDate = DateUtil.longToString(startDate.value, DateUtil.DATE_FORMAT_yyyy_MM_dd),
+            endDate = DateUtil.longToString(endDate.value, DateUtil.DATE_FORMAT_yyyy_MM_dd),
+            startTime = startDate.value.takeIf { isAllDay.value } ?: startTime.value,//hh:mm a
+            endTime = endDate.value.takeIf { isAllDay.value } ?: endTime.value,//hh:mm a
+            year = date.first,
+            month = date.second,
+            date = date.third,
+            eventType = EventType.PERSONAL,
+            isAllDay = isAllDay.value,
+            isHoliday = false,
+            sourceType = sourceType.value,
+            repeatOption = repeatOption.value,
+            alertOffset = alertOffset.value,
+            customAlertOffset = customAlertOffset.value,
+            triggerTime = startTime.value, // todo: set triggerTime as start time
+        )
+
+        insertEvent(context, event)
+        return EVENT_INSERT_SUCCESSFULLY.takeIf { id == null } ?: EVENT_UPDATE_SUCCESSFULLY// Event inserted/update successfully
+    }
+
+    fun resetEventState() {
+        val date = DateUtil.getStartAndEndOfDay(Calendar.getInstance().timeInMillis)
+
+        viewModelScope.launch {
+            _startDate.value = date.first
+            _endDate.value = date.second
+
+            val calendar = Calendar.getInstance()
+            _startTime.value = calendar.apply {
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+
+            _endTime.value = calendar.apply {
+                add(Calendar.HOUR_OF_DAY, 1)
+            }.timeInMillis
+
+            _title.value = ""
+            _description.value = ""
+            _isAllDay.value = false
+            _repeatOption.value = RepeatOption.NEVER
+            _alertOffset.value = AlertOffset.AT_TIME_OF_EVENT
+            _customAlertOffset.value = null
+        }
+    }
+
+    //----------------------------------------------------------------//
+
+    fun cancelAlarm(event: Event){
+        viewModelScope.launch {
+            eventRepository.cancelAlarm(event = event)// cancel when update single event from newEventFrag
+        }
+    }
+
+    private val insertEventsMutex = Mutex()
+    private fun insertEvent(context: Context, event: Event) {
+        viewModelScope.launch {
+            insertEventsMutex.withLock {
+                try {
+                    val updatedEvent = coroutineScope {
+                            async(Dispatchers.Default) {
+                                val nextTriggerTime: Long
+
+                                // Calculate nextTriggerTime if needed
+                                var alertOffsetUse : AlertOffset = event.alertOffset
+                                val minus: Long
+                                if (event.alertOffset == AlertOffset.BEFORE_CUSTOM_TIME){
+                                    val customTimeStamp = event.customAlertOffset!!
+                                    val isCustom = customTimeStamp.toInt() == 0
+                                    alertOffsetUse = AlertOffset.AT_TIME_OF_EVENT.takeIf { isCustom } ?: parseAlertOffset(timestampToMinutes(customTimeStamp))
+                                    minus = AlertOffsetConverter.toMilliseconds(alertOffsetUse) ?: 0L
+                                }else{
+                                    minus = AlertOffsetConverter.toMilliseconds(alertOffsetUse) ?: 0L
+                                }
+                                val calculatedTriggerTime = DateUtil.calculateNextOccurrence(event.triggerTime, event.repeatOption)
+
+                                nextTriggerTime = if (calculatedTriggerTime != null) {
+                                    calculatedTriggerTime - minus
+                                }else{
+                                    event.startTime - minus
+                                }
+
+                                event.copy(triggerTime = nextTriggerTime)
+                            }.await() // Collect all updated events
+                    }
+
+                    withContext(Dispatchers.IO) {
+                        eventRepository.upsertEvent(updatedEvent)
+                    }
+
+                } catch (e: Exception) {
+                    // InsertEvents - Error inserting events
+                    Log.e(TAG, "insertEvent: ", e)
+                }
+            }
+        }
+    }
+
+    /** Use in ViewEventFragment's [Delete] button :- for delete event */
+    suspend fun deleteEvent(argEvent: Event): Int {
+        return eventRepository.deleteEvent(argEvent)
+    }
+}

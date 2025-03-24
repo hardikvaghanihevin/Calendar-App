@@ -50,7 +50,7 @@
             android:orientation="horizontal"
             android:weightSum="2.36">
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.NumberPicker
                 android:id="@+id/year_picker"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_110sdp"
@@ -70,7 +70,7 @@
                 app:np_value="2025"
                 android:contentDescription="@string/year_picker"/>
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.NumberPicker
                 android:id="@+id/month_picker"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_110sdp"
@@ -90,7 +90,7 @@
                 app:np_value="1"
                 android:contentDescription="@string/month_picker"/>
 
-            <com.hardik.calendarapp.presentation.ui.custom_view.NumberPicker
+            <calendar.schedule.task.todo.event.reminder.presentation.ui.custom_view.NumberPicker
                 android:id="@+id/date_picker"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_110sdp"

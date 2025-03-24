@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.hardik.calendarapp",
+  "applicationId": "calendar.schedule.task.todo.event.reminder",
   "variantName": "release",
   "elements": [
     {
@@ -12,7 +12,7 @@
       "filters": [],
       "attributes": [],
       "versionCode": 1,
-      "versionName": "0.0.2",
+      "versionName": "0.0.1",
       "outputFile": "app-release.apk"
     }
   ],
